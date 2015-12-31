@@ -28,6 +28,7 @@ import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.carmera.CameraManager;
 import com.cardinfolink.yunshouyin.constant.Msg;
+import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.decoding.CaptureActivityHandler;
 import com.cardinfolink.yunshouyin.decoding.InactivityTimer;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
@@ -38,6 +39,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -72,7 +74,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private TradingLoadDialog mTradingLoadDialog;//交易的load的对话框
     private HintDialog mHintDialog;//显示一些提示信息 下面两个按钮的 对话框
 
-    private String total;
+    private String total;//实际要支付的金额，如果有优惠这个就是优惠后的金额
+    private String originaltotal;//原始金额
 
     private String mOrderNum;
     private ResultData mResultData;
@@ -85,6 +88,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
     //从哪里启动的这个activity
     private String originalFromFlag;
+
+    private String chcd;//渠道
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -155,6 +160,14 @@ public class CaptureActivity extends BaseActivity implements Callback {
                             orderData.txamt = total;
                             orderData.currency = "156";
                             orderData.scanCodeId = (String) msg.obj;
+                            //有优惠金额的时候
+                            if (SessonData.loginUser.getResultData().saleDiscount != null &&
+                                    !"0".equals(SessonData.loginUser.getResultData().saleDiscount)) {
+                                orderData.payType = SessonData.loginUser.getResultData().payType;
+
+                                orderData.discountMoney = String.valueOf(new BigDecimal(originaltotal).subtract(new BigDecimal(total)).doubleValue());
+                                orderData.couponOrderNum = SessonData.loginUser.getResultData().scanCodeId;
+                            }
                             // /orderData.scanCodeId="13241252555";
                             CashierSdk.startPay(orderData, new CashierListener() {
 
@@ -180,7 +193,73 @@ public class CaptureActivity extends BaseActivity implements Callback {
                             });
                         } else if ("ticketview".equals(originalFromFlag)) {
                             //这里是卡券核销
-                            Toast.makeText(mContext, "ticketview", Toast.LENGTH_SHORT).show();
+                            String scancode = (String) msg.obj;
+                            final OrderData orderData = new OrderData();
+                            orderData.orderNum = geneOrderNumber();
+                            orderData.scanCodeId = scancode;
+
+                            CashierSdk.startVeri(orderData, new CashierListener() {
+                                @Override
+                                public void onResult(ResultData resultData) {
+                                    mResultData = resultData;
+                                    SessonData.loginUser.setResultData(resultData);//保存卡券核销返回信息
+                                    if ("00".equals(mResultData.respcd)) {
+                                        Intent intent = new Intent(mContext, CouponResultActivity.class);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putBoolean("check_coupon_result_flag", true);
+                                        intent.putExtras(bundle);
+                                        mContext.startActivity(intent);
+                                    } else {
+                                        //核销失败
+                                        mHintDialog.setText(getResources().getString(R.string.coupon_ver_fail), getResources().getString(R.string.coupon_ver_close), getResources().getString(R.string.coupon_ver_try_again));
+                                        mHintDialog.show();
+                                        mHintDialog.setCancelOnClickListener(new OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                SessonData.loginUser.setResultData(null);
+                                                finish();
+                                            }
+                                        });
+                                        mHintDialog.setOkOnClickListener(new OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                CashierSdk.startVeri(orderData, new CashierListener() {
+                                                    @Override
+                                                    public void onResult(ResultData resultData) {
+                                                        if ("00".equals(mResultData.respcd)) {
+                                                            runOnUiThread(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    Intent intent = new Intent(mContext, CouponResultActivity.class);
+                                                                    Bundle bundle = new Bundle();
+                                                                    bundle.putBoolean("check_coupon_result_flag", true);
+                                                                    intent.putExtras(bundle);
+                                                                    mContext.startActivity(intent);
+                                                                    mHintDialog.hide();
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+
+                                                    @Override
+                                                    public void onError(final int errorCode) {
+                                                        Log.e(TAG, " starVeri fail===" + errorCode);
+                                                    }
+                                                });
+                                            }
+
+                                        });
+
+                                    }
+                                }
+
+                                @Override
+                                public void onError(int errorCode) {
+                                    Log.e(TAG, " starVeri fail===" + errorCode);
+                                }
+                            });
+                            break;
+
                         }
                         break;
                     }
@@ -365,12 +444,12 @@ public class CaptureActivity extends BaseActivity implements Callback {
         final OrderData orderData = new OrderData();
         orderData.origOrderNum = mOrderNum;
         //这里先查询一下，如果还未支付再取消也不迟呀
-        Log.e(TAG,"[onPause] cancel before search");
+        Log.e(TAG, "[onPause] cancel before search");
         CashierSdk.startQy(orderData, new CashierListener() {
             @Override
             public void onResult(ResultData resultData) {
                 if (resultData.respcd.equals("09")) {
-                    Log.e(TAG,"[onPause] not pay yet, will cancel");
+                    Log.e(TAG, "[onPause] not pay yet, will cancel");
                     //如果是还未支付 这时候再取消
                     orderData.origOrderNum = mOrderNum;
                     orderData.orderNum = geneOrderNumber();//新生成一个订单号
@@ -427,18 +506,25 @@ public class CaptureActivity extends BaseActivity implements Callback {
     public void enterPaySuccessActivity() {
         stopPolling();
         mTradingLoadDialog.hide();
-
         Intent intent = new Intent(CaptureActivity.this, PayResultActivity.class);
         Bundle bun = new Bundle();
+
         bun.putString("txamt", mResultData.txamt);
         bun.putString("orderNum", mResultData.orderNum);
         bun.putString("chcd", mResultData.chcd);
         bun.putString("mCurrentTime", mCurrentTime);
         bun.putBoolean("result", true);
 
-        intent.putExtras(bun);
+        if (SessonData.loginUser.getResultData().saleDiscount != null &&
+                !"0".equals(SessonData.loginUser.getResultData().saleDiscount)) {
+            //有优惠卡券支付
+            bun.putString("originaltotal", originaltotal);//消费金额
+            bun.putString("total", total);//付款金额
+        } else {
+            //无优惠卡券支付
 
-        intent.setClass(CaptureActivity.this, PayResultActivity.class);
+        }
+        intent.putExtras(bun);
 
         startActivity(intent);
 
@@ -451,14 +537,21 @@ public class CaptureActivity extends BaseActivity implements Callback {
         mTradingLoadDialog.hide();
         Intent intent = new Intent(CaptureActivity.this, PayResultActivity.class);
         Bundle bun = new Bundle();
-
         bun.putString("txamt", mResultData.txamt);
         bun.putString("orderNum", mResultData.orderNum);
         bun.putString("chcd", mResultData.chcd);
-        bun.putString("errorDetail", mResultData.errorDetail);
         bun.putString("mCurrentTime", mCurrentTime);
+        bun.putString("errorDetail", mResultData.errorDetail);
         bun.putBoolean("result", false);
 
+        if (SessonData.loginUser.getResultData().saleDiscount != null &&
+                !"0".equals(SessonData.loginUser.getResultData().saleDiscount)) {
+            //有优惠卡券支付
+            bun.putString("originaltotal", originaltotal);//消费金额
+            bun.putString("total", total);//付款金额
+        } else {
+
+        }
         intent.putExtras(bun);
 
         startActivity(intent);
@@ -544,14 +637,13 @@ public class CaptureActivity extends BaseActivity implements Callback {
         originalFromFlag = bundle.getString("original");
         if ("scancodeview".equals(originalFromFlag)) {
             total = bundle.getString("total");
-            //这里不需要传人支付类型了，服务器判断。
+            chcd = bundle.getString("chcd");
+            originaltotal = bundle.getString("originaltotal");
             Date now = new Date();
-
             SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             mCurrentTime = mspf.format(now);
 
             mOrderNum = geneOrderNumber();
-
         } else if ("ticketview".equals(originalFromFlag)) {
             //扫卡券
             mActionBar.setTitle(getResources().getString(R.string.coupon_title_first));
@@ -580,7 +672,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
     @Override
     protected void onPause() {
         cancelBillInPause();
-        Log.e(TAG, "onPause:");
         super.onPause();
         if (captureActivityHandler != null) {
             captureActivityHandler.quitSynchronously();
@@ -644,8 +735,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
         playBeepSoundAndVibrate();
         //从这里发送了扫二维码成功，之后就要调用sdk里面的付款了
         Message msg = mHandler.obtainMessage(Msg.MSG_FROM_SCANCODE_SUCCESS);
+
         msg.obj = obj.getText().toString();
         mHandler.sendMessageDelayed(msg, 0);
+
         CameraManager.get().stopPreview();//停止camera的preview
         CameraManager.get().closeDriver();
     }
