@@ -336,5 +336,8 @@
     <string name="coupon_time_receive_money">收款时间</string>
     <string name="coupon_pay_money_again">重新支付</string>
 
+    <!--  欢迎界面 要用到的文本 -->
+    <string name="splash_activity_message">一天让你的店铺进入互联网 + 收款时代"</string>
+    <string name="splash_activity_title">云收银</string>
 
 </resources>
