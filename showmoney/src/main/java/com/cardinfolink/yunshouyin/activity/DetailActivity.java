@@ -143,7 +143,7 @@ public class DetailActivity extends BaseActivity {
             //正在处理中的交易
             tradeStatus = getResources().getString(R.string.detail_activity_trade_status_nopay);
             mPayResult.setTextColor(Color.BLACK);
-            mPayResultImage.setImageResource(R.drawable.refresh);
+            mPayResultImage.setImageResource(R.drawable.bill_fresh);
             mPayResultImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
