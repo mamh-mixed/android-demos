@@ -341,7 +341,7 @@
 
     <!--  卡卷要用到的文本 -->
     <string name="coupon_title_first">券码核销</string>
-    <string name="coupon_reminder">输入券码</string>
+    <string name="coupon_reminder">输入券码或扫描券码</string>
     <string name="coupon_confirm">核销</string>
     <string name="coupon_return">返回销券</string>
     <string name="coupon_cancel_return">返回核销</string>
@@ -357,6 +357,7 @@
     <string name="coupon_account_receive_money">应到账金额(不含手续费):</string>
     <string name="coupon_time_receive_money">收款时间</string>
     <string name="coupon_pay_money_again">重新支付</string>
+    <string name="coupon_ticket_verification">卡券核销</string>
 
     <!--  欢迎界面 要用到的文本 -->
     <string name="splash_activity_message">一天让你的店铺进入互联网 + 收款时代"</string>
