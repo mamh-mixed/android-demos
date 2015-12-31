@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.adapter.BillExpandableListAdapter;
+import com.cardinfolink.yunshouyin.adapter.CollectionExpandableListAdapter;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
@@ -65,6 +66,7 @@ public class TransManageView extends LinearLayout {
 
     //**收款码账单**************************************************************************************
     private PullToRefreshExpandableListView mCollectionPullRefreshListView;//第3个第3个收款码账单的listview
+    private CollectionExpandableListAdapter mCollectionAdapter;
 
     private Map<String, MonthBill> mMonthCollectionBillMap;
     private List<MonthBill> mMonthCollectionBillList;//收款码的月账单
@@ -117,7 +119,7 @@ public class TransManageView extends LinearLayout {
 
         mTitle = (TextView) findViewById(R.id.tv_title);
 
-        //******************************************************************************************
+        //***普通的收款账单***************************************************************************************
         mBillPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.bill_list_view);
         mBillPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
         mBillPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ExpandableListView>() {
@@ -151,19 +153,31 @@ public class TransManageView extends LinearLayout {
         ActualView.setAdapter(mBillAdapter);
         ActualView.setGroupIndicator(null);
 
-        //******************************************************************************************
+        //***卡券账单***************************************************************************************
         mTicketPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.ticket_list_view);
         mTicketPullRefreshListView.setVisibility(GONE);
 
 
-        //******************************************************************************************
+        //***收款码账单***************************************************************************************
         mCollectionPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.colloction_list_view);
+        mCollectionPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
         mCollectionPullRefreshListView.setVisibility(GONE);
+        mCollectionPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ExpandableListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
+                getCollectionBill();
+            }
+        });
 
-        mCollectionBillList = new ArrayList<>();
         mMonthCollectionBillList = new ArrayList<>();
-        mCollectionBillMap = new HashMap<>();
+        mCollectionBillList = new ArrayList<>();
         mMonthCollectionBillMap = new HashMap<>();
+        mCollectionBillMap = new HashMap<>();
+
+        mCollectionAdapter = new CollectionExpandableListAdapter(mContext, mMonthCollectionBillList, mCollectionBillList);
+        ExpandableListView ActualView1 = mCollectionPullRefreshListView.getRefreshableView();
+        ActualView1.setAdapter(mCollectionAdapter);
+        ActualView1.setGroupIndicator(null);
 
         //******************************************************************************************
 
@@ -199,8 +213,6 @@ public class TransManageView extends LinearLayout {
                 mTicketPullRefreshListView.setVisibility(GONE);
                 mCollectionPullRefreshListView.setVisibility(GONE);
                 mTitle.setText(mRaidoBill.getText());//设置标题
-
-                getBill();
             }
         });
 
@@ -214,8 +226,6 @@ public class TransManageView extends LinearLayout {
                 mTicketPullRefreshListView.setVisibility(VISIBLE);
                 mCollectionPullRefreshListView.setVisibility(GONE);
                 mTitle.setText(mRadioTicket.getText());
-
-                getTicketBill();
             }
         });
 
@@ -229,8 +239,6 @@ public class TransManageView extends LinearLayout {
                 mTicketPullRefreshListView.setVisibility(GONE);
                 mCollectionPullRefreshListView.setVisibility(VISIBLE);
                 mTitle.setText(mRadioCollection.getText());
-
-                getCollectionBill();
             }
         });
     }
@@ -238,6 +246,7 @@ public class TransManageView extends LinearLayout {
 
     public void refresh() {
         getBill();
+        getCollectionBill();
     }
 
 
@@ -465,6 +474,7 @@ public class TransManageView extends LinearLayout {
                 mapToMonthBillList(mMonthCollectionBillMap, mMonthCollectionBillList);
                 mapToBillList(mCollectionBillMap, mCollectionBillList);
 
+                mCollectionAdapter.notifyDataSetChanged();//这一句很重要的
                 mCollectionPullRefreshListView.onRefreshComplete();
 
                 collectionIndex += size;
@@ -472,7 +482,6 @@ public class TransManageView extends LinearLayout {
 
             @Override
             public void onFailure(QuickPayException ex) {
-
                 mCollectionPullRefreshListView.onRefreshComplete();
             }
         });
