@@ -33,6 +33,9 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/app/improveCertInfo", improveCertInfoHandle)
 	mux.HandleFunc("/app/pullinfo", pullInfoHandle)
 
+	// app3.0接口
+	mux.HandleFunc("/app/v3/bill", billV3Handle)
+
 	// 地推工具api
 	mux.HandleFunc("/app/tools/login", CompanyLogin)
 	mux.HandleFunc("/app/tools/users", UserList)
@@ -50,7 +53,7 @@ func RouteV3() (mux *AppV3ServeMux) {
 	mux = NewAppV3ServeMux()
 
 	// app3.0接口
-	mux.HandleFunc("/app/v3/bill", billV3Handle)
+	mux.HandleFunc("/v3/app/bill", billV3Handle)
 
 	return mux
 }
@@ -69,6 +72,9 @@ func (mux *AppV3ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("**********%s************", "<<<<<<>>>>>>")
 	log.Debugf("request url is %s; sign is %s", r.URL.Path, r.FormValue("sign"))
 	log.Debugf("username is %s", r.FormValue("username"))
+
+	// 可跨域,测试用
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	// 验签
 	if !checkSignSha256(r) {
