@@ -406,7 +406,7 @@ func validateTxamt(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
 
 	// 金额范围
 	// || toInt > maxTxamt 不限制金额，就按12位最大值来
-	if toInt <= minTxamt {
+	if toInt < minTxamt {
 		return false, fieldFormatError(txamt)
 	}
 
