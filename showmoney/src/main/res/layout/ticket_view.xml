@@ -20,7 +20,7 @@
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@drawable/setting_my" />
+                android:src="@drawable/setting_my1" />
 
             <TextView
                 android:id="@+id/tv_coupon_account"
@@ -28,9 +28,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="10dp"
-                android:text="用户账号"
-                android:textColor="#0099cc"
-                android:textSize="10sp" />
+                android:textColor="#999999"
+                android:textSize="20sp" />
         </LinearLayout>
 
         <TextView
@@ -39,7 +38,8 @@
             android:layout_centerHorizontal="true"
             android:padding="10dp"
             android:text="@string/coupon_title_first"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:visibility="invisible" />
 
         <ImageView
             android:id="@+id/iv_coupon_info"
@@ -48,16 +48,20 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:src="@drawable/setting_news" />
+            android:src="@drawable/setting_news"
+            android:visibility="invisible" />
     </RelativeLayout>
 
 
-    <ImageView
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="60dp"
-        android:src="@drawable/ticket_selected" />
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="40dp"
+        android:text="@string/coupon_ticket_verification"
+        android:textColor="#666666"
+        android:textSize="25sp" />
 
 
     <LinearLayout
@@ -65,25 +69,39 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="40dp"
         android:orientation="horizontal">
 
-        <EditText
+        <ImageView
+            android:id="@+id/iv_pencil"
+            android:layout_width="25dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center_vertical"
+            android:src="@drawable/ticket_pencilgrey" />
+
+        <com.cardinfolink.yunshouyin.ui.EditTextClear
             android:id="@+id/et_input_coupon_code"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:background="@drawable/ticket_edittext_bg"
+            android:background="@null"
             android:hint="@string/coupon_reminder" />
 
         <ImageView
             android:id="@+id/iv_scan_code"
-            android:layout_width="70dp"
+            android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_weight="0"
-            android:background="@drawable/ticket_edittext_bg"
-            android:src="@drawable/ticket_camera" />
+            android:src="@drawable/ticket_camera_blue" />
+
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:background="#333333" />
 
     <Button
         android:id="@+id/bt_confirm"
@@ -93,6 +111,14 @@
         android:layout_marginRight="30dp"
         android:layout_marginTop="60dp"
         android:background="@drawable/blue_selector"
-        android:text="@string/coupon_confirm" />
+        android:text="@string/coupon_confirm"
+        android:textColor="#ffffff" />
+
+    <ImageView
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40dp"
+        android:src="@drawable/ticket_umq" />
 
 </LinearLayout>

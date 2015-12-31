@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -21,7 +23,6 @@ import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.CaptureActivity;
 import com.cardinfolink.yunshouyin.activity.CouponResultActivity;
-import com.cardinfolink.yunshouyin.activity.TicketResultActivity;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.SessonData;
 
@@ -36,13 +37,13 @@ import java.util.Random;
 public class TicketView extends LinearLayout implements View.OnClickListener {
     private static final String TAG = "TicketView";
 
-
     private Context mContext;
     private View contentView;
     private Button mConfirm;
     private ImageView mCamera;
     private EditText mCouponCode;
     private ImageView mInfo;
+    private ImageView mPencil;
     private TextView mAccount;
 
     private Handler mMainActivityHandler;//这个是mainActivity类里面的handler
@@ -77,9 +78,31 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
         mCamera = (ImageView) contentView.findViewById(R.id.iv_scan_code);
         mInfo = (ImageView) contentView.findViewById(R.id.iv_coupon_info);
         mAccount = (TextView) contentView.findViewById(R.id.tv_coupon_account);
-
+        mPencil = (ImageView) contentView.findViewById(R.id.iv_pencil);
         mConfirm.setOnClickListener(this);
         mCamera.setOnClickListener(this);
+
+        mAccount.setText(SessonData.loginUser.getUsername());
+        mCouponCode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (TextUtils.isEmpty(s)) {
+                    mPencil.setImageResource(R.drawable.ticket_pencilgrey);
+                } else {
+                    mPencil.setImageResource(R.drawable.ticket_pencilblack);
+                }
+            }
+        });
     }
 
     public void initHandler() {
@@ -174,4 +197,6 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
         }
         return mOrderNum;
     }
+
+
 }
