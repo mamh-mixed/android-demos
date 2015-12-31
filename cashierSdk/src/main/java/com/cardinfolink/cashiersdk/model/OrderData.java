@@ -7,6 +7,7 @@ public class OrderData {
     public String origOrderNum;
     public String scanCodeId;
     public String currency;
-    public String chcd;
-
+    public String chcd;//渠道
+    public String discountMoney;//优惠金额
+    public String couponOrderNum;//扫码号，券号
 }
