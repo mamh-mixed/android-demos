@@ -367,6 +367,7 @@
     <string name="bill_title2">卡券账单</string>
     <string name="bill_title3">收款码账单</string>
     <string name="bill_search">搜索</string>
+    <string name="bill_search_hint">精确查找请输入订单号</string>
     <string name="bill_status_success">成功</string>
     <string name="bill_rec_type0">折扣券</string>
     <string name="bill_rec_type1">PC收款</string>
