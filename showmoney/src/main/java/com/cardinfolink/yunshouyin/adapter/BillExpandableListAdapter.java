@@ -85,7 +85,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
         if (convertView == null) {
             groupViewHolder = new GroupViewHolder();
-            convertView = View.inflate(mContext, R.layout.expandablelistview_group, null);
+            convertView = View.inflate(mContext, R.layout.bill_expandablelistview_group, null);
 
             groupViewHolder.month = (TextView) convertView.findViewById(R.id.tv_month);
             groupViewHolder.year = (TextView) convertView.findViewById(R.id.tv_year);
@@ -118,7 +118,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
         if (convertView == null) {
             childViewHolder = new ChildViewHolder();
-            convertView = View.inflate(mContext, R.layout.expandablelistview_child, null);
+            convertView = View.inflate(mContext, R.layout.bill_expandablelistview_child, null);
             childViewHolder.linearLayoutDay = convertView.findViewById(R.id.ll_day);
             childViewHolder.linearLayoutBillItem = convertView.findViewById(R.id.ll_bill_item);
 
