@@ -376,4 +376,9 @@
     <string name="bill_pay_type1">支付宝</string>
     <string name="bill_pay_type2">微信支付</string>
 
+    <!--我的 网页版二维码 界面用到的字符串-->
+    <string name="my_web_activity_merchant_name">店铺名称：</string>
+    <string name="my_web_activity_save">将二维码保存到相册"</string>
+    <string name="my_web_activity_message">手机微信扫一扫输入金额付款</string>
+    <string name="my_web_activity_message1">你可以将此图打印后贴在店铺内让顾客自主扫码付款</string>
 </resources>
