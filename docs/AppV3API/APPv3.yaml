@@ -1,0 +1,440 @@
+swagger: '2.0'
+info:
+  title: 云收银 API
+  description: 云收银系统移动应用API
+  version: 3.0.0
+host: 'localhost:6800'
+schemes:
+  - http
+  - https
+basePath: /v3/app
+produces:
+  - application/json
+  - application/x-www-form-urlencoded
+paths:
+  /register:
+    post:
+      summary: 注册
+      description: |
+        提供给APP注册的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: invitationCode
+          description: 邀请码
+          required: false
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /login:
+    post:
+      summary: 登录
+      description: |
+        提供给APP登录的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: device_type
+          description: '可选项：iOS, Android 建议：客户端上传大小写可能有变，建议后端统一成大写或是小写。如果传送了数据，需要更新数据库对应字段。'
+          required: false
+          type: string
+        - in: formData
+          name: device_token
+          description: 消息推送的唯一标识。如果传送了数据，需要更新数据库对应字段。
+          required: false
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/LoginResponse'
+  /password/forget:
+    post:
+      summary: 忘记密码
+      description: |
+        提供给APP端忘记密码的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /password/update:
+    post:
+      summary: 修改密码
+      description: |
+        提供给APP端修改密码的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: oldpassword
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: newpassword
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /account/activate:
+    post:
+      summary: 账户激活
+      description: |
+        提供给APP端账户激活的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /account/improve:
+    post:
+      summary: 清算银行卡信息完善
+      description: |
+        提供给APP端清算银行卡信息完善的接口。oldPath＝ /improveinfo
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: province
+          description: 省份
+          required: false
+          type: string
+        - in: formData
+          name: city
+          description: 城市
+          required: false
+          type: string
+        - in: formData
+          name: bank_open
+          description: 收款银行
+          required: false
+          type: string
+        - in: formData
+          name: branch_bank
+          description: 收款银行支行
+          required: false
+          type: string
+        - in: formData
+          name: bankNo
+          description: 收款银行代码
+          required: false
+          type: string
+        - in: formData
+          name: payee
+          description: 收款人
+          required: false
+          type: string
+        - in: formData
+          name: payee_card
+          description: 收款账号
+          required: false
+          type: string
+        - in: formData
+          name: phone_num
+          description: 收款人电话号码
+          required: false
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /account/certificate:
+    post:
+      summary: 账户认证
+      description: |
+        提供给APP端用来账户认证提升限额的接口。oldPath＝/improveCertInfo
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: certName
+          description: 商户证照上名称
+          required: false
+          type: string
+        - in: formData
+          name: certAddr
+          description: 商户地址
+          required: false
+          type: string
+        - in: formData
+          name: legalCertPos
+          description: 身份证正面图片地址
+          required: false
+          type: string
+        - in: formData
+          name: legalCertOpp
+          description: 身份证反面图片地址
+          required: false
+          type: string
+        - in: formData
+          name: businessLicense
+          description: 营业执照图片地址
+          required: false
+          type: string
+        - in: formData
+          name: taxRegistCert
+          description: 税务登记证图片地址
+          required: false
+          type: string
+        - in: formData
+          name: organizeCodeCert
+          description: 组织机构代码证图片地址.注：以上图片地址是客户端上传七牛后留下的唯一标识
+          required: false
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /token/qiniu:
+    post:
+      summary: 获取七牛上传token
+      description: |
+        提供给APP端获取七牛上传token的接口.oldPath=/getQiniuToken
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+      tags:
+        - Token
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/QiniuTokenResponse'
+definitions:
+  Response:
+    type: object
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+  QiniuTokenResponse:
+    type: object
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      uploadToken:
+        type: string
+        description: 七牛上传token，成功返回
+  LoginResponse:
+    type: object
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      user:
+        $ref: '#/definitions/User'
+  User:
+    type: object
+    properties:
+      username:
+        type: string
+        example: 453481716@qq.com
+      password:
+        type: string
+        example: 670b14728ad9902aecba32e22fa4f6bd
+      activate:
+        type: boolean
+        example: true
+      clientid:
+        type: string
+        example: 999118880000017
+      limit:
+        type: boolean
+        example: true
+      createTime:
+        type: string
+        example: 2015-12-24T19:38:20.000Z
+      merName:
+        type: string
+        example: 云收银
+      deviceType:
+        type: string
+        example: IOS
+      deviceToken:
+        type: string
+        example: 4951b12f901bb4799c8cb82740cd978ba9fcfa468cb58418ceacf3d38bf89c19
+      signKey:
+        type: string
+        example: 4d5449304d4445774d7a4d324d413d3d
+      inscd:
+        type: string
+        example: 99911888
+      objectId:
+        type: string
+        example: 1445224412723670000
+      payUrl:
+        type: string
+        example: 'http://qrcode.cardinfolink.net/agent/index.html?merchantCode=OTk5MTE4ODgwMDAwMDE3'
