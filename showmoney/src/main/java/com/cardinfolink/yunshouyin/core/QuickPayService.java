@@ -3,7 +3,6 @@ package com.cardinfolink.yunshouyin.core;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
-import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 
 import java.util.Map;
 
@@ -29,7 +28,8 @@ public interface QuickPayService {
 
     void getHistoryBillsAsync(User user, String month, String index, String size, String status, QuickPayCallbackListener<ServerPacket> listener);
 
-    void findOrderAsync(User user, String index, String size, String orderNum, String recType, String payType, String txnStatus, QuickPayCallbackListener<ServerPacket> listener);
+
+    void findOrderAsync(User user, String index, String size, String recType, String payType, String txnStatus, QuickPayCallbackListener<ServerPacket> listener);
 
     void getTotalAsync(User user, String date, QuickPayCallbackListener<String> listener);
 
