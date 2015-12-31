@@ -340,4 +340,18 @@
     <string name="splash_activity_message">一天让你的店铺进入互联网 + 收款时代"</string>
     <string name="splash_activity_title">云收银</string>
 
+    <!-- 账单界面用到的文本 -->
+    <string name="bill_title1">收款账单</string>
+    <string name="bill_title2">卡券账单</string>
+    <string name="bill_title3">收款码账单</string>
+    <string name="bill_search">搜索</string>
+    <string name="bill_status_success">成功</string>
+    <string name="bill_rec_type0">折扣券</string>
+    <string name="bill_rec_type1">PC收款</string>
+    <string name="bill_rec_type2">APP收款</string>
+    <string name="bill_rec_type3">网页收款</string>
+    <string name="bill_rec_type4">其他收款</string>
+    <string name="bill_pay_type1">支付宝</string>
+    <string name="bill_pay_type2">微信支付</string>
+
 </resources>
