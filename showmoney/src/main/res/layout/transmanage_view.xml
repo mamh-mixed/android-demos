@@ -255,21 +255,22 @@
             <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
                 android:id="@+id/bill_list_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_height="match_parent"
+                android:visibility="visible" />
 
             <!-- 卡券账单的listview -->
             <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
                 android:id="@+id/ticket_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
             <!-- 收款码账单的listview -->
             <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
                 android:id="@+id/colloction_list_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone" />
+                android:visibility="visible" />
 
         </RelativeLayout>
 
