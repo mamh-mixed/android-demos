@@ -33,7 +33,7 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="10dp"
-                android:src="@drawable/loading"
+                android:src="@drawable/login_wait"
                 android:visibility="gone" />
         </RelativeLayout>
 
@@ -205,6 +205,7 @@
                 android:layout_marginBottom="30dp"
                 android:maxHeight="50dp"
                 android:minHeight="20dp"
+                android:textColor="#ffffff"
                 android:text="@string/copyright"
                 android:textSize="17sp" />
         </RelativeLayout>
