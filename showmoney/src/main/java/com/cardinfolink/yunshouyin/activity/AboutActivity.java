@@ -1,9 +1,9 @@
 package com.cardinfolink.yunshouyin.activity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
@@ -77,8 +77,10 @@ public class AboutActivity extends Activity implements View.OnClickListener {
                 break;
             case R.id.welcome:
                 intent = new Intent(AboutActivity.this, SplashActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("original", "AboutActivity");
+                intent.putExtras(bundle);
                 startActivity(intent);
-                finish();
                 break;
             case R.id.update:
                 //检查更新
