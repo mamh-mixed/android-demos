@@ -1,272 +1,280 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#ffffff"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:padding="10dp"
-        android:text="@string/bill_title1"
-        android:textSize="22dp" />
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <RadioGroup
-            android:id="@+id/redio_group"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:visibility="visible">
-
-            <RadioButton
-                android:id="@+id/radio_bill"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/radio_button1_selector"
-                android:button="@null"
-                android:checked="true"
-                android:gravity="center"
-                android:paddingBottom="10dp"
-                android:paddingLeft="2dp"
-                android:paddingRight="2dp"
-                android:paddingTop="10dp"
-                android:text="@string/bill_title1"
-                android:textColor="@drawable/radio_button1_color_selector"
-                android:textSize="15sp" />
-
-            <RadioButton
-                android:id="@+id/radio_ticket"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="1dp"
-                android:layout_marginRight="1dp"
-                android:layout_weight="1"
-                android:background="@drawable/radio_button2_selector"
-                android:button="@null"
-                android:gravity="center"
-                android:paddingBottom="10dp"
-                android:paddingLeft="2dp"
-                android:paddingRight="2dp"
-                android:paddingTop="10dp"
-                android:text="@string/bill_title2"
-                android:textColor="@drawable/radio_button1_color_selector"
-                android:textSize="15sp" />
-
-            <RadioButton
-                android:id="@+id/radio_collection"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@drawable/radio_button3_selector"
-                android:button="@null"
-                android:gravity="center"
-                android:paddingBottom="10dp"
-                android:paddingLeft="2dp"
-                android:paddingRight="2dp"
-                android:paddingTop="10dp"
-                android:text="@string/bill_title3"
-                android:textColor="@drawable/radio_button1_color_selector"
-                android:textSize="15sp" />
-
-
-        </RadioGroup>
-
-
-        <LinearLayout
-            android:id="@+id/ll_search"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:visibility="gone">
-
-            <com.cardinfolink.yunshouyin.ui.EditTextClear
-                android:id="@+id/et_search"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bill_textview_bg" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tv_search"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:background="@drawable/white1_selector"
-            android:drawableLeft="@drawable/bill_seek"
-            android:gravity="center"
-            android:padding="5dp"
-            android:text="@string/bill_search"
-            android:textSize="15dp" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/ll_search_condition"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:button="@null"
-                android:clickable="true"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/bill_status_success"
-                android:textColor="@drawable/radio_button1_color_selector"
-                android:textSize="15sp" />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:button="@null"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/bill_rec_type0"
-                android:textColor="@drawable/radio_button1_color_selector"
-                android:textSize="15sp" />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:button="@null"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/bill_rec_type1"
-                android:textColor="@drawable/radio_button1_color_selector"
-                android:textSize="15sp" />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:button="@null"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/bill_rec_type2"
-                android:textColor="@drawable/radio_button1_color_selector"
-                android:textSize="15sp" />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:button="@null"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/bill_rec_type3"
-                android:textColor="@drawable/radio_button1_color_selector"
-                android:textSize="15sp" />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:button="@null"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/bill_rec_type4"
-                android:textColor="@drawable/radio_button1_color_selector"
-                android:textSize="15sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:button="@null"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/bill_pay_type1"
-                android:textColor="@drawable/radio_button1_color_selector"
-                android:textSize="15sp" />
-
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:button="@null"
-                android:gravity="center"
-                android:padding="5dp"
-                android:text="@string/bill_pay_type2"
-                android:textColor="@drawable/radio_button1_color_selector"
-                android:textSize="15sp" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center" />
-        </LinearLayout>
-    </LinearLayout>
-
-
-    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="5dp">
+        android:background="#ffffff"
+        android:orientation="vertical">
 
-        <!-- 账单的listview -->
-        <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
-            android:id="@+id/bill_list_view"
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="10dp"
+            android:text="@string/bill_title1"
+            android:textSize="22dp" />
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content">
 
-        <!-- 卡券账单的listview -->
-        <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
-            android:id="@+id/ticket_list_view"
+            <RadioGroup
+                android:id="@+id/redio_group"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <RadioButton
+                    android:id="@+id/radio_bill"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/radio_button1_selector"
+                    android:button="@null"
+                    android:checked="true"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/bill_title1"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_ticket"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="1dp"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/radio_button2_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/bill_title2"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <RadioButton
+                    android:id="@+id/radio_collection"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/radio_button3_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="2dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/bill_title3"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+
+            </RadioGroup>
+
+
+            <LinearLayout
+                android:id="@+id/ll_search"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="3"
+                android:visibility="gone">
+
+                <com.cardinfolink.yunshouyin.ui.EditTextClear
+                    android:id="@+id/et_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bill_textview1_bg"
+                    android:hint="@string/bill_search_hint" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_search"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@drawable/white1_selector"
+                android:drawableLeft="@drawable/bill_seek"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="@string/bill_search"
+                android:textSize="15dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_search_condition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_status_success"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_rec_type0"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_rec_type1"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_rec_type2"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_rec_type3"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_rec_type4"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_pay_type1"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+
+                <CheckBox
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_pay_type2"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone" />
+            android:layout_marginTop="5dp">
 
-        <!-- 收款码账单的listview -->
-        <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
-            android:id="@+id/colloction_list_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
+            <!-- 账单的listview -->
+            <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
+                android:id="@+id/bill_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-    </RelativeLayout>
+            <!-- 卡券账单的listview -->
+            <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
+                android:id="@+id/ticket_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <!-- 收款码账单的listview -->
+            <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
+                android:id="@+id/colloction_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+        </RelativeLayout>
 
 
-</LinearLayout>
+    </LinearLayout>
+
+    <include layout="@layout/showmoney_dialog" />
+</RelativeLayout>
