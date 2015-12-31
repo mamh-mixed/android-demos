@@ -9,7 +9,6 @@ import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
-import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -261,13 +260,14 @@ public class QuickPayServiceImpl implements QuickPayService {
         }.execute();
     }
 
+    //这个是通过条件来查找订单的，里面使用的是新的接口findOrder
     @Override
-    public void findOrderAsync(final User user, final String index, final String size, final String orderNum, final String recType, final String payType, final String txnStatus, final QuickPayCallbackListener<ServerPacket> listener) {
+    public void findOrderAsync(final User user, final String index, final String size, final String recType, final String payType, final String txnStatus, final QuickPayCallbackListener<ServerPacket> listener) {
         new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
             @Override
             protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
                 try {
-                    ServerPacket serverPacket = quickPayApi.findOrder(user, index, size, orderNum, recType, payType, txnStatus);
+                    ServerPacket serverPacket = quickPayApi.findOrder(user, index, size, recType, payType, txnStatus);
                     return new AsyncTaskResult<ServerPacket>(serverPacket, null);
                 } catch (QuickPayException ex) {
                     return new AsyncTaskResult<ServerPacket>(null, ex);
@@ -309,6 +309,7 @@ public class QuickPayServiceImpl implements QuickPayService {
         }.execute();
     }
 
+    //这个是通过订单号来查找订单的，里面使用的新的的接口findOrder
     @Override
     public void getOrderAsync(final User user, final String orderNum, final QuickPayCallbackListener<ServerPacket> listener) {
         new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
