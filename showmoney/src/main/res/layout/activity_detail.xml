@@ -2,8 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:background="#ffffff"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#ffffff">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,8 +14,8 @@
             android:id="@+id/action_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            cardinfolink:left_text="返回账单"
-            cardinfolink:right_text="退款" />
+            cardinfolink:left_text="@string/detail_activity_return"
+            cardinfolink:right_text="@string/detail_activity_busicd_refd" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -23,6 +23,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal">
 
             <TextView
@@ -50,28 +51,56 @@
             android:layout_marginTop="10dp"
             android:orientation="vertical">
 
-
-            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/real_pay_money"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                cardinfolink:left_text="实收金额（元）"
-                cardinfolink:right_text="50000" />
+                android:orientation="horizontal">
 
-            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/pay_money"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/detail_activity_pay_money"
+                    android:textSize="25sp" />
+
+                <TextView
+                    android:id="@+id/pay_money"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="5000"
+                    android:textSize="20sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_pay_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                cardinfolink:left_text="收款金额（元）"
-                cardinfolink:right_text="50000" />
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bill_detail_bg"
+                android:orientation="vertical">
 
-            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/refd_money"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                cardinfolink:left_text="退款金额（元）"
-                cardinfolink:right_text="-500" />
+                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                    android:id="@+id/card_discount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    cardinfolink:left_text="@string/detail_activity_card_discount"
+                    cardinfolink:right_text="50000" />
 
+
+                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                    android:id="@+id/refd_money"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    cardinfolink:left_text="@string/detail_activity_refd_money"
+                    cardinfolink:right_text="-500" />
+
+                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                    android:id="@+id/pay_arrival_money"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    cardinfolink:left_text="@string/detail_activity_pay_arrival_money"
+                    cardinfolink:right_text="50000" />
+
+            </LinearLayout>
         </LinearLayout>
 
 
@@ -83,53 +112,71 @@
             android:layout_marginTop="30dp"
             android:orientation="vertical">
 
+            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                android:id="@+id/pay_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                cardinfolink:left_text="@string/detail_activity_order_number"
+                cardinfolink:right_text="" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/pay_chcd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                cardinfolink:left_text="支付渠道"
+                cardinfolink:left_text="@string/detail_activity_chcd"
                 cardinfolink:right_text="支付宝" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/pay_account"
+                android:id="@+id/pay_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                cardinfolink:left_text="收银人员"
-                cardinfolink:right_text="A01" />
+                cardinfolink:left_text="@string/detail_activity_pay_type"
+                cardinfolink:right_text="APP 收款" />
+
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/pay_datetime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                cardinfolink:left_text="交易时间"
+                cardinfolink:left_text="@string/detail_activity_pay_datetime"
                 cardinfolink:right_text="2015/12/28 20:35:36" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/pay_order"
+                android:id="@+id/pay_terminator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                cardinfolink:left_text="订单编号"
-                cardinfolink:right_text="xxxxxxxxxxxxxxxxxx" />
+                cardinfolink:left_text="@string/detail_activity_terminator"
+                cardinfolink:right_text="A01" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/pay_tradefrom"
+                android:id="@+id/pay_comments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                cardinfolink:left_text="收款方式"
-                cardinfolink:right_text="APP 收款" />
+                cardinfolink:left_text="@string/detail_activity_comments" />
+
+            <LinearLayout
+                android:id="@+id/ll_pay_commets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/bill_detail_bg"
+                android:orientation="vertical">
+
+                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                    android:id="@+id/pay_check_code"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    cardinfolink:left_text="@string/detail_activity_check_code" />
+
+                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                    android:id="@+id/pay_small_ticket_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    cardinfolink:left_text="@string/detail_activity_small_ticket_number" />
+            </LinearLayout>
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/btnclose"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/blue_selector"
-            android:text="关闭" />
 
     </LinearLayout>
 
