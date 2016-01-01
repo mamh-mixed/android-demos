@@ -8,6 +8,8 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
@@ -95,6 +97,17 @@ public class TransManageView extends LinearLayout {
     private LinearLayout mSearchLinearLayout;
     private LinearLayout mSearchConditionLinearLayout;
 
+    //定义几个搜索条件 的checkbpx组件
+    private CheckBox mPaySuccessCheckBox;//支付成功的 1
+
+    private CheckBox mRecAppCheckBox;//app 收款的 1
+    private CheckBox mRecPCCheckBox;//pc 收款的   2
+    private CheckBox mRecWebCheckBox;//网页收款的  4
+    private CheckBox mRecOpenCheckBox;//开放接口的 8
+    //这里少折扣券的
+    private CheckBox mPayAliCheckBox;//支付宝支付的 1
+    private CheckBox mPayWxCheckBox;//微信支付的    2
+
     private Handler mMainactivityHandler;
 
     public TransManageView(Context context) {
@@ -137,12 +150,22 @@ public class TransManageView extends LinearLayout {
                 mBillAdapter.notifyDataSetChanged();
                 SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
                 mCurrentYearMonth = spf.format(new Date());
-                getBill();
+
+                if (mRadioGroup.getVisibility() == VISIBLE) {
+                    getBill();
+                } else if (mRadioGroup.getVisibility() == GONE) {
+                    //通过判断 radio group是否是隐藏的状态，隐藏的状态就是按条件查找的情况
+                    searchBill();
+                }
             }
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
-                getBill();
+                if (mRadioGroup.getVisibility() == VISIBLE) {
+                    getBill();
+                } else if (mRadioGroup.getVisibility() == GONE) {
+                    searchBill();
+                }
             }
         });
 
@@ -174,6 +197,7 @@ public class TransManageView extends LinearLayout {
                 mCollectionBillList.clear();
                 mMonthCollectionBillMap.clear();
                 mCollectionBillMap.clear();
+                mCollectionAdapter.notifyDataSetChanged();
                 getCollectionBill();
             }
 
@@ -246,7 +270,6 @@ public class TransManageView extends LinearLayout {
                     mMonthBilList.clear();
                     mMonthBillMap.clear();
                     mTradeBillMap.clear();
-                    mBillAdapter.notifyDataSetChanged();
                     SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
                     mCurrentYearMonth = spf.format(new Date());
 
@@ -293,11 +316,108 @@ public class TransManageView extends LinearLayout {
                 mTitle.setText(mRadioCollection.getText());
             }
         });
+
+        //定义几个搜索条件 的checkbpx组件
+        mPaySuccessCheckBox = (CheckBox) findViewById(R.id.cb_success);//支付成功的 1
+        mPaySuccessCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+
+        mRecAppCheckBox = (CheckBox) findViewById(R.id.cb_rec_type1);//app 收款的 1
+        mRecAppCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        mRecPCCheckBox = (CheckBox) findViewById(R.id.cb_rec_type2);//pc 收款的   2
+        mRecPCCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        mRecWebCheckBox = (CheckBox) findViewById(R.id.cb_rec_type3);//网页收款的  4
+        mRecWebCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        mRecOpenCheckBox = (CheckBox) findViewById(R.id.cb_rec_type4);//其他收款的开放接口的 8
+        mRecOpenCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        //这里少折扣券的
+        mPayAliCheckBox = (CheckBox) findViewById(R.id.cb_pay_type1);//支付宝支付的 1
+        mPayAliCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        mPayWxCheckBox = (CheckBox) findViewById(R.id.cb_pay_type2);//微信支付的    2
+        mPayWxCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+
+    }
+
+    private class SearchCheckBoxOnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
+
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (!TextUtils.isEmpty(mSearchEditText.getText())) {
+                return;
+            }
+            //按条件查找之前先清空一下数据
+            billIndex = 0;
+            mMonthBillAgo = 0;//注意这里要清零
+            mTradeBillList.clear();
+            mMonthBilList.clear();
+            mMonthBillMap.clear();
+            mTradeBillMap.clear();
+            mBillAdapter.notifyDataSetChanged();
+            SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
+            mCurrentYearMonth = spf.format(new Date());
+            searchBill();
+        }
+    }
+
+    private void searchBill() {
+        int recValue = 0;//收款方式
+        if (mRecAppCheckBox.isChecked()) {
+            recValue += 1;
+        }
+        if (mRecPCCheckBox.isChecked()) {
+            recValue += 2;
+        }
+        if (mRecWebCheckBox.isChecked()) {
+            recValue += 4;
+        }
+        if (mRecOpenCheckBox.isChecked()) {
+            recValue += 8;
+        }
+        if (recValue == 0) {
+            recValue = 15;
+        }
+
+
+        int payValue = 0;//支付方式
+        if (mPayAliCheckBox.isChecked()) {
+            payValue += 1;
+        }
+        if (mPayWxCheckBox.isChecked()) {
+            payValue += 2;
+        }
+        if (payValue == 0) {
+            payValue = 3;
+        }
+
+        int txnStatus = 0;//支付状态
+        if (mPaySuccessCheckBox.isChecked()) {
+            txnStatus += 1;
+        }
+        if (txnStatus == 0) {
+            txnStatus = 7;
+        }
+
+        getBill(String.valueOf(recValue), String.valueOf(payValue), String.valueOf(txnStatus));
     }
 
 
     public void refresh() {
-        getBill();
+        billIndex = 0;
+        mMonthBillAgo = 0;//注意这里要清零
+        mTradeBillList.clear();
+        mMonthBilList.clear();
+        mMonthBillMap.clear();
+        mTradeBillMap.clear();
+        mBillAdapter.notifyDataSetChanged();
+        SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
+        mCurrentYearMonth = spf.format(new Date());
+
+        if (mRadioGroup.getVisibility() == VISIBLE) {
+            getBill();
+        } else if (mRadioGroup.getVisibility() == GONE) {
+            //通过判断 radio group是否是隐藏的状态，隐藏的状态就是按条件查找的情况
+            searchBill();
+        }
+
         getCollectionBill();
     }
 
@@ -321,6 +441,37 @@ public class TransManageView extends LinearLayout {
             @Override
             public void onFailure(QuickPayException ex) {
                 Log.e(TAG, " on failure = " + ex);
+                mBillPullRefreshListView.onRefreshComplete();
+                String msg = mContext.getString(R.string.bill_search_result_message2) + ex.getErrorMsg();
+                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private void getBill(String recType, String payType, String txnStatus) {
+        String sizeStr = "100";
+        String index = String.valueOf(billIndex);
+        quickPayService.findOrderAsync(SessonData.loginUser, index, sizeStr, recType, payType, txnStatus, new QuickPayCallbackListener<ServerPacket>() {
+            @Override
+            public void onSuccess(ServerPacket data) {
+                //这里特殊一些，需要用的size。
+                final int size = data.getSize();
+
+                parseServerPacket(data, mMonthBillMap, mTradeBillMap, mMonthBilList, mTradeBillList);
+
+                mBillAdapter.notifyDataSetChanged();
+                mBillPullRefreshListView.onRefreshComplete();
+
+                billIndex += size;
+                if (mMonthBilList.size() <= 0) {
+                    String msg = mContext.getString(R.string.bill_search_result_message3);
+                    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(QuickPayException ex) {
                 mBillPullRefreshListView.onRefreshComplete();
                 String msg = mContext.getString(R.string.bill_search_result_message2) + ex.getErrorMsg();
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
@@ -373,7 +524,7 @@ public class TransManageView extends LinearLayout {
 
     //获取 收款码 账单
     public void getCollectionBill() {
-        String size = "100";
+        String sizeStr = "100";
         String index = String.valueOf(collectionIndex);
         /**
          * recType
@@ -408,7 +559,7 @@ public class TransManageView extends LinearLayout {
          */
         String txnStatus = "7";
 
-        quickPayService.findOrderAsync(SessonData.loginUser, index, size, recType, payType, txnStatus, new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.findOrderAsync(SessonData.loginUser, index, sizeStr, recType, payType, txnStatus, new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 //这里特殊一些，需要用的size。
