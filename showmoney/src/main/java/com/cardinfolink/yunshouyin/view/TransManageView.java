@@ -122,23 +122,24 @@ public class TransManageView extends LinearLayout {
         //***普通的收款账单***************************************************************************************
         mBillPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.bill_list_view);
         mBillPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
-        mBillPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ExpandableListView>() {
+        mBillPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ExpandableListView>() {
             @Override
-            public void onRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
-                // Do work to refresh the list here.
-                if (refreshView.isHeaderShown()) {
-                    billIndex = 0;
-                    mTradeBillList.clear();
-                    mMonthBilList.clear();
-                    mMonthBillMap.clear();
-                    mTradeBillMap.clear();
-                    SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-                    mCurrentYearMonth = spf.format(new Date());
-                    getBill();
-                } else {
-                    getBill();
-                }
+            public void onPullDownToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
+                billIndex = 0;
+                mMonthBillAgo = 0;//注意这里要清零
+                mTradeBillList.clear();
+                mMonthBilList.clear();
+                mMonthBillMap.clear();
+                mTradeBillMap.clear();
+                mBillAdapter.notifyDataSetChanged();
+                SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
+                mCurrentYearMonth = spf.format(new Date());
+                getBill();
+            }
 
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
+                getBill();
             }
         });
 
@@ -149,9 +150,9 @@ public class TransManageView extends LinearLayout {
 
         mBillAdapter = new BillExpandableListAdapter(mContext, mMonthBilList, mTradeBillList);
 
-        ExpandableListView ActualView = mBillPullRefreshListView.getRefreshableView();
-        ActualView.setAdapter(mBillAdapter);
-        ActualView.setGroupIndicator(null);
+        ExpandableListView billActualView = mBillPullRefreshListView.getRefreshableView();
+        billActualView.setAdapter(mBillAdapter);
+        billActualView.setGroupIndicator(null);
 
         //***卡券账单***************************************************************************************
         mTicketPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.ticket_list_view);
@@ -175,9 +176,9 @@ public class TransManageView extends LinearLayout {
         mCollectionBillMap = new HashMap<>();
 
         mCollectionAdapter = new CollectionExpandableListAdapter(mContext, mMonthCollectionBillList, mCollectionBillList);
-        ExpandableListView ActualView1 = mCollectionPullRefreshListView.getRefreshableView();
-        ActualView1.setAdapter(mCollectionAdapter);
-        ActualView1.setGroupIndicator(null);
+        ExpandableListView collectionActualView = mCollectionPullRefreshListView.getRefreshableView();
+        collectionActualView.setAdapter(mCollectionAdapter);
+        collectionActualView.setGroupIndicator(null);
 
         //******************************************************************************************
 
@@ -343,13 +344,12 @@ public class TransManageView extends LinearLayout {
                     calendar.add(Calendar.MONTH, 0 - mMonthBillAgo);    //得到前一个月
                     String year = String.valueOf(calendar.get(Calendar.YEAR));
                     String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-                    mCurrentYearMonth = year + month;
+                    mCurrentYearMonth = year + month;//走到这里说明 下次调用这个 getBill()方法的时候拉取的就是上个月的账单了
                 }
             }
 
             @Override
             public void onFailure(QuickPayException ex) {
-                Log.e(TAG, " get history bill fail" + ex.getErrorMsg());
                 mBillPullRefreshListView.onRefreshComplete();
             }
         });
