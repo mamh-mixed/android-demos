@@ -163,9 +163,19 @@ public class TransManageView extends LinearLayout {
         mCollectionPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.colloction_list_view);
         mCollectionPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
         mCollectionPullRefreshListView.setVisibility(GONE);
-        mCollectionPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ExpandableListView>() {
+        mCollectionPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ExpandableListView>() {
             @Override
-            public void onRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
+            public void onPullDownToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
+                collectionIndex = 0;
+                mMonthCollectionBillList.clear();
+                mCollectionBillList.clear();
+                mMonthCollectionBillMap.clear();
+                mCollectionBillMap.clear();
+                getCollectionBill();
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
                 getCollectionBill();
             }
         });
