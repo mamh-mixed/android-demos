@@ -51,10 +51,9 @@
             android:layout_marginTop="10dp"
             android:orientation="vertical">
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -66,9 +65,10 @@
                     android:id="@+id/pay_money"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="5000"
-                    android:textSize="20sp" />
-            </LinearLayout>
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="20dp"
+                    android:textSize="30sp" />
+            </RelativeLayout>
 
             <LinearLayout
                 android:id="@+id/ll_pay_info"
@@ -82,23 +82,20 @@
                     android:id="@+id/card_discount"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    cardinfolink:left_text="@string/detail_activity_card_discount"
-                    cardinfolink:right_text="50000" />
+                    cardinfolink:left_text="@string/detail_activity_card_discount" />
 
 
                 <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                     android:id="@+id/refd_money"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    cardinfolink:left_text="@string/detail_activity_refd_money"
-                    cardinfolink:right_text="-500" />
+                    cardinfolink:left_text="@string/detail_activity_refd_money" />
 
                 <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                     android:id="@+id/pay_arrival_money"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    cardinfolink:left_text="@string/detail_activity_pay_arrival_money"
-                    cardinfolink:right_text="50000" />
+                    cardinfolink:left_text="@string/detail_activity_pay_arrival_money" />
 
             </LinearLayout>
         </LinearLayout>
@@ -123,30 +120,26 @@
                 android:id="@+id/pay_chcd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                cardinfolink:left_text="@string/detail_activity_chcd"
-                cardinfolink:right_text="支付宝" />
+                cardinfolink:left_text="@string/detail_activity_chcd" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/pay_type"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                cardinfolink:left_text="@string/detail_activity_pay_type"
-                cardinfolink:right_text="APP 收款" />
+                cardinfolink:left_text="@string/detail_activity_pay_type" />
 
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/pay_datetime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                cardinfolink:left_text="@string/detail_activity_pay_datetime"
-                cardinfolink:right_text="2015/12/28 20:35:36" />
+                cardinfolink:left_text="@string/detail_activity_pay_datetime" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/pay_terminator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                cardinfolink:left_text="@string/detail_activity_terminator"
-                cardinfolink:right_text="A01" />
+                cardinfolink:left_text="@string/detail_activity_terminator" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/pay_comments"
