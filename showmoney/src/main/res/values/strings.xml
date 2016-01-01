@@ -394,6 +394,8 @@
     <string name="bill_rec_type4">其他收款</string>
     <string name="bill_pay_type1">支付宝</string>
     <string name="bill_pay_type2">微信支付</string>
+    <string name="bill_search_result_message1">没有搜索到此账单，请确认账单号是否有误</string>
+    <string name="bill_search_result_message2">搜索账单失败</string>
 
     <!--我的 网页版二维码 界面用到的字符串-->
     <string name="my_web_activity_merchant_name">店铺名称：</string>

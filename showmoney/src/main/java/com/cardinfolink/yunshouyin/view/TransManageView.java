@@ -2,7 +2,9 @@ package com.cardinfolink.yunshouyin.view;
 
 import android.content.Context;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
@@ -202,14 +205,52 @@ public class TransManageView extends LinearLayout {
         mSearch.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mRadioGroup.getVisibility() == VISIBLE) {
-                    mRadioGroup.setVisibility(GONE);
-                    mSearchLinearLayout.setVisibility(VISIBLE);
-                    mSearchConditionLinearLayout.setVisibility(VISIBLE);
-                } else if (mRadioGroup.getVisibility() == GONE) {
-                    mRadioGroup.setVisibility(VISIBLE);
-                    mSearchLinearLayout.setVisibility(GONE);
-                    mSearchConditionLinearLayout.setVisibility(GONE);
+                if (mRaidoBill.isChecked()) {
+                    mSearchEditText.setText("");//先清空输入框的文本
+                    if (mRadioGroup.getVisibility() == VISIBLE) {
+                        mRadioGroup.setVisibility(GONE);
+                        mSearchLinearLayout.setVisibility(VISIBLE);
+                        mSearchConditionLinearLayout.setVisibility(VISIBLE);
+                    } else if (mRadioGroup.getVisibility() == GONE) {
+                        mRadioGroup.setVisibility(VISIBLE);
+                        mSearchLinearLayout.setVisibility(GONE);
+                        mSearchConditionLinearLayout.setVisibility(GONE);
+                    }
+                } else {
+                    Log.e(TAG, "搜索功能暂时 只支持收款账单");
+                }
+            }
+        });
+
+        mSearchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //订单号大于等于17位才触发查询操作
+                String orderNum = mSearchEditText.getText().toString();
+                if (!TextUtils.isEmpty(orderNum) && orderNum.length() == 17) {
+                    Log.e(TAG, " search order: " + orderNum);
+                    //这里精确查找
+                    billIndex = 0;
+                    mMonthBillAgo = 0;//注意这里要清零
+                    mTradeBillList.clear();
+                    mMonthBilList.clear();
+                    mMonthBillMap.clear();
+                    mTradeBillMap.clear();
+                    mBillAdapter.notifyDataSetChanged();
+                    SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
+                    mCurrentYearMonth = spf.format(new Date());
+
+                    findBill(orderNum);
                 }
             }
         });
@@ -260,6 +301,106 @@ public class TransManageView extends LinearLayout {
         getCollectionBill();
     }
 
+    //精确查找某个账单
+    private void findBill(String orderNum) {
+        quickPayService.getOrderAsync(SessonData.loginUser, orderNum, new QuickPayCallbackListener<ServerPacket>() {
+            @Override
+            public void onSuccess(ServerPacket data) {
+                //这里可以在ui线程里执行的
+                final int totalRecord = data.getTotalRecord();//这个字段表示当月的总条数
+                final int count = data.getCount();//返回的条数
+                final String total = data.getTotal();
+                final int refdcount = data.getRefdcount();
+                final String refdtotal = data.getRefdtotal();
+                final int size = data.getSize();
+
+                //这里开始遍历这个账单的数组************************************************************
+                for (Txn txn : data.getTxn()) {
+                    TradeBill tradeBill = new TradeBill();
+                    tradeBill.response = txn.getResponse();
+                    tradeBill.tandeDate = txn.getSystemDate();
+                    tradeBill.consumerAccount = txn.getConsumerAccount();
+                    tradeBill.transStatus = txn.getTransStatus();
+                    tradeBill.refundAmt = TxamtUtil.getNormal(txn.getRefundAmt());
+
+                    QRequest req = txn.getmRequest();
+                    if (req != null) {
+                        tradeBill.orderNum = req.getOrderNum();
+                        tradeBill.amount = TxamtUtil.getNormal(req.getTxamt());
+                        tradeBill.busicd = req.getBusicd();
+
+                        //使用/v3/bill接口 退款的好像也没有拉取到
+                        if (tradeBill.busicd.equals("REFD")) {
+                            tradeBill.amount = "-" + tradeBill.amount;
+                        }
+                        tradeBill.chcd = req.getChcd();
+                        tradeBill.tradeFrom = req.getTradeFrom();
+                        tradeBill.goodsInfo = req.getGoodsInfo();
+                    }
+
+                    //获取这个账单里面的日期,年月日 的 日
+                    String currentDay = tradeBill.tandeDate.substring(6, 8);
+                    String currentYear = tradeBill.tandeDate.substring(0, 4);
+                    String currentMonth = tradeBill.tandeDate.substring(4, 6);
+                    String currentYearMonth = tradeBill.tandeDate.substring(0, 6);
+
+                    //渠道为空的 不列入统计，这样totalRecord和实际的list的size可能不一样
+                    if (TextUtils.isEmpty(tradeBill.chcd)) {
+                        continue;
+                    }
+
+                    //添加到相应的map中，最后再转换到list中，按照月份的先后排序转换到list中
+                    if (mMonthBillMap.containsKey(currentYearMonth)) {
+                        mMonthBillMap.get(currentYearMonth).setCount(count);
+                        mMonthBillMap.get(currentYearMonth).setTotal(total);
+                        mMonthBillMap.get(currentYearMonth).setRefdcount(refdcount);
+                        mMonthBillMap.get(currentYearMonth).setRefdtotal(refdtotal);
+                        mMonthBillMap.get(currentYearMonth).setSize(size);
+                        mMonthBillMap.get(currentYearMonth).setTotalRecord(totalRecord);
+                    } else {
+                        MonthBill monthBill = new MonthBill(currentYear, currentMonth);
+                        monthBill.setCount(count);
+                        monthBill.setTotal(total);
+                        monthBill.setRefdcount(refdcount);
+                        monthBill.setRefdtotal(refdtotal);
+                        monthBill.setSize(size);
+                        monthBill.setTotalRecord(totalRecord);
+                        mMonthBillMap.put(currentYearMonth, monthBill);
+                    }
+
+                    if (mTradeBillMap.containsKey(currentYearMonth)) {
+                        mTradeBillMap.get(currentYearMonth).add(tradeBill);
+                    } else {
+                        List<TradeBill> list = new ArrayList<TradeBill>();
+                        list.add(tradeBill);
+                        mTradeBillMap.put(currentYearMonth, list);
+                    }
+                }
+                //**********************************************************************************
+
+                mapToMonthBillList(mMonthBillMap, mMonthBilList);
+                mapToBillList(mTradeBillMap, mTradeBillList);
+
+                mBillAdapter.notifyDataSetChanged();
+                mBillPullRefreshListView.onRefreshComplete();
+
+                if (mMonthBilList.size() <= 0) {
+                    String msg = mContext.getString(R.string.bill_search_result_message1);
+                    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(QuickPayException ex) {
+                Log.e(TAG, " on failure = " + ex);
+                mBillPullRefreshListView.onRefreshComplete();
+                String msg = mContext.getString(R.string.bill_search_result_message2) + ex.getErrorMsg();
+                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 
     //获取收款的账单账单
     private void getBill() {
