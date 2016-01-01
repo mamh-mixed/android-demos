@@ -103,14 +103,17 @@ public class DetailActivity extends BaseActivity {
         //这里是设置支付渠道
         if (!TextUtils.isEmpty(mTradeBill.chcd)) {
             if ("WXP".equals(mTradeBill.chcd)) {
-                mPayChcd.setRightText(getString(R.string.detail_activity_pay_type1));
-            } else {
+                mPayChcd.setRightText(getString(R.string.detail_activity_chcd_type1));
+            } else if ("ALP".equals(mTradeBill.chcd)) {
                 //支付宝
-                mPayChcd.setRightText(getString(R.string.detail_activity_pay_type2));
+                mPayChcd.setRightText(getString(R.string.detail_activity_chcd_type2));
+            } else {
+                //其他支付渠道
+                mPayChcd.setRightText(getString(R.string.detail_activity_chcd_type3));
             }
         } else {
-            //其他支付渠道
-            mPayChcd.setRightText("");
+            //这里表明没有渠道，默认先设置为 其他支付渠道
+            mPayChcd.setRightText(getString(R.string.detail_activity_chcd_type3));
         }
 
         SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -122,28 +125,33 @@ public class DetailActivity extends BaseActivity {
             mPayDatetime.setRightText("");
         }
 
+        //支付终端
         mPayTerminator.setRightText(SessonData.loginUser.getUsername());
 
-        String tradeFrom = "";
+        //支付方式
         if (!TextUtils.isEmpty(mTradeBill.tradeFrom)) {
-            tradeFrom = mTradeBill.tradeFrom;
+            if ("android".equals(mTradeBill.tradeFrom) || "ios".equals(mTradeBill.tradeFrom)) {
+                //app收款
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type1));
+            } else if ("wap".equals(mTradeBill.tradeFrom)) {
+                //web 收款
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type2));
+            } else {
+                //其他收款
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type3));
+            }
+        } else {
+            //tradeFrom 是 null 清空
+            mPayType.setRightText(getString(R.string.detail_activity_pay_type4));
         }
 
-        mPayType.setRightText(tradeFrom + " 收款");
-
+        //设置订单号
         mPayOrder.setRightText(mTradeBill.orderNum);
 
         //设置交易的结果状态
-        String tradeStatus = "";
-        if ("00".equals(mTradeBill.response)) {
-            //成功的
-            tradeStatus = getResources().getString(R.string.detail_activity_trade_status_success);
-            mPayResult.setTextColor(Color.parseColor("#00bbd3"));
-            mPayResultImage.setImageResource(R.drawable.pay_result_succeed);
-        } else if ("09".equals(mTradeBill.response)) {
-            //正在处理中的交易
-            tradeStatus = getResources().getString(R.string.detail_activity_trade_status_nopay);
-            mPayResult.setTextColor(Color.BLACK);
+        if ("10".equals(mTradeBill.transStatus)) {
+            //处理中
+            mPayResult.setText(getString(R.string.detail_activity_trade_status_nopay));
             mPayResultImage.setImageResource(R.drawable.bill_fresh);
             mPayResultImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -151,17 +159,34 @@ public class DetailActivity extends BaseActivity {
                     refreshOnclick(v);
                 }
             });
+        } else if ("30".equals(mTradeBill.transStatus)) {
+            double amt = Double.parseDouble(mTradeBill.refundAmt);
+            if (amt == 0) {
+                //成功的
+                mPayResult.setTextColor(Color.parseColor("#00bbd3"));
+                mPayResult.setText(getString(R.string.detail_activity_trade_status_success));
+                mPayResultImage.setImageResource(R.drawable.pay_result_succeed);
+            } else {
+                //部分退款的
+                mPayResult.setText(getString(R.string.detail_activity_trade_status_partrefd));
+            }
+        } else if ("40".equals(mTradeBill.transStatus)) {
+            if ("09".equals(mTradeBill.response)) {
+                //已关闭
+                mPayResult.setText(getString(R.string.detail_activity_trade_status_closed));
+            } else {
+                //全额退款
+                mPayResult.setText(getString(R.string.detail_activity_trade_status_partrefd));
+            }
         } else {
-            //其他
-            tradeStatus = getResources().getString(R.string.detail_activity_trade_status_fail);
+            //失败的
+            mPayResult.setText(getString(R.string.detail_activity_trade_status_fail));
             mPayResult.setTextColor(Color.RED);
             mPayResultImage.setImageResource(R.drawable.pay_result_fail);
         }
-        mPayResult.setText(tradeStatus);
 
         mPayMoney.setText(mTradeBill.amount);
         mRefdMoney.setRightText(mTradeBill.refundAmt);
-
     }
 
 

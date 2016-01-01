@@ -113,6 +113,9 @@
     <string name="detail_activity_refd_money">退款金额（元）</string>
     <string name="detail_activity_card_discount">卡券折扣（元）</string>
     <string name="detail_activity_chcd">支付渠道</string>
+    <string name="detail_activity_chcd_type1">微信</string>
+    <string name="detail_activity_chcd_type2">支付宝</string>
+    <string name="detail_activity_chcd_type3">开放接口</string>
     <string name="detail_activity_account">收银人员</string>
     <string name="detail_activity_terminator">操作终端</string>
     <string name="detail_activity_comments">备注摘要</string>
@@ -121,9 +124,10 @@
     <string name="detail_activity_pay_datetime">交易时间</string>
     <string name="detail_activity_order_number">订单编号</string>
     <string name="detail_activity_pay_type">收款方式</string>
-    <string name="detail_activity_pay_type1">微信</string>
-    <string name="detail_activity_pay_type2">支付宝</string>
-    <string name="detail_activity_pay_type3">其他</string>
+    <string name="detail_activity_pay_type1">App收款</string>
+    <string name="detail_activity_pay_type2">Web收款</string>
+    <string name="detail_activity_pay_type3">PC收款</string>
+    <string name="detail_activity_pay_type4">其他收款</string>
     <string name="detail_activity_close">关闭</string>
 
     <string name="expandable_listview_group_separator">/</string>
