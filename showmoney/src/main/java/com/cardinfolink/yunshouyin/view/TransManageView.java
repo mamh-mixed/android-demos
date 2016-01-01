@@ -269,6 +269,7 @@ public class TransManageView extends LinearLayout {
                     tradeBill.response = txn.getResponse();
                     tradeBill.tandeDate = txn.getSystemDate();
                     tradeBill.consumerAccount = txn.getConsumerAccount();
+                    tradeBill.transStatus = txn.getTransStatus();
                     tradeBill.refundAmt = TxamtUtil.getNormal(txn.getRefundAmt());
 
                     QRequest req = txn.getmRequest();
