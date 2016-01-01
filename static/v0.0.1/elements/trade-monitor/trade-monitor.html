@@ -215,7 +215,7 @@
               utcOffset: moment().utcOffset(),
               total: 0,
               page: 1,
-              size: 100
+              size: 20
             };
           }
         },
@@ -323,8 +323,8 @@
         refreshFrequency: {
           type: Object,
           value: {
-            key: 15,
-            value: '15秒'
+            key: 30,
+            value: '30秒'
           }
         },
         user: Object,
@@ -355,6 +355,9 @@
         this.queryAction();
 
       },
+      detached: function() {
+        this.stopRefreshTap();
+      },
       observers: [
         '_watchAgentChange(agent.code)',
         '_watchSubAgentChange(subAgent.code)',
@@ -374,7 +377,7 @@
         if (this.interval !== 0) {
           this.stopRefreshTap();
         }
-        
+
         this.startRefreshEvent();
       },
       _watchTimeChanged: function(startTime, endTime) {
