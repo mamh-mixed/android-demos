@@ -1,7 +1,6 @@
 package scanpay2
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 )
 

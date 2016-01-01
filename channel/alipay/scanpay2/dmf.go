@@ -2,6 +2,7 @@ package scanpay2
 
 import (
 	"github.com/CardInfoLink/quickpay/model"
+	"time"
 )
 
 var DefaultClient dmf2
@@ -10,9 +11,9 @@ type dmf2 struct{}
 
 func getCommonParams(m *model.ScanPayRequest) *CommonParams {
 	return &CommonParams{
-		AppID:      "2014122500021754",
-		PrivateKey: LoadPrivateKey([]byte(privateKeyPem)), // TODO 做个缓存处理
-		Req:        m,
+		AppID: "2014122500021754",
+		// PrivateKey: LoadPrivateKey([]byte(privateKeyPem)), // TODO 做个缓存处理
+		Req: m,
 	}
 }
 
