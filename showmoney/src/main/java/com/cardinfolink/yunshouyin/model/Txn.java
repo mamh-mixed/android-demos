@@ -14,6 +14,9 @@ public class Txn {
 
     private String refundAmt;
 
+    private String transStatus;
+
+
     public String getResponse() {
         return response;
     }
@@ -52,5 +55,25 @@ public class Txn {
 
     public void setRefundAmt(String refundAmt) {
         this.refundAmt = refundAmt;
+    }
+
+    public String getTransStatus() {
+        return transStatus;
+    }
+
+    public void setTransStatus(String transStatus) {
+        this.transStatus = transStatus;
+    }
+
+    @Override
+    public String toString() {
+        return "Txn{" +
+                "response='" + response + '\'' +
+                ", systemDate='" + systemDate + '\'' +
+                ", consumerAccount='" + consumerAccount + '\'' +
+                ", mRequest=" + mRequest +
+                ", refundAmt='" + refundAmt + '\'' +
+                ", transStatus='" + transStatus + '\'' +
+                '}';
     }
 }
