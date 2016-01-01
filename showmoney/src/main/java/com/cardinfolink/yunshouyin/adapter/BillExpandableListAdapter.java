@@ -127,7 +127,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
             childViewHolder.paylogo = (ImageView) convertView.findViewById(R.id.paylogo);
             childViewHolder.billTradeDate = (TextView) convertView.findViewById(R.id.bill_tradedate);
-            childViewHolder.billBusicd = (TextView) convertView.findViewById(R.id.bill_tv_tradefrom);
+            childViewHolder.billTradeFrom = (TextView) convertView.findViewById(R.id.bill_tv_tradefrom);
             childViewHolder.billTradeFromImage = (ImageView) convertView.findViewById(R.id.bill_iv_tradefrom);
             childViewHolder.billTradeStatus = (TextView) convertView.findViewById(R.id.bill_tradestatus);
             childViewHolder.billTradeAmount = (TextView) convertView.findViewById(R.id.bill_tradeamount);
@@ -142,10 +142,12 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
         if (!TextUtils.isEmpty(bill.chcd)) {
             //有chcd渠道的话,这里设置不同渠道的图片
-            if (bill.chcd.equals("WXP")) {
+            if ("WXP".equals(bill.chcd)) {
                 childViewHolder.paylogo.setImageResource(R.drawable.wpay);
-            } else {
+            } else if ("ALP".equals(bill.chcd)) {
                 childViewHolder.paylogo.setImageResource(R.drawable.apay);
+            } else {
+                childViewHolder.paylogo.setImageDrawable(null);
             }
         } else {
             childViewHolder.paylogo.setImageDrawable(null);
@@ -163,61 +165,49 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             e.printStackTrace();
         }
 
-
-        String busicd = mContext.getResources().getString(R.string.detail_activity_busicd_pay);
-        if (bill.busicd.equals("REFD")) {
-            //退款的
-            busicd = mContext.getResources().getString(R.string.detail_activity_busicd_refd);
-        } else if ("CANC".equals(bill.busicd)) {
-            //取消订单
-            busicd = mContext.getResources().getString(R.string.detail_activity_busicd_canc);
-        }
-
-        if ("PC".equals(bill.tradeFrom)) {
-            childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_pc);
-            busicd = "PC " + busicd;
-        } else if ("android".equals(bill.tradeFrom) || "ios".equals(bill.tradeFrom)) {
+        if ("android".equals(bill.tradeFrom) || "ios".equals(bill.tradeFrom)) {
             childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_phone);
-            busicd = "APP " + busicd;
+            childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type1));
         } else if ("wap".equals(bill.tradeFrom)) {
             childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_web);
-            busicd = "网页 " + busicd;
+            childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type2));
+        } else if ("PC".equals(bill.tradeFrom)) {
+            childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_pc);
+            childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type3));
         } else {
             childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_else);
-            busicd = "其他 " + busicd;
+            childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type4));
         }
-
-        childViewHolder.billBusicd.setText(busicd);
 
         String tradeStatus;
         if ("10".equals(bill.transStatus)) {
             //处理中
-            tradeStatus = mContext.getString(R.string.detail_activity_trade_status_nopay);
+            tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_nopay);
             childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
         } else if ("30".equals(bill.transStatus)) {
             double amt = Double.parseDouble(bill.refundAmt);
             if (amt == 0) {
                 //成功的
-                tradeStatus = mContext.getString(R.string.detail_activity_trade_status_success);
+                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_success);
                 childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             } else {
                 //部分退款的
-                tradeStatus = mContext.getString(R.string.detail_activity_trade_status_partrefd);
+                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_partrefd);
                 childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             }
         } else if ("40".equals(bill.transStatus)) {
             if ("09".equals(bill.response)) {
                 //已关闭
-                tradeStatus = mContext.getString(R.string.detail_activity_trade_status_closed);
+                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_closed);
                 childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             } else {
                 //全额退款
-                tradeStatus = mContext.getString(R.string.detail_activity_trade_status_partrefd);
+                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_partrefd);
                 childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             }
         } else {
             //失败的
-            tradeStatus = mContext.getString(R.string.detail_activity_trade_status_fail);
+            tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_fail);
             childViewHolder.billTradeStatus.setTextColor(Color.RED);
         }
         childViewHolder.billTradeStatus.setText(tradeStatus);
@@ -227,14 +217,12 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         childViewHolder.linearLayoutDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e(TAG, "xxxxxx day click");
             }
         });
 
         childViewHolder.linearLayoutBillItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e(TAG, " right item");
                 Intent intent = new Intent(mContext, DetailActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable("TradeBill", bill);
@@ -265,7 +253,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         public TextView weekday;
         public ImageView paylogo;
         public TextView billTradeDate;
-        public TextView billBusicd;
+        public TextView billTradeFrom;
         public ImageView billTradeFromImage;
         public TextView billTradeStatus;
         public TextView billTradeAmount;

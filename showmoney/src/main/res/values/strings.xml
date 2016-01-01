@@ -125,7 +125,7 @@
     <string name="detail_activity_order_number">订单编号</string>
     <string name="detail_activity_pay_type">收款方式</string>
     <string name="detail_activity_pay_type1">App收款</string>
-    <string name="detail_activity_pay_type2">Web收款</string>
+    <string name="detail_activity_pay_type2">网页收款</string>
     <string name="detail_activity_pay_type3">PC收款</string>
     <string name="detail_activity_pay_type4">其他收款</string>
     <string name="detail_activity_close">关闭</string>
@@ -133,6 +133,16 @@
     <string name="expandable_listview_group_separator">/</string>
     <string name="expandable_listview_group_imcome">收入：</string>
     <string name="expandable_listview_group_count">笔数：</string>
+    <string name="expandable_listview_trade_status_nopay">处理中</string>
+    <string name="expandable_listview_trade_status_success">成功</string>
+    <string name="expandable_listview_trade_status_partrefd">部分退款</string>
+    <string name="expandable_listview_trade_status_closed">已关闭</string>
+    <string name="expandable_listview_trade_status_allrefd">全额退款</string>
+    <string name="expandable_listview_trade_status_fail">失败</string>
+    <string name="expandable_listview_pay_type1">App</string>
+    <string name="expandable_listview_pay_type2">网页</string>
+    <string name="expandable_listview_pay_type3">PC</string>
+    <string name="expandable_listview_pay_type4">其他</string>
 
     <string name="main_activity_menu_scancode">扫码支付</string>
     <string name="main_activity_menu_transmange">交易管理</string>
