@@ -101,9 +101,12 @@
     <string name="detail_activity_busicd_canc">取消订单</string>
     <string name="detail_activity_busicd_pay">支付</string>
     <string name="detail_activity_busicd_refd">退款</string>
-    <string name="detail_activity_trade_status_success">交易成功</string>
-    <string name="detail_activity_trade_status_fail">交易失败</string>
-    <string name="detail_activity_trade_status_nopay">正在处理</string>
+    <string name="detail_activity_trade_status_nopay">处理中</string>
+    <string name="detail_activity_trade_status_success">成功</string>
+    <string name="detail_activity_trade_status_partrefd">部分退款</string>
+    <string name="detail_activity_trade_status_closed">已关闭</string>
+    <string name="detail_activity_trade_status_allrefd">全额退款</string>
+    <string name="detail_activity_trade_status_fail">失败</string>
     <string name="detail_activity_return">返回账单</string>
     <string name="detail_activity_pay_money">收款金额（元）</string>
     <string name="detail_activity_pay_arrival_money">到账金额（不含手续费）</string>
