@@ -3,10 +3,8 @@ package com.cardinfolink.yunshouyin.data;
 import java.io.Serializable;
 
 public class TradeBill implements Serializable {
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
+
     public String chcd;
     public String tradeFrom;
     public String busicd;
@@ -18,4 +16,5 @@ public class TradeBill implements Serializable {
     public String goodsInfo;
 
     public String refundAmt;
+    public String transStatus;
 }
