@@ -190,17 +190,36 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         childViewHolder.billBusicd.setText(busicd);
 
         String tradeStatus;
-        if (bill.response.equals("00")) {
-            tradeStatus = mContext.getResources().getString(R.string.detail_activity_trade_status_success);
+        if ("10".equals(bill.transStatus)) {
+            //处理中
+            tradeStatus = mContext.getString(R.string.detail_activity_trade_status_nopay);
             childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
-        } else if (bill.response.equals("09")) {
-            tradeStatus = mContext.getResources().getString(R.string.detail_activity_trade_status_nopay);
-            childViewHolder.billTradeStatus.setTextColor(Color.RED);
+        } else if ("30".equals(bill.transStatus)) {
+            double amt = Double.parseDouble(bill.refundAmt);
+            if (amt == 0) {
+                //成功的
+                tradeStatus = mContext.getString(R.string.detail_activity_trade_status_success);
+                childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
+            } else {
+                //部分退款的
+                tradeStatus = mContext.getString(R.string.detail_activity_trade_status_partrefd);
+                childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
+            }
+        } else if ("40".equals(bill.transStatus)) {
+            if ("09".equals(bill.response)) {
+                //已关闭
+                tradeStatus = mContext.getString(R.string.detail_activity_trade_status_closed);
+                childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
+            } else {
+                //全额退款
+                tradeStatus = mContext.getString(R.string.detail_activity_trade_status_partrefd);
+                childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
+            }
         } else {
-            tradeStatus = mContext.getResources().getString(R.string.detail_activity_trade_status_fail);
+            //失败的
+            tradeStatus = mContext.getString(R.string.detail_activity_trade_status_fail);
             childViewHolder.billTradeStatus.setTextColor(Color.RED);
         }
-
         childViewHolder.billTradeStatus.setText(tradeStatus);
         childViewHolder.billTradeAmount.setText("￥" + bill.amount);
 
