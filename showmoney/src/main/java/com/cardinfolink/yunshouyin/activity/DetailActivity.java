@@ -185,8 +185,17 @@ public class DetailActivity extends BaseActivity {
             mPayResultImage.setImageResource(R.drawable.pay_result_fail);
         }
 
-        mPayMoney.setText(mTradeBill.amount);
-        mRefdMoney.setRightText(mTradeBill.refundAmt);
+        mPayMoney.setText(mTradeBill.amount);//支付金额
+        mRefdMoney.setRightText(mTradeBill.refundAmt);//退款金额
+        String arriavl = "";
+        try {
+            BigDecimal bg1 = new BigDecimal(mTradeBill.amount);
+            BigDecimal bg2 = new BigDecimal(mTradeBill.refundAmt);
+            arriavl = bg1.subtract(bg2).toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mArriavlMoney.setRightText(arriavl);//到款金额
     }
 
 
