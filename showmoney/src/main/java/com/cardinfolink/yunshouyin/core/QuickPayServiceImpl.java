@@ -316,8 +316,12 @@ public class QuickPayServiceImpl implements QuickPayService {
 
             @Override
             protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
-                ServerPacket serverPacket = quickPayApi.findOrder(user, orderNum);
-                return new AsyncTaskResult<ServerPacket>(serverPacket, null);
+                try {
+                    ServerPacket serverPacket = quickPayApi.findOrder(user, orderNum);
+                    return new AsyncTaskResult<ServerPacket>(serverPacket, null);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<ServerPacket>(ex);
+                }
             }
 
             @Override
@@ -337,8 +341,12 @@ public class QuickPayServiceImpl implements QuickPayService {
 
             @Override
             protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
-                ServerPacket serverPacket = quickPayApi.getRefd(user, orderNum);//退款
-                return new AsyncTaskResult<ServerPacket>(serverPacket, null);
+                try {
+                    ServerPacket serverPacket = quickPayApi.getRefd(user, orderNum);//退款
+                    return new AsyncTaskResult<ServerPacket>(serverPacket, null);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<ServerPacket>(ex);
+                }
             }
 
             @Override
@@ -358,8 +366,12 @@ public class QuickPayServiceImpl implements QuickPayService {
 
             @Override
             protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
-                ServerPacket serverPacket = quickPayApi.forgetPassword(username);//忘记密码
-                return new AsyncTaskResult<ServerPacket>(serverPacket, null);
+                try {
+                    ServerPacket serverPacket = quickPayApi.forgetPassword(username);//忘记密码
+                    return new AsyncTaskResult<ServerPacket>(serverPacket, null);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<ServerPacket>(ex);
+                }
             }
 
             @Override
@@ -375,7 +387,6 @@ public class QuickPayServiceImpl implements QuickPayService {
 
     @Override
     public void getUploadTokenAsync(final User user, final QuickPayCallbackListener<String> listener) {
-
         new AsyncTask<Void, Integer, AsyncTaskResult<String>>() {
 
             @Override
