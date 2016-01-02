@@ -384,6 +384,12 @@
     <string name="coupon_verial_fail_info">您的卡券来自其他星球，我们无法识别哦</string>
     <string name="coupon_goback">返回</string>
     <string name="coupon_confirm_ok">确认</string>
+    <string name="coupon_getmoney">收款</string>
+    <string name="coupon_abandom_verial_or_not">是否放弃本次核销</string>
+    <string name="coupon_abandom">放弃</string>
+    <string name="coupon_pay_again">重新支付</string>
+    <string name="coupon_verial_success">冲正成功</string>
+    <string name="coupon_verial_fail">冲正失败</string>
 
     <!--  欢迎界面 要用到的文本 -->
     <string name="splash_activity_message">一天让你的店铺进入互联网 + 收款时代"</string>
