@@ -10,4 +10,5 @@ public class OrderData {
     public String chcd;//渠道
     public String discountMoney;//优惠金额
     public String couponOrderNum;//扫码号，券号
+    public String payType;//卡券支付方式
 }
