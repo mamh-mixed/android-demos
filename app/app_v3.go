@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/qiniu"
 
 	"github.com/omigo/log"
 )
@@ -47,6 +48,21 @@ func billV3Handle(w http.ResponseWriter, r *http.Request) {
 		Size:        r.FormValue("size"),
 		TransType:   model.PayTrans,
 	})
+
+	w.Write(jsonMarshal(result))
+}
+
+// qiniuTokenHandler 获取七牛的上传token
+func qiniuTokenHandler(w http.ResponseWriter, r *http.Request) {
+	log.Debugf("username is %s; password is %s", r.FormValue("username"), r.FormValue("password"))
+	result := User.getQiniuToken(&reqParams{
+		UserName: r.FormValue("username"),
+		Password: r.FormValue("password"),
+	})
+
+	if result.State == "success" {
+		result.UploadToken = qiniu.GetUploadtoken()
+	}
 
 	w.Write(jsonMarshal(result))
 }

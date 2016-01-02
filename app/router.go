@@ -53,6 +53,7 @@ func RouteV3() (mux *AppV3ServeMux) {
 	mux = NewAppV3ServeMux()
 
 	// app3.0接口
+	mux.HandleFunc("/v3/app/token/qiniu", qiniuTokenHandler)
 	mux.HandleFunc("/v3/app/bill", billV3Handle)
 
 	return mux
