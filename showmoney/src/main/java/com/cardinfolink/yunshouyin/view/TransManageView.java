@@ -108,6 +108,8 @@ public class TransManageView extends LinearLayout {
     private CheckBox mPayAliCheckBox;//支付宝支付的 1
     private CheckBox mPayWxCheckBox;//微信支付的    2
 
+    protected LoadingDialog mLoadingDialog;    //显示loading
+
     private Handler mMainactivityHandler;
 
     public TransManageView(Context context) {
@@ -134,6 +136,7 @@ public class TransManageView extends LinearLayout {
         mCurrentYearMonth = spf.format(new Date());
 
         mTitle = (TextView) findViewById(R.id.tv_title);
+        mLoadingDialog = new LoadingDialog(mContext, findViewById(R.id.loading_dialog));
 
         //***普通的收款账单***************************************************************************************
         mBillPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.bill_list_view);
@@ -423,6 +426,7 @@ public class TransManageView extends LinearLayout {
 
     //精确查找某个账单
     private void findBill(String orderNum) {
+        mLoadingDialog.startLoading();
         quickPayService.getOrderAsync(SessonData.loginUser, orderNum, new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
@@ -436,6 +440,7 @@ public class TransManageView extends LinearLayout {
                     Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 }
 
+                mLoadingDialog.endLoading();
             }
 
             @Override
@@ -444,12 +449,14 @@ public class TransManageView extends LinearLayout {
                 mBillPullRefreshListView.onRefreshComplete();
                 String msg = mContext.getString(R.string.bill_search_result_message2) + ex.getErrorMsg();
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                mLoadingDialog.endLoading();
             }
         });
 
     }
 
     private void getBill(String recType, String payType, String txnStatus) {
+        mLoadingDialog.startLoading();
         String sizeStr = "100";
         String index = String.valueOf(billIndex);
         quickPayService.findOrderAsync(SessonData.loginUser, index, sizeStr, recType, payType, txnStatus, new QuickPayCallbackListener<ServerPacket>() {
@@ -468,6 +475,7 @@ public class TransManageView extends LinearLayout {
                     String msg = mContext.getString(R.string.bill_search_result_message3);
                     Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 }
+                mLoadingDialog.endLoading();
             }
 
             @Override
@@ -475,6 +483,7 @@ public class TransManageView extends LinearLayout {
                 mBillPullRefreshListView.onRefreshComplete();
                 String msg = mContext.getString(R.string.bill_search_result_message2) + ex.getErrorMsg();
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                mLoadingDialog.endLoading();
             }
         });
 
@@ -482,6 +491,7 @@ public class TransManageView extends LinearLayout {
 
     //获取收款的账单账单
     private void getBill() {
+        mLoadingDialog.startLoading();
         quickPayService.getHistoryBillsAsync(SessonData.loginUser, mCurrentYearMonth, String.valueOf(billIndex), "100", "all", new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
@@ -508,11 +518,14 @@ public class TransManageView extends LinearLayout {
                     String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
                     mCurrentYearMonth = year + month;//走到这里说明 下次调用这个 getBill()方法的时候拉取的就是上个月的账单了
                 }
+
+                mLoadingDialog.endLoading();
             }
 
             @Override
             public void onFailure(QuickPayException ex) {
                 mBillPullRefreshListView.onRefreshComplete();
+                mLoadingDialog.endLoading();
             }
         });
     }
@@ -524,6 +537,7 @@ public class TransManageView extends LinearLayout {
 
     //获取 收款码 账单
     public void getCollectionBill() {
+        mLoadingDialog.startLoading();
         String sizeStr = "100";
         String index = String.valueOf(collectionIndex);
         /**
@@ -571,11 +585,14 @@ public class TransManageView extends LinearLayout {
                 mCollectionPullRefreshListView.onRefreshComplete();
 
                 collectionIndex += size;
+
+                mLoadingDialog.endLoading();
             }
 
             @Override
             public void onFailure(QuickPayException ex) {
                 mCollectionPullRefreshListView.onRefreshComplete();
+                mLoadingDialog.endLoading();
             }
         });
 
