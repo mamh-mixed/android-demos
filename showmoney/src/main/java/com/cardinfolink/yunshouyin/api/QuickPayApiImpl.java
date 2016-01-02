@@ -28,6 +28,8 @@ public class QuickPayApiImpl implements QuickPayApi {
 
     private static final String QUICK_PAY_SUCCESS = "success";
 
+    private static final String DEVICE_TYPE = "Android";//这里就是android
+
     protected QuickPayConfigStorage quickPayConfigStorage;
     protected PostEngine postEngine;
 
@@ -94,11 +96,6 @@ public class QuickPayApiImpl implements QuickPayApi {
      * @param password
      */
     @Override
-    public void register(String username, String password) {
-        register(username, password, null);
-    }
-
-    @Override
     public void register(String username, String password, String invite) {
         String url = quickPayConfigStorage.getUrl() + "/register";
 
@@ -136,7 +133,7 @@ public class QuickPayApiImpl implements QuickPayApi {
      * @return
      */
     @Override
-    public User login(String username, String password) {
+    public User login(String username, String password, String deviceToken) {
         String url = quickPayConfigStorage.getUrl() + "/login";
 
         Map<String, String> params = new LinkedHashMap<>();
@@ -144,6 +141,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         password = EncoderUtil.Encrypt(password, "MD5");
         params.put("password", password);
         params.put("transtime", getTransTime());
+        params.put("device_type", DEVICE_TYPE);
+        if (!TextUtils.isEmpty(deviceToken)) {
+            params.put("device_token", deviceToken);
+        }
         params.put("sign", createSign(params, "SHA-1"));
 
         try {
@@ -412,11 +413,6 @@ public class QuickPayApiImpl implements QuickPayApi {
     }
 
     @Override
-    public ServerPacket getHistoryBills(User user, String month, String index, String status) {
-        return getHistoryBills(user, month, index, "50", status);
-    }
-
-    @Override
     public ServerPacket getHistoryBills(User user, String month, String index, String size, String status) {
         String url = quickPayConfigStorage.getUrl() + "/v3/bill";
 
@@ -521,6 +517,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    //not used now
     @Override
     public ServerPacketOrder getOrder(User user, String orderNum) {
         /**

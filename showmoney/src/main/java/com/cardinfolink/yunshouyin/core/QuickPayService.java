@@ -11,6 +11,8 @@ public interface QuickPayService {
 
     void loginAsync(String username, String password, QuickPayCallbackListener<User> listener);
 
+    void loginAsync(String username, String password, String deviceToken, QuickPayCallbackListener<User> listener);
+
     void activateAsync(String username, String password, QuickPayCallbackListener<Void> listener);
 
     //user logged in

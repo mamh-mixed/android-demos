@@ -63,12 +63,18 @@ public class QuickPayServiceImpl implements QuickPayService {
 
     @Override
     public void loginAsync(final String username, final String password, final QuickPayCallbackListener<User> listener) {
+        loginAsync(username, password, null, listener);
+    }
+
+
+    @Override
+    public void loginAsync(final String username, final String password, final String deviceToken, final QuickPayCallbackListener<User> listener) {
 
         new AsyncTask<Void, Integer, AsyncTaskResult<User>>() {
             @Override
             protected AsyncTaskResult<User> doInBackground(Void... params) {
                 try {
-                    User user = quickPayApi.login(username, password);
+                    User user = quickPayApi.login(username, password, deviceToken);
                     return new AsyncTaskResult<User>(user, null);
                 } catch (QuickPayException ex) {
                     return new AsyncTaskResult<User>(null, ex);
