@@ -339,6 +339,44 @@ public class ParamsUtil {
         return json;
     }
 
+    /**
+     * 卡券冲正
+     * 参数        参数名称        请求    应答    类型        备注
+     * 交易方向    txndir          M       M       String(1)
+     * 交易类型    busicd          M       M       String(4)   CAVE
+     * 交易结果    respcd          M               String(2)
+     * 机构号      inscd           M       M       String(8)
+     * 渠道        chcd            C       C       String(5)   成功应答中必选
+     * 商户号      mchntid         M       M       String(15)
+     * 终端号      terminalid      M               String（8） 有终端号时要求填写
+     * 错误信息    errorDetail             C       String(64)
+     * 订单号      orderNum        M       M       String(64)
+     * 原订单号    origOrderNum    M       M       String(64)
+     * 签名        sign            M       M       String(128)
+     *
+     * @param initData
+     * @param orderData
+     * @return
+     */
+    public static JSONObject getReveral(InitData initData, OrderData orderData) {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("txndir", "Q");
+            json.put("busicd", "CAVE");// CAVE:卡券冲正
+            json.put("inscd", initData.inscd);
+            json.put("mchntid", initData.mchntid);
+            json.put("orderNum", orderData.orderNum);
+            json.put("origOrderNum", orderData.origOrderNum);
+            json.put("terminalid", initData.terminalid);
+            json.put("tradeFrom", "android");
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return json;
+    }
+
 
     @SuppressWarnings("unchecked")
     public static String getSign(String str, String key, String signType) {
