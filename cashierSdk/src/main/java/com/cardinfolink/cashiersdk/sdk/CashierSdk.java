@@ -390,4 +390,41 @@ public class CashierSdk {
             }
         });
     }
+
+
+    /**
+     * 卡券冲正
+     */
+    public static void startReversal(OrderData orderData, final CashierListener listener) {
+
+        CommunicationUtil.sendDataToServer(ParamsUtil.getReveral(mInitData, orderData), new CommunicationListener() {
+
+            @Override
+            public void onResult(String result) {
+                Map<String, Object> map = MapUtil.getMapForJson(result);
+                String sign = (String) map.get("sign");
+                if (sign != null) {
+                    map.remove("sign");
+
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    if (sign.equals(veriSign)) {
+                        ResultData resultData = MapUtil.getResultData(map);
+                        listener.onResult(resultData);
+
+                    } else {
+                        listener.onError(3);
+                    }
+                }
+            }
+
+            @Override
+            public void onError(int error) {
+                listener.onError(error);
+
+            }
+        });
+
+    }
+
+
 }
