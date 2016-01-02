@@ -66,7 +66,7 @@ public class PostEngine {
                 String response = IOUtils.toString(in, "UTF-8");
                 return response;
             } else {
-                return null;
+                throw new QuickPayException(String.valueOf(conn.getResponseCode()), conn.getResponseMessage());
             }
 
         } finally {
@@ -105,8 +105,7 @@ public class PostEngine {
                 String response = IOUtils.toString(in, "UTF-8");
                 return response;
             } else {
-                //TODO: handle other http code
-                return null;
+                throw new QuickPayException(String.valueOf(conn.getResponseCode()), conn.getResponseMessage());
             }
 
         } finally {
