@@ -44,6 +44,7 @@
       <div class="search-condition">
         <paper-button raised on-tap="stopRefreshTap" hidden="{{!interval}}">停止刷新</paper-button>
         <paper-button raised on-tap="startRefreshEvent" hidden="{{interval}}">开始刷新</paper-button>
+        <x-select items="[[refreshFrequencies]]" name="refreshFrequency" selected-item="{{refreshFrequency}}" label="刷新频率"></x-select>
       </div>
       <div class="data-grid table">
         <div class="thead">
@@ -214,7 +215,7 @@
               utcOffset: moment().utcOffset(),
               total: 0,
               page: 1,
-              size: 100
+              size: 20
             };
           }
         },
@@ -300,6 +301,32 @@
             valueCN: '处理中'
           }, ]
         },
+        refreshFrequencies: {
+          type: Array,
+          value: [{
+            key: 15,
+            value: '15秒'
+          }, {
+            key: 30,
+            value: '30秒'
+          }, {
+            key: 45,
+            value: '45秒'
+          }, {
+            key: 60,
+            value: '1分钟'
+          }, {
+            key: 300,
+            value: '5分钟'
+          }]
+        },
+        refreshFrequency: {
+          type: Object,
+          value: {
+            key: 30,
+            value: '30秒'
+          }
+        },
         user: Object,
       },
       ready: function() {
@@ -328,17 +355,31 @@
         this.queryAction();
 
       },
+      detached: function() {
+        this.stopRefreshTap();
+      },
       observers: [
         '_watchAgentChange(agent.code)',
         '_watchSubAgentChange(subAgent.code)',
         '_watchGroupChange(group.code)',
         '_watchMerchantChange(merchant.code)',
         '_watchBusicdChange(busicd.key)',
+        '_watchRefreshFrequencyChange(refreshFrequency.key)',
         '_watchCondChange(cond.*)',
         '_watchTransStatusChange(transStatus.key)',
         '_watchUserChanged(user.*)',
         '_watchTimeChanged(time.startTime, time.endTime)'
       ],
+      _watchRefreshFrequencyChange: function(t){
+        if (!t) {
+          return;
+        }
+        if (this.interval !== 0) {
+          this.stopRefreshTap();
+        }
+
+        this.startRefreshEvent();
+      },
       _watchTimeChanged: function(startTime, endTime) {
         this.set('time.startTimeString', moment(startTime).format('YYYY-MM-DD HH:mm:ss'));
         this.set('time.endTimeString', moment(endTime).format('YYYY-MM-DD HH:mm:ss'));
@@ -457,7 +498,7 @@
           this.set('time.endTime', endTime.toDate());
 
           this.queryAction();
-        }.bind(this), 1000 * 60);
+        }.bind(this), 1000 * this.refreshFrequency.key);
         this.set('interval', intr);
       },
       queryAction: function() {
