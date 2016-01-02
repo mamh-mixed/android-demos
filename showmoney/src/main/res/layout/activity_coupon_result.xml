@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_alignParentTop="true"
-        cardinfolink:title="券码核销" />
+        cardinfolink:title="@string/coupon_title_first" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="卡券内容"
+            android:text="@string/coupon_content"
             android:textColor="#cccccc"
             android:textSize="40sp" />
 
@@ -36,7 +36,6 @@
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:layout_marginTop="30dp"
-            android:text="满300打5折"
             android:textSize="20sp" />
 
     </LinearLayout>
@@ -45,7 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="60dp"
         android:orientation="vertical">
 
         <Button
@@ -55,7 +54,7 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:background="@drawable/blue_selector"
-            android:text="扫码收款"
+            android:text="@string/coupon_payby_scancode"
             android:textColor="#ffffff" />
 
         <Button
@@ -66,7 +65,7 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="30dp"
             android:background="@drawable/blue_selector"
-            android:text="现金收款"
+            android:text="@string/coupon_payby_cash"
             android:textColor="#ffffff" />
     </LinearLayout>
 
