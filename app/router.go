@@ -53,7 +53,16 @@ func RouteV3() (mux *AppV3ServeMux) {
 	mux = NewAppV3ServeMux()
 
 	// app3.0接口
+	mux.HandleFunc("/v3/app/register", registerHandler)
+	mux.HandleFunc("/v3/app/login", loginHandler)
+	mux.HandleFunc("/v3/app/password/forget", forgetPasswordHandler)
+	mux.HandleFunc("/v3/app/password/update", updatePasswordHandler)
+	mux.HandleFunc("/v3/app/account/activate", activateAccountHandler)
+	mux.HandleFunc("/v3/app/account/improve", improveAccountHandler)
+	mux.HandleFunc("/v3/app/account/certificate", improveAccountHandler)
+
 	mux.HandleFunc("/v3/app/token/qiniu", qiniuTokenHandler)
+
 	mux.HandleFunc("/v3/app/bill", billV3Handle)
 
 	return mux

@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/qiniu"
@@ -63,6 +64,108 @@ func qiniuTokenHandler(w http.ResponseWriter, r *http.Request) {
 	if result.State == "success" {
 		result.UploadToken = qiniu.GetUploadtoken()
 	}
+
+	w.Write(jsonMarshal(result))
+}
+
+// registerHandler 注册处理
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+	result := User.register(&reqParams{
+		UserName:       r.FormValue("username"),
+		Password:       r.FormValue("password"),
+		Transtime:      r.FormValue("transtime"),
+		InvitationCode: r.FormValue("invitationCode"),
+		UserFrom:       model.SelfRegister,
+		Remark:         "self_register",
+		Limit:          "true",
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
+// loginHandler 登录处理
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	req := &reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+	}
+
+	user := new(model.AppUser)
+	devictType := r.FormValue("deviceType")
+	user.DeviceType = strings.ToUpper(devictType)
+	user.DeviceToken = r.FormValue("deviceToken")
+	req.AppUser = user
+
+	result := User.login(req)
+
+	w.Write(jsonMarshal(result))
+}
+
+// forgetPasswordHandler 忘记密码处理
+func forgetPasswordHandler(w http.ResponseWriter, r *http.Request) {
+	result := User.forgetPassword(&reqParams{
+		UserName: r.FormValue("username"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
+// updatePasswordHandler 更新密码处理
+func updatePasswordHandler(w http.ResponseWriter, r *http.Request) {
+	result := User.passwordHandle(&reqParams{
+		UserName:    r.FormValue("username"),
+		OldPassword: r.FormValue("oldpassword"),
+		NewPassword: r.FormValue("newpassword"),
+		Transtime:   r.FormValue("transtime"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
+// activateAccountHandler 激活帐户处理。通过用户名和密码激活的
+func activateAccountHandler(w http.ResponseWriter, r *http.Request) {
+	result := User.reqActivate(&reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
+// improveAccountHandler 清算银行卡信息完善处理。
+func improveAccountHandler(w http.ResponseWriter, r *http.Request) {
+	result := User.improveInfo(&reqParams{
+		UserName:   r.FormValue("username"),
+		Password:   r.FormValue("password"),
+		BankOpen:   r.FormValue("bankOpen"),
+		Payee:      r.FormValue("payee"),
+		PayeeCard:  r.FormValue("payeeCard"),
+		PhoneNum:   r.FormValue("phoneNum"),
+		Transtime:  r.FormValue("transtime"),
+		Province:   r.FormValue("province"),
+		City:       r.FormValue("city"),
+		BranchBank: r.FormValue("branchBank"),
+		BankNo:     r.FormValue("bankNo"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
+// certificateAccountHandler 帐户验证处理，用于提升限额
+func certificateAccountHandler(w http.ResponseWriter, r *http.Request) {
+	result := User.improveCertInfo(&reqParams{
+		UserName:         r.FormValue("username"),
+		Password:         r.FormValue("password"),
+		CertName:         r.FormValue("certName"),
+		CertAddr:         r.FormValue("certAddr"),
+		LegalCertPos:     r.FormValue("legalCertPos"),
+		LegalCertOpp:     r.FormValue("legalCertOpp"),
+		BusinessLicense:  r.FormValue("businessLicense"),
+		TaxRegistCert:    r.FormValue("taxRegistCert"),
+		OrganizeCodeCert: r.FormValue("organizeCodeCert"),
+	})
 
 	w.Write(jsonMarshal(result))
 }
