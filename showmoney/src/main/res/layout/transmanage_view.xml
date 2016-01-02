@@ -285,5 +285,21 @@
 
     </LinearLayout>
 
-    <include layout="@layout/showmoney_dialog" />
+    <!-- loading 对话框 -->
+    <RelativeLayout
+        android:id="@+id/loading_dialog"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="#00000000"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/load_img"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/loading" />
+
+    </RelativeLayout>
+    <!-- loading 对话框 -->
 </RelativeLayout>
