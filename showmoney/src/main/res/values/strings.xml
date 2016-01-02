@@ -375,6 +375,15 @@
     <string name="coupon_time_receive_money">收款时间</string>
     <string name="coupon_pay_money_again">重新支付</string>
     <string name="coupon_ticket_verification">卡券核销</string>
+    <string name="coupon_ver_fail">对不起核销失败了，网络似乎有些不给力啊</string>
+    <string name="coupon_ver_close">关闭</string>
+    <string name="coupon_ver_try_again">重试</string>
+    <string name="coupon_content">卡券内容</string>
+    <string name="coupon_payby_scancode">扫码收款</string>
+    <string name="coupon_payby_cash">现金收款</string>
+    <string name="coupon_verial_fail_info">您的卡券来自其他星球，我们无法识别哦</string>
+    <string name="coupon_goback">返回</string>
+    <string name="coupon_confirm_ok">确认</string>
 
     <!--  欢迎界面 要用到的文本 -->
     <string name="splash_activity_message">一天让你的店铺进入互联网 + 收款时代"</string>
