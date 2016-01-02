@@ -758,6 +758,64 @@ func (u *user) getUserTrans(req *reqParams) (result model.AppResult) {
 	return result
 }
 
+// FindRefundOrdersOfOrder 获取用户某笔交易的所有退款的订单信息
+func (u *user) FindRefundOrdersOfOrder(req *reqParams) (result model.AppResult) {
+
+	// 字段长度验证
+	if result, ok := requestDataValidate(req); !ok {
+		return result
+	}
+
+	log.Debugf("*********, username is %s, password is %s; ordernumber is %s", req.UserName, req.Password, req.OrderNum)
+
+	// 用户名不为空
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_PASSWORD_ERROR
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// TODO:密码不对，兼容IOS客户端bug，暂时不验证密码
+	// if req.Password != user.Password {
+	// 	return model.USERNAME_PASSWORD_ERROR
+	// }
+
+	// 没有机构用户
+	if user.MerId == "" {
+		return model.NO_PAY_MER
+	}
+
+	// 查找交易
+	q := &model.QueryCondition{
+		Busicd:       "REFD",
+		OrigOrderNum: req.OrderNum,
+	}
+	t, err := mongo.SpTransColl.FindOneByOrigOrderNum(q)
+	if err != nil {
+		return model.NO_TRANS
+	}
+
+	result = model.NewAppResult(model.SUCCESS, "")
+	result.RefdCount = len(t)
+
+	var txns []*model.AppTxn
+	for _, t := range t {
+		txns = append(txns, transToTxn(t))
+	}
+
+	result.Txn = txns
+
+	return result
+}
+
 // passwordHandle 修改密码
 func (u *user) passwordHandle(req *reqParams) (result model.AppResult) {
 
