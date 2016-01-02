@@ -30,6 +30,7 @@ import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
 import com.cardinfolink.yunshouyin.view.HintDialog;
+import com.umeng.message.PushAgent;
 
 public class LoginActivity extends BaseActivity {
     private static final String TAG = "LoginActivity";
@@ -44,6 +45,7 @@ public class LoginActivity extends BaseActivity {
 
     private Button mLoginButton;//登录按钮
     private HintDialog mHintDialog;
+    private PushAgent mPushAgent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,10 +146,13 @@ public class LoginActivity extends BaseActivity {
             return;
         }
 
+        mPushAgent = PushAgent.getInstance(this);
+
         final String username = mUsernameEdit.getText().toString();
         final String password = mPasswordEdit.getText().toString();
+        final String deviceToken = mPushAgent.getRegistrationId();
 
-        quickPayService.loginAsync(username, password, new QuickPayCallbackListener<User>() {
+        quickPayService.loginAsync(username, password, deviceToken, new QuickPayCallbackListener<User>() {
             @Override
             public void onSuccess(User data) {
                 endLoading();
