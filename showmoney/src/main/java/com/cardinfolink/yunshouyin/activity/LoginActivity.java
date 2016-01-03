@@ -184,7 +184,6 @@ public class LoginActivity extends BaseActivity {
                     initData.setIsProduce(SystemConfig.IS_PRODUCE);
                     CashierSdk.init(initData);//初始化sdk
                     //更新UI
-                    SessonData.positionView = 0;
                     Intent intent = new Intent(mContext, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     mContext.startActivity(intent);
