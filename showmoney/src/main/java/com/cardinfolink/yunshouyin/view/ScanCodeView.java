@@ -35,6 +35,7 @@ import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.Untilly;
@@ -137,6 +138,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
     private double mOriginalTotal;//原始金额
     private double mTotal;//优惠后的金额,实际支付的金额，如果有优惠就是优惠后的金额。如果没有优惠就和原始金额是一样的
+    private String mCurrentTime;
 
 
     public ScanCodeView(Context context) {
@@ -415,11 +417,17 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         return true;
     }
 
-    private void startQRPay(final double total) {
-        if (!validate(total)) {
+    private void startQRPay(final double total, final double originaiTotal) {
+        ResultData resultData = SessonData.loginUser.getResultData();
+
+        boolean hasDiscount = (resultData != null) && (resultData.saleDiscount != null)
+                && (!"0".equals(resultData.saleDiscount));
+        if (!hasDiscount && !validate(total) && !validate(originaiTotal)) {
             return;
         }
-
+        if (hasDiscount && !validate(originaiTotal) && total >= 0) {
+            return;
+        }
         if (mCHCD.equals(CHCD_TYPE[0])) {
             setLeft();//微信
         } else {
@@ -432,7 +440,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         checkLimit(new CheckLimitInterface() {
             @Override
             public void start() {
-                createOrder(String.valueOf(total), mCHCD);
+                createOrder(String.valueOf(total), String.valueOf(originaiTotal), mCHCD);
             }
         });
 
@@ -453,7 +461,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 int dy = currentY - mLastDownY;
                 if (dy < 0) {
                     if (Math.abs(dy) > keyboardView.getHeight() / 2) {
-                        startQRPay(mTotal);
+                        startQRPay(mTotal, mOriginalTotal);
                     }
                 }
                 break;
@@ -517,7 +525,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     } else {
                         mCHCD = CHCD_TYPE[0];
                         Log.e(TAG, "[onClick] 没有在轮询了才允许切换支付方式【微信】");
-                        startQRPay(mTotal);
+                        startQRPay(mTotal, mOriginalTotal);
                     }
                 } else {
                     Log.e(TAG, "[onClick] 切换了支付方式,已经是【微信】支付了，不要再按我了");
@@ -531,7 +539,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     } else {
                         mCHCD = CHCD_TYPE[1];
                         Log.e(TAG, "[onClick] 没有在轮询了才允许切换支付方式【支付宝】");
-                        startQRPay(mTotal);
+                        startQRPay(mTotal, mOriginalTotal);
                     }
                 } else {
                     Log.e(TAG, "[onClick] 切换了支付方式,已经是【支付宝】支付了，不要再按我了");
@@ -708,8 +716,17 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
      * @param total
      * @param chcd
      */
-    private void createOrder(String total, String chcd) {
+    private void createOrder(String total, String originalTotal, String chcd) {
         final OrderData orderData = new OrderData();
+        if (!total.equals(originalTotal)) {
+            orderData.payType = SessonData.loginUser.getResultData().payType;
+            orderData.discountMoney = new BigDecimal(originalTotal).subtract(new BigDecimal(total)).toString();
+            orderData.couponOrderNum = SessonData.loginUser.getResultData().scanCodeId;
+        }
+
+        SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        mCurrentTime = mspf.format(new Date());
+
         orderData.orderNum = geneOrderNumber();
         orderData.txamt = total;
         orderData.currency = "156";
@@ -807,13 +824,23 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         Intent intent = new Intent(mContext, PayResultActivity.class);
         Bundle bun = new Bundle();
-        bun.putString("txamt", mResultData.txamt);
-        bun.putString("orderNum", mResultData.orderNum);
-        bun.putString("chcd", mResultData.chcd);
-        bun.putString("mCurrentTime", "");
-        bun.putBoolean("result", true);
 
-        intent.putExtras(bun);
+        TradeBill tradeBill = new TradeBill();
+        tradeBill.orderNum = mResultData.orderNum;
+        tradeBill.chcd = mResultData.chcd;
+        tradeBill.tandeDate = mCurrentTime;
+        tradeBill.response = "success";
+        tradeBill.total = String.valueOf(mTotal);//付款金额
+        if (SessonData.loginUser.getResultData().saleDiscount != null &&
+                !"0".equals(SessonData.loginUser.getResultData().saleDiscount)) {
+            //有优惠卡券支付
+            tradeBill.originalTotal = String.valueOf(mOriginalTotal);//消费金额
+        } else {
+            //无优惠卡券支付
+
+        }
+        bun.putSerializable("TradeBill", tradeBill);
+        intent.putExtra("BillBundle", bun);
 
         mContext.startActivity(intent);
     }
@@ -825,16 +852,26 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         stopPolling();
 
         Intent intent = new Intent(mContext, PayResultActivity.class);
+
         Bundle bun = new Bundle();
+        TradeBill tradeBill = new TradeBill();
+        tradeBill.orderNum = mResultData.orderNum;
+        tradeBill.chcd = mResultData.chcd;
+        tradeBill.tandeDate = mCurrentTime;
+        tradeBill.errorDetail = mResultData.errorDetail;
+        tradeBill.response = "fail";
+        tradeBill.total = String.valueOf(mTotal);//付款金额
+        boolean flag = SessonData.loginUser.getResultData() != null && SessonData.loginUser.getResultData().saleDiscount != null &&
+                !"0".equals(SessonData.loginUser.getResultData().saleDiscount);//判断是否有优惠金额
+        if (flag) {
+            //有优惠卡券支付
+            tradeBill.originalTotal = String.valueOf(mOriginalTotal);//消费金额
+        } else {
 
-        bun.putString("txamt", mResultData.txamt);
-        bun.putString("orderNum", mResultData.orderNum);
-        bun.putString("chcd", mResultData.chcd);
-        bun.putString("errorDetail", mResultData.errorDetail);
-        bun.putString("mCurrentTime", "");
-        bun.putBoolean("result", false);
+        }
+        bun.putSerializable("TradeBill", tradeBill);
+        intent.putExtra("BillBundle", bun);
 
-        intent.putExtras(bun);
 
         mContext.startActivity(intent);
     }
