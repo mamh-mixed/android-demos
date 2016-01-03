@@ -218,13 +218,6 @@ public class CreateQRcodeActivity extends BaseActivity {
                         //mCustomDialog.nopay();
                         break;
                     }
-                    case Msg.MSG_FROM_SUCCESS_DIGLOG_HISTORY: {
-                        SessonData.positionView = 1;
-                        setResult(101);
-                        finish();
-                        break;
-                    }
-
                 }
                 super.handleMessage(msg);
             }
