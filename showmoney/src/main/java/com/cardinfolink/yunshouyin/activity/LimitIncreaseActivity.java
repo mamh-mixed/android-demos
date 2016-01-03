@@ -331,22 +331,27 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         switch (photoKey) {//根据不同的photoKey来更新不同的ui组件
             case PICK_ID_P_REQUEST: // 身份证 正面
                 mCardPositive.setRightText(successStr);
+                mCardPositive.setImageResource(R.drawable.login_added);
                 Log.e(TAG, " upload success == 身份证 正面 ");
                 break;
             case PICK_ID_N_REQUEST://身份证 反面
                 mCardNegative.setRightText(successStr);
+                mCardNegative.setImageResource(R.drawable.login_added);
                 Log.e(TAG, " upload success == 身份证 反面 ");
                 break;
             case PICK_B_REQUEST://营业执照
                 mBusiness.setRightText(successStr);
+                mBusiness.setImageResource(R.drawable.login_added);
                 Log.e(TAG, " upload success == 营业执照 ");
                 break;
             case PICK_TAX_REQUEST://税务
                 mTax.setRightText(successStr);
+                mTax.setImageResource(R.drawable.login_added);
                 Log.e(TAG, " upload success == 税务 ");
                 break;
             case PICK_O_REQUEST://组织机构
                 mOrganization.setRightText(successStr);
+                mOrganization.setImageResource(R.drawable.login_added);
                 Log.e(TAG, " upload success == 组织机构 ");
                 break;
         }
