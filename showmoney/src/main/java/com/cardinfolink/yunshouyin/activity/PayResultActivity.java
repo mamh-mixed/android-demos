@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -18,6 +17,7 @@ import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.ui.ResultInfoItem;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.view.HintDialog;
@@ -44,6 +44,7 @@ public class PayResultActivity extends Activity {
     private ResultInfoItem mActualTotalMoney;
     private ResultInfoItem mActualDiscount;
     private HintDialog mHintDialog;
+    private TradeBill tradeBill;
 
 
     @Override
@@ -56,25 +57,11 @@ public class PayResultActivity extends Activity {
 
         //获取交易参数
         Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        String txamt = "";
-        String orderNum = "";
-        String chcd = "";
-        Boolean result = false;
-        String currentTime = "";
-        String resultExplain = "";
-        String originaltotal = "";
-        String total = "";
+        Bundle bundle = intent.getBundleExtra("BillBundle");
         if (bundle != null) {
-            txamt = bundle.getString("txamt");
-            orderNum = bundle.getString("orderNum");
-            chcd = bundle.getString("chcd");
-            currentTime = bundle.getString("mCurrentTime");
-            result = bundle.getBoolean("result");
-            resultExplain = bundle.getString("errorDetail");
-            originaltotal = bundle.getString("originaltotal");
-            total = bundle.getString("total");
+            tradeBill = (TradeBill) bundle.getSerializable("TradeBill");
         }
+
 
         mPayResult = (TextView) findViewById(R.id.tv_pay_result);
         mPayResultPhoto = (ImageView) findViewById(R.id.iv_pay_result);
@@ -91,7 +78,7 @@ public class PayResultActivity extends Activity {
         mReceiveMoneyStatus = (TextView) findViewById(R.id.total_state);
         mConfirm = (Button) findViewById(R.id.btnconfirm);
         mPayAccess = (ImageView) findViewById(R.id.pay_chcd);
-        boolean hasCouponDiscount = SessonData.loginUser.getResultData().saleDiscount != null &&
+        boolean hasCouponDiscount = SessonData.loginUser.getResultData() != null && SessonData.loginUser.getResultData().saleDiscount != null &&
                 !"0".equals(SessonData.loginUser.getResultData().saleDiscount);
         //判断是否有卡券优惠
         if (hasCouponDiscount) {
@@ -100,8 +87,8 @@ public class PayResultActivity extends Activity {
             mActualDiscount.setVisibility(View.VISIBLE);
 
             mCouponContent.setRightText(SessonData.loginUser.getResultData().cardId);//卡券内容
-            mActualTotalMoney.setRightText(originaltotal);//消费金额
-            mActualDiscount.setRightText(String.valueOf(new BigDecimal(originaltotal).subtract(new BigDecimal(total)).doubleValue()));//优惠金额
+            mActualTotalMoney.setRightText(tradeBill.originalTotal);//消费金额
+            mActualDiscount.setRightText(String.valueOf(new BigDecimal(tradeBill.originalTotal).subtract(new BigDecimal(tradeBill.total)).doubleValue()));//优惠金额
         } else {
             mCouponContent.setVisibility(View.GONE);
             mActualTotalMoney.setVisibility(View.GONE);
@@ -109,7 +96,7 @@ public class PayResultActivity extends Activity {
         }
 
         //判断支付是否成功
-        if (result) {
+        if ("success".equals(tradeBill.response)) {
             mPayResult.setText(R.string.pay_result_success);
             mPayResultPhoto.setImageResource(R.drawable.pay_result_succeed);
             mResultExplain.setText("");
@@ -121,11 +108,11 @@ public class PayResultActivity extends Activity {
                     finish();
                 }
             });
-        } else {
+        } else if ("fail".equals(tradeBill.response)) {
             mPayResult.setText(R.string.pay_result_fail);
             mPayResult.setTextColor(Color.RED);
             mPayResultPhoto.setImageResource(R.drawable.pay_result_fail);
-            mResultExplain.setText(resultExplain);
+            mResultExplain.setText(tradeBill.errorDetail);
             mReceiveMoneyStatus.setTextColor(Color.RED);
             mReceiveMoney.setTextColor(Color.RED);
             mReceiveMoneyStatus.setText(R.string.pay_total_state_fail);
@@ -147,16 +134,16 @@ public class PayResultActivity extends Activity {
             }
         }
         mPersonAccount.setRightText(SessonData.loginUser.getUsername());
-        mMakeDealTime.setRightText(currentTime);
-        mBillOrderNum.setRightText(orderNum);
-        mReceiveMoney.setText(txamt);
+        mMakeDealTime.setRightText(tradeBill.tandeDate);
+        mBillOrderNum.setRightText(tradeBill.orderNum);
+        mReceiveMoney.setText(tradeBill.total);
 
-        if ("ALP".equals(chcd)) {
+        if ("ALP".equals(tradeBill.chcd)) {
             mPayAccess.setImageResource(R.drawable.scan_alipay);
-        } else if ("WXP".equals(chcd)) {
+        } else if ("WXP".equals(tradeBill.chcd)) {
             mPayAccess.setImageResource(R.drawable.scan_wechat);
         } else {
-            mPayAccess.setImageResource(R.drawable.pay_result_fail);
+            mPayAccess.setImageDrawable(null);
         }
 
         mConfirm.setOnClickListener(new View.OnClickListener() {
