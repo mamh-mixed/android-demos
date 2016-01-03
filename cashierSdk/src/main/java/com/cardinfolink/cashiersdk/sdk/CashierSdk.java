@@ -40,6 +40,15 @@ public class CashierSdk {
 
     }
 
+    public static final String SDK_CURRENCY_RMB = "156";//币种类型，这里表示的人民币
+    public static final String SDK_CURRENCY = "156";//币种类型，这里表示的人民币
+
+    public static final int SDK_ERROR_RESULT_FORMAT = 0;//socket 返回的结果格式不对
+    public static final int SDK_ERROR_RESULT_NULL = 5;//socket 返回的结果是空
+
+    public static final int SDK_ERROR_TXAMT_NULL = 1;//交易金额为空
+    public static final int SDK_ERROR_CURRENCY_NOT_RMB = 2;//币种不是rmb
+    public static final int SDK_ERROR_SIGN_NOT_MATCH = 3;//签名不匹配
 
     /**
      * 3.1. 下单支付
@@ -53,14 +62,14 @@ public class CashierSdk {
 
         String str = orderData.txamt;
         if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
+            if (SDK_CURRENCY.equals(orderData.currency)) {
                 orderData.txamt = TxamtUtil.getTxamtUtil(str);
                 if (orderData.txamt == null) {
-                    listener.onError(1);
+                    listener.onError(SDK_ERROR_TXAMT_NULL);
                     return;
                 }
             } else {
-                listener.onError(2);
+                listener.onError(SDK_ERROR_CURRENCY_NOT_RMB);
                 return;
             }
         }
@@ -74,25 +83,19 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
-                    Log.i(TAG, "veriSign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
-
                     } else {
-                        Log.i(TAG, "签名不一致");
-                        listener.onError(3);
+                        listener.onError(SDK_ERROR_SIGN_NOT_MATCH);
                     }
                 }
-
             }
 
             @Override
             public void onError(int error) {
                 listener.onError(error);
-
             }
         });
     }
@@ -109,14 +112,14 @@ public class CashierSdk {
     public static void startPrePay(OrderData orderData, final CashierListener listener) {
         String str = orderData.txamt;
         if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
+            if (SDK_CURRENCY.equals(orderData.currency)) {
                 orderData.txamt = TxamtUtil.getTxamtUtil(str);
                 if (orderData.txamt == null) {
-                    listener.onError(1);
+                    listener.onError(SDK_ERROR_TXAMT_NULL);
                     return;
                 }
             } else {
-                listener.onError(2);
+                listener.onError(SDK_ERROR_CURRENCY_NOT_RMB);
                 return;
             }
         }
@@ -129,14 +132,12 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
-
                     } else {
-                        listener.onError(3);
+                        listener.onError(SDK_ERROR_SIGN_NOT_MATCH);
                     }
                 }
             }
@@ -160,20 +161,6 @@ public class CashierSdk {
      * @param listener
      */
     public static void startQy(OrderData orderData, final CashierListener listener) {
-        String str = orderData.txamt;
-        if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
-                orderData.txamt = TxamtUtil.getTxamtUtil(str);
-                if (orderData.txamt == null) {
-                    listener.onError(1);
-                    return;
-                }
-            } else {
-                listener.onError(2);
-                return;
-            }
-        }
-
         CommunicationUtil.sendDataToServer(ParamsUtil.getQy(mInitData, orderData), new CommunicationListener() {
 
             @Override
@@ -188,7 +175,7 @@ public class CashierSdk {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
                     } else {
-                        listener.onError(3);
+                        listener.onError(SDK_ERROR_SIGN_NOT_MATCH);
                     }
                 }
             }
@@ -196,7 +183,6 @@ public class CashierSdk {
             @Override
             public void onError(int error) {
                 listener.onError(error);
-
             }
         });
     }
@@ -210,21 +196,6 @@ public class CashierSdk {
      * @param listener
      */
     public static void startVoid(OrderData orderData, final CashierListener listener) {
-
-        String str = orderData.txamt;
-        if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
-                orderData.txamt = TxamtUtil.getTxamtUtil(str);
-                if (orderData.txamt == null) {
-                    listener.onError(1);
-                    return;
-                }
-            } else {
-                listener.onError(2);
-                return;
-            }
-        }
-
         CommunicationUtil.sendDataToServer(ParamsUtil.getVoid(mInitData, orderData), new CommunicationListener() {
 
             @Override
@@ -233,14 +204,12 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
-
                     } else {
-                        listener.onError(3);
+                        listener.onError(SDK_ERROR_SIGN_NOT_MATCH);
                     }
                 }
             }
@@ -263,14 +232,14 @@ public class CashierSdk {
     public static void startRefd(OrderData orderData, final CashierListener listener) {
         String str = orderData.txamt;
         if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
+            if (SDK_CURRENCY.equals(orderData.currency)) {
                 orderData.txamt = TxamtUtil.getTxamtUtil(str);
                 if (orderData.txamt == null) {
-                    listener.onError(1);
+                    listener.onError(SDK_ERROR_TXAMT_NULL);
                     return;
                 }
             } else {
-                listener.onError(2);
+                listener.onError(SDK_ERROR_CURRENCY_NOT_RMB);
                 return;
             }
         }
@@ -283,15 +252,13 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
                     Log.i(TAG, "veriSign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
-
                     } else {
-                        listener.onError(3);
+                        listener.onError(SDK_ERROR_SIGN_NOT_MATCH);
                     }
                 }
             }
@@ -299,7 +266,6 @@ public class CashierSdk {
             @Override
             public void onError(int error) {
                 listener.onError(error);
-
             }
         });
     }
@@ -328,7 +294,7 @@ public class CashierSdk {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
                     } else {
-                        listener.onError(3);
+                        listener.onError(SDK_ERROR_SIGN_NOT_MATCH);
                     }
                 }
             }
@@ -348,21 +314,6 @@ public class CashierSdk {
      * @param listener
      */
     public static void startVeri(OrderData orderData, final CashierListener listener) {
-
-        String str = orderData.txamt;
-        if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
-                orderData.txamt = TxamtUtil.getTxamtUtil(str);
-                if (orderData.txamt == null) {
-                    listener.onError(1);
-                    return;
-                }
-            } else {
-                listener.onError(2);
-                return;
-            }
-        }
-
         CommunicationUtil.sendDataToServer(ParamsUtil.getVeri(mInitData, orderData), new CommunicationListener() {
 
             @Override
@@ -371,14 +322,12 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
-
                     } else {
-                        listener.onError(3);
+                        listener.onError(SDK_ERROR_SIGN_NOT_MATCH);
                     }
                 }
             }
@@ -386,7 +335,6 @@ public class CashierSdk {
             @Override
             public void onError(int error) {
                 listener.onError(error);
-
             }
         });
     }
@@ -396,7 +344,6 @@ public class CashierSdk {
      * 卡券冲正
      */
     public static void startReversal(OrderData orderData, final CashierListener listener) {
-
         CommunicationUtil.sendDataToServer(ParamsUtil.getReveral(mInitData, orderData), new CommunicationListener() {
 
             @Override
@@ -405,14 +352,12 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
-
                     } else {
-                        listener.onError(3);
+                        listener.onError(SDK_ERROR_SIGN_NOT_MATCH);
                     }
                 }
             }
@@ -420,7 +365,6 @@ public class CashierSdk {
             @Override
             public void onError(int error) {
                 listener.onError(error);
-
             }
         });
 
