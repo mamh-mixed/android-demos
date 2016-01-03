@@ -29,6 +29,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.carmera.CameraManager;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.decoding.CaptureActivityHandler;
 import com.cardinfolink.yunshouyin.decoding.InactivityTimer;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
@@ -161,7 +162,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                             orderData.currency = "156";
                             orderData.scanCodeId = (String) msg.obj;
                             //有优惠金额的时候
-                            if (SessonData.loginUser.getResultData().saleDiscount != null &&
+                            if (SessonData.loginUser.getResultData()!=null && SessonData.loginUser.getResultData().saleDiscount != null &&
                                     !"0".equals(SessonData.loginUser.getResultData().saleDiscount)) {
                                 orderData.payType = SessonData.loginUser.getResultData().payType;
 
@@ -509,22 +510,22 @@ public class CaptureActivity extends BaseActivity implements Callback {
         Intent intent = new Intent(CaptureActivity.this, PayResultActivity.class);
         Bundle bun = new Bundle();
 
-        bun.putString("txamt", mResultData.txamt);
-        bun.putString("orderNum", mResultData.orderNum);
-        bun.putString("chcd", mResultData.chcd);
-        bun.putString("mCurrentTime", mCurrentTime);
-        bun.putBoolean("result", true);
-
+        TradeBill tradeBill = new TradeBill();
+        tradeBill.orderNum = mResultData.orderNum;
+        tradeBill.chcd = mResultData.chcd;
+        tradeBill.tandeDate = mCurrentTime;
+        tradeBill.response = "success";
+        tradeBill.total=total;//付款金额
         if (SessonData.loginUser.getResultData().saleDiscount != null &&
                 !"0".equals(SessonData.loginUser.getResultData().saleDiscount)) {
             //有优惠卡券支付
-            bun.putString("originaltotal", originaltotal);//消费金额
-            bun.putString("total", total);//付款金额
+            tradeBill.originalTotal = originaltotal;//消费金额
         } else {
             //无优惠卡券支付
 
         }
-        intent.putExtras(bun);
+        bun.putSerializable("TradeBill",tradeBill);
+        intent.putExtra("BillBundle", bun);
 
         startActivity(intent);
 
@@ -537,22 +538,24 @@ public class CaptureActivity extends BaseActivity implements Callback {
         mTradingLoadDialog.hide();
         Intent intent = new Intent(CaptureActivity.this, PayResultActivity.class);
         Bundle bun = new Bundle();
-        bun.putString("txamt", mResultData.txamt);
-        bun.putString("orderNum", mResultData.orderNum);
-        bun.putString("chcd", mResultData.chcd);
-        bun.putString("mCurrentTime", mCurrentTime);
-        bun.putString("errorDetail", mResultData.errorDetail);
-        bun.putBoolean("result", false);
-
-        if (SessonData.loginUser.getResultData().saleDiscount != null &&
-                !"0".equals(SessonData.loginUser.getResultData().saleDiscount)) {
+        TradeBill tradeBill = new TradeBill();
+        tradeBill.orderNum = mResultData.orderNum;
+        tradeBill.chcd = mResultData.chcd;
+        tradeBill.tandeDate = mCurrentTime;
+        tradeBill.errorDetail = mResultData.errorDetail;
+        tradeBill.response = "fail";
+        tradeBill.total = total;//付款金额
+        boolean flag = SessonData.loginUser.getResultData()!=null&& SessonData.loginUser.getResultData().saleDiscount != null &&
+                !"0".equals(SessonData.loginUser.getResultData().saleDiscount);//判断是否有优惠金额
+        if (flag) {
             //有优惠卡券支付
-            bun.putString("originaltotal", originaltotal);//消费金额
-            bun.putString("total", total);//付款金额
+            tradeBill.originalTotal = originaltotal;
+
         } else {
 
         }
-        intent.putExtras(bun);
+        bun.putSerializable("TradeBill", tradeBill);
+        intent.putExtra("BillBundle",bun);
 
         startActivity(intent);
 
