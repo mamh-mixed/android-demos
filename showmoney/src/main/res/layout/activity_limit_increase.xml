@@ -54,6 +54,7 @@
             android:id="@+id/id_card_negaitive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/login_increase"
             cardinfolink:right_text="@string/limit_increase_update_licence"
             cardinfolink:title="@string/limit_increase_card_negaitive" />
 
@@ -61,6 +62,7 @@
             android:id="@+id/business"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/login_increase"
             cardinfolink:right_text="@string/limit_increase_update_licence"
             cardinfolink:title="@string/limit_increase_business_licence" />
 
@@ -68,6 +70,7 @@
             android:id="@+id/tax"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/login_increase"
             cardinfolink:right_text="@string/limit_increase_update_licence"
             cardinfolink:title="@string/limit_increase_tax" />
 
@@ -75,6 +78,7 @@
             android:id="@+id/organization"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:src="@drawable/login_increase"
             cardinfolink:right_text="@string/limit_increase_update_licence"
             cardinfolink:title="@string/limit_increase_organization" />
 
