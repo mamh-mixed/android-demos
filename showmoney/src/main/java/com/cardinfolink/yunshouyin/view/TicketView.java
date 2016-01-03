@@ -42,7 +42,6 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
     private Button mConfirm;
     private ImageView mCamera;
     private EditText mCouponCode;
-    private ImageView mInfo;
     private ImageView mPencil;
     private TextView mAccount;
 
@@ -76,7 +75,6 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
         mConfirm = (Button) contentView.findViewById(R.id.bt_confirm);
         mCouponCode = (EditText) contentView.findViewById(R.id.et_input_coupon_code);
         mCamera = (ImageView) contentView.findViewById(R.id.iv_scan_code);
-        mInfo = (ImageView) contentView.findViewById(R.id.iv_coupon_info);
         mAccount = (TextView) contentView.findViewById(R.id.tv_coupon_account);
         mPencil = (ImageView) contentView.findViewById(R.id.iv_pencil);
         mConfirm.setOnClickListener(this);
