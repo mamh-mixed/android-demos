@@ -57,6 +57,7 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="40dp"
             android:background="@drawable/blue_selector"
+            android:textColor="#ffffff"
             android:text="退款" />
     </LinearLayout>
 
