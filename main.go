@@ -74,6 +74,7 @@ func startMaster() {
 
 func startApp() {
 	http.Handle("/app/", app.Route())
+	http.Handle("/v3/app/", app.RouteV3())
 	app.StartPush()
 }
 

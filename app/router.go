@@ -1,6 +1,12 @@
 package app
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/CardInfoLink/quickpay/model"
+
+	"github.com/omigo/log"
+)
 
 // Route app请求统一入口
 func Route() (mux *http.ServeMux) {
@@ -40,4 +46,53 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/app/tools/download", GetDownloadUrl)
 
 	return mux
+}
+
+// RouteV3 APPv3请求统一入口
+func RouteV3() (mux *AppV3ServeMux) {
+	mux = NewAppV3ServeMux()
+
+	// app3.0接口
+	mux.HandleFunc("/v3/app/register", registerHandler)
+	mux.HandleFunc("/v3/app/login", loginHandler)
+	mux.HandleFunc("/v3/app/password/forget", forgetPasswordHandler)
+	mux.HandleFunc("/v3/app/password/update", updatePasswordHandler)
+	mux.HandleFunc("/v3/app/account/activate", activateAccountHandler)
+	mux.HandleFunc("/v3/app/account/improve", improveAccountHandler)
+	mux.HandleFunc("/v3/app/account/certificate", improveAccountHandler)
+
+	mux.HandleFunc("/v3/app/token/qiniu", qiniuTokenHandler)
+
+	mux.HandleFunc("/v3/app/bill", billV3Handle)
+
+	return mux
+}
+
+// AppV3ServeMux APPv3拦截器
+type AppV3ServeMux struct {
+	http.ServeMux
+}
+
+// NewAppV3ServeMux allocates and returns a new ServeMux.
+func NewAppV3ServeMux() *AppV3ServeMux {
+	return &AppV3ServeMux{*http.NewServeMux()}
+}
+
+func (mux *AppV3ServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Debugf("**********%s************", "<<<<<<>>>>>>")
+	log.Debugf("request url is %s; sign is %s", r.URL.Path, r.FormValue("sign"))
+	log.Debugf("username is %s", r.FormValue("username"))
+
+	// 可跨域,测试用
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	// 验签
+	if !checkSignSha256(r) {
+		// 验签失败
+		w.Write(jsonMarshal(model.SIGN_FAIL))
+		return
+	}
+
+	h, _ := mux.Handler(r)
+	h.ServeHTTP(w, r)
 }
