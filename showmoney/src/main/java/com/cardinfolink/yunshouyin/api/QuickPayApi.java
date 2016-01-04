@@ -2,9 +2,9 @@ package com.cardinfolink.yunshouyin.api;
 
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
+import com.cardinfolink.yunshouyin.model.Message;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
-import com.cardinfolink.yunshouyin.model.Txn;
 
 import java.util.Map;
 
@@ -53,4 +53,8 @@ public interface QuickPayApi {
     String getUploadToken(User user);
 
     void improveCertInfo(User user, Map<String, String> imageMap);
+
+    ServerPacket pullinfo(String username, String password, String size, String lasttime, String maxtime);
+
+    ServerPacket updateMessage(String username, String password, String status, Message[] messages);
 }

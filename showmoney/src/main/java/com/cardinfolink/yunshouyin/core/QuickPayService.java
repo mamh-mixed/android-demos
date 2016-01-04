@@ -2,6 +2,7 @@ package com.cardinfolink.yunshouyin.core;
 
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
+import com.cardinfolink.yunshouyin.model.Message;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 
 import java.util.Map;
@@ -45,4 +46,8 @@ public interface QuickPayService {
     void getUploadTokenAsync(User user, QuickPayCallbackListener<String> listener);
 
     void improveCertInfoAsync(User user, Map<String, String> imageMap, QuickPayCallbackListener<Void> listener);
+
+    void pullinfoAsync(String username, String password, String size, String lasttime, String maxtime, QuickPayCallbackListener<ServerPacket> listener);
+
+    void updateMessageAsync(String username, String password, Message[] messages, String status, QuickPayCallbackListener<ServerPacket> listener);
 }
