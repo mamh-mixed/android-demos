@@ -103,7 +103,7 @@ func importMerchant(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ip := importer{Sheets: file.Sheets, fileName: key, msg: im, IsDebug: true}
+	ip := importer{Sheets: file.Sheets, fileName: key, msg: im}
 	info, err := ip.DoImport()
 	if err != nil {
 		w.Write(resultBody(err.Error(), 2))
@@ -302,9 +302,9 @@ func updateValidate(r *rowData, im *ImportMessage) error {
 			return fmt.Errorf(m.OpenSignValueErr, r.IsNeedSignStr)
 		}
 		if r.IsNeedSignStr == yes {
-			if r.SignKey == "" {
-				return fmt.Errorf(m.NoSignKey, r.MerId)
-			}
+			// if r.SignKey == "" {
+			// 	return fmt.Errorf(m.NoSignKey, r.MerId)
+			// }
 			r.IsNeedSign = true
 		}
 	}
@@ -798,6 +798,10 @@ func (i *importer) doDataWrap() {
 			}
 			if r.IsNeedSignStr != "" {
 				mer.IsNeedSign = r.IsNeedSign
+				if mer.IsNeedSign && mer.SignKey == "" {
+					log.Infof("gen new sign key...merId=%s", mer.MerId)
+					mer.SignKey = util.SignKey()
+				}
 			}
 			if r.BankId != "" {
 				mer.Detail.BankId = r.BankId

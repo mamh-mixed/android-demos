@@ -3,7 +3,7 @@ package scanpay2
 import (
 	"testing"
 
-	"github.com/dawei888/quickpay/util"
+	"github.com/CardInfoLink/quickpay/util"
 )
 
 func TestPrecreate(t *testing.T) {

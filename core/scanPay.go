@@ -1076,7 +1076,7 @@ func RefreshOrder() {
 func findAndLockOrigTrans(merId, orderNum string) (orig *model.Trans, err error) {
 
 	// 判断是否有此订单
-	orig, err = mongo.SpTransColl.FindOne(merId, orderNum)
+	orig, err = mongo.SpTransColl.FindOneInMaster(merId, orderNum)
 	if err != nil {
 		return nil, errors.New("TRADE_NOT_EXIST")
 	}
