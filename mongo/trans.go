@@ -453,6 +453,10 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	// 处理交易状态查询条件
 	handleTransStatus(q, match)
 
+	if len(q.CouTransStatus) > 0 {
+		match["transStatus"] = bson.M{"$nin": q.CouTransStatus}
+	}
+
 	p := []bson.M{
 		{"$match": match},
 	}

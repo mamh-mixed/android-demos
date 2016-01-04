@@ -79,6 +79,7 @@ type AppResult struct {
 	UploadToken  string      `json:"uploadToken,omitempty"`
 	AccessToken  string      `json:"accessToken,omitempty"`
 	DownloadUrl  string      `json:"downloadUrl,omitempty"`
+	Coupons      []*Coupon   `json:"coupons,omitempty"`
 }
 
 type SettInfo struct {
@@ -192,4 +193,10 @@ type PushMessage struct {
 	LastTime string `json:"-" bson:"-"`
 	MaxTime  string `json:"-" bson:"-"`
 	Size     int    `json:"-" bson:"-"`
+}
+
+type Coupon struct {
+	Type    string `json:"type,omitempty"` // 1:减 2:兑 3:折
+	Name    string `json:"name,omitempty"`
+	Channel string `json:"channel,omitempty"`
 }

@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/CardInfoLink/quickpay/model"
-
 	"github.com/omigo/log"
 )
 

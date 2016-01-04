@@ -193,7 +193,12 @@ func couponsHandler(w http.ResponseWriter, r *http.Request) {
 		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
+		ClientId:  r.FormValue("clientId"),
+		Month:     r.FormValue("month"),
+		Index:     r.FormValue("index"),
+		Size:      r.FormValue("size"),
 	})
+	w.Write(jsonMarshal(result))
 }
 
 // messagePullHandler 消息接口
