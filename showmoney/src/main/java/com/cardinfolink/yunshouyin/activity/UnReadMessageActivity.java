@@ -177,24 +177,27 @@ public class UnReadMessageActivity extends BaseActivity {
             //获取系统当前时间
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String currentTime = format.format(new Date());
-            String lastTime = mMessageDB.getLastTime(username);
+            final String lastTime = mMessageDB.getLastTime(username);
             //从服务器端查询最新的消息
             quickPayService.pullinfoAsync(username, password, "0", lastTime, currentTime, new QuickPayCallbackListener<ServerPacket>() {
                 @Override
                 public void onSuccess(ServerPacket data) {
+                    List<Message> messageList = new ArrayList<>();
                     if (data.getCount() > 0) {
                         Message[] messages = data.getMessage();
-                        List<Message> temp = new ArrayList<>();
                         if (messages != null && messages.length > 0) {
                             for (Message message : messages) {
-                                temp.add(message);
+                                messageList.add(message);
                             }
                         }
                         //数据写入到本地
-                        mMessageDB.add(temp);
-                        //更新界面内容
-                        setMessageToView(temp, type);
+                        mMessageDB.add(messageList);
                     }
+                    if (data.getCount() == 0 && type == null) { //服务器没有获取数据，重本地读取
+                        messageList = getLocalMessages(lastTime, null);
+                    }
+                    //更新界面内容
+                    setMessageToView(messageList, type);
                 }
 
                 @Override
