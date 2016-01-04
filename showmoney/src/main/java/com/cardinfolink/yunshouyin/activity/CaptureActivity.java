@@ -19,7 +19,6 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Toast;
 
 import com.cardinfolink.cashiersdk.listener.CashierListener;
 import com.cardinfolink.cashiersdk.model.OrderData;
@@ -28,7 +27,7 @@ import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.carmera.CameraManager;
 import com.cardinfolink.yunshouyin.constant.Msg;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.decoding.CaptureActivityHandler;
 import com.cardinfolink.yunshouyin.decoding.InactivityTimer;
@@ -162,12 +161,11 @@ public class CaptureActivity extends BaseActivity implements Callback {
                             orderData.currency = "156";
                             orderData.scanCodeId = (String) msg.obj;
                             //有优惠金额的时候
-                            if (SessonData.loginUser.getResultData()!=null && SessonData.loginUser.getResultData().saleDiscount != null &&
-                                    !"0".equals(SessonData.loginUser.getResultData().saleDiscount)) {
-                                orderData.payType = SessonData.loginUser.getResultData().payType;
+                            if (Coupon.getInstance().getSaleDiscount() != null && !"0".equals(Coupon.getInstance().getSaleDiscount())) {
+                                orderData.payType = Coupon.getInstance().getPayType();
 
                                 orderData.discountMoney = String.valueOf(new BigDecimal(originaltotal).subtract(new BigDecimal(total)).doubleValue());
-                                orderData.couponOrderNum = SessonData.loginUser.getResultData().scanCodeId;
+                                orderData.couponOrderNum = Coupon.getInstance().getScanCodeId();
                             }
                             // /orderData.scanCodeId="13241252555";
                             CashierSdk.startPay(orderData, new CashierListener() {
@@ -203,7 +201,16 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                 @Override
                                 public void onResult(ResultData resultData) {
                                     mResultData = resultData;
-                                    SessonData.loginUser.setResultData(resultData);//保存卡券核销返回信息
+
+                                    Coupon.getInstance().setPayType(resultData.payType);
+                                    Coupon.getInstance().setAvailCount(resultData.availCount);
+                                    Coupon.getInstance().setCardId(resultData.cardId);
+                                    Coupon.getInstance().setVoucherType(resultData.voucherType);
+                                    Coupon.getInstance().setSaleDiscount(resultData.saleDiscount);
+                                    Coupon.getInstance().setMaxDiscountAmt(resultData.maxDiscountAmt);
+                                    Coupon.getInstance().setExpDate(resultData.expDate);
+                                    Coupon.getInstance().setSaleMinAmount(resultData.saleMinAmount);//保存卡券核销返回信息
+
                                     if ("00".equals(mResultData.respcd)) {
                                         Intent intent = new Intent(mContext, CouponResultActivity.class);
                                         Bundle bundle = new Bundle();
@@ -217,7 +224,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                         mHintDialog.setCancelOnClickListener(new OnClickListener() {
                                             @Override
                                             public void onClick(View v) {
-                                                SessonData.loginUser.setResultData(null);
+                                                Coupon.getInstance().clear();
                                                 finish();
                                             }
                                         });
@@ -515,16 +522,16 @@ public class CaptureActivity extends BaseActivity implements Callback {
         tradeBill.chcd = mResultData.chcd;
         tradeBill.tandeDate = mCurrentTime;
         tradeBill.response = "success";
-        tradeBill.total=total;//付款金额
-        if (SessonData.loginUser.getResultData().saleDiscount != null &&
-                !"0".equals(SessonData.loginUser.getResultData().saleDiscount)) {
+        tradeBill.total = total;//付款金额
+        if (Coupon.getInstance().getSaleDiscount() != null &&
+                !"0".equals(Coupon.getInstance().getSaleDiscount())) {
             //有优惠卡券支付
             tradeBill.originalTotal = originaltotal;//消费金额
         } else {
             //无优惠卡券支付
 
         }
-        bun.putSerializable("TradeBill",tradeBill);
+        bun.putSerializable("TradeBill", tradeBill);
         intent.putExtra("BillBundle", bun);
 
         startActivity(intent);
@@ -538,6 +545,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         mTradingLoadDialog.hide();
         Intent intent = new Intent(CaptureActivity.this, PayResultActivity.class);
         Bundle bun = new Bundle();
+
         TradeBill tradeBill = new TradeBill();
         tradeBill.orderNum = mResultData.orderNum;
         tradeBill.chcd = mResultData.chcd;
@@ -545,9 +553,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
         tradeBill.errorDetail = mResultData.errorDetail;
         tradeBill.response = "fail";
         tradeBill.total = total;//付款金额
-        boolean flag = SessonData.loginUser.getResultData()!=null&& SessonData.loginUser.getResultData().saleDiscount != null &&
-                !"0".equals(SessonData.loginUser.getResultData().saleDiscount);//判断是否有优惠金额
-        if (flag) {
+
+        //判断是否有优惠金额
+        boolean hasDiscount = Coupon.getInstance().getSaleDiscount() != null && !"0".equals(Coupon.getInstance().getSaleDiscount());
+        if (hasDiscount) {
             //有优惠卡券支付
             tradeBill.originalTotal = originaltotal;
 
@@ -555,7 +564,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
         }
         bun.putSerializable("TradeBill", tradeBill);
-        intent.putExtra("BillBundle",bun);
+        intent.putExtra("BillBundle", bun);
 
         startActivity(intent);
 
