@@ -122,7 +122,7 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		// 9. 对返回报文签名
 		if signKey != "" {
 			log.Debug("sign content to return : " + ret.SignMsg())
-			ret.Sign = security.SHA1WithKey(ret.SignMsg(), signKey)
+			ret.Sign = security.SHA256WithKey(ret.SignMsg(), signKey)
 		}
 	}()
 
@@ -168,12 +168,12 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		case nonCheckSignBusicd:
 			if mer.JsPayVersion == "2.0" {
 				content = fmt.Sprintf("backUrl=%s&mchntid=%s&orderNum=%s&txamt=%s", req.NotifyUrl, req.Mchntid, req.OrderNum, req.Txamt)
-				sig = security.SHA1WithKey(content, mer.SignKey)
+				sig = security.SHA256WithKey(content, mer.SignKey)
 			}
 		// 其他接口
 		default:
 			content = req.SignMsg()
-			sig = security.SHA1WithKey(content, mer.SignKey)
+			sig = security.SHA256WithKey(content, mer.SignKey)
 		}
 
 		if sig != "" && sig != req.Sign {
