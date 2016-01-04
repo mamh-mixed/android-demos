@@ -64,6 +64,9 @@ func RouteV3() (mux *AppV3ServeMux) {
 	mux.HandleFunc("/v3/app/token/qiniu", qiniuTokenHandler)
 
 	mux.HandleFunc("/v3/app/bill", billV3Handle)
+	mux.HandleFunc("/v3/app/orders", ordersHandler)
+	mux.HandleFunc("/v3/app/coupons", couponsHandler)
+	mux.HandleFunc("/v3/app/message/pull", messagePullHandler)
 
 	return mux
 }
