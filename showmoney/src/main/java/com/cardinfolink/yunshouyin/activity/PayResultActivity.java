@@ -16,6 +16,7 @@ import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
+import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.ui.ResultInfoItem;
@@ -78,9 +79,9 @@ public class PayResultActivity extends Activity {
         mReceiveMoneyStatus = (TextView) findViewById(R.id.total_state);
         mConfirm = (Button) findViewById(R.id.btnconfirm);
         mPayAccess = (ImageView) findViewById(R.id.pay_chcd);
-        boolean hasCouponDiscount = SessonData.loginUser.getResultData() != null && SessonData.loginUser.getResultData().saleDiscount != null &&
-                !"0".equals(SessonData.loginUser.getResultData().saleDiscount);
+
         //判断是否有卡券优惠
+        boolean hasCouponDiscount = Coupon.getInstance().getSaleDiscount() != null && !"0".equals(Coupon.getInstance().getSaleDiscount());
         if (hasCouponDiscount) {
             mCouponContent.setVisibility(View.VISIBLE);
             mActualTotalMoney.setVisibility(View.VISIBLE);
@@ -104,7 +105,7 @@ public class PayResultActivity extends Activity {
             mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SessonData.loginUser.setResultData(null);
+                    Coupon.getInstance().clear();
                     finish();
                 }
             });
@@ -149,7 +150,7 @@ public class PayResultActivity extends Activity {
         mConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SessonData.loginUser.setResultData(null);
+                Coupon.getInstance().clear();
                 finish();
             }
         });
@@ -170,7 +171,7 @@ public class PayResultActivity extends Activity {
                     public void onResult(ResultData resultData) {
                         if ("00".equals(resultData.respcd)) {
                             //冲正成功
-                            SessonData.loginUser.setResultData(null);
+                            Coupon.getInstance().clear();
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
