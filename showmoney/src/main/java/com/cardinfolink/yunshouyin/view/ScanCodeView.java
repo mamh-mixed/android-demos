@@ -34,6 +34,7 @@ import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
+import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.data.User;
@@ -418,10 +419,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
     private void startQRPay(final double total, final double originaiTotal) {
-        ResultData resultData = SessonData.loginUser.getResultData();
 
-        boolean hasDiscount = (resultData != null) && (resultData.saleDiscount != null)
-                && (!"0".equals(resultData.saleDiscount));
+        boolean hasDiscount = (Coupon.getInstance().getSaleDiscount() != null)
+                && (!"0".equals(Coupon.getInstance().getSaleDiscount()));
         if (!hasDiscount && !validate(total) && !validate(originaiTotal)) {
             return;
         }
@@ -470,7 +470,12 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
     private void startCapturePay(final double total, final double originaltotal) {
-        if (!validate(total) && !validate(originaltotal)) {  //对于现金券的使用还有待讨论，因为可能会有sum为，而originalsum不为的情况发生
+        boolean hasDiscount = (Coupon.getInstance().getSaleDiscount() != null)
+                && (!"0".equals(Coupon.getInstance().getSaleDiscount()));
+        if (!hasDiscount && !validate(total) && !validate(originaltotal)) {
+            return;
+        }
+        if (hasDiscount && !validate(originaltotal) && total >= 0) {
             return;
         }
 
@@ -719,9 +724,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private void createOrder(String total, String originalTotal, String chcd) {
         final OrderData orderData = new OrderData();
         if (!total.equals(originalTotal)) {
-            orderData.payType = SessonData.loginUser.getResultData().payType;
+            orderData.payType = Coupon.getInstance().getPayType();
             orderData.discountMoney = new BigDecimal(originalTotal).subtract(new BigDecimal(total)).toString();
-            orderData.couponOrderNum = SessonData.loginUser.getResultData().scanCodeId;
+            orderData.couponOrderNum = Coupon.getInstance().getScanCodeId();
         }
 
         SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -831,8 +836,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         tradeBill.tandeDate = mCurrentTime;
         tradeBill.response = "success";
         tradeBill.total = String.valueOf(mTotal);//付款金额
-        if (SessonData.loginUser.getResultData().saleDiscount != null &&
-                !"0".equals(SessonData.loginUser.getResultData().saleDiscount)) {
+        boolean hasCoupon = Coupon.getInstance().getSaleDiscount() != null &&
+                !"0".equals(Coupon.getInstance().getSaleDiscount());
+        if (hasCoupon) {
             //有优惠卡券支付
             tradeBill.originalTotal = String.valueOf(mOriginalTotal);//消费金额
         } else {
@@ -861,9 +867,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         tradeBill.errorDetail = mResultData.errorDetail;
         tradeBill.response = "fail";
         tradeBill.total = String.valueOf(mTotal);//付款金额
-        boolean flag = SessonData.loginUser.getResultData() != null && SessonData.loginUser.getResultData().saleDiscount != null &&
-                !"0".equals(SessonData.loginUser.getResultData().saleDiscount);//判断是否有优惠金额
-        if (flag) {
+        boolean hasCoupon = Coupon.getInstance().getSaleDiscount() != null &&
+                !"0".equals(Coupon.getInstance().getSaleDiscount());//判断是否有优惠金额
+        if (hasCoupon) {
             //有优惠卡券支付
             tradeBill.originalTotal = String.valueOf(mOriginalTotal);//消费金额
         } else {
@@ -1180,29 +1186,30 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     //获取打折后的金额
     public double discountMoneyResult(double result) {
         double tempResult = result;
-        //这里要判断ResultData是否为null
-        if (SessonData.loginUser.getResultData() == null || SessonData.loginUser.getResultData().saleDiscount == null || "0".equals(SessonData.loginUser.getResultData().saleDiscount) ||
-                SessonData.loginUser.getResultData().voucherType == null || "0".equals(SessonData.loginUser.getResultData().voucherType)) {
+        Log.e(TAG, Coupon.getInstance().toString());
+        boolean hasCoupon = Coupon.getInstance().getSaleDiscount() != null &&
+                !"0".equals(Coupon.getInstance().getSaleDiscount());
+        if (!hasCoupon) {
             mHasDiscount.setVisibility(View.INVISIBLE);
             return tempResult;
         }
         //打折门限值
         double limit = 0;
-        if (SessonData.loginUser.getResultData().saleMinAmount != null && !"0".equals(SessonData.loginUser.getResultData().saleMinAmount)) {
-            BigDecimal saleMinAmount = new BigDecimal(Double.valueOf(SessonData.loginUser.getResultData().saleMinAmount));
+        if (Coupon.getInstance().getSaleMinAmount() != null && !"0".equals(Coupon.getInstance().getSaleMinAmount())) {
+            BigDecimal saleMinAmount = new BigDecimal(Double.valueOf(Coupon.getInstance().getSaleMinAmount()));
             limit = saleMinAmount.divide(new BigDecimal(100)).doubleValue();
         }
         //折扣值
-        BigDecimal saleDiscount = new BigDecimal(Double.valueOf(SessonData.loginUser.getResultData().saleDiscount));
+        BigDecimal saleDiscount = new BigDecimal(Double.valueOf(Coupon.getInstance().getSaleDiscount()));
         double discount = saleDiscount.divide(new BigDecimal(100)).doubleValue();
 
         //满减券
-        if (SessonData.loginUser.getResultData().voucherType.endsWith("1")) {
+        if (Coupon.getInstance().getVoucherType().endsWith("1")) {
             if (limit > 0 && result > limit) {
                 mHasDiscount.setVisibility(View.VISIBLE);
                 tempResult -= discount;
             }
-        } else if (SessonData.loginUser.getResultData().voucherType.endsWith("2")) {
+        } else if (Coupon.getInstance().getVoucherType().endsWith("2")) {
             //固定金额券
             mHasDiscount.setVisibility(View.VISIBLE);
             if (tempResult <= discount) {
@@ -1210,11 +1217,16 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             } else {
                 tempResult -= discount;
             }
-        } else if (SessonData.loginUser.getResultData().voucherType.endsWith("3")) {
+        } else if (Coupon.getInstance().getVoucherType().endsWith("3")) {
             //满折券
             if (limit > 0 && result > limit) {
                 mHasDiscount.setVisibility(View.VISIBLE);
                 tempResult = new BigDecimal(tempResult).multiply(new BigDecimal(discount)).doubleValue();
+                //判断优惠金额是否大于最大优惠金额
+                // TODO: 2016/1/4  可能存在精度的问题
+                if ((result - tempResult) > Double.valueOf(Coupon.getInstance().getMaxDiscountAmt())) {
+                    tempResult = new BigDecimal(result).subtract(new BigDecimal(Coupon.getInstance().getMaxDiscountAmt())).doubleValue();
+                }
             }
         }
         return tempResult;
