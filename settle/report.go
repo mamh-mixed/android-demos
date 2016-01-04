@@ -186,6 +186,10 @@ func settDataHandle(sg model.SettRoleGroup) []reportData {
 
 	var rds []reportData
 	for _, mg := range sg.MerGroups {
+		// 交易金额为0的过滤掉
+		if mg.TransAmt == 0 {
+			continue
+		}
 		m, err := mongo.MerchantColl.Find(mg.MerId)
 		if err != nil {
 			// cmMap[mg.MerId] = 0 // 标识不成功

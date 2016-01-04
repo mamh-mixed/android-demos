@@ -68,6 +68,26 @@ func (c *scanPayRespCollection) GetByAlp(code, busicd string) (resp *model.ScanP
 	return resp
 }
 
+// GetByAlp2 由支付宝2.0应答得到Resp对象
+func (c *scanPayRespCollection) GetByAlp2(code, busicd string) (resp *model.ScanPayRespCode) {
+	resp = &model.ScanPayRespCode{}
+	q := bson.M{
+		"alp2": bson.M{
+			"$elemMatch": bson.M{
+				"code":   code,
+				"busicd": busicd,
+			},
+		},
+	}
+	err := database.C(c.name).Find(q).One(resp)
+	if err != nil {
+		log.Errorf("can not find scanPayResp for (code:%s,busicd:%s): %s", code, busicd, err)
+		return defaultResp
+	}
+
+	return resp
+}
+
 // GetByWxp 由微信应答得到Resp对象
 func (c *scanPayRespCollection) GetByWxp(code, busicd string) (resp *model.ScanPayRespCode) {
 	resp = &model.ScanPayRespCode{}
