@@ -52,7 +52,11 @@
     <string name="increase_company">我是企业</string>
     <string name="increase_personal">我是个体</string>
     <string name="increase_limit">提升限额</string>
-    <string name="increase_message1">个体工商户 所需材料\n法人身份证\n营业执照\n\n企业商户 所需材料\n法人身份证\n企业营业执照\n税务登记证\n组织机构代码证</string>
+    <string name="increase_material_requested">所需材料</string>
+    <string name="increase_personal1">个体工商户</string>
+    <string name="increase_personal1_material">法人身份证\n营业执照</string>
+    <string name="increase_company1">企业商户</string>
+    <string name="increase_company1_meaterial">法人身份证\n企业营业执照\n税务登记证\n组织机构代码证</string>
     <string name="increase_i_know">我知道了</string>
     <string name="increase_message2">提升限额材料提交完成</string>
     <string name="increase_message3">你提交的材料，我们会在7个工作日内帮你审核。</string>
