@@ -27,6 +27,9 @@ public class ServerPacket {
 
     private String uploadToken;
 
+    private Message[] message;
+
+
     public static ServerPacket getServerPacketFrom(String json) {
         try {
             Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
@@ -132,5 +135,13 @@ public class ServerPacket {
 
     public void setTotalRecord(int totalRecord) {
         this.totalRecord = totalRecord;
+    }
+
+    public Message[] getMessage() {
+        return message;
+    }
+
+    public void setMessage(Message[] message) {
+        this.message = message;
     }
 }
