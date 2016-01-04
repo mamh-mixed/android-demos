@@ -67,6 +67,14 @@ public class SettingActionBarItem extends RelativeLayout {
         mRightText.setText(str);
     }
 
+    public String getLeftText() {
+        return mLeftText.getText().toString();
+    }
+
+    public String getRightText() {
+        return mRightText.getText().toString();
+    }
+
     public void setBackgroundColor(int color) {
         relativeLayout.setBackgroundColor(color);
         mLeftText.setBackgroundColor(color);
