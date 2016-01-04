@@ -1274,7 +1274,7 @@ func (u *user) ordersHandler(req *reqParams) (result model.AppResult) {
 		result = u.getUserTrans(req)
 	} else {
 		if req.Size == "" {
-			req.Size = 15
+			req.Size = string(15)
 		}
 		result = u.findOrderHandle(req)
 	}
@@ -1290,17 +1290,24 @@ func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
 
 // 消息接口
 func (u *user) messagePullHandler(req *reqParams) (result model.AppResult) {
-
+	return
 }
 
 func transToTxn(t *model.Trans) *model.AppTxn {
 	txn := &model.AppTxn{
-		Response:        t.RespCode,
-		SystemDate:      timeReplacer.Replace(t.CreateTime),
-		ConsumerAccount: t.ConsumerAccount,
-		TransStatus:     t.TransStatus,
-		RefundAmt:       t.RefundAmt,
-		TicketNum:       t.TicketNum,
+		Response:          t.RespCode,
+		SystemDate:        timeReplacer.Replace(t.CreateTime),
+		ConsumerAccount:   t.ConsumerAccount,
+		TransStatus:       t.TransStatus,
+		RefundAmt:         t.RefundAmt,
+		TicketNum:         t.TicketNum,
+		NickName:          t.NickName,
+		AvatarUrl:         t.HeadImgUrl,
+		CheckCode:         t.VeriCode,
+		CouponName:        t.Prodname,
+		CouponChannel:     t.ChanCode,
+		CouponOrderNo:     t.CouponOrderNum,
+		CouponDiscountAmt: t.DiscountAmt,
 	}
 	txn.ReqData.Busicd = t.Busicd
 	txn.ReqData.AgentCode = t.AgentCode
@@ -1311,6 +1318,7 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 	txn.ReqData.MerId = t.MerId
 	txn.ReqData.TradeFrom = t.TradeFrom
 	txn.ReqData.Txamt = fmt.Sprintf("%012d", t.TransAmt)
+	txn.ReqData.TotalFee = t.TransAmt
 	txn.ReqData.ChanCode = t.ChanCode
 	txn.ReqData.Currency = t.Currency
 	if t.Currency == "" {

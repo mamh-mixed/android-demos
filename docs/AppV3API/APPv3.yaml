@@ -7,7 +7,7 @@ host: 'localhost:6800'
 schemes:
   - http
   - https
-basePath: /v3/app
+basePath: /app/v3
 produces:
   - application/json
   - application/x-www-form-urlencoded
@@ -399,7 +399,7 @@ paths:
           type: string
         - in: formData
           name: month
-          description: 如果传送，返回该月账单情况，见返回字段. YYYYMM
+          description: 默认当月。如果传送，返回该月账单情况，见返回字段. YYYYMM
           required: false
           type: string
         - in: formData
@@ -799,17 +799,18 @@ definitions:
       error:
         type: string
         description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
-      total:
+      totalFee:
         type: number
-        description: 该月收入金额（刨去退款？）。如果传入month字段，则必须返回。
+        format: int64
+        description: 该月支付金额，扣去了退款的金额。如果传入month字段，则必须返回。根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
       count:
         type: number
         format: int64
         description: 该月支付笔数。如果传入month字段，则必须返回。
-      refdtotal:
+      refdTotalFee:
         type: number
-        format: float64
-        description: 该月退款金额。如果传入month字段，则必须返回。
+        format: int64
+        description: 该月退款金额。如果传入month字段，则必须返回。根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
       refdcount:
         type: number
         format: int64
@@ -854,9 +855,9 @@ definitions:
         description: 卡券核销订单号
       couponDiscountAmt:
         type: number
-        format: float64
+        format: int64
         description: 卡券优惠金额
-      mRequest:
+      m_request:
         type: object
         $ref: '#/definitions/mRequest'
   mRequest:
@@ -883,9 +884,11 @@ definitions:
       tradeFrom:
         type: string
         example: ios
-      txamt:
+      totalFee:
         type: number
-        example: 2.12
+        format: int64
+        example: 212
+        description: 根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
       chcd:
         type: string
         example: ALP
