@@ -77,7 +77,7 @@ public class MessageDB {
         SQLiteDatabase database = helper.getReadableDatabase();
         Cursor cursor;
         if (message.getStatus() == null) { //查询全部消息（包括删除的）
-            cursor = database.rawQuery("select * from message where username=? and pushtime<? order by pushtime desc limit ?",
+            cursor = database.rawQuery("select * from message where username=? and pushtime<=? order by pushtime desc limit ?",
                     new String[]{message.getUsername(), message.getPushtime(), size});
         } else {
             cursor = database.rawQuery("select * from message where username=? and pushtime<? and status=? order by pushtime desc limit ?",
