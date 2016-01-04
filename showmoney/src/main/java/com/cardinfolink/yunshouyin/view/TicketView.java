@@ -24,6 +24,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.CaptureActivity;
 import com.cardinfolink.yunshouyin.activity.CouponResultActivity;
 import com.cardinfolink.yunshouyin.constant.Msg;
+import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.data.SessonData;
 
 import java.text.SimpleDateFormat;
@@ -158,7 +159,15 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                     @Override
                     public void onResult(ResultData resultData) {
                         mResultData = resultData;
-                        SessonData.loginUser.setResultData(resultData);
+                        Coupon coupon = Coupon.getInstance();
+                        coupon.setPayType(resultData.payType);
+                        coupon.setAvailCount(resultData.availCount);
+                        coupon.setCardId(resultData.cardId);
+                        coupon.setVoucherType(resultData.voucherType);
+                        coupon.setSaleDiscount(resultData.saleDiscount);
+                        coupon.setMaxDiscountAmt(resultData.maxDiscountAmt);
+                        coupon.setExpDate(resultData.expDate);
+                        coupon.setSaleMinAmount(resultData.saleMinAmount);
                         if ("00".equals(mResultData.respcd)) {
                             mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
                         } else {
