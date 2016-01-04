@@ -169,3 +169,42 @@ func certificateAccountHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Write(jsonMarshal(result))
 }
+
+// ordersHandler 查询订单
+func ordersHandler(w http.ResponseWriter, r *http.Request) {
+	result := User.ordersHandler(&reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+		OrderNum:  r.FormValue("orderNum"),
+		PayType:   r.FormValue("payType"),
+		RecType:   r.FormValue("recType"),
+		Status:    r.FormValue("txnStatus"),
+		Index:     r.FormValue("index"),
+		Size:      r.FormValue("size"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
+// couponsHandler  卡券列表
+func couponsHandler(w http.ResponseWriter, r *http.Request) {
+	result := User.couponsHandler(&reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+	})
+}
+
+// messagePullHandler 消息接口
+func messagePullHandler(w http.ResponseWriter, r *http.Request) {
+	result := User.findPushMessage(&reqParams{
+		UserName: r.FormValue("username"),
+		Password: r.FormValue("password"),
+		Size:     r.FormValue("size"),
+		LastTime: r.FormValue("lasttime"),
+		MaxTime:  r.FormValue("maxtime"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
