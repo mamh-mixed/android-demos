@@ -276,7 +276,7 @@ func sendNotifyToMerchant(t *model.Trans, nr *model.NotifyRecord, ret *model.Sca
 	signContent, sign := ret.SignMsg(), ""
 	if mer.IsNeedSign {
 		log.Debug("send notify sign content to return : " + signContent)
-		sign = security.SHA1WithKey(signContent, mer.SignKey)
+		sign = security.SHA256WithKey(signContent, mer.SignKey)
 	}
 	parms := signContent + "&sign=" + sign
 
