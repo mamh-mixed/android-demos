@@ -1,66 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
-    android:orientation="vertical">
-
-    <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        cardinfolink:left_text="@string/setting_return"
-        cardinfolink:title="@string/setting_message_detail" />
+    android:background="#ffffff">
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
         android:orientation="vertical">
 
-
-        <TextView
+        <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+            android:id="@+id/action_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="你的密码修改成功" />
+            cardinfolink:left_text="@string/setting_return"
+            cardinfolink:title="@string/setting_message_detail" />
 
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="50dp"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp" />
+
+            <TextView
+                android:id="@+id/pushtime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:padding="10dp" />
+
+
+        </LinearLayout>
+
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="0.1dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
-            android:text="2015-11-15 23:23:32" />
+            android:background="#88000000" />
 
 
-    </LinearLayout>
-
-
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="0.1dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="10dp"
-        android:background="#88000000" />
-
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginLeft="5dp"
-        android:layout_marginTop="20dp"
-        android:orientation="vertical">
-
-
-        <TextView
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="你的密码修改成功,请牢记你的密码" />
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
 
+
+            <TextView
+                android:id="@+id/message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp" />
+
+        </LinearLayout>
     </LinearLayout>
 
+    <include layout="@layout/showmoney_dialog" />
 
-</LinearLayout>
+</RelativeLayout>
