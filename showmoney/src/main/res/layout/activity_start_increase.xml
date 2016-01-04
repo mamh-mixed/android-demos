@@ -120,6 +120,6 @@
 
     <include layout="@layout/showmoney_dialog" />
 
-    <include layout="@layout/hint_dialog" />
+    <include layout="@layout/hint_increase_dialog" />
 
 </RelativeLayout>

@@ -58,8 +58,6 @@ public class StartIncreaseActivity extends BaseActivity implements View.OnClickL
             case R.id.iv_help:
                 //显示一个提示信息的对话框
                 mHintDialog.show();
-                mHintDialog.setTitle(getString(R.string.increase_message1));
-                mHintDialog.setOkText(getString(R.string.increase_i_know));
                 break;
             case R.id.btnperson:
                 //个体用户
