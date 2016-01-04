@@ -243,14 +243,20 @@ func TestScanPay(t *testing.T) {
 func TestSignMsg(t *testing.T) {
 
 	//4d045cf4039a420a86824c7132a24d6ff4c559f3
-	str := `{ "busicd": "VOID", "chcd": "ALP", "inscd": "97271888", "mchntid": "727363058120002", "orderNum": "362140544547", "origOrderNum": "362135543107", "terminalid": "00001270", "txndir": "Q" }`
+	str := `{"txndir":"Q","busicd":"PURC","inscd":"99911888","chcd":"WXP","mchntid":"991221054110001","txamt":"000000001400","goodsInfo":"6927229221501,福宁鸡蛋肉松面包,3,2.50;6901028001465,双喜（软国际）,1,6.50;","orderNum":"1056000011024917","scanCodeId":"130472120612304529","currency":"CNY","terminalid":"10560001","sign":"99706d3f26df36a33ecd51d928a7181d208f7608"}`
 
 	req := new(model.ScanPayRequest)
 	err := json.Unmarshal([]byte(str), req)
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(security.SHA1WithKey(req.SignMsg(), "8627a2ba43da3ada31b820b788680b99"))
+
+	err = doOneScanPay(req)
+	time.Sleep(5 * time.Second)
+	if err != nil {
+		t.Error(err)
+	}
+	// t.Log(security.SHA1WithKey(req.SignMsg(), "8627a2ba43da3ada31b820b788680b99"))
 }
 
 // 测试卡券核销
