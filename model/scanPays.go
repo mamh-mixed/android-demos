@@ -80,6 +80,7 @@ type QueryCondition struct {
 	WriteoffStatus     string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
 	Terminalid         string `bson:"terminalid,omitempty" json:"terminalid,omitempty"`         // 终端代码
 	BlendType          string
+	CouTransStatus     []string `json:"couTransStatus,omitempty"`
 }
 
 // QueryResult 查询结果值
