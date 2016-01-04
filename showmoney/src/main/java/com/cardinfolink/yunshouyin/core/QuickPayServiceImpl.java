@@ -8,6 +8,7 @@ import com.cardinfolink.yunshouyin.api.QuickPayConfigStorage;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
+import com.cardinfolink.yunshouyin.model.Message;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 
 import java.util.Map;
@@ -435,6 +436,57 @@ public class QuickPayServiceImpl implements QuickPayService {
             protected void onPostExecute(AsyncTaskResult<Void> result) {
                 if (result == null) {//这里为null表示成功
                     listener.onSuccess(null);
+                } else {
+                    listener.onFailure(result.getException());
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void pullinfoAsync(final String username, final String password, final String size, final String lasttime, final String maxtime, final QuickPayCallbackListener<ServerPacket> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
+
+            @Override
+            protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
+                try {
+                    ServerPacket serverPacket = quickPayApi.pullinfo(username,password,size,lasttime,maxtime);
+                    return new AsyncTaskResult<ServerPacket>(serverPacket);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<ServerPacket>(ex);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<ServerPacket> result) {
+                if (result.getException() == null) {//这里为null表示成功
+                    listener.onSuccess(result.getResult());
+                } else {
+                    listener.onFailure(result.getException());
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void updateMessageAsync(final String username, final String password, final Message[] messages, final String status, final QuickPayCallbackListener<ServerPacket> listener) {
+
+        new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
+
+            @Override
+            protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
+                try {
+                    ServerPacket serverPacket = quickPayApi.updateMessage(username, password, status, messages);
+                    return new AsyncTaskResult<ServerPacket>(serverPacket);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<ServerPacket>(ex);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<ServerPacket> result) {
+                if (result.getException() == null) {//这里为null表示成功
+                    listener.onSuccess(result.getResult());
                 } else {
                     listener.onFailure(result.getException());
                 }

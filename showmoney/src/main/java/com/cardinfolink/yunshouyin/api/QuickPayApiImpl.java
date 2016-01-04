@@ -6,6 +6,7 @@ import android.text.TextUtils;
 
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
+import com.cardinfolink.yunshouyin.model.Message;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 import com.cardinfolink.yunshouyin.util.EncoderUtil;
@@ -667,4 +668,55 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    @Override
+    public ServerPacket pullinfo(String username, String password, String size, String lasttime, String maxtime) {
+        String url = quickPayConfigStorage.getUrl() + "/pullinfo";
+
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("username", username);
+        password = EncoderUtil.Encrypt(password, "MD5");
+        params.put("password", password);
+        if (!TextUtils.isEmpty(lasttime)) {
+            params.put("lasttime", lasttime);
+        }
+        if (!TextUtils.isEmpty(maxtime)) {
+            params.put("maxtime", maxtime);
+        }
+        params.put("size", size);
+        params.put("sign", createSign(params, "SHA-1"));
+        try {
+            //// TODO: mamh  这里没有判断 serverPacket.getState()的状态？？？？
+            String response = postEngine.post(url, params);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
+            return serverPacket;
+        } catch (IOException e) {
+            throw new QuickPayException();
+        }
+    }
+
+    @Override
+    public ServerPacket updateMessage(String username, String password, String status, Message[] messages) {
+        String url = quickPayConfigStorage.getUrl() + "/updateMessage";
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("username", username);
+        password = EncoderUtil.Encrypt(password, "MD5");
+        params.put("password", password);
+        StringBuilder sb = new StringBuilder("[");
+        for (Message message : messages) {
+            message.setStatus(status);
+            sb.append("{").append("\"msgId\":").append("\"").append(message.getMsgId()).append("\"").append(",");
+            sb.append("\"status\":").append(message.getStatus()).append("}").append(",");
+        }
+        sb.append("]");
+        String messageStr = sb.toString().replace(",]", "]");
+        params.put("message", messageStr);
+        params.put("sign", createSign(params, "SHA-1"));
+        try {
+            String response = postEngine.post(url, params);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
+            return serverPacket;
+        } catch (IOException e) {
+            throw new QuickPayException();
+        }
+    }
 }
