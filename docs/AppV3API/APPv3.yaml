@@ -406,12 +406,12 @@ paths:
           name: index
           description: 分页起始位置
           required: true
-          type: number
+          type: string
         - in: formData
           name: size
           description: 每页条数，默认15条
           required: false
-          type: number
+          type: string
         - in: formData
           name: status
           description: '现在是必须字段, 客户端硬编码all。3.0接口建议去除'
@@ -427,8 +427,9 @@ paths:
   /orders:
     post:
       summary: 查找订单
-      description: |
-        查找订单，返回收款账单列表，本接口提供按照订单号搜索，以及状态位搜索，recType，payType，txnStatus。本接口包含了(/getOrder 取单个订单的功能)
+      description: >
+        查找订单，返回收款账单列表，本接口提供按照订单号搜索，以及状态位搜索，recType，payType，txnStatus。本接口包含了(/getOrde
+         取单个订单的功能)
       parameters:
         - in: formData
           name: username
@@ -454,12 +455,12 @@ paths:
           name: index
           description: 分页起始位置
           required: true
-          type: number
+          type: string
         - in: formData
           name: size
           description: 每页条数，默认15条
           required: false
-          type: number
+          type: string
         - in: formData
           name: orderNum
           description: 订单号，用于订单精准搜索
@@ -467,17 +468,17 @@ paths:
           type: string
         - in: formData
           name: recType
-          description: 收款方式：移动版 桌面版 收款码 开放接口
+          description: '收款方式：移动版(1) 桌面版(2) 收款码(4) 开放接口(8)。移动版｜桌面版：1 | 2 = 3移动版 | 收款码: 1 | 4 = 5'
           required: false
           type: string
         - in: formData
           name: payType
-          description: 支付方式：支付宝 微信。支付宝 1，微信 2，全部：1 | 2 = 3
+          description: '支付方式：支付宝 微信。支付宝 1，微信 2，全部：1 | 2 = 3'
           required: false
           type: string
         - in: formData
           name: txnStatus
-          description: 交易状态：交易成功 部分退款 全额退款。交易成功 1，部分退款 2，全额退款 4。部分退款 ｜ 全额退款：2 | 4 = 6，全部：1 | 2 | 4 = 7
+          description: '交易状态：交易成功 部分退款 全额退款。交易成功 1，部分退款 2，全额退款 4。部分退款 ｜ 全额退款：2 | 4 = 6，全部：1 | 2 | 4 = 7'
           required: false
           type: string
       tags:
@@ -527,12 +528,12 @@ paths:
           name: index
           description: 分页起始位置
           required: true
-          type: number
+          type: string
         - in: formData
           name: size
           description: 每页条数，默认15条
           required: false
-          type: number
+          type: string
       tags:
         - Bill
       responses:
@@ -568,7 +569,7 @@ paths:
           type: string
         - in: formData
           name: reportType
-          description: 报表类型。1:收款账单；2:卡券账单
+          description: '报表类型。1:收款账单；2:卡券账单'
           required: true
           type: string
         - in: formData
@@ -613,7 +614,7 @@ paths:
           name: size
           description: 数量
           required: true
-          type: number
+          type: string
         - in: formData
           name: lastTime
           description: 返回的消息结果在这个时间之后，与maxtime不同时出现。建议：现在日期格式不统一，建议统一成yyyyMMddHHmmss
@@ -691,20 +692,20 @@ definitions:
         type: number
         example: 1
   MessagePullResponse:
-   type: object
-   required:
-     - state
-   properties:
-     state:
-       type: string
-     error:
-       type: string
-       description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
-     messages:
-       type: array
-       description: 卡券数组。每个卡券需包含：卡券类型：（减、兑、折）、卡券名称、卡券渠道等等
-       items:
-         $ref: '#/definitions/Message'
+    type: object
+    required:
+      - state
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      messages:
+        type: array
+        description: 卡券数组。每个卡券需包含：卡券类型：（减、兑、折）、卡券名称、卡券渠道等等
+        items:
+          $ref: '#/definitions/Message'
   Message:
     properties:
       msgId:
@@ -727,41 +728,41 @@ definitions:
         description: 更新时间
       status:
         type: string
-        description: "0: unread, undeleted；1: read, undeleted；2: unread, deleted；3: read, deleted。"
+        description: '0: unread, undeleted；1: read, undeleted；2: unread, deleted；3: read, deleted。'
   DaySummaryResponse:
-   type: object
-   required:
-     - state
-   properties:
-     state:
-       type: string
-     error:
-       type: string
-       description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
-     total:
-       type: number
-       description: 当日总收入或：核销关联的订单总金额
-     count:
-       type: number
-       description: 当日总笔数或：当日核销数
+    type: object
+    required:
+      - state
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      total:
+        type: number
+        description: 当日总收入或：核销关联的订单总金额
+      count:
+        type: number
+        description: 当日总笔数或：当日核销数
   CouponsResponse:
-   type: object
-   required:
-     - state
-   properties:
-     state:
-       type: string
-     error:
-       type: string
-       description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
-     count:
-       type: number
-       description: 如果传了month，返回当月卡券核销数
-     coupons:
-       type: array
-       items:
-         $ref: '#/definitions/Coupon'
-       description: '卡券数组。每个卡券需包含：卡券类型：（减、兑、折）、卡券名称、卡券渠道等等'
+    type: object
+    required:
+      - state
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      count:
+        type: number
+        description: 如果传了month，返回当月卡券核销数
+      coupons:
+        type: array
+        items:
+          $ref: '#/definitions/Coupon'
+        description: 卡券数组。每个卡券需包含：卡券类型：（减、兑、折）、卡券名称、卡券渠道等等
   Coupon:
     properties:
       type:
@@ -774,50 +775,50 @@ definitions:
         type: string
         description: 卡券渠道
   OrdersResponse:
-   type: object
-   required:
-     - state
-   properties:
-     state:
-       type: string
-     error:
-       type: string
-       description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
-     txn:
-       type: array
-       items:
-         $ref: '#/definitions/Trans'
-       description: '订单数组，成功返回 | 注意：现在返回的是缺少一些订单的元素的，如果有，也一并返回，见黄色字体的。建议：返回的金额格式：不要000012000这种类型，能否直接传送类似52.22即可。'
+    type: object
+    required:
+      - state
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      txn:
+        type: array
+        items:
+          $ref: '#/definitions/Trans'
+        description: '订单数组，成功返回 | 注意：现在返回的是缺少一些订单的元素的，如果有，也一并返回，见黄色字体的。建议：返回的金额格式：不要000012000这种类型，能否直接传送类似52.22即可。'
   BillsResponse:
-   type: object
-   required:
-     - state
-   properties:
-     state:
-       type: string
-     error:
-       type: string
-       description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
-     total:
-       type: number
-       description: 该月收入金额（刨去退款？）。如果传入month字段，则必须返回。
-     count:
-       type: number
-       format: int64
-       description: 该月支付笔数。如果传入month字段，则必须返回。
-     refdtotal:
-       type: number
-       format: float64
-       description: 该月退款金额。如果传入month字段，则必须返回。
-     refdcount:
-       type: number
-       format: int64
-       description: 该月退款笔数。如果传入month字段，则必须返回。
-     txn:
-       type: array
-       items:
-         $ref: '#/definitions/Trans'
-       description: '订单数组，成功返回 | 注意：现在返回的是缺少一些订单的元素的，如果有，也一并返回，见黄色字体的。建议：返回的金额格式：不要000012000这种类型，能否直接传送类似52.22即可。'
+    type: object
+    required:
+      - state
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      total:
+        type: number
+        description: 该月收入金额（刨去退款？）。如果传入month字段，则必须返回。
+      count:
+        type: number
+        format: int64
+        description: 该月支付笔数。如果传入month字段，则必须返回。
+      refdtotal:
+        type: number
+        format: float64
+        description: 该月退款金额。如果传入month字段，则必须返回。
+      refdcount:
+        type: number
+        format: int64
+        description: 该月退款笔数。如果传入month字段，则必须返回。
+      txn:
+        type: array
+        items:
+          $ref: '#/definitions/Trans'
+        description: '订单数组，成功返回 | 注意：现在返回的是缺少一些订单的元素的，如果有，也一并返回，见黄色字体的。建议：返回的金额格式：不要000012000这种类型，能否直接传送类似52.22即可。'
   Trans:
     type: object
     properties:
@@ -833,6 +834,28 @@ definitions:
       refundAmt:
         type: number
         example: 0
+      nickName:
+        type: string
+        description: 微信昵称，如果是使用微信扫描收款码支付需要有
+      avatarUrl:
+        type: string
+        description: 微信头像，如果是使用微信扫描收款码支付需要有
+      checkCode:
+        type: string
+        description: 校验码，微信扫描固定码支付有这个数据
+      couponName:
+        type: string
+        description: 卡券名称
+      couponChannel:
+        type: string
+        description: 卡券渠道
+      couponOrderNo:
+        type: string
+        description: 卡券核销订单号
+      couponDiscountAmt:
+        type: number
+        format: float64
+        description: 卡券优惠金额
       mRequest:
         type: object
         $ref: '#/definitions/mRequest'
@@ -853,7 +876,7 @@ definitions:
         example: 453481716@qq.com
       orderNum:
         type: string
-        example: 15122919074202667
+        example: 15122919074202668
       mchntid:
         type: string
         example: 999118880000017
