@@ -115,10 +115,12 @@
             android:label="@string/app_name" />
         <activity
             android:name=".activity.MessageActivity"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:launchMode="singleTask" />
         <activity
             android:name=".activity.UnReadMessageActivity"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:launchMode="singleTask" />
         <activity
             android:name=".activity.MessageDetailActivity"
             android:label="@string/app_name" />
@@ -152,8 +154,8 @@
             android:label="@string/app_name" />
         <activity
             android:name=".activity.CouponResultActivity"
-            android:launchMode="singleTop"
-            android:label="@string/app_name" />
+            android:label="@string/app_name"
+            android:launchMode="singleTop" />
 
         <!-- UMENG appkey start -->
         <meta-data
