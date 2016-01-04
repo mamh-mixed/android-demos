@@ -73,6 +73,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initUmeng() {
+        UmengUpdateAgent.setDefault();
         UmengUpdateAgent.setUpdateOnlyWifi(false);
         UmengUpdateAgent.setUpdateCheckConfig(false);
         UmengUpdateAgent.update(this);
