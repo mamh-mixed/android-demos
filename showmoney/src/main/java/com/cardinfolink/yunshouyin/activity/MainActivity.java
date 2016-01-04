@@ -44,20 +44,14 @@ public class MainActivity extends BaseActivity {
     private long exitTime = 0;
 
     private Handler handler = new Handler();
-    private PushAgent mPushAgent;
     //此处是注册的回调处理
     //参考集成文档的1.7.10
     //http://dev.umeng.com/push/android/integration#1_7_10
     private IUmengRegisterCallback mRegisterCallback = new UmengPushAgengRegisterCallback();
 
     private ViewPager mTabPager;//声明对象
-    private ImageView mTabImg;// 动画图片
     private ImageView mTab1, mTab2, mTab3, mTab4;
-    private int zero = 0;// 动画图片偏移量
     private int currIndex = 0;// 当前页卡编号
-    private int one;// 单个水平动画位移
-    private int two;
-    private int three;
 
     // 每个页面的view数据,存放4个界面
     private ArrayList<View> mViews;
@@ -71,7 +65,6 @@ public class MainActivity extends BaseActivity {
         initHandler();
         initLayout();
         initUmeng();
-
     }
 
 
@@ -84,7 +77,7 @@ public class MainActivity extends BaseActivity {
         UmengUpdateAgent.setUpdateCheckConfig(false);
         UmengUpdateAgent.update(this);
 
-        mPushAgent = PushAgent.getInstance(this);
+        PushAgent mPushAgent = PushAgent.getInstance(this);
         //mPushAgent.setPushCheck(true);    //默认不检查集成配置文件
         //mPushAgent.setLocalNotificationIntervalLimit(false);  //默认本地通知间隔最少是10分钟
 
@@ -98,12 +91,6 @@ public class MainActivity extends BaseActivity {
         if (!mPushAgent.isEnabled()) {
             mPushAgent.enable(mRegisterCallback);
         }
-        String info = String.format("enabled:%s \n isRegistered:%s \n DeviceToken:%s " +
-                        "SdkVersion:%s  \n AppVersionCode:%s \n AppVersionName:%s",
-                mPushAgent.isEnabled(), mPushAgent.isRegistered(),
-                mPushAgent.getRegistrationId(), MsgConstant.SDK_VERSION,
-                UmengMessageDeviceConfig.getAppVersionCode(this), UmengMessageDeviceConfig.getAppVersionName(this));
-        Log.e(TAG, "pushAgeng info :" + info);
     }
 
     public void initHandler() {
@@ -117,7 +104,6 @@ public class MainActivity extends BaseActivity {
                 //// TODO: mamh  这里要进行切换界面的操作
                 switch (msg.what) {
                     case Msg.MSG_FROM_SERVER_COUPON_SUCCESS:
-                        Log.e("scanCode", "=================");
                         mTabPager.setCurrentItem(0);
                         //mScanCodeView.showKeyBoard();
                         break;
@@ -155,18 +141,11 @@ public class MainActivity extends BaseActivity {
         mTab3 = (ImageView) findViewById(R.id.img_bill);
         mTab4 = (ImageView) findViewById(R.id.img_my);
 
-        mTabImg = (ImageView) findViewById(R.id.img_tab_now);//动画图片
-
         mTab1.setOnClickListener(new MainPagerItemOnClickListener(0));
         mTab2.setOnClickListener(new MainPagerItemOnClickListener(1));
         mTab3.setOnClickListener(new MainPagerItemOnClickListener(2));
         mTab4.setOnClickListener(new MainPagerItemOnClickListener(3));
 
-        Display currDisplay = getWindowManager().getDefaultDisplay();// 获取屏幕当前分辨率
-        int displayWidth = currDisplay.getWidth();
-        one = displayWidth / 4; // 设置水平动画平移大小
-        two = one * 2;
-        three = one * 3;
 
         // 每个页面的view数据
         mViews = new ArrayList<View>();
@@ -178,7 +157,7 @@ public class MainActivity extends BaseActivity {
         // 填充ViewPager的数据适配器
         PagerAdapter mPagerAdapter = new MainPagerAdapter();
         mTabPager.setAdapter(mPagerAdapter);
-        mTab1.setImageDrawable(getResources().getDrawable(R.drawable.gathering_selected));
+        mTab1.setImageResource(R.drawable.gathering_selected);
     }
 
     @Override
@@ -248,78 +227,60 @@ public class MainActivity extends BaseActivity {
      * 页卡切换监听
      */
     private class MainPagerOnPageChangeListener implements ViewPager.OnPageChangeListener {
-        @Override
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-        }
-
-        public void onPageSelected(int arg0) {
-            Animation animation = null;
-            switch (arg0) {
+        public void onPageSelected(int position) {
+            switch (position) {
                 case 0:
                     mTab1.setImageResource(R.drawable.gathering_selected);
 
                     if (currIndex == 1) {
-                        animation = new TranslateAnimation(one, 0, 0, 0);
                         mTab2.setImageResource(R.drawable.ticket_not_selected);
                     } else if (currIndex == 2) {
-                        animation = new TranslateAnimation(two, 0, 0, 0);
                         mTab3.setImageResource(R.drawable.bill_not_selected);
                     } else if (currIndex == 3) {
-                        animation = new TranslateAnimation(three, 0, 0, 0);
                         mTab4.setImageResource(R.drawable.my_not_selected);
                     }
                     break;
                 case 1:
                     mTab2.setImageResource(R.drawable.ticket_selected);
                     if (currIndex == 0) {
-                        animation = new TranslateAnimation(zero, one, 0, 0);
                         mTab1.setImageResource(R.drawable.gathering_not_selected);
                     } else if (currIndex == 2) {
-                        animation = new TranslateAnimation(two, one, 0, 0);
                         mTab3.setImageResource(R.drawable.bill_not_selected);
                     } else if (currIndex == 3) {
-                        animation = new TranslateAnimation(three, one, 0, 0);
                         mTab4.setImageResource(R.drawable.my_not_selected);
                     }
                     break;
                 case 2:
                     mTab3.setImageResource(R.drawable.bill_selected);
-                    //刷新一下账单列表
-                    mTransManageView.refresh();
                     if (currIndex == 0) {
-                        animation = new TranslateAnimation(zero, two, 0, 0);
                         mTab1.setImageResource(R.drawable.gathering_not_selected);
                     } else if (currIndex == 1) {
-                        animation = new TranslateAnimation(one, two, 0, 0);
                         mTab2.setImageResource(R.drawable.ticket_not_selected);
                     } else if (currIndex == 3) {
-                        animation = new TranslateAnimation(three, two, 0, 0);
                         mTab4.setImageResource(R.drawable.my_not_selected);
                     }
                     break;
                 case 3:
                     mTab4.setImageResource(R.drawable.my_selected);
                     if (currIndex == 0) {
-                        animation = new TranslateAnimation(zero, three, 0, 0);
                         mTab1.setImageResource(R.drawable.gathering_not_selected);
                     } else if (currIndex == 1) {
-                        animation = new TranslateAnimation(one, three, 0, 0);
                         mTab2.setImageResource(R.drawable.ticket_not_selected);
                     } else if (currIndex == 2) {
-                        animation = new TranslateAnimation(two, three, 0, 0);
                         mTab3.setImageResource(R.drawable.bill_not_selected);
                     }
                     break;
             }
-            currIndex = arg0;
-            animation.setFillAfter(true);// True:图片停在动画结束位置
-            animation.setDuration(150);// 动画持续时间
-            mTabImg.startAnimation(animation);// 开始动画
+            currIndex = position;
         }
 
         @Override
         public void onPageScrollStateChanged(int state) {
+
+        }
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
         }
 
@@ -334,7 +295,6 @@ public class MainActivity extends BaseActivity {
 
                 @Override
                 public void run() {
-                    Log.e(TAG, " =========onRegistered(String s) =============run()");
                 }
             });
         }
