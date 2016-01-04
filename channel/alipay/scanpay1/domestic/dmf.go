@@ -288,7 +288,7 @@ func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlend
 	for i := 0; s.Scan(); i++ {
 		if i > 0 {
 			ts := strings.Split(s.Text(), ",")
-			if len(ts) != 14 {
+			if len(ts) != 15 {
 				log.Errorf("length invalid , skip, data=%s", ts)
 				continue
 			}
@@ -309,20 +309,34 @@ func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlend
 		elementModel.OrderTime = d[2] // 时间
 		elementModel.OrderID = d[4]   // 支付宝交易号
 		elementModel.Account = d[5]
-		// elementModel.OrderType = element[14*(i+1)+12]
-		// if elementModel.OrderType == "在线支付" {
-		// 	elementModel.OrderAct = element[14*(i+1)+8] //收入
-		// } else if elementModel.OrderType == "交易退款" {
-		// 	elementModel.OrderAct = element[14*(i+1)+9] //支出
-		// }
-
-		// 归类
-		if elementArray, ok := recsMap[elementModel.OrderID]; ok {
-			elementArray = append(elementArray, elementModel)
-			recsMap[elementModel.OrderID] = elementArray
-		} else {
-			recsMap[elementModel.OrderID] = []model.BlendElement{elementModel}
+		elementModel.OrderAct = d[8] // 收入
+		if elementModel.OrderAct == "" {
+			elementModel.OrderAct = d[9] // 支出
 		}
+		elementModel.OrderType = d[12]
+
+		if strings.Contains(elementModel.LocalID, "-r-") {
+			elementModel.LocalID = strings.Split(elementModel.LocalID, "-r-")[0]
+			// log.Debugf("退费交易: %+v", elementModel)
+		}
+
+		var key string
+		switch elementModel.OrderType {
+		case "收费", "退费":
+			// 取的是外部订单号
+			key = elementModel.LocalID
+		default:
+			key = elementModel.OrderID
+		}
+
+		if elementArray, ok := recsMap[key]; ok {
+			elementArray = append(elementArray, elementModel)
+			recsMap[key] = elementArray
+		} else {
+			recsMap[key] = []model.BlendElement{elementModel}
+		}
+
 	}
+	log.Debugf("debug data: %+v", recsMap["2015122221001004770044413116"])
 	cbd[chanMerId] = recsMap
 }

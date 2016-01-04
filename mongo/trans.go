@@ -160,7 +160,7 @@ func (col *transCollection) Count(merId, orderNum string) (count int, err error)
 	return
 }
 
-// FindPay 通过订单号、商户号查找一条交易记录
+// FindOne 通过订单号、商户号查找一条交易记录
 func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err error) {
 
 	q := bson.M{
@@ -170,6 +170,20 @@ func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err
 	}
 	t = new(model.Trans)
 	err = database.C(col.name).Find(q).One(t)
+
+	return
+}
+
+// FindOneInMaster 通过订单号、商户号在master中查找一条交易记录
+func (col *transCollection) FindOneInMaster(merId, orderNum string) (t *model.Trans, err error) {
+
+	q := bson.M{
+		"orderNum": orderNum,
+		"merId":    merId,
+		// "transType": transType,
+	}
+	t = new(model.Trans)
+	err = masterDB.C(col.name).Find(q).One(t)
 
 	return
 }
@@ -337,14 +351,14 @@ func (col *transCollection) FindTransRefundAmt(merId, origOrderNum string) (int6
 	return s.Amt, err
 }
 
-// FindByOrderNum 根据渠道订单号查找
-func (col *transCollection) FindByOrderNum(sysOrderNum string) (t *model.Trans, err error) {
+// FindBySysOrderNum 根据渠道订单号在master中查找
+func (col *transCollection) FindBySysOrderNum(sysOrderNum string) (t *model.Trans, err error) {
 	// 订单是uuid 全局唯一
 	t = new(model.Trans)
 	q := bson.M{
 		"sysOrderNum": sysOrderNum,
 	}
-	err = database.C(col.name).Find(q).One(t)
+	err = masterDB.C(col.name).Find(q).One(t)
 
 	return
 }
