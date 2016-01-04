@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
 /**
@@ -42,12 +42,12 @@ public class CouponResultActivity extends Activity {
         boolean isSuccess = bundle.getBoolean("check_coupon_result_flag", false);//核销成功失败的标记
         if (isSuccess) {
             //换物品
-            if ("2".equals(SessonData.loginUser.getResultData().voucherType)) {
-                mCouponContent.setText(SessonData.loginUser.getResultData().cardId);
+            if ("2".equals(Coupon.getInstance().getVoucherType())) {
+                mCouponContent.setText(Coupon.getInstance().getCardId());
                 mPayByScanCode.setVisibility(View.GONE);
                 mPayByCash.setText(getString(R.string.coupon_confirm_ok));
             } else {//打折
-                mCouponContent.setText(SessonData.loginUser.getResultData().cardId);
+                mCouponContent.setText(Coupon.getInstance().getCardId());
                 mPayByScanCode.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -66,7 +66,7 @@ public class CouponResultActivity extends Activity {
         mPayByCash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SessonData.loginUser.setResultData(null);
+                Coupon.getInstance().clear();//清空卡券信息
                 finish();
 
             }
@@ -75,7 +75,7 @@ public class CouponResultActivity extends Activity {
         mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SessonData.loginUser.setResultData(null);
+                Coupon.getInstance().clear();//清空卡券信息
                 finish();
             }
         });
