@@ -5,6 +5,10 @@ package com.cardinfolink.yunshouyin.data;
  * 保存卡券优惠相关的信息， 这个放在SessonData里面，作为一个static的成员变量
  */
 public class Coupon {
+
+    private static Coupon coupon;
+
+
     private String respcd;//返回交易结果
     private String busicd;//交易类型
     private String chcd;//交易渠道
@@ -22,6 +26,42 @@ public class Coupon {
     private String cardInfo;//卡券详情
     private String cardbin;//银行卡的bin 或 用户标识
     private String txamt;//交易原始金额
+
+    public void clear() {
+        respcd = null;
+        busicd = null;
+        chcd = null;
+        payType = null;
+        availCount = null;
+        expDate = null;
+        voucherType = null;
+        saleMinAmount = null;
+        saleDiscount = null;
+        actualPayAmount = null;
+        maxDiscountAmt = null;
+        mchntid = null;
+        scanCodeId = null;
+        cardId = null;
+        cardInfo = null;
+        cardbin = null;
+        txamt = null;
+    }
+
+    private Coupon() {
+    }
+
+
+
+    //多线程安全单例模式(使用双重同步锁)
+    public static Coupon getInstance() {
+        if (coupon == null) {
+            synchronized (Coupon.class) {
+                if (coupon == null)
+                    coupon = new Coupon();
+            }
+        }
+        return coupon;
+    }
 
     public void setRespcd(String respcd) {
         this.respcd = respcd;
