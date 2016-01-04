@@ -5,6 +5,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
+	"math/rand"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/email"
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -13,12 +20,6 @@ import (
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"io"
-	"math/rand"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type user struct{}
@@ -1264,6 +1265,32 @@ func (u *user) findPushMessage(req *reqParams) (result model.AppResult) {
 	result.Count = len(messages)
 	result.Message = messages
 	return result
+}
+
+// 查询订单
+func (u *user) ordersHandler(req *reqParams) (result model.AppResult) {
+	if req.OrderNum != "" {
+		req.BusinessType = "getOrder"
+		result = u.getUserTrans(req)
+	} else {
+		if req.Size == "" {
+			req.Size = 15
+		}
+		result = u.findOrderHandle(req)
+	}
+
+	return result
+}
+
+// 卡券列表
+func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
+
+	return result
+}
+
+// 消息接口
+func (u *user) messagePullHandler(req *reqParams) (result model.AppResult) {
+
 }
 
 func transToTxn(t *model.Trans) *model.AppTxn {
