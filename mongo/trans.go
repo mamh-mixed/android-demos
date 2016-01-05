@@ -468,7 +468,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	handleTransStatus(q, match)
 
 	if len(q.CouTransStatus) > 0 {
-		match["transStatus"] = bson.M{"$nin": q.CouTransStatus}
+		match["transStatus"] = bson.M{"$in": q.CouTransStatus}
 	}
 
 	p := []bson.M{
