@@ -47,20 +47,20 @@
     },
     "WeixinScanPay": {
         "URL": "https://api.mch.weixin.qq.com", // 微信刷卡支付接口地址
-        "NotifyURL": "http://test.quick.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "NotifyURL": "http://10.9.210.12", // 异步消息通知地址，路径是固定的，只需要域名和端口
         "DNSCacheRefreshTime": "5m" // 微信域名解析慢，程序内部做了缓存，这里配置缓存刷新时间
     },
     "AlipayScanPay": {
         "AlipayPubKey": "config/pem/alipay/pubkey.pem", // 支付宝 RSA 公钥
         "OpenAPIURL": "https://openapi.alipay.com/gateway.do", // 支付宝 Open API 地址
         "URL": "https://mapi.alipay.com/gateway.do?_input_charset=utf-8", // 支付宝扫码支付接口地址
-        "NotifyUrl": "http://test.quick.ipay.so", // 支付宝异步消息通知地址，路径是固定的，只需要域名和端口
+        "NotifyUrl": "http://10.9.210.12", // 支付宝异步消息通知地址，路径是固定的，只需要域名和端口
         "AgentId": "12010128a1" // 标识讯联交易
     },
     "MobileApp":{
         "WXPMerId":"11015876",
         "ALPMerId":"2088811767473826",
-        "WebAppUrl":"http://qrcode.cardinfolink.net/agent"
+        "WebAppUrl":"http://10.9.210.12/agent"
     },
     "UnionLive": {
         "Encrypt": false, // 密码是否需要加密，如果需要加密，用 EncryptXXXX 这个字段，避免直接暴露密码，否则用 XXXX 字段
