@@ -153,6 +153,17 @@ func improveAccountHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonMarshal(result))
 }
 
+// settleInfoHandler 获取银行卡清算信息的处理
+func settleInfoHandler(w http.ResponseWriter, r *http.Request) {
+	result := User.getSettInfo(&reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
 // certificateAccountHandler 帐户验证处理，用于提升限额
 func certificateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	result := User.improveCertInfo(&reqParams{

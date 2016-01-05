@@ -333,6 +333,39 @@ paths:
           description: 成功响应
           schema:
             $ref: '#/definitions/Response'
+  /account/info/settle:
+    post:
+      summary: 获取帐户清算银行卡信息
+      description: |
+        提供给APP端获取清算银行卡信息的接口。oldPath＝ /app/getinfo
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/SettleInfoResponse'
   /token/qiniu:
     post:
       summary: 获取七牛上传token
@@ -652,6 +685,64 @@ paths:
           schema:
             $ref: '#/definitions/Response'
 definitions:
+  SettleInfoResponse:
+    type: object
+    required:
+      - state
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      info:
+        type: object
+        $ref: '#/definitions/SettleInfo'
+        description: 清算信息。
+  SettleInfo:
+    type: object
+    required:
+      - bank_open
+      - payee
+      - payee_card
+      - phone_num
+      - province
+      - city
+      - branch_bank
+      - bankNo
+    properties:
+      bank_open:
+        type: string
+        example: wonsikin
+        description: 开户银行
+      payee:
+        type: string
+        example: wonsikin
+        description: 收款人
+      payee_card:
+        type: string
+        example: wonsikin
+        description: 收款人账号
+      phone_num:
+        type: string
+        example: wonsikin
+        description: 电话号码
+      province:
+        type: string
+        example: wonsikin
+        description: 省份
+      city:
+        type: string
+        example: wonsikin
+        description: 城市
+      branch_bank:
+        type: string
+        example: wonsikin
+        description: 开户银行支行
+      bankNo:
+        type: string
+        example: wonsikin
+        description: 开户银行代码
   MessageUpdateRequest:
     type: object
     required:
