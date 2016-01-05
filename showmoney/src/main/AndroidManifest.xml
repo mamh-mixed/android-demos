@@ -156,6 +156,9 @@
             android:name=".activity.CouponResultActivity"
             android:label="@string/app_name"
             android:launchMode="singleTop" />
+        <activity
+            android:name=".activity.GuideActivity"
+            android:label="@string/app_name" />
 
         <!-- UMENG appkey start -->
         <meta-data
