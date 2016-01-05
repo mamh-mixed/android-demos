@@ -149,6 +149,7 @@
       </div>
       <div class="row">
         <paper-input required$="{{requiredDetector.backUrl}}" class="col" id="backUrl" name="backUrl" label="异步通知地址(backUrl)" value="{{scanCode.backUrl::input}}"></paper-input>
+        <paper-input required$="{{requiredDetector.signType}}" class="col" id="signType" name="signType" label="签名方法(signType)" value="{{scanCode.signType::input}}"></paper-input>
       </div>
       <div class="divider"></div>
 
@@ -342,6 +343,7 @@
         orderNum: '' + now.valueOf(),
         origOrderNum: '',
         scanCodeId: '',
+        signType: 'MD5',
         sign: '',
         backUrl: 'http://dev.quick.ipay.so/scanpay/test/recNotify'
       };

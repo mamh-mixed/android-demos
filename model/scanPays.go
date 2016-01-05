@@ -174,7 +174,7 @@ type ScanPayRequest struct {
 	OrigOrderNum string `json:"origOrderNum,omitempty" url:"origOrderNum,omitempty" bson:"origOrderNum,omitempty"` // 原订单号
 	ScanCodeId   string `json:"scanCodeId,omitempty" url:"scanCodeId,omitempty" bson:"scanCodeId,omitempty"`       // 扫码号
 	Sign         string `json:"sign,omitempty" url:"-" bson:"sign,omitempty" `                                     // 签名
-	SignType     string `json:"signType,omitempty" url:"-" bson:"signType,omitempty" `                             // 签名类型
+	SignType     string `json:"signType,omitempty" url:"signType,omitempty" bson:"signType,omitempty" `            // 签名类型
 	NotifyUrl    string `json:"backUrl,omitempty" url:"backUrl,omitempty" bson:"backUrl,omitempty"`                // 异步通知地址
 	OpenId       string `json:"openid,omitempty" url:"openid,omitempty" bson:"openid,omitempty"`                   // openid
 	CheckName    string `json:"checkName,omitempty" url:"checkName,omitempty" bson:"checkName,omitempty"`          // 校验用户姓名选项

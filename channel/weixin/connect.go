@@ -202,6 +202,7 @@ func SettleExecute(req BaseReq, resp BaseResp) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	log.Debugf("<<< return from weixin: %s", string(ret))
 
 	return string(ret), err
 }
