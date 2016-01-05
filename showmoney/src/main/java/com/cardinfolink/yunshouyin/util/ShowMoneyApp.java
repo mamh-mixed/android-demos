@@ -82,7 +82,7 @@ public class ShowMoneyApp extends Application {
                 break;
             case "test":
                 SystemConfig.IS_PRODUCE = false;
-                SystemConfig.Server = "http://192.168.1.154:6800/app";
+                SystemConfig.Server = "http://10.9.210.12/app";
                 SystemConfig.WEB_BILL_URL = "http://qrcode.cardinfolink.net/agent/trade.html";
                 break;
             case "dev":
