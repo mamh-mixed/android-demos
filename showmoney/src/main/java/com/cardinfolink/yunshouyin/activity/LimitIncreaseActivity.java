@@ -384,7 +384,9 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
         }
 
         User user = SessonData.loginUser;
-        quickPayService.improveCertInfoAsync(user, map, new QuickPayCallbackListener<Void>() {
+        String shopName = mShopName.getText();//商户名称
+        String shopAddress = mShopAddress.getText();//商户地址
+        quickPayService.improveCertInfoAsync(user, shopName, shopAddress, map, new QuickPayCallbackListener<Void>() {
             @Override
             public void onSuccess(Void data) {
                 //improve成功，接下来 activateUser激活
