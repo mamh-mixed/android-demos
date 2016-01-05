@@ -218,16 +218,16 @@ type ScanPayRequest struct {
 	GoodsTag   string `json:"-" url:"-" bson:"-"` // 商品标识
 
 	// 辅助字段
-	Subject          string `json:"-" url:"-" bson:"-"` // 商品名称
-	SysOrderNum      string `json:"-" url:"-" bson:"-"` // 渠道交易号
-	ActTxamt         string `json:"-" url:"-" bson:"-"` // 实际交易金额 不同渠道单位不同
-	IntTxamt         int64  `json:"-" url:"-" bson:"-"` // 以分为单位的交易金额
-	ChanMerId        string `json:"-" url:"-" bson:"-"` // 渠道商户Id
-	SignKey          string `json:"-" url:"-" bson:"-"` // 可能表示md5key等
-	ExtendParams     string `json:"-" url:"-" bson:"-"` // 业务扩展参数
-	WeixinClientCert []byte `json:"-" url:"-" bson:"-"` // 商户双向认证证书，如果是大商户模式，用大商户的证书
-	WeixinClientKey  []byte `json:"-" url:"-" bson:"-"` // 商户双向认证密钥，如果是大商户模式，用大商户的密钥
-	ReqId            string `json:"-" url:"-" bson:"-"`
+	Subject      string `json:"-" url:"-" bson:"-"` // 商品名称
+	SysOrderNum  string `json:"-" url:"-" bson:"-"` // 渠道交易号
+	ActTxamt     string `json:"-" url:"-" bson:"-"` // 实际交易金额 不同渠道单位不同
+	IntTxamt     int64  `json:"-" url:"-" bson:"-"` // 以分为单位的交易金额
+	ChanMerId    string `json:"-" url:"-" bson:"-"` // 渠道商户Id
+	SignKey      string `json:"-" url:"-" bson:"-"` // 可能表示md5key等
+	ExtendParams string `json:"-" url:"-" bson:"-"` // 业务扩展参数
+	PemCert      []byte `json:"-" url:"-" bson:"-"` // 商户双向认证证书，如果是大商户模式，用大商户的证书
+	PemKey       []byte `json:"-" url:"-" bson:"-"` // 商户双向认证密钥，如果是大商户模式，用大商户的密钥
+	ReqId        string `json:"-" url:"-" bson:"-"`
 
 	// 访问方式
 	IsGBK bool     `json:"-" url:"-" bson:"-"`

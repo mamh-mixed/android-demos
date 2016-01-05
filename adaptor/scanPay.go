@@ -32,8 +32,8 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.AppID = c.WxpAppId
-		req.WeixinClientCert = []byte(c.HttpCert)
-		req.WeixinClientKey = []byte(c.HttpKey)
+		req.PemCert = []byte(c.HttpCert)
+		req.PemKey = []byte(c.HttpKey)
 		// req.SubMchId = c.SubMchId // remark:暂不支持受理商模式
 	}
 
@@ -178,8 +178,8 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 		req.SubAppID = subAppId
 		req.SubMchId = subMchId
-		req.WeixinClientCert = []byte(chanMer.HttpCert)
-		req.WeixinClientKey = []byte(chanMer.HttpKey)
+		req.PemCert = []byte(chanMer.HttpCert)
+		req.PemKey = []byte(chanMer.HttpKey)
 	default:
 		req.ActTxamt = req.Txamt
 	}
@@ -237,8 +237,8 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 		req.AppID = chanMer.WxpAppId
 		req.SubAppID = subAppId
 		req.SubMchId = subMchId
-		req.WeixinClientCert = []byte(chanMer.HttpCert)
-		req.WeixinClientKey = []byte(chanMer.HttpKey)
+		req.PemCert = []byte(chanMer.HttpCert)
+		req.PemKey = []byte(chanMer.HttpKey)
 	default:
 	}
 
@@ -291,8 +291,8 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 		req.ActTxamt = req.TotalTxamt
 		req.SubAppID = subAppId
 		req.SubMchId = subMchId
-		req.WeixinClientCert = []byte(chanMer.HttpCert)
-		req.WeixinClientKey = []byte(chanMer.HttpKey)
+		req.PemCert = []byte(chanMer.HttpCert)
+		req.PemKey = []byte(chanMer.HttpKey)
 		ret, err = sp.ProcessRefund(req)
 	case channel.ChanCodeAlipay:
 		ret, err = sp.ProcessCancel(req)
@@ -398,7 +398,7 @@ func ProcessClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest
 func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var err error
-	errResp := prepareWxpReqData(t, c, req)
+	errResp := prepareWxpReqData(req, c)
 	if errResp != nil {
 		return errResp
 	}
@@ -418,7 +418,7 @@ func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayR
 func ProcessWxpCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var err error
-	errResp := prepareWxpReqData(orig, c, req)
+	errResp := prepareWxpReqData(req, c)
 	if errResp != nil {
 		return errResp
 	}
@@ -438,7 +438,7 @@ func ProcessWxpCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReq
 func ProcessWxpClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var err error
-	errResp := prepareWxpReqData(orig, c, req)
+	errResp := prepareWxpReqData(req, c)
 	if errResp != nil {
 		return errResp
 	}
@@ -454,7 +454,7 @@ func ProcessWxpClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequ
 	return ret
 }
 
-func prepareWxpReqData(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func prepareWxpReqData(req *model.ScanPayRequest, c *model.ChanMer) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
 	chanMer, subMchId, subAppId, err := chooseChanMer(c)
@@ -469,8 +469,8 @@ func prepareWxpReqData(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	req.AppID = chanMer.WxpAppId
 	req.SubAppID = subAppId
 	req.SubMchId = subMchId
-	req.WeixinClientCert = []byte(chanMer.HttpCert)
-	req.WeixinClientKey = []byte(chanMer.HttpKey)
+	req.PemCert = []byte(chanMer.HttpCert)
+	req.PemKey = []byte(chanMer.HttpKey)
 
 	return nil
 }
