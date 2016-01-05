@@ -19,9 +19,6 @@ public interface QuickPayService {
     //user logged in
     void improveInfoAsync(User user, QuickPayCallbackListener<User> listener);
 
-    void updateInfoAsync(User user, QuickPayCallbackListener<User> listener);
-
-    void increaseLimitAsync(User user, QuickPayCallbackListener<Void> listener);
 
     void getBankInfoAsync(User user, QuickPayCallbackListener<BankInfo> quickPayCallbackListener);
 
@@ -45,7 +42,7 @@ public interface QuickPayService {
     //获取七牛上传图片时用的token
     void getUploadTokenAsync(User user, QuickPayCallbackListener<String> listener);
 
-    void improveCertInfoAsync(User user, Map<String, String> imageMap, QuickPayCallbackListener<Void> listener);
+    void improveCertInfoAsync(User user, String certName, String certAddr, Map<String, String> imageMap, QuickPayCallbackListener<Void> listener);
 
     void pullinfoAsync(String username, String password, String size, String lasttime, String maxtime, QuickPayCallbackListener<ServerPacket> listener);
 
