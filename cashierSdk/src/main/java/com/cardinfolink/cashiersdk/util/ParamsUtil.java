@@ -2,6 +2,7 @@ package com.cardinfolink.cashiersdk.util;
 
 import com.cardinfolink.cashiersdk.model.InitData;
 import com.cardinfolink.cashiersdk.model.OrderData;
+import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,11 +79,11 @@ public class ParamsUtil {
             json.put("orderNum", orderData.orderNum);
             json.put("scanCodeId", orderData.scanCodeId);
             json.put("terminalid", initData.terminalid);
-            json.put("tradeFrom", "android");
+            json.put("tradeFrom", CashierSdk.SDK_TRADE_FROM);
             if (orderData.goodsInfo != null) {
                 json.put("goodsInfo", orderData.goodsInfo);
             }
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -124,11 +125,11 @@ public class ParamsUtil {
             json.put("orderNum", orderData.orderNum);
             json.put("chcd", orderData.chcd);
             json.put("terminalid", initData.terminalid);
-            json.put("tradeFrom", "android");
+            json.put("tradeFrom", CashierSdk.SDK_TRADE_FROM);
             if (orderData.goodsInfo != null) {
                 json.put("goodsInfo", orderData.goodsInfo);
             }
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -166,7 +167,7 @@ public class ParamsUtil {
             json.put("mchntid", initData.mchntid);
             json.put("origOrderNum", orderData.origOrderNum);
             json.put("terminalid", initData.terminalid);
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -210,8 +211,8 @@ public class ParamsUtil {
             json.put("origOrderNum", orderData.origOrderNum);
             json.put("orderNum", orderData.orderNum);
             json.put("terminalid", initData.terminalid);
-            json.put("tradeFrom", "android");
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("tradeFrom", CashierSdk.SDK_TRADE_FROM);
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -251,8 +252,8 @@ public class ParamsUtil {
             json.put("orderNum", orderData.orderNum);
             json.put("txamt", orderData.txamt);
             json.put("terminalid", initData.terminalid);
-            json.put("tradeFrom", "android");
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("tradeFrom", CashierSdk.SDK_TRADE_FROM);
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -291,8 +292,8 @@ public class ParamsUtil {
             json.put("terminalid", initData.terminalid);//终端号
             json.put("orderNum", orderData.orderNum);//订单号
             json.put("origOrderNum", orderData.origOrderNum);//原订单号
-            json.put("tradeFrom", "android");//这个要加上的
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("tradeFrom", CashierSdk.SDK_TRADE_FROM);//这个要加上的
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -331,8 +332,8 @@ public class ParamsUtil {
             json.put("scanCodeId", orderData.scanCodeId);
             json.put("orderNum", orderData.orderNum);
             json.put("terminalid", initData.terminalid);
-            json.put("tradeFrom", "android");
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("tradeFrom", CashierSdk.SDK_TRADE_FROM);
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -368,8 +369,8 @@ public class ParamsUtil {
             json.put("orderNum", orderData.orderNum);
             json.put("origOrderNum", orderData.origOrderNum);
             json.put("terminalid", initData.terminalid);
-            json.put("tradeFrom", "android");
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("tradeFrom", CashierSdk.SDK_TRADE_FROM);
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -377,8 +378,10 @@ public class ParamsUtil {
         return json;
     }
 
+    public static String getSign(String str, String key) {
+        return getSign(str, key, CashierSdk.SIGN_TYPE);
+    }
 
-    @SuppressWarnings("unchecked")
     public static String getSign(String str, String key, String signType) {
         str = str + key;
         String sign = EncoderUtil.Encrypt(str, signType);
