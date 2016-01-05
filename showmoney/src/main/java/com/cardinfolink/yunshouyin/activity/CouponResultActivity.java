@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -18,6 +19,7 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
  */
 public class CouponResultActivity extends Activity {
 
+    private static final String TAG = "CouponResultActivity";
     private Context mContext;
 
     private TextView mCouponContent;
@@ -47,6 +49,15 @@ public class CouponResultActivity extends Activity {
                 mPayByScanCode.setVisibility(View.GONE);
                 mPayByCash.setText(getString(R.string.coupon_confirm_ok));
             } else {//打折
+                //指定扫码支付
+                Boolean preferenceScancode = Coupon.getInstance().getVoucherType() != null && (Coupon.getInstance().getVoucherType().startsWith("4")
+                        || Coupon.getInstance().getVoucherType().startsWith("5"));
+                //指定扫码支付
+                Log.e(TAG, "preferenceScancode:" + preferenceScancode);
+                if (preferenceScancode) {
+                    mPayByCash.setVisibility(View.INVISIBLE);
+                }
+
                 mCouponContent.setText(Coupon.getInstance().getCardId());
                 mPayByScanCode.setOnClickListener(new View.OnClickListener() {
                     @Override
