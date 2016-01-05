@@ -41,7 +41,7 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 		appUser, err := mongo.AppUserCol.FindOne(userName)
 		if err != nil {
 			log.Errorf("find user(%s) error: %s", userName, err)
-			return model.NewResultBody(2, "无此用户名")
+			return model.NewResultBody(2, "USERNAME_PASSWORD_ERROR")
 		} else {
 			pb := md5.Sum([]byte(password))
 			encryptPass = fmt.Sprintf("%x", pb[:])
@@ -198,7 +198,7 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 			}
 		}
 		log.Errorf("wrong password, expect %s but get %s", user.Password, encryptPass)
-		return model.NewResultBody(3, "密码错误")
+		return model.NewResultBody(3, "USERNAME_PASSWORD_ERROR")
 	}
 
 	//密码正确，清空登陆记录

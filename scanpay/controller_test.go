@@ -22,14 +22,14 @@ var (
 		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
 		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "131256296955833670",
-		// SignType:   "MD5",
-		SignType:  "HMAC-SHA256",
+		ScanCodeId: "131272120137935306",
+		SignType:   "MD5",
+		// SignType:  "HMAC-SHA256",
 		AgentCode: "19992900",
 		Txamt:     "000000000051",
 		Chcd:      "AOS",
 		Busicd:    "PURC",
-		Currency:  "HKD",
+		Currency:  "TWD",
 		Mchntid:   "200000000010002",
 		// Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
@@ -173,7 +173,7 @@ func doOneScanPay(scanPay *model.ScanPayRequest) error {
 	if err != nil {
 		return err
 	}
-	scanPay.Sign = security.SHA1WithKey(scanPay.SignMsg(), mer.SignKey)
+	scanPay.Sign = security.SHA256WithKey(scanPay.SignMsg(), mer.SignKey)
 	reqBytes, _ := json.Marshal(scanPay)
 	respBytes := ScanPayHandle(reqBytes, false)
 	resp := new(model.ScanPayResponse)
