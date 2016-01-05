@@ -1352,7 +1352,7 @@ func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
 		Size:           size,
 		Page:           1,
 		Skip:           index,
-		CouTransStatus: []string{"40"},
+		CouTransStatus: []string{model.TransSuccess},
 		Respcd:         "00",
 		Busicd:         "VERI",
 	}
