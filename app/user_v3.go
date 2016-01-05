@@ -77,7 +77,7 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 		q.RespcdNotIn = "00"
 	}
 
-	trans, _, err := mongo.SpTransColl.Find(q)
+	trans, total, err := mongo.SpTransColl.Find(q)
 	if err != nil {
 		log.Errorf("find user trans error: %s", err)
 		return model.SYSTEM_ERROR
@@ -92,6 +92,7 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 		txns = append(txns, transToTxn(t))
 	}
 	result.Txn = txns
+	result.TotalRecord = total
 
 	// 如果APP传递了月份，则需要返回total，count，fefdtotal，refdcount
 	if hasMonth {

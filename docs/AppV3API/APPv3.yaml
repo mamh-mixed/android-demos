@@ -815,6 +815,10 @@ definitions:
         type: number
         format: int64
         description: 该月退款笔数。如果传入month字段，则必须返回。
+      totalRecord:
+        type: number
+        format: int64
+        description: 总纪录数
       txn:
         type: array
         items:
@@ -834,6 +838,7 @@ definitions:
         example: 40
       refundAmt:
         type: number
+        format: int64
         example: 0
       nickName:
         type: string
