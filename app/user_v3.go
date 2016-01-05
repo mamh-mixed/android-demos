@@ -52,7 +52,11 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 	}
 
 	// 统计的开始时间和结束时间
-	startTime, _ := time.ParseInLocation("200601", req.Month, time.Local)
+	startTime, err := time.ParseInLocation("200601", req.Month, time.Local)
+	if err != nil {
+		log.Errorf("Invalid date format is 'month': %s", err)
+		return model.TIME_ERROR
+	}
 	endTime := startTime.AddDate(0, 1, 0).Add(-time.Second)
 
 	// 构建查询条件
