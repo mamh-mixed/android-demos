@@ -1,8 +1,9 @@
 package mongo
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
 	// "time"
 )
 
@@ -20,7 +21,7 @@ func TestPushMessageFind(t *testing.T) {
 	push := new(model.PushMessage)
 	push.UserName = "842712881@qq.Com"
 	push.Size = 50
-	push.LastTime = "2015-12-21 13:00:00"
+	push.LastTime = "20151221130000"
 	message, err := PushMessageColl.Find(push)
 	if err != nil {
 		t.Error(err)

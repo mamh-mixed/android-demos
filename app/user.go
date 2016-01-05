@@ -1252,6 +1252,7 @@ func (u *user) findPushMessage(req *reqParams) (result model.AppResult) {
 		UserName: req.UserName,
 		LastTime: req.LastTime,
 		MaxTime:  req.MaxTime,
+		Message:  "MSG_TYPE_C", // 只返回MSG_TYPE_C类型消息
 		Size:     size,
 	})
 	if err != nil {
@@ -1378,6 +1379,12 @@ func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
 
 // 消息接口
 func (u *user) messagePullHandler(req *reqParams) (result model.AppResult) {
+	if req.Size == "" {
+		req.Size = "15"
+	}
+
+	result = u.findPushMessage(req)
+
 	return result
 }
 
