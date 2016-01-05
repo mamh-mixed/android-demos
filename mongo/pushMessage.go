@@ -1,11 +1,9 @@
 package mongo
 
 import (
-	"regexp"
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -24,16 +22,9 @@ func (col *pushMessage) Insert(t *model.PushMessage) error {
 // UpdateByID 更新某条信息状态
 func (col *pushMessage) UpdateStatusByID(msgId string, status int) error {
 
-	formatTime := time.Now().Format("2006-01-02 15:04:05")
-	reg, err := regexp.Compile("[^0-9]")
-	if err != nil {
-		log.Errorf("reg error in UpdateStatusByID function")
-		return err
-	}
-	formatTime = reg.ReplaceAllString(formatTime, "")
 	update := bson.M{
 		"$set": bson.M{
-			"updateTime": formatTime,
+			"updateTime": time.Now().Format("20060102150405"),
 			"status":     status,
 		},
 	}

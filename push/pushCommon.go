@@ -1,7 +1,6 @@
 package push
 
 import (
-	"regexp"
 	"strings"
 	"time"
 
@@ -33,14 +32,7 @@ func SavePushMessage(req *model.PushMessageReq) error {
 	rsp.Title = req.Title
 	rsp.DeviceToken = req.DeviceToken
 	rsp.Message = req.Message
-	formatTime := time.Now().Format("2006-01-02 15:04:05")
-	reg, err := regexp.Compile("[^0-9]")
-	if err != nil {
-		log.Errorf("reg error in function SavePushMessage in file pushCommon")
-		return err
-	}
-	formatTime = reg.ReplaceAllString(formatTime, "")
-	rsp.PushTime = formatTime
+	rsp.PushTime = time.Now().Format("20060102150405")
 	rsp.MsgId = util.SerialNumber()
 	return mongo.PushMessageColl.Insert(rsp)
 }
