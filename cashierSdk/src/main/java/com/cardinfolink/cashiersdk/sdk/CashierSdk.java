@@ -20,8 +20,9 @@ public class CashierSdk {
 
     private static final String mProduceHost = "121.40.167.112";
     private static final String mProducePort = "6001";
-    private static final String mTestHost = "192.168.1.154";
-    private static final String mTestPort = "6600";
+    private static final String mTestHost = "10.9.210.12";
+    private static final String mTestPort = "6000";//utf-8的端口
+    //private static final String mTestPort = "6001"; //gbk的端口
     private static InitData mInitData;
 
     public static void init(InitData data) {
