@@ -5,6 +5,13 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
+	"math/rand"
+	"regexp"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/email"
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -13,12 +20,6 @@ import (
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"io"
-	"math/rand"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
 type user struct{}
@@ -648,7 +649,7 @@ func (u *user) getUserBill(req *reqParams) (result model.AppResult) {
 		q.TransType = req.TransType
 	}
 
-	// TODO：日本项目字段 只包含支付交易
+	// TODO�������日本项目字段 只包含支付交易
 	if req.OrderDetail == "pay" {
 		q.TransType = model.PayTrans
 	}
@@ -1006,7 +1007,7 @@ func (u *user) ticketHandle(req *reqParams) (result model.AppResult) {
 		return model.PARAMS_EMPTY
 	}
 
-	// 根据用户名查找用户
+	// 根���用���名查找用户
 	user, err := mongo.AppUserCol.FindOne(req.UserName)
 	if err != nil {
 		if err.Error() == "not found" {
@@ -1266,14 +1267,131 @@ func (u *user) findPushMessage(req *reqParams) (result model.AppResult) {
 	return result
 }
 
+// 查询订单
+func (u *user) ordersHandler(req *reqParams) (result model.AppResult) {
+	if req.OrderNum != "" {
+		req.BusinessType = "getOrder"
+		result = u.getUserTrans(req)
+	} else {
+		if req.Size == "" {
+			req.Size = "15"
+		}
+		result = u.findOrderHandle(req)
+	}
+
+	return result
+}
+
+// 卡券列表
+func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
+	//判断必填项不能为空
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.ClientId == "" || req.Index == "" {
+		return model.PARAMS_EMPTY
+	}
+	if req.Month != "" && !monthRegexp.MatchString(req.Month) {
+		return model.TIME_ERROR
+	}
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_PASSWORD_ERROR
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+
+	if req.Size == "" {
+		req.Size = "15"
+	}
+
+	result = model.NewAppResult(model.SUCCESS, "")
+
+	dsDate, deDate, ssDate, seDate := "", "", "", ""
+	if req.Month != "" {
+		// 按month来统计
+		ym := req.Month
+		yearNum, _ := strconv.Atoi(ym[:4])
+		month := ym[4:6]
+		day := ""
+		if month == "01" || month == "03" || month == "05" || month == "07" || month == "08" || month == "10" || month == "12" {
+			day = "31"
+		} else if month == "02" {
+			if (yearNum%4 == 0 && yearNum%100 != 0) || yearNum%400 == 0 {
+				day = "29"
+			} else {
+				day = "28"
+			}
+		} else {
+			day = "30"
+		}
+		ssDate = ym[:4] + "-" + ym[4:6] + "-" + "01" + " 00:00:00"
+		seDate = ym[:4] + "-" + ym[4:6] + "-" + day + " 23:59:59"
+		//month不为空，则返回该月账单情况
+		dsDate = ssDate
+		deDate = seDate
+	} else {
+		// month不填默认返回当月账单
+		now := time.Now()
+		dsDate = now.Format("2006-01")[0:7] + "-" + "01" + " 00:00:00"
+		deDate = now.Format("2006-01-02") + " 23:59:59"
+	}
+
+	index, size := pagingParams(req)
+
+	q := &model.QueryCondition{
+		MerId:          user.MerId,
+		StartTime:      dsDate,
+		EndTime:        deDate,
+		Size:           size,
+		Page:           1,
+		Skip:           index,
+		CouTransStatus: []string{"40"},
+		Respcd:         "00",
+		Busicd:         "VERI",
+	}
+
+	trans, total, err := mongo.CouTransColl.Find(q)
+	if err != nil {
+		log.Errorf("find user coupon trans error: %s", err)
+		return model.SYSTEM_ERROR
+	}
+	result.Count = total
+
+	var coupons []*model.Coupon
+	for _, t := range trans {
+		coupons = append(coupons, transToCoupon(t))
+	}
+	result.Coupons = coupons
+	return result
+}
+
+// 消息接口
+func (u *user) messagePullHandler(req *reqParams) (result model.AppResult) {
+	return result
+}
+
 func transToTxn(t *model.Trans) *model.AppTxn {
 	txn := &model.AppTxn{
-		Response:        t.RespCode,
-		SystemDate:      timeReplacer.Replace(t.CreateTime),
-		ConsumerAccount: t.ConsumerAccount,
-		TransStatus:     t.TransStatus,
-		RefundAmt:       t.RefundAmt,
-		TicketNum:       t.TicketNum,
+		Response:          t.RespCode,
+		SystemDate:        timeReplacer.Replace(t.CreateTime),
+		ConsumerAccount:   t.ConsumerAccount,
+		TransStatus:       t.TransStatus,
+		RefundAmt:         t.RefundAmt,
+		TicketNum:         t.TicketNum,
+		NickName:          t.NickName,
+		AvatarUrl:         t.HeadImgUrl,
+		CheckCode:         t.VeriCode,
+		CouponName:        t.Prodname,
+		CouponChannel:     t.ChanCode,
+		CouponOrderNo:     t.CouponOrderNum,
+		CouponDiscountAmt: t.DiscountAmt,
 	}
 	txn.ReqData.Busicd = t.Busicd
 	txn.ReqData.AgentCode = t.AgentCode
@@ -1284,6 +1402,7 @@ func transToTxn(t *model.Trans) *model.AppTxn {
 	txn.ReqData.MerId = t.MerId
 	txn.ReqData.TradeFrom = t.TradeFrom
 	txn.ReqData.Txamt = fmt.Sprintf("%012d", t.TransAmt)
+	txn.ReqData.TotalFee = t.TransAmt
 	txn.ReqData.ChanCode = t.ChanCode
 	txn.ReqData.Currency = t.Currency
 	if t.Currency == "" {
@@ -1464,4 +1583,22 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 		// 交易成功、部分、全额退
 		q.RefundStatus = []int{model.TransNoRefunded, model.TransPartRefunded, model.TransRefunded}
 	}
+}
+
+func transToCoupon(t *model.Trans) *model.Coupon {
+	coupon := &model.Coupon{
+		Name:    t.Prodname,
+		Channel: t.ChanCode,
+	}
+	couponType := ""
+	if len(t.VoucherType) == 2 {
+		couponType = t.VoucherType[1:2]
+		if couponType == "2" {
+			couponType = "1"
+		}
+	} else {
+		couponType = t.VoucherType
+	}
+	coupon.Type = couponType
+	return coupon
 }

@@ -279,18 +279,21 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 记录该笔交易
 	t := &model.Trans{
-		MerId:       req.Mchntid,
-		SysOrderNum: util.SerialNumber(),
-		OrderNum:    req.OrderNum,
-		TransType:   model.PayTrans,
-		Busicd:      req.Busicd,
-		AgentCode:   req.AgentCode,
-		Terminalid:  req.Terminalid,
-		TransAmt:    req.IntTxamt,
-		GoodsInfo:   req.GoodsInfo,
-		TradeFrom:   req.TradeFrom,
-		Currency:    req.Currency,
-		LockFlag:    1,
+		MerId:          req.Mchntid,
+		CouponOrderNum: req.CouponOrderNum, // 优惠券核销后的订单号
+		DiscountAmt:    req.IntDiscountAmt, // 卡券优惠金额
+		PayType:        req.PayType,        // 卡券指定的支付方式
+		SysOrderNum:    util.SerialNumber(),
+		OrderNum:       req.OrderNum,
+		TransType:      model.PayTrans,
+		Busicd:         req.Busicd,
+		AgentCode:      req.AgentCode,
+		Terminalid:     req.Terminalid,
+		TransAmt:       req.IntTxamt,
+		GoodsInfo:      req.GoodsInfo,
+		TradeFrom:      req.TradeFrom,
+		Currency:       req.Currency,
+		LockFlag:       1,
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
@@ -304,6 +307,15 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		shouldChcd = channel.ChanCodeAlipay
 	default:
 		return adaptor.LogicErrorHandler(t, "NO_CHANNEL")
+	}
+
+	// 实际支付方式与卡券指定支付方式不符，则拒掉交易
+	if req.PayType != "" {
+		if shouldChcd == channel.ChanCodeWeixin && req.PayType != "4" {
+			return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+		} else if shouldChcd == channel.ChanCodeAlipay && req.PayType != "5" {
+			return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+		}
 	}
 
 	// 下单时忽略渠道，以免误送渠道导致交易失败
@@ -362,21 +374,24 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 记录该笔交易
 	t := &model.Trans{
-		MerId:       req.Mchntid,
-		SysOrderNum: util.SerialNumber(),
-		OrderNum:    req.OrderNum,
-		TransType:   model.PayTrans,
-		Busicd:      req.Busicd,
-		AgentCode:   req.AgentCode,
-		ChanCode:    req.Chcd,
-		Terminalid:  req.Terminalid,
-		TransAmt:    req.IntTxamt,
-		GoodsInfo:   req.GoodsInfo,
-		NotifyUrl:   req.NotifyUrl,
-		TradeFrom:   req.TradeFrom,
-		Attach:      req.Attach,
-		Currency:    req.Currency,
-		LockFlag:    1,
+		MerId:          req.Mchntid,
+		SysOrderNum:    util.SerialNumber(),
+		OrderNum:       req.OrderNum,
+		TransType:      model.PayTrans,
+		Busicd:         req.Busicd,
+		AgentCode:      req.AgentCode,
+		ChanCode:       req.Chcd,
+		Terminalid:     req.Terminalid,
+		TransAmt:       req.IntTxamt,
+		GoodsInfo:      req.GoodsInfo,
+		NotifyUrl:      req.NotifyUrl,
+		TradeFrom:      req.TradeFrom,
+		Attach:         req.Attach,
+		Currency:       req.Currency,
+		LockFlag:       1,
+		CouponOrderNum: req.CouponOrderNum, // 优惠券核销后的订单号
+		DiscountAmt:    req.IntDiscountAmt, // 卡券优惠金额
+		PayType:        req.PayType,        // 卡券指定的支付方式
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)

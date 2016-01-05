@@ -106,8 +106,7 @@ func (col *transCollection) Update(t *model.Trans) error {
 
 	t.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	// 查找条件
-	update := bson.M{"_id": t.Id}
-	err := database.C(col.name).Update(update, t)
+	err := database.C(col.name).UpdateId(t.Id, t)
 	if err != nil {
 		log.Errorf("update trans(%+v) fail: %s", t, err)
 	}
@@ -467,6 +466,10 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	}
 	// 处理交易状态查询条件
 	handleTransStatus(q, match)
+
+	if len(q.CouTransStatus) > 0 {
+		match["transStatus"] = bson.M{"$nin": q.CouTransStatus}
+	}
 
 	p := []bson.M{
 		{"$match": match},

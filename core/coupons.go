@@ -404,6 +404,7 @@ func updateCouponTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	//更新核销状态
 	if ret.Respcd == "00" {
 		t.WriteoffStatus = model.COUPON_WO_SUCCESS
+		t.TransStatus = model.TransSuccess
 		// } else if ret.Respcd == "09" {
 		// 	t.WriteoffStatus = model.COUPON_WO_PROCESS
 	} else {
@@ -622,7 +623,11 @@ func RecoverCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		log.Errorf("process RecoverCoupons error:%s", err)
 		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
 	}
-
+	// 更新原交易信息，如果撤销成功，则将原订单关闭掉
+	if ret.Respcd == "00" {
+		orig.TransStatus = model.TransClosed
+		mongo.CouTransColl.UpdateAndUnlock(orig)
+	}
 	// 更新交易信息
 	updateCouponTrans(t, ret)
 

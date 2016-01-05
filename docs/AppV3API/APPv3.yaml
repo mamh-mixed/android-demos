@@ -1,0 +1,968 @@
+swagger: '2.0'
+info:
+  title: 云收银 API
+  description: 云收银系统移动应用API
+  version: 3.0.0
+host: 'localhost:6800'
+schemes:
+  - http
+  - https
+basePath: /app/v3
+produces:
+  - application/json
+  - application/x-www-form-urlencoded
+paths:
+  /register:
+    post:
+      summary: 注册
+      description: |
+        提供给APP注册的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: invitationCode
+          description: 邀请码
+          required: false
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /login:
+    post:
+      summary: 登录
+      description: |
+        提供给APP登录的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: deviceType
+          description: '可选项：iOS, Android 建议：客户端上传大小写可能有变，建议后端统一成大写或是小写。如果传送了数据，需要更新数据库对应字段。'
+          required: false
+          type: string
+        - in: formData
+          name: deviceToken
+          description: 消息推送的唯一标识。如果传送了数据，需要更新数据库对应字段。
+          required: false
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/LoginResponse'
+  /password/forget:
+    post:
+      summary: 忘记密码
+      description: |
+        提供给APP端忘记密码的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /password/update:
+    post:
+      summary: 修改密码
+      description: |
+        提供给APP端修改密码的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: oldpassword
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: newpassword
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /account/activate:
+    post:
+      summary: 账户激活
+      description: |
+        提供给APP端账户激活的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /account/improve:
+    post:
+      summary: 清算银行卡信息完善
+      description: |
+        提供给APP端清算银行卡信息完善的接口。oldPath＝ /improveinfo
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: province
+          description: 省份
+          required: false
+          type: string
+        - in: formData
+          name: city
+          description: 城市
+          required: false
+          type: string
+        - in: formData
+          name: bankOpen
+          description: 收款银行
+          required: false
+          type: string
+        - in: formData
+          name: branchBank
+          description: 收款银行支行
+          required: false
+          type: string
+        - in: formData
+          name: bankNo
+          description: 收款银行代码
+          required: false
+          type: string
+        - in: formData
+          name: payee
+          description: 收款人
+          required: false
+          type: string
+        - in: formData
+          name: payeeCard
+          description: 收款账号
+          required: false
+          type: string
+        - in: formData
+          name: phoneNum
+          description: 收款人电话号码
+          required: false
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /account/certificate:
+    post:
+      summary: 账户认证
+      description: |
+        提供给APP端用来账户认证提升限额的接口。oldPath＝/improveCertInfo
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: certName
+          description: 商户证照上名称
+          required: false
+          type: string
+        - in: formData
+          name: certAddr
+          description: 商户地址
+          required: false
+          type: string
+        - in: formData
+          name: legalCertPos
+          description: 身份证正面图片地址
+          required: false
+          type: string
+        - in: formData
+          name: legalCertOpp
+          description: 身份证反面图片地址
+          required: false
+          type: string
+        - in: formData
+          name: businessLicense
+          description: 营业执照图片地址
+          required: false
+          type: string
+        - in: formData
+          name: taxRegistCert
+          description: 税务登记证图片地址
+          required: false
+          type: string
+        - in: formData
+          name: organizeCodeCert
+          description: 组织机构代码证图片地址.注：以上图片地址是客户端上传七牛后留下的唯一标识
+          required: false
+          type: string
+      tags:
+        - Account
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+  /token/qiniu:
+    post:
+      summary: 获取七牛上传token
+      description: |
+        提供给APP端获取七牛上传token的接口.oldPath=/getQiniuToken
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+      tags:
+        - Token
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/QiniuTokenResponse'
+  /bills:
+    post:
+      summary: 收款账单列表
+      description: |
+        提供给APP获取收款账单的接口，只返回支付订单，没有退款订单
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: clientId
+          description: 用户ID
+          required: true
+          type: string
+        - in: formData
+          name: month
+          description: 默认当月。如果传送，返回该月账单情况，见返回字段. YYYYMM
+          required: false
+          type: string
+        - in: formData
+          name: index
+          description: 分页起始位置
+          required: true
+          type: string
+        - in: formData
+          name: size
+          description: 每页条数，默认15条
+          required: false
+          type: string
+        - in: formData
+          name: status
+          description: '现在是必须字段, 客户端硬编码all。3.0接口建议去除'
+          required: true
+          type: string
+      tags:
+        - Bill
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/BillsResponse'
+  /orders:
+    post:
+      summary: 查找订单
+      description: >
+        查找订单，返回收款账单列表，本接口提供按照订单号搜索，以及状态位搜索，recType，payType，txnStatus。本接口包含了(/getOrde
+         取单个订单的功能)
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: index
+          description: 分页起始位置
+          required: true
+          type: string
+        - in: formData
+          name: size
+          description: 每页条数，默认15条
+          required: false
+          type: string
+        - in: formData
+          name: orderNum
+          description: 订单号，用于订单精准搜索
+          required: false
+          type: string
+        - in: formData
+          name: recType
+          description: '收款方式：移动版(1) 桌面版(2) 收款码(4) 开放接口(8)。移动版｜桌面版：1 | 2 = 3移动版 | 收款码: 1 | 4 = 5'
+          required: false
+          type: string
+        - in: formData
+          name: payType
+          description: '支付方式：支付宝 微信。支付宝 1，微信 2，全部：1 | 2 = 3'
+          required: false
+          type: string
+        - in: formData
+          name: txnStatus
+          description: '交易状态：交易成功 部分退款 全额退款。交易成功 1，部分退款 2，全额退款 4。部分退款 ｜ 全额退款：2 | 4 = 6，全部：1 | 2 | 4 = 7'
+          required: false
+          type: string
+      tags:
+        - Bill
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/OrdersResponse'
+  /coupons:
+    post:
+      summary: 卡券列表
+      description: |
+        提供给APP获取卡券列表信息的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: clientId
+          description: 用户ID
+          required: true
+          type: string
+        - in: formData
+          name: month
+          description: 如果传送，返回该月账单情况，见返回字段. YYYYMM
+          required: false
+          type: string
+        - in: formData
+          name: index
+          description: 分页起始位置
+          required: true
+          type: string
+        - in: formData
+          name: size
+          description: 每页条数，默认15条
+          required: false
+          type: string
+      tags:
+        - Bill
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/CouponsResponse'
+  /summary/day:
+    post:
+      summary: 取单日的收款账单、卡券账单汇总信息
+      description: |
+        提供给APP取当日的收款账单、卡券账单汇总的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: reportType
+          description: '报表类型。1:收款账单；2:卡券账单'
+          required: true
+          type: string
+        - in: formData
+          name: day
+          description: yyyyMMdd. YYYYMM
+          required: true
+          type: string
+      tags:
+        - Bill
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/DaySummaryResponse'
+  /message/pull:
+    post:
+      summary: 消息接口
+      description: |
+        提供给APP拉取消息的接口
+      parameters:
+        - in: formData
+          name: username
+          description: 用户名
+          required: true
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: size
+          description: 数量
+          required: true
+          type: string
+        - in: formData
+          name: lastTime
+          description: 返回的消息结果在这个时间之后，与maxtime不同时出现。建议：现在日期格式不统一，建议统一成yyyyMMddHHmmss
+          required: false
+          type: string
+        - in: formData
+          name: maxTime
+          description: 返回的消息结果在这个时间之前，与maxtime不同时出现。建议：现在日期格式不统一，建议统一成yyyyMMddHHmmss
+          required: false
+          type: string
+      tags:
+        - Message
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/MessagePullResponse'
+  /message/update:
+    post:
+      summary: 消息更新
+      description: |
+        提供给APP消息更新的接口,已读、已删
+      parameters:
+        - in: body
+          name: body
+          description: 更新消息接口对象体。请使用JSON字符串格式发送请求
+          required: true
+          schema:
+            $ref: '#/definitions/MessageUpdateRequest'
+      tags:
+        - Message
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/Response'
+definitions:
+  MessageUpdateRequest:
+    type: object
+    required:
+      - username
+      - password
+      - transtime
+      - sign
+      - message
+    properties:
+      username:
+        type: string
+        example: wonsikin
+        description: 用户名
+      password:
+        type: string
+        example: wonsikin
+        description: 密码
+      transtime:
+        type: string
+        example: wonsikin
+        description: 交易时间
+      sign:
+        type: string
+        example: 20160101121314
+        description: 签名
+      message:
+        type: array
+        description: 待更新消息数组
+        items:
+          $ref: '#/definitions/UpdateMessage'
+  UpdateMessage:
+    type: object
+    properties:
+      msgId:
+        type: string
+        example: 56793eb1dc1ee7f0a906e140
+      status:
+        type: number
+        example: 1
+  MessagePullResponse:
+    type: object
+    required:
+      - state
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      messages:
+        type: array
+        description: 卡券数组。每个卡券需包含：卡券类型：（减、兑、折）、卡券名称、卡券渠道等等
+        items:
+          $ref: '#/definitions/Message'
+  Message:
+    properties:
+      msgId:
+        type: string
+        description: 消息编号，主键
+      username:
+        type: string
+        description: 用户名
+      title:
+        type: string
+        description: 标题
+      message:
+        type: string
+        description: 消息内容
+      pushTime:
+        type: string
+        description: 推送事件
+      updateTime:
+        type: string
+        description: 更新时间
+      status:
+        type: string
+        description: '0: unread, undeleted；1: read, undeleted；2: unread, deleted；3: read, deleted。'
+  DaySummaryResponse:
+    type: object
+    required:
+      - state
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      total:
+        type: number
+        description: 当日总收入或：核销关联的订单总金额
+      count:
+        type: number
+        description: 当日总笔数或：当日核销数
+  CouponsResponse:
+    type: object
+    required:
+      - state
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      count:
+        type: number
+        description: 如果传了month，返回当月卡券核销数
+      coupons:
+        type: array
+        items:
+          $ref: '#/definitions/Coupon'
+        description: 卡券数组。每个卡券需包含：卡券类型：（减、兑、折）、卡券名称、卡券渠道等等
+  Coupon:
+    properties:
+      type:
+        type: string
+        description: 卡券类型
+      name:
+        type: string
+        description: 卡券名称
+      channel:
+        type: string
+        description: 卡券渠道
+  OrdersResponse:
+    type: object
+    required:
+      - state
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      txn:
+        type: array
+        items:
+          $ref: '#/definitions/Trans'
+        description: '订单数组，成功返回 | 注意：现在返回的是缺少一些订单的元素的，如果有，也一并返回，见黄色字体的。建议：返回的金额格式：不要000012000这种类型，能否直接传送类似52.22即可。'
+  BillsResponse:
+    type: object
+    required:
+      - state
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      totalFee:
+        type: number
+        format: int64
+        description: 该月支付金额，扣去了退款的金额。如果传入month字段，则必须返回。根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
+      count:
+        type: number
+        format: int64
+        description: 该月支付笔数。如果传入month字段，则必须返回。
+      refdTotalFee:
+        type: number
+        format: int64
+        description: 该月退款金额。如果传入month字段，则必须返回。根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
+      refdcount:
+        type: number
+        format: int64
+        description: 该月退款笔数。如果传入month字段，则必须返回。
+      txn:
+        type: array
+        items:
+          $ref: '#/definitions/Trans'
+        description: '订单数组，成功返回 | 注意：现在返回的是缺少一些订单的元素的，如果有，也一并返回，见黄色字体的。建议：返回的金额格式：不要000012000这种类型，能否直接传送类似52.22即可。'
+  Trans:
+    type: object
+    properties:
+      response:
+        type: string
+        example: 09
+      system_date:
+        type: string
+        example: 20151229190742
+      transStatus:
+        type: string
+        example: 40
+      refundAmt:
+        type: number
+        example: 0
+      nickName:
+        type: string
+        description: 微信昵称，如果是使用微信扫描收款码支付需要有
+      avatarUrl:
+        type: string
+        description: 微信头像，如果是使用微信扫描收款码支付需要有
+      checkCode:
+        type: string
+        description: 校验码，微信扫描固定码支付有这个数据
+      couponName:
+        type: string
+        description: 卡券名称
+      couponChannel:
+        type: string
+        description: 卡券渠道
+      couponOrderNo:
+        type: string
+        description: 卡券核销订单号
+      couponDiscountAmt:
+        type: number
+        format: int64
+        description: 卡券优惠金额
+      m_request:
+        type: object
+        $ref: '#/definitions/mRequest'
+  mRequest:
+    type: object
+    properties:
+      busicd:
+        type: string
+        example: PAUT
+      inscd:
+        type: string
+        example: 99911888
+      txndir:
+        type: string
+        example: Q
+      terminalid:
+        type: string
+        example: 453481716@qq.com
+      orderNum:
+        type: string
+        example: 15122919074202668
+      mchntid:
+        type: string
+        example: 999118880000017
+      tradeFrom:
+        type: string
+        example: ios
+      totalFee:
+        type: number
+        format: int64
+        example: 212
+        description: 根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
+      chcd:
+        type: string
+        example: ALP
+      currency:
+        type: string
+        example: CNY
+  Response:
+    type: object
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+  QiniuTokenResponse:
+    type: object
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      uploadToken:
+        type: string
+        description: 七牛上传token，成功返回
+  LoginResponse:
+    type: object
+    properties:
+      state:
+        type: string
+      error:
+        type: string
+        description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      user:
+        $ref: '#/definitions/User'
+  User:
+    type: object
+    properties:
+      username:
+        type: string
+        example: 453481716@qq.com
+      password:
+        type: string
+        example: 670b14728ad9902aecba32e22fa4f6bd
+      activate:
+        type: boolean
+        example: true
+      clientid:
+        type: string
+        example: 999118880000017
+      limit:
+        type: boolean
+        example: true
+      createTime:
+        type: string
+        example: 2015-12-24T19:38:20.000Z
+      merName:
+        type: string
+        example: 云收银
+      deviceType:
+        type: string
+        example: IOS
+      deviceToken:
+        type: string
+        example: 4951b12f901bb4799c8cb82740cd978ba9fcfa468cb58418ceacf3d38bf89c19
+      signKey:
+        type: string
+        example: 4d5449304d4445774d7a4d324d413d3d
+      inscd:
+        type: string
+        example: 99911888
+      objectId:
+        type: string
+        example: 1445224412723670000
+      payUrl:
+        type: string
+        example: 'http://qrcode.cardinfolink.net/agent/index.html?merchantCode=OTk5MTE4ODgwMDAwMDE3'

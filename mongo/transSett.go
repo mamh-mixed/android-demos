@@ -4,6 +4,8 @@ import (
 	"errors"
 	"time"
 
+	"strconv"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"gopkg.in/mgo.v2"
@@ -250,6 +252,12 @@ func (col *transSettCollection) Find(q *model.QueryCondition) ([]model.TransSett
 	}
 	if len(q.ChanMerId) != 0 {
 		find["trans.chanMerId"] = bson.M{"$in": q.ChanMerId}
+	}
+	if q.BlendType != "" {
+		blend, err := strconv.ParseInt(q.BlendType, 10, 32)
+		if err == nil {
+			find["blendType"] = blend
+		}
 	}
 
 	var ts []model.TransSett

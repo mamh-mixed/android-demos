@@ -192,7 +192,6 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	ret = processFunc(req)
 
 	ret.AgentCode = strings.TrimSpace(reqAgentCode) // 返回时送回原代理代码
-
 	return ret
 }
 
