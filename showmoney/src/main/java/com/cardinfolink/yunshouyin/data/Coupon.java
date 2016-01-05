@@ -26,6 +26,8 @@ public class Coupon {
     private String cardInfo;//卡券详情
     private String cardbin;//银行卡的bin 或 用户标识
     private String txamt;//交易原始金额
+    private String orderNum;//订单号
+
 
     public void clear() {
         respcd = null;
@@ -49,7 +51,6 @@ public class Coupon {
 
     private Coupon() {
     }
-
 
 
     //多线程安全单例模式(使用双重同步锁)
@@ -197,5 +198,13 @@ public class Coupon {
 
     public String getRespcd() {
         return respcd;
+    }
+
+    public String getOrderNum() {
+        return orderNum;
+    }
+
+    public void setOrderNum(String orderNum) {
+        this.orderNum = orderNum;
     }
 }
