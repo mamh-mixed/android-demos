@@ -1,7 +1,6 @@
 package com.cardinfolink.yunshouyin.api;
 
 
-import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.cardinfolink.yunshouyin.data.User;
@@ -31,6 +30,12 @@ public class QuickPayApiImpl implements QuickPayApi {
 
     private static final String DEVICE_TYPE = "Android";//这里就是android
 
+    private static final String SIGN_TYPE_MD5 = "MD5";//密码加密使用这个
+
+    private static final String SIGN_TYPE_SHA_1 = "SHA-1";
+    private static final String SIGN_TYPE_SHA_256 = "SHA-1";
+    private static final String SIGN_TYPE = SIGN_TYPE_SHA_1;//报文加密使用这个
+
     protected QuickPayConfigStorage quickPayConfigStorage;
     protected PostEngine postEngine;
 
@@ -48,11 +53,14 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
-    @NonNull
     private String getTransTime() {
         Date now = new Date();
         SimpleDateFormat spf = new SimpleDateFormat("yyyyMMddHHmmss");
         return spf.format(now);
+    }
+
+    private String createSign(Map<String, String> params) {
+        return createSign(params, SIGN_TYPE);
     }
 
     /**
@@ -102,7 +110,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
-        password = EncoderUtil.Encrypt(password, "MD5");
+        password = EncoderUtil.Encrypt(password, SIGN_TYPE_MD5);
         params.put("password", password);
 
         if (!TextUtils.isEmpty(invite)) {
@@ -110,7 +118,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
 
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -139,14 +147,14 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
-        password = EncoderUtil.Encrypt(password, "MD5");
+        password = EncoderUtil.Encrypt(password, SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("transtime", getTransTime());
         params.put("device_type", DEVICE_TYPE);
         if (!TextUtils.isEmpty(deviceToken)) {
             params.put("device_token", deviceToken);
         }
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -169,12 +177,12 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
-        oldPassword = EncoderUtil.Encrypt(oldPassword, "MD5");
-        newPassword = EncoderUtil.Encrypt(newPassword, "MD5");
+        oldPassword = EncoderUtil.Encrypt(oldPassword, SIGN_TYPE_MD5);
+        newPassword = EncoderUtil.Encrypt(newPassword, SIGN_TYPE_MD5);
         params.put("oldpassword", oldPassword);
         params.put("newpassword", newPassword);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -202,10 +210,10 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
-        password = EncoderUtil.Encrypt(password, "MD5");
+        password = EncoderUtil.Encrypt(password, SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -232,7 +240,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         params.put("username", user.getUsername());
 
-        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
 
         params.put("province", user.getProvince());
@@ -244,7 +252,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("payee_card", user.getPayeeCard());
         params.put("phone_num", user.getPhoneNum());
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -270,7 +278,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         params.put("username", user.getUsername());
 
-        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
 
         params.put("province", user.getProvince());
@@ -282,7 +290,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("payee_card", user.getPayeeCard());
         params.put("phone_num", user.getPhoneNum());
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
         try {
             String response = postEngine.post(url, params);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
@@ -305,7 +313,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
-        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
 
         params.put("payee", user.getLimitName());
@@ -313,7 +321,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("phone_num", user.getLimitPhone());
 
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -334,10 +342,10 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
-        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -365,7 +373,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -394,11 +402,11 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
-        newPassword = EncoderUtil.Encrypt(newPassword, "MD5");
+        newPassword = EncoderUtil.Encrypt(newPassword, SIGN_TYPE_MD5);
         params.put("code", code);
         params.put("newpassword", newPassword);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -419,7 +427,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
-        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("clientid", user.getClientid());
         params.put("month", month);
@@ -427,7 +435,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("size", size);
         params.put("status", status);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -461,7 +469,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
-        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
         if (TextUtils.isEmpty(orderNum)) {
             params.put("index", index);
@@ -475,7 +483,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
 
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -497,12 +505,12 @@ public class QuickPayApiImpl implements QuickPayApi {
         String url = quickPayConfigStorage.getUrl() + "/getTotal";
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
-        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("clientid", user.getClientid());
         params.put("date", date);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -551,12 +559,12 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
-        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("clientid", user.getClientid());
         params.put("orderNum", orderNum);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
@@ -580,12 +588,12 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
-        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("clientid", user.getClientid());
         params.put("orderNum", orderNum);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
         try {
             String response = postEngine.post(url, params);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
@@ -615,10 +623,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         String url = quickPayConfigStorage.getUrl() + "/getQiniuToken";
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
-        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
         try {
             String response = postEngine.post(url, params);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
@@ -647,14 +655,14 @@ public class QuickPayApiImpl implements QuickPayApi {
         String url = quickPayConfigStorage.getUrl() + "/improveCertInfo";
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
-        String password = EncoderUtil.Encrypt(user.getPassword(), "MD5");
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("transtime", getTransTime());
         //把名字对应值都放入到params里面
         for (Map.Entry<String, String> map : imageMap.entrySet()) {
             params.put(map.getKey(), map.getValue());
         }
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
         try {
             String response = postEngine.post(url, params);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
@@ -674,7 +682,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
-        password = EncoderUtil.Encrypt(password, "MD5");
+        password = EncoderUtil.Encrypt(password, SIGN_TYPE_MD5);
         params.put("password", password);
         if (!TextUtils.isEmpty(lasttime)) {
             params.put("lasttime", lasttime);
@@ -683,7 +691,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             params.put("maxtime", maxtime);
         }
         params.put("size", size);
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
         try {
             //// TODO: mamh  这里没有判断 serverPacket.getState()的状态？？？？
             String response = postEngine.post(url, params);
@@ -699,7 +707,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         String url = quickPayConfigStorage.getUrl() + "/updateMessage";
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
-        password = EncoderUtil.Encrypt(password, "MD5");
+        password = EncoderUtil.Encrypt(password, SIGN_TYPE_MD5);
         params.put("password", password);
         StringBuilder sb = new StringBuilder("[");
         for (Message message : messages) {
@@ -710,7 +718,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         sb.append("]");
         String messageStr = sb.toString().replace(",]", "]");
         params.put("message", messageStr);
-        params.put("sign", createSign(params, "SHA-1"));
+        params.put("sign", createSign(params));
         try {
             String response = postEngine.post(url, params);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
