@@ -35,6 +35,7 @@ public class CashierSdk {
             Server server = new Server();
             server.setHost(mTestHost);
             server.setPort(mTestPort);
+            CommunicationUtil.setDEBUG(true);
             CommunicationUtil.setServer(server);
         }
 
