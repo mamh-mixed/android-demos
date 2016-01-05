@@ -574,7 +574,7 @@ paths:
           type: string
         - in: formData
           name: day
-          description: yyyyMMdd. YYYYMM
+          description: yyyyMMdd
           required: true
           type: string
       tags:
@@ -739,7 +739,7 @@ definitions:
       error:
         type: string
         description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
-      total:
+      totalFee:
         type: number
         description: 当日总收入或：核销关联的订单总金额
       count:

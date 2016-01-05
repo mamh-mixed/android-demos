@@ -467,10 +467,6 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	// 处理交易状态查询条件
 	handleTransStatus(q, match)
 
-	if len(q.CouTransStatus) > 0 {
-		match["transStatus"] = bson.M{"$in": q.CouTransStatus}
-	}
-
 	p := []bson.M{
 		{"$match": match},
 	}
@@ -653,19 +649,25 @@ func (col *transCollection) MerBills(q *model.QueryCondition) ([]model.TransType
 	// 过滤掉取消不成功的订单
 	find["transAmt"] = bson.M{"$ne": 0}
 
+	if q.IsRelatedCoupon {
+		find["couponOrderNum"] = bson.M{"$ne": nil}
+	}
+
 	var results []model.TransTypeGroup
 	err := database.C(col.name).Pipe([]bson.M{
 		{"$match": find},
 		{"$group": bson.M{"_id": "$transType",
 			"transAmt": bson.M{"$sum": "$transAmt"},
 			// "refundAmt": bson.M{"$sum": "$refundAmt"},
-			"transNum": bson.M{"$sum": 1},
+			"transNum":    bson.M{"$sum": 1},
+			"discountAmt": bson.M{"$sum": "$discountAmt"},
 		}},
 		{"$project": bson.M{
 			"transType": "$_id",
 			"transAmt":  1,
 			"transNum":  1,
 			// "refundAmt": 1,
+			"discountAmt": 1,
 		}},
 	}).All(&results)
 	return results, err
