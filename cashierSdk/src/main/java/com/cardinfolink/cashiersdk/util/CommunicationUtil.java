@@ -1,6 +1,7 @@
 package com.cardinfolink.cashiersdk.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.cardinfolink.cashiersdk.listener.CommunicationListener;
 import com.cardinfolink.cashiersdk.model.Server;
@@ -12,10 +13,15 @@ public class CommunicationUtil {
     private static final String TAG = "CommunicationUtil";
     private static String mHost = "211.147.72.70";
     private static String mPort = "10008";
+    private static boolean DEBUG = false;
 
     public static void setServer(Server server) {
         mHost = server.getHost();
         mPort = server.getPort();
+    }
+
+    public static void setDEBUG(boolean debug) {
+        DEBUG = debug;
     }
 
     public static void sendDataToServer(final JSONObject json, final CommunicationListener listener) {
@@ -25,6 +31,7 @@ public class CommunicationUtil {
             public void run() {
                 SocketClient socketClient = new SocketClient(mHost, mPort, 15000);
                 String result = socketClient.reqToServer(json.toString());
+                if (DEBUG) Log.e(TAG, "socekt result ==" + result);
                 if (!TextUtils.isEmpty(result)) {
                     if (result.contains("}")) {
                         result = result.substring(4, result.lastIndexOf("}") + 1);
