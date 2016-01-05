@@ -210,7 +210,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                     Coupon.getInstance().setMaxDiscountAmt(resultData.maxDiscountAmt);
                                     Coupon.getInstance().setExpDate(resultData.expDate);
                                     Coupon.getInstance().setSaleMinAmount(resultData.saleMinAmount);//保存卡券核销返回信息
-
+                                    Coupon.getInstance().setOrderNum(resultData.orderNum);
                                     if ("00".equals(mResultData.respcd)) {
                                         Intent intent = new Intent(mContext, CouponResultActivity.class);
                                         Bundle bundle = new Bundle();
@@ -219,7 +219,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                         mContext.startActivity(intent);
                                     } else {
                                         //核销失败
-                                        mHintDialog.setText(getResources().getString(R.string.coupon_ver_fail), getResources().getString(R.string.coupon_ver_close), getResources().getString(R.string.coupon_ver_try_again));
+                                        mHintDialog.setText(getResources().getString(R.string.coupon_ver_fail),getResources().getString(R.string.coupon_ver_try_again) , getResources().getString(R.string.coupon_ver_close));
                                         mHintDialog.show();
                                         mHintDialog.setCancelOnClickListener(new OnClickListener() {
                                             @Override
@@ -251,7 +251,13 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
                                                     @Override
                                                     public void onError(final int errorCode) {
-                                                        Log.e(TAG, " starVeri fail===" + errorCode);
+                                                        runOnUiThread(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                Log.e(TAG, " starVeri fail===" + errorCode);
+                                                            }
+                                                        });
+
                                                     }
                                                 });
                                             }
