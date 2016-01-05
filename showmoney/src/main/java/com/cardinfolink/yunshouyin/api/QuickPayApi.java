@@ -18,17 +18,12 @@ public interface QuickPayApi {
 
     ServerPacket forgetPassword(String username);
 
-    void resetPassword(String username, String code, String newPassword);
 
     void activate(String username, String password);
 
     // bank related
     User improveInfo(User user);
 
-    User updateInfo(User user); //这个和上面那个improveinfo很容易弄混。
-
-
-    void increaseLimit(User user);
 
     BankInfo getBankInfo(User user);
 
@@ -44,15 +39,13 @@ public interface QuickPayApi {
 
     String getTotal(User user, String date);
 
-    @Deprecated
-    ServerPacketOrder getOrder(User user, String orderNum);
 
     ServerPacket getRefd(User user, String orderNum);
 
     //获取七牛的token的方法
     String getUploadToken(User user);
 
-    void improveCertInfo(User user, Map<String, String> imageMap);
+    void improveCertInfo(User user, String certName, String certAddr, Map<String, String> imageMap);
 
     ServerPacket pullinfo(String username, String password, String size, String lasttime, String maxtime);
 

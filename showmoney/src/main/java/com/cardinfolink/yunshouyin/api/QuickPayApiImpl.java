@@ -33,8 +33,23 @@ public class QuickPayApiImpl implements QuickPayApi {
     private static final String SIGN_TYPE_MD5 = "MD5";//密码加密使用这个
 
     private static final String SIGN_TYPE_SHA_1 = "SHA-1";
-    private static final String SIGN_TYPE_SHA_256 = "SHA-1";
-    private static final String SIGN_TYPE = SIGN_TYPE_SHA_1;//报文加密使用这个
+    private static final String SIGN_TYPE_SHA_256 = "SHA-256";
+    private static final String SIGN_TYPE = SIGN_TYPE_SHA_256;//报文加密使用这个
+
+    private static final String URL_PATH_REGISTER = "/v3/register";
+    private static final String URL_PATH_LOGIN = "/v3/login";
+    private static final String URL_PATH_PASSWORD_FORGET = "/v3/password/forget";
+    private static final String URL_PATH_PASSWORD_UPDATE = "/v3/password/update";
+    private static final String URL_PATH_ACCOUNT_ACTIVATE = "/v3/account/activate";
+    private static final String URL_PATH_ACCOUNT_IMPROVE = "/v3/account/improve";
+    private static final String URL_PATH_ACCOUNT_CERTIFICATE = "/v3/account/certificate";
+    private static final String URL_PATH_TOKEN_QINIU = "/v3/token/qiniu";
+    private static final String URL_PATH_BILLS = "/v3/bills";
+    private static final String URL_PATH_ORDERS = "/v3/orders";
+    private static final String URL_PATH_COUPONS = "/v3/coupons";
+    private static final String URL_PATH_SUMMARY_DAY = "/v3/summary/day";
+    private static final String URL_PATH_MESSAGE_PULL = "/v3/message/pull";
+    private static final String URL_PATH_MESSAGE_UPDATE = "/v3/message/update";
 
     protected QuickPayConfigStorage quickPayConfigStorage;
     protected PostEngine postEngine;
@@ -98,25 +113,24 @@ public class QuickPayApiImpl implements QuickPayApi {
 
 
     /**
-     * errors:
-     * username_exist
+     * 注册
+     * /register:
      *
      * @param username
      * @param password
+     * @param invite
      */
     @Override
     public void register(String username, String password, String invite) {
-        String url = quickPayConfigStorage.getUrl() + "/register";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_REGISTER;
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
         password = EncoderUtil.Encrypt(password, SIGN_TYPE_MD5);
         params.put("password", password);
-
         if (!TextUtils.isEmpty(invite)) {
-            params.put("invitation_code", invite);
+            params.put("invitationCode", invite);//邀请码,不是必须的
         }
-
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
@@ -134,25 +148,25 @@ public class QuickPayApiImpl implements QuickPayApi {
     }
 
     /**
-     * errors:
-     * username_no_exist
+     * /login:登录
      *
      * @param username
      * @param password
+     * @param deviceToken
      * @return
      */
     @Override
     public User login(String username, String password, String deviceToken) {
-        String url = quickPayConfigStorage.getUrl() + "/login";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_LOGIN;
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
         password = EncoderUtil.Encrypt(password, SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("transtime", getTransTime());
-        params.put("device_type", DEVICE_TYPE);
+        params.put("deviceType", DEVICE_TYPE);//可选项：iOS, Android 建议：客户端上传大小写可能有变，建议后端统一成大写或是小写。如果传送了数据，需要更新数据库对应字段。
         if (!TextUtils.isEmpty(deviceToken)) {
-            params.put("device_token", deviceToken);
+            params.put("deviceToken", deviceToken);//消息推送的唯一标识。如果传送了数据，需要更新数据库对应字段。
         }
         params.put("sign", createSign(params));
 
@@ -169,11 +183,18 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    /**
+     * 修改密码
+     *
+     * @param username
+     * @param oldPassword
+     * @param newPassword
+     */
     @Override
     public void updatePassword(String username, String oldPassword, String newPassword) {
         // {"state":"fail","error":"old_password_error","count":0,"size":0,"refdcount":0}
 
-        String url = quickPayConfigStorage.getUrl() + "/updatepassword"; //更新密码
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_PASSWORD_UPDATE; //更新密码
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
@@ -198,15 +219,14 @@ public class QuickPayApiImpl implements QuickPayApi {
     }
 
     /**
-     * errors:
-     * username_password_error
+     * 账户激活
      *
      * @param username
      * @param password
      */
     @Override
     public void activate(String username, String password) {
-        String url = quickPayConfigStorage.getUrl() + "/request_activate";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_ACCOUNT_ACTIVATE;
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
@@ -229,28 +249,29 @@ public class QuickPayApiImpl implements QuickPayApi {
     }
 
     /**
-     * errors:
-     * user_already_improved
+     * 清算银行卡信息完善
+     *
+     * @param user
      */
     @Override
     public User improveInfo(User user) {
-        String url = quickPayConfigStorage.getUrl() + "/improveinfo";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_ACCOUNT_IMPROVE;
 
         Map<String, String> params = new LinkedHashMap<>();
 
         params.put("username", user.getUsername());
-
         String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
 
         params.put("province", user.getProvince());
         params.put("city", user.getCity());
-        params.put("bank_open", user.getBankOpen());
-        params.put("branch_bank", user.getBranchBank());
+        params.put("bankOpen", user.getBankOpen());
+        params.put("branchBank", user.getBranchBank());
         params.put("bankNo", user.getBankNo());
         params.put("payee", user.getPayee());
-        params.put("payee_card", user.getPayeeCard());
-        params.put("phone_num", user.getPhoneNum());
+        params.put("payeeCard", user.getPayeeCard());
+        params.put("phoneNum", user.getPhoneNum());
+
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
@@ -267,74 +288,6 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
-
-    @Override
-    public User updateInfo(User user) {
-        //{"state":"fail","error":"请联系您的服务商为您修改清算信息。","count":0,"size":0,"refdcount":0}
-
-        String url = quickPayConfigStorage.getUrl() + "/updateinfo";
-
-        Map<String, String> params = new LinkedHashMap<>();
-
-        params.put("username", user.getUsername());
-
-        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
-        params.put("password", password);
-
-        params.put("province", user.getProvince());
-        params.put("city", user.getCity());
-        params.put("bank_open", user.getBankOpen());
-        params.put("branch_bank", user.getBranchBank());
-        params.put("bankNo", user.getBankNo());
-        params.put("payee", user.getPayee());
-        params.put("payee_card", user.getPayeeCard());
-        params.put("phone_num", user.getPhoneNum());
-        params.put("transtime", getTransTime());
-        params.put("sign", createSign(params));
-        try {
-            String response = postEngine.post(url, params);
-            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
-                return serverPacket.getUser();
-            } else {
-                throw new QuickPayException(serverPacket.getError());
-            }
-        } catch (IOException e) {
-            throw new QuickPayException();
-        }
-    }
-
-    /**
-     * 提升限额
-     */
-    @Override
-    public void increaseLimit(User user) {
-        String url = quickPayConfigStorage.getUrl() + "/limitincrease";
-
-        Map<String, String> params = new LinkedHashMap<>();
-        params.put("username", user.getUsername());
-        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
-        params.put("password", password);
-
-        params.put("payee", user.getLimitName());
-        params.put("email", user.getLimitEmail());
-        params.put("phone_num", user.getLimitPhone());
-
-        params.put("transtime", getTransTime());
-        params.put("sign", createSign(params));
-
-        try {
-            String response = postEngine.post(url, params);
-            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
-                return;
-            } else {
-                throw new QuickPayException(serverPacket.getError());
-            }
-        } catch (IOException e) {
-            throw new QuickPayException();
-        }
-    }
 
     @Override
     public BankInfo getBankInfo(User user) {
@@ -345,7 +298,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params));
+        params.put("sign", createSign(params, SIGN_TYPE_SHA_1));
 
         try {
             String response = postEngine.post(url, params);
@@ -362,13 +315,13 @@ public class QuickPayApiImpl implements QuickPayApi {
 
 
     /**
-     * server not support
+     * 忘记密码
      *
      * @param username
      */
     @Override
     public ServerPacket forgetPassword(String username) {
-        String url = quickPayConfigStorage.getUrl() + "/forgetpassword";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_PASSWORD_FORGET;
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
@@ -389,51 +342,33 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+
     /**
-     * Not tested, no one use
+     * 收款账单列表
+     * 提供给APP获取收款账单的接口，只返回支付订单，没有退款订单
      *
-     * @param username
-     * @param code
-     * @param newPassword
+     * @param user
+     * @param month
+     * @param index
+     * @param size
+     * @param status
+     * @return
      */
     @Override
-    public void resetPassword(String username, String code, String newPassword) {
-        String url = quickPayConfigStorage.getUrl() + "/resetpassword";
-
-        Map<String, String> params = new LinkedHashMap<>();
-        params.put("username", username);
-        newPassword = EncoderUtil.Encrypt(newPassword, SIGN_TYPE_MD5);
-        params.put("code", code);
-        params.put("newpassword", newPassword);
-        params.put("transtime", getTransTime());
-        params.put("sign", createSign(params));
-
-        try {
-            String response = postEngine.post(url, params);
-            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
-                return;
-            } else {
-                throw new QuickPayException(serverPacket.getError());
-            }
-        } catch (IOException e) {
-            throw new QuickPayException();
-        }
-    }
-
-    @Override
     public ServerPacket getHistoryBills(User user, String month, String index, String size, String status) {
-        String url = quickPayConfigStorage.getUrl() + "/v3/bill";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_BILLS;
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
         String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
-        params.put("clientid", user.getClientid());
+
+        params.put("clientId", user.getClientid());
         params.put("month", month);
         params.put("index", index);
         params.put("size", size);
         params.put("status", status);
+
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
@@ -463,23 +398,38 @@ public class QuickPayApiImpl implements QuickPayApi {
     }
 
 
+    /**
+     * 查找订单
+     * 查找订单，返回收款账单列表，本接口提供按照订单号搜索，以及状态位搜索，recType，payType，txnStatus。本接口包含了(/getOrde
+     * 取单个订单的功能)
+     *
+     * @param user
+     * @param orderNum
+     * @param index
+     * @param size
+     * @param recType
+     * @param payType
+     * @param txnStatus
+     * @return
+     */
     @Override
     public ServerPacket findOrder(User user, String orderNum, String index, String size, String recType, String payType, String txnStatus) {
-        String url = quickPayConfigStorage.getUrl() + "/findOrder";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_ORDERS;
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
         String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
+
         if (TextUtils.isEmpty(orderNum)) {
-            params.put("index", index);
-            params.put("size", size);
-            params.put("recType", recType);
-            params.put("payType", payType);
-            params.put("txnStatus", txnStatus);
+            params.put("index", index);//分页起始位置
+            params.put("size", size);//每页条数，默认15条
+            params.put("recType", recType);//'收款方式：移动版(1) 桌面版(2) 收款码(4) 开放接口(8)。移动版｜桌面版：1 | 2 = 3移动版 | 收款码: 1 | 4 = 5'
+            params.put("payType", payType);//'支付方式：支付宝 微信。支付宝 1，微信 2，全部：1 | 2 = 3'
+            params.put("txnStatus", txnStatus);//'交易状态：交易成功 部分退款 全额退款。交易成功 1，部分退款 2，全额退款 4。部分退款 ｜ 全额退款：2 | 4 = 6，全部：1 | 2 | 4 = 7'
         } else {
             //如果提供了账单号，这里是精确查询，其他的参数不要传人
-            params.put("orderNum", orderNum);
+            params.put("orderNum", orderNum);//订单号，用于订单精准搜索
         }
 
         params.put("transtime", getTransTime());
@@ -498,6 +448,13 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    /**
+     * 这个有替代的方案   /summary/day:
+     *
+     * @param user
+     * @param date
+     * @return
+     */
     @Override
     public String getTotal(User user, String date) {
         //result =={"state":"success","total":"0.00","count":5,"size":0,"refdcount":0}
@@ -510,7 +467,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("clientid", user.getClientid());
         params.put("date", date);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params));
+        params.put("sign", createSign(params, SIGN_TYPE_SHA_1));
 
         try {
             String response = postEngine.post(url, params);
@@ -526,60 +483,13 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
-    //not used now
-    @Override
-    public ServerPacketOrder getOrder(User user, String orderNum) {
-        /**
-         * {
-         "state": "success",
-         "count": 0,
-         "size": 0,
-         "refdcount": 0,
-         "txn": {
-         "response": "09",
-         "system_date": "20151204112740",
-         "transStatus": "10",
-         "refundAmt": 0,
-         "m_request": {
-         "busicd": "PAUT",
-         "inscd": "99911888",
-         "txndir": "Q",
-         "terminalid": "000000000000000",
-         "orderNum": "15120322232663574",
-         "mchntid": "999118880000017",
-         "tradeFrom": "android",
-         "txamt": "000000089500",
-         "chcd": "ALP",
-         "currency": "CNY"
-         }
-         }
-         }
-         */
-        String url = quickPayConfigStorage.getUrl() + "/getOrder";
 
-        Map<String, String> params = new LinkedHashMap<>();
-        params.put("username", user.getUsername());
-        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
-        params.put("password", password);
-        params.put("clientid", user.getClientid());
-        params.put("orderNum", orderNum);
-        params.put("transtime", getTransTime());
-        params.put("sign", createSign(params));
-
-        try {
-            String response = postEngine.post(url, params);
-            //特别注意这里用的是一个新的ServerPacketOrder类来解析json。
-            ServerPacketOrder serverPacket = ServerPacketOrder.getServerPacketOrder(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
-                return serverPacket;
-            } else {
-                throw new QuickPayException(serverPacket.getError());
-            }
-        } catch (IOException e) {
-            throw new QuickPayException();
-        }
-    }
-
+    /**
+     * 这个暂时还不确定 新的接口 v3里面要不要？？？？！！！！
+     * @param user
+     * @param orderNum
+     * @return
+     */
     @Override
     public ServerPacket getRefd(User user, String orderNum) {
         //{"state":"success","count":0,"size":0,"refdcount":0,"refdtotal":"9.66"}
@@ -593,7 +503,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("clientid", user.getClientid());
         params.put("orderNum", orderNum);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params));
+        params.put("sign", createSign(params, SIGN_TYPE_SHA_1));
         try {
             String response = postEngine.post(url, params);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
@@ -607,6 +517,12 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    /**
+     * 获取七牛上传token
+     *
+     * @param user
+     * @return
+     */
     @Override
     public String getUploadToken(User user) {
         /**
@@ -620,7 +536,8 @@ public class QuickPayApiImpl implements QuickPayApi {
          }
          */
         //送username，password
-        String url = quickPayConfigStorage.getUrl() + "/getQiniuToken";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_TOKEN_QINIU;
+
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
         String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
@@ -640,8 +557,14 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    /**
+     * 账户认证
+     *
+     * @param user
+     * @param imageMap
+     */
     @Override
-    public void improveCertInfo(User user, Map<String, String> imageMap) {
+    public void improveCertInfo(User user, String certName, String certAddr, Map<String, String> imageMap) {
         /**
          * 送username，password
          * merName(店铺名称),
@@ -652,12 +575,17 @@ public class QuickPayApiImpl implements QuickPayApi {
          * taxRegistCert（税务登记证）,
          * organizeCodeCert（组织机构代码证）
          */
-        String url = quickPayConfigStorage.getUrl() + "/improveCertInfo";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_ACCOUNT_CERTIFICATE;
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
         String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
+
         params.put("transtime", getTransTime());
+
+        params.put("certName", certName);
+        params.put("certAddr", certAddr);
+
         //把名字对应值都放入到params里面
         for (Map.Entry<String, String> map : imageMap.entrySet()) {
             params.put(map.getKey(), map.getValue());
@@ -676,9 +604,20 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    /**
+     * 消息接口
+     * 提供给APP拉取消息的接口
+     *
+     * @param username
+     * @param password
+     * @param size
+     * @param lasttime
+     * @param maxtime
+     * @return
+     */
     @Override
     public ServerPacket pullinfo(String username, String password, String size, String lasttime, String maxtime) {
-        String url = quickPayConfigStorage.getUrl() + "/pullinfo";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_MESSAGE_PULL;
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
@@ -691,6 +630,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             params.put("maxtime", maxtime);
         }
         params.put("size", size);
+        params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
         try {
             //// TODO: mamh  这里没有判断 serverPacket.getState()的状态？？？？
@@ -702,9 +642,19 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    /**
+     * 消息更新
+     * 提供给APP消息更新的接口,已读、已删
+     *
+     * @param username
+     * @param password
+     * @param status
+     * @param messages
+     * @return
+     */
     @Override
     public ServerPacket updateMessage(String username, String password, String status, Message[] messages) {
-        String url = quickPayConfigStorage.getUrl() + "/updateMessage";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_MESSAGE_UPDATE;
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", username);
         password = EncoderUtil.Encrypt(password, SIGN_TYPE_MD5);
@@ -718,6 +668,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         sb.append("]");
         String messageStr = sb.toString().replace(",]", "]");
         params.put("message", messageStr);
+        params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
         try {
             String response = postEngine.post(url, params);
