@@ -219,12 +219,25 @@ func couponsHandler(w http.ResponseWriter, r *http.Request) {
 
 // messagePullHandler 消息接口
 func messagePullHandler(w http.ResponseWriter, r *http.Request) {
-	result := User.findPushMessage(&reqParams{
-		UserName: r.FormValue("username"),
-		Password: r.FormValue("password"),
-		Size:     r.FormValue("size"),
-		LastTime: r.FormValue("lasttime"),
-		MaxTime:  r.FormValue("maxtime"),
+	result := User.messagePullHandler(&reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+		Size:      r.FormValue("size"),
+		LastTime:  r.FormValue("lasttime"),
+		MaxTime:   r.FormValue("maxtime"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
+// messageUpdateHandler 消息修改
+func messageUpdateHandler(w http.ResponseWriter, r *http.Request) {
+	result := User.updateMessageHandle(&reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+		Message:   r.FormValue("message"),
 	})
 
 	w.Write(jsonMarshal(result))

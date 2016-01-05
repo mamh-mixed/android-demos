@@ -1,12 +1,14 @@
 package push
 
 import (
+	"regexp"
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"strings"
-	"time"
 )
 
 func Do(req *model.PushMessageReq) {
@@ -31,7 +33,14 @@ func SavePushMessage(req *model.PushMessageReq) error {
 	rsp.Title = req.Title
 	rsp.DeviceToken = req.DeviceToken
 	rsp.Message = req.Message
-	rsp.PushTime = time.Now().Format("2006-01-02 15:04:05")
+	formatTime := time.Now().Format("2006-01-02 15:04:05")
+	reg, err := regexp.Compile("[^0-9]")
+	if err != nil {
+		log.Errorf("reg error in function SavePushMessage in file pushCommon")
+		return err
+	}
+	formatTime = reg.ReplaceAllString(formatTime, "")
+	rsp.PushTime = formatTime
 	rsp.MsgId = util.SerialNumber()
 	return mongo.PushMessageColl.Insert(rsp)
 }
