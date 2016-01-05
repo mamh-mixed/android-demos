@@ -43,6 +43,7 @@ public class QuickPayApiImpl implements QuickPayApi {
     private static final String URL_PATH_ACCOUNT_ACTIVATE = "/v3/account/activate";
     private static final String URL_PATH_ACCOUNT_IMPROVE = "/v3/account/improve";
     private static final String URL_PATH_ACCOUNT_CERTIFICATE = "/v3/account/certificate";
+    private static final String URL_PATH_ACCOUNT_INFO_SETTLE = "/v3/account/info/settle";
     private static final String URL_PATH_TOKEN_QINIU = "/v3/token/qiniu";
     private static final String URL_PATH_BILLS = "/v3/bills";
     private static final String URL_PATH_ORDERS = "/v3/orders";
@@ -291,7 +292,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
     @Override
     public BankInfo getBankInfo(User user) {
-        String url = quickPayConfigStorage.getUrl() + "/getinfo";
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_ACCOUNT_INFO_SETTLE;
 
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
@@ -486,6 +487,7 @@ public class QuickPayApiImpl implements QuickPayApi {
 
     /**
      * 这个暂时还不确定 新的接口 v3里面要不要？？？？！！！！
+     *
      * @param user
      * @param orderNum
      * @return
