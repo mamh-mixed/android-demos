@@ -23,20 +23,22 @@ import (
 // ProcessAlipayNotify 支付宝异步通知处理，接受预下单和下单异步通知
 func ProcessAlipayNotify(params url.Values) error {
 
-	// 通知动作类型
-	notifyAction := params.Get("notify_action_type")
-	// 交易订单号
-	orderNum := params.Get("out_trade_no")
 	// 系统订单号、异步通知日志关联ID
 	sysOrderNum, logReqId := parseAttach(params.Get("extra_common_param"))
-
+	if sysOrderNum == "" {
+		return fmt.Errorf("%s", "params error")
+	}
 	// 系统订单号是全局唯一
-	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
+	t, err := mongo.SpTransColl.FindBySysOrderNum(sysOrderNum)
 	if err != nil {
 		log.Errorf("fail to find trans by sysOrderNum=%s, error: %s", sysOrderNum, err)
 		return err
 	}
 
+	// 通知动作类型
+	notifyAction := params.Get("notify_action_type")
+	// 交易订单号
+	orderNum := params.Get("out_trade_no")
 	count, err := mongo.NotifyRecColl.Count(t.MerId, t.OrderNum)
 	if err != nil {
 		return err
@@ -164,8 +166,11 @@ func ProcessAlipayNotify(params url.Values) error {
 func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 	// 上送的订单号、日志关联ID
 	sysOrderNum, logReqId := parseAttach(req.Attach)
+	if sysOrderNum == "" {
+		return fmt.Errorf("%s", "params error")
+	}
 	// 系统订单号是全局唯一
-	t, err := mongo.SpTransColl.FindByOrderNum(sysOrderNum)
+	t, err := mongo.SpTransColl.FindBySysOrderNum(sysOrderNum)
 	if err != nil {
 		log.Errorf("fail to find trans by sysOrderNum=%s, error: %s", sysOrderNum, err)
 		return err

@@ -9,6 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 )
 
+var masterDB *mgo.Database
 var database *mgo.Database
 
 // Connect 程序启动时，或者，单元测试前，先连接到 MongoDB 数据库
@@ -22,10 +23,16 @@ func init() {
 		os.Exit(1)
 	}
 
-	session.SetMode(mgo.Eventual, true) //需要指定为Eventual
+	// 连接master的session
+	masterSession := session.Copy()
+	masterSession.SetMode(mgo.Strong, true) // 从master读写，处理对于实时性要求高的操作
+	masterSession.SetSafe(&mgo.Safe{})
+
+	session.SetMode(mgo.Eventual, true) // 最终一致性即可，读写分离
 	session.SetSafe(&mgo.Safe{})
 
 	database = session.DB(dbname)
+	masterDB = masterSession.DB(dbname)
 
 	// 不能在日志中出现数据库密码
 	// fmt.Println("connected to mongodb host `%s` and database `%s`", url, dbname)

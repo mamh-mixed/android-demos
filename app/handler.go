@@ -514,6 +514,7 @@ type reqParams struct {
 	MaxTime          string
 	Message          string
 	TransType        int
+	ClientId         string
 	AppUser          *model.AppUser
 	m                *model.Merchant
 }

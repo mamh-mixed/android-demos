@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/CardInfoLink/quickpay/model"
-
 	"github.com/omigo/log"
 )
 
@@ -53,20 +52,20 @@ func RouteV3() (mux *AppV3ServeMux) {
 	mux = NewAppV3ServeMux()
 
 	// app3.0接口
-	mux.HandleFunc("/v3/app/register", registerHandler)
-	mux.HandleFunc("/v3/app/login", loginHandler)
-	mux.HandleFunc("/v3/app/password/forget", forgetPasswordHandler)
-	mux.HandleFunc("/v3/app/password/update", updatePasswordHandler)
-	mux.HandleFunc("/v3/app/account/activate", activateAccountHandler)
-	mux.HandleFunc("/v3/app/account/improve", improveAccountHandler)
-	mux.HandleFunc("/v3/app/account/certificate", improveAccountHandler)
+	mux.HandleFunc("/app/v3/register", registerHandler)
+	mux.HandleFunc("/app/v3/login", loginHandler)
+	mux.HandleFunc("/app/v3/password/forget", forgetPasswordHandler)
+	mux.HandleFunc("/app/v3/password/update", updatePasswordHandler)
+	mux.HandleFunc("/app/v3/account/activate", activateAccountHandler)
+	mux.HandleFunc("/app/v3/account/improve", improveAccountHandler)
+	mux.HandleFunc("/app/v3/account/certificate", improveAccountHandler)
 
-	mux.HandleFunc("/v3/app/token/qiniu", qiniuTokenHandler)
+	mux.HandleFunc("/app/v3/token/qiniu", qiniuTokenHandler)
 
-	mux.HandleFunc("/v3/app/bill", billV3Handle)
-	mux.HandleFunc("/v3/app/orders", ordersHandler)
-	mux.HandleFunc("/v3/app/coupons", couponsHandler)
-	mux.HandleFunc("/v3/app/message/pull", messagePullHandler)
+	mux.HandleFunc("/app/v3/bills", billsHandler)
+	mux.HandleFunc("/app/v3/orders", ordersHandler)
+	mux.HandleFunc("/app/v3/coupons", couponsHandler)
+	mux.HandleFunc("/app/v3/message/pull", messagePullHandler)
 
 	return mux
 }

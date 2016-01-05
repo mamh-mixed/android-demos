@@ -170,6 +170,22 @@ func certificateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonMarshal(result))
 }
 
+// billsHandler 账单处理
+func billsHandler(w http.ResponseWriter, r *http.Request) {
+	result := UserV3.getUserBills(&reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
+		Month:     r.FormValue("month"),
+		Status:    r.FormValue("status"),
+		Index:     r.FormValue("index"),
+		Size:      r.FormValue("size"),
+		TransType: model.PayTrans,
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
 // ordersHandler 查询订单
 func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	result := User.ordersHandler(&reqParams{
@@ -193,7 +209,12 @@ func couponsHandler(w http.ResponseWriter, r *http.Request) {
 		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
+		ClientId:  r.FormValue("clientId"),
+		Month:     r.FormValue("month"),
+		Index:     r.FormValue("index"),
+		Size:      r.FormValue("size"),
 	})
+	w.Write(jsonMarshal(result))
 }
 
 // messagePullHandler 消息接口

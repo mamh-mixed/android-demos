@@ -3,11 +3,11 @@ package scanpay2
 import (
 	"crypto/rsa"
 	"errors"
-	"net/url"
-	"time"
-
+	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"github.com/omigo/validator"
+	"net/url"
+	"time"
 )
 
 // 编码、签名算法、版本
@@ -25,15 +25,16 @@ type BaseReq interface {
 
 // CommonParams 组装公共参数
 type CommonParams struct {
-	AppID     string `json:"-" validate:"nonzero"` // 支付宝服务窗 APPID
-	Method    string `json:"-"`                    // 接口名称
-	Charset   string `json:"-"`                    // 请求使用的编码格式，如utf-8,gbk,gb2312等
-	SignType  string `json:"-"`                    // 商户生成签名字符串所使用的签名算法类型，目前支持RSA,DSA
-	Sign      string `json:"-"`                    // 商户请求参数的签名串，详见安全规范中的签名生成算法
-	Timestamp string `json:"-"`                    // 发送请求的时间，格式“yyyy-MM-dd HH:mm:ss”
-	Version   string `json:"-"`                    // 调用的接口版本，固定为:1.0
+	AppID     string                `json:"-" validate:"nonzero"` // 支付宝服务窗 APPID
+	Method    string                `json:"-"`                    // 接口名称
+	Charset   string                `json:"-"`                    // 请求使用的编码格式，如utf-8,gbk,gb2312等
+	SignType  string                `json:"-"`                    // 商户生成签名字符串所使用的签名算法类型，目前支持RSA,DSA
+	Sign      string                `json:"-"`                    // 商户请求参数的签名串，详见安全规范中的签名生成算法
+	Timestamp string                `json:"-"`                    // 发送请求的时间，格式“yyyy-MM-dd HH:mm:ss”
+	Version   string                `json:"-"`                    // 调用的接口版本，固定为:1.0
+	Req       *model.ScanPayRequest `json:"-" bson:"-"`
 
-	PrivateKey *rsa.PrivateKey `json:"-"` // 商户 RSA 私钥
+	PrivateKey *rsa.PrivateKey `json:"-" bson:"-"` // 商户 RSA 私钥
 }
 
 // Values 组装公共参数
