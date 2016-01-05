@@ -1289,6 +1289,10 @@ func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
 	if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.ClientId == "" || req.Index == "" {
 		return model.PARAMS_EMPTY
 	}
+	// 字段长度验证
+	if result, ok := requestDataValidate(req); !ok {
+		return result
+	}
 	if req.Month != "" && !monthRegexp.MatchString(req.Month) {
 		return model.TIME_ERROR
 	}
@@ -1347,15 +1351,15 @@ func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
 	index, size := pagingParams(req)
 
 	q := &model.QueryCondition{
-		MerId:          user.MerId,
-		StartTime:      dsDate,
-		EndTime:        deDate,
-		Size:           size,
-		Page:           1,
-		Skip:           index,
-		CouTransStatus: []string{model.TransSuccess},
-		Respcd:         "00",
-		Busicd:         "VERI",
+		MerId:       user.MerId,
+		StartTime:   dsDate,
+		EndTime:     deDate,
+		Size:        size,
+		Page:        1,
+		Skip:        index,
+		TransStatus: []string{model.TransSuccess},
+		Respcd:      "00",
+		Busicd:      "VERI",
 	}
 
 	trans, total, err := mongo.CouTransColl.Find(q)

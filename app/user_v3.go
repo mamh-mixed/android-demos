@@ -120,11 +120,11 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 			switch v.TransType {
 			case model.PayTrans:
 				result.TotalFee += v.TransAmt
-				result.Count += 1
-			case model.RefundTrans:
+				result.Count += v.TransNum
+			default:
 				result.RefdTotalFee += v.TransAmt
 				result.TotalFee -= v.TransAmt
-				result.RefdCount += 1
+				result.RefdCount += v.TransNum
 			}
 		}
 	}
@@ -134,29 +134,85 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 
 // getDaySummary 获取单日汇总的处理
 func (u *userV3) getDaySummary(req *reqParams) (result model.AppResult) {
-	// // req.BusinessType 表示 报表类型。"1":收款账单；"2":卡券账单
-	// // 必填字段不为空
-	// if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.BusinessType == "" || req.Date == "" {
-	// 	return model.PARAMS_EMPTY
-	// }
-	//
-	// // 字段长度验证
-	// if result, ok := requestDataValidate(req); !ok {
-	// 	return result
-	// }
-	//
-	// // 报表类型
-	// if req.BusinessType != "1" && req.BusinessType != "2" {
-	// 	return model.INVALID_REPORT_TYPE
-	// }
-	//
-	// // 验证日期格式
-	// startTime, err := time.Parse("20060102", req.Date)
-	// if err != nil {
-	// 	return model.TIME_ERROR
-	// }
-	// endTime := startTime.AddDate(0, 0, 1).Add(-time.Second)
-	// startTimeStr, endTimeStr := startTime.Format("2006-01-02 15:04:05"), endTime.Format("2006-01-02 15:04:05")
+	// req.BusinessType 表示 报表类型。"1":收款账单；"2":卡券账单
+	// 必填字段不为空
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.BusinessType == "" || req.Date == "" {
+		return model.PARAMS_EMPTY
+	}
 
+	// 字段长度验证
+	if result, ok := requestDataValidate(req); !ok {
+		return result
+	}
+	// 报表类型验证
+	if req.BusinessType != "1" && req.BusinessType != "2" {
+		return model.INVALID_REPORT_TYPE
+	}
+	// 验证日期格式
+	startDate, err := time.ParseInLocation("20060102", req.Date, time.Local)
+	if err != nil {
+		return model.TIME_ERROR
+	}
+	formatDate := startDate.Format("2006-01-02")
+	dsDate := formatDate + " 00:00:00"
+	deDate := formatDate + " 23:59:59"
+
+	// 根据用户名查找用户
+	user, err := mongo.AppUserCol.FindOne(req.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.USERNAME_PASSWORD_ERROR
+		}
+		log.Errorf("find database err,%s", err)
+		return model.SYSTEM_ERROR
+	}
+
+	// 密码不对
+	if req.Password != user.Password {
+		return model.USERNAME_PASSWORD_ERROR
+	}
+	result = model.NewAppResult(model.SUCCESS, "")
+	q := &model.QueryCondition{
+		MerId:        user.MerId,
+		StartTime:    dsDate,
+		EndTime:      deDate,
+		RefundStatus: []int{model.TransRefunded},   // 1: 已退款
+		TransStatus:  []string{model.TransSuccess}, // '30': 交易成功
+	}
+	if req.BusinessType == "1" {
+		q.IsRelatedCoupon = false
+		typeGroup, err := mongo.SpTransColl.MerBills(q)
+		if err != nil {
+			return model.SYSTEM_ERROR
+		}
+		for _, v := range typeGroup {
+			switch v.TransType {
+			case model.PayTrans:
+				result.TotalFee += v.TransAmt
+				result.Count += v.TransNum
+			default:
+				result.TotalFee -= v.TransAmt
+			}
+		}
+
+	} else if req.BusinessType == "2" {
+		//totalFee:返回的是原始总金额
+		q.IsRelatedCoupon = true
+		typeGroup, err := mongo.SpTransColl.MerBills(q)
+		if err != nil {
+			return model.SYSTEM_ERROR
+		}
+		for _, v := range typeGroup {
+			switch v.TransType {
+			case model.PayTrans:
+				origTransAmt := v.TransAmt + v.DiscountAmt
+				result.TotalFee += origTransAmt
+				result.Count += v.TransNum
+			default:
+				origTransAmt := v.TransAmt + v.DiscountAmt
+				result.TotalFee -= origTransAmt
+			}
+		}
+	}
 	return result
 }
