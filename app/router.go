@@ -66,6 +66,7 @@ func RouteV3() (mux *AppV3ServeMux) {
 	mux.HandleFunc("/app/v3/orders", ordersHandler)
 	mux.HandleFunc("/app/v3/coupons", couponsHandler)
 	mux.HandleFunc("/app/v3/message/pull", messagePullHandler)
+	mux.HandleFunc("/app/v3/message/update", messageUpdateHandler)
 
 	return mux
 }

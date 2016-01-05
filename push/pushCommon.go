@@ -1,12 +1,13 @@
 package push
 
 import (
+	"strings"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-	"strings"
-	"time"
 )
 
 func Do(req *model.PushMessageReq) {
@@ -31,7 +32,7 @@ func SavePushMessage(req *model.PushMessageReq) error {
 	rsp.Title = req.Title
 	rsp.DeviceToken = req.DeviceToken
 	rsp.Message = req.Message
-	rsp.PushTime = time.Now().Format("2006-01-02 15:04:05")
+	rsp.PushTime = time.Now().Format("20060102150405")
 	rsp.MsgId = util.SerialNumber()
 	return mongo.PushMessageColl.Insert(rsp)
 }
