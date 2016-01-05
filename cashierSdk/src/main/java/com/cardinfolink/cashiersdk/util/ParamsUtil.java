@@ -4,12 +4,14 @@ import android.annotation.SuppressLint;
 
 import com.cardinfolink.cashiersdk.model.InitData;
 import com.cardinfolink.cashiersdk.model.OrderData;
+import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 
 public class ParamsUtil {
+    public static final String SIGN_TYPE = CashierSdk.SIGN_TYPE_SHA_256;
 
     @SuppressLint("SimpleDateFormat")
     public static JSONObject getPay(InitData initData, OrderData orderData) {
@@ -28,7 +30,7 @@ public class ParamsUtil {
                 json.put("goodsInfo", orderData.goodsInfo);
             }
 
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, SIGN_TYPE));
 
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -55,7 +57,7 @@ public class ParamsUtil {
                 json.put("goodsInfo", orderData.goodsInfo);
             }
 
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, SIGN_TYPE));
 
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -76,7 +78,7 @@ public class ParamsUtil {
             json.put("mchntid", initData.mchntid);
             json.put("origOrderNum", orderData.origOrderNum);
             json.put("terminalid", initData.terminalid);
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, SIGN_TYPE));
 
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -98,7 +100,7 @@ public class ParamsUtil {
             json.put("orderNum", orderData.orderNum);
             json.put("terminalid", initData.terminalid);
             json.put("tradeFrom", "android");
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, SIGN_TYPE));
 
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -122,7 +124,7 @@ public class ParamsUtil {
             json.put("txamt", orderData.txamt);
             json.put("terminalid", initData.terminalid);
             json.put("tradeFrom", "android");
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, SIGN_TYPE));
 
         } catch (JSONException e) {
             // TODO Auto-generated catch block
@@ -145,7 +147,7 @@ public class ParamsUtil {
             json.put("orderNum", orderData.orderNum);
             json.put("terminalid", initData.terminalid);
             json.put("tradeFrom", "android");
-            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, "SHA-1"));
+            json.put("sign", getSign(MapUtil.getSignString(MapUtil.getMapForJson(json.toString())), initData.signKey, SIGN_TYPE));
 
         } catch (JSONException e) {
             // TODO Auto-generated catch block

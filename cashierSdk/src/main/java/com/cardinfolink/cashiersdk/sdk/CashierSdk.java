@@ -20,8 +20,8 @@ public class CashierSdk {
 
     private static final String mProduceHost = "121.40.167.112";
     private static final String mProducePort = "6001";
-    private static final String mTestHost = "121.40.86.222";
-    private static final String mTestPort = "6001";
+    private static final String mTestHost = "192.168.1.154";
+    private static final String mTestPort = "6600";
     private static InitData mInitData;
 
     public static void init(InitData data) {
@@ -40,12 +40,19 @@ public class CashierSdk {
 
     }
 
+    public static final String SIGN_TYPE_SHA_1 = "SHA-1";
+    public static final String SIGN_TYPE_SHA_256 = "SHA-256";
+    public static final String SIGN_TYPE = SIGN_TYPE_SHA_256;
+
+
+    public static final String SDK_CURRENCY_TWD = "TWD";//币种类型，这里表示的台湾币
+    public static final String SDK_CURRENCY = SDK_CURRENCY_TWD;//币种类型，这里表示的台湾币
 
     public static void startPay(OrderData orderData, final CashierListener listener) {
 
         String str = orderData.txamt;
         if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
+            if (orderData.currency.equals(SDK_CURRENCY)) {
                 orderData.txamt = TxamtUtil.getTxamtUtil(str);
                 if (orderData.txamt == null) {
                     listener.onError(1);
@@ -67,8 +74,8 @@ public class CashierSdk {
                 if (sign != null) {
                     map.remove("sign");
 
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
-                    Log.i(TAG,"veriSign: " + veriSign);
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, SIGN_TYPE);
+                    Log.i(TAG, "veriSign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
@@ -93,7 +100,7 @@ public class CashierSdk {
     public static void startPrePay(OrderData orderData, final CashierListener listener) {
         String str = orderData.txamt;
         if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
+            if (orderData.currency.equals(SDK_CURRENCY)) {
                 orderData.txamt = TxamtUtil.getTxamtUtil(str);
                 if (orderData.txamt == null) {
                     listener.onError(1);
@@ -114,7 +121,7 @@ public class CashierSdk {
                 if (sign != null) {
                     map.remove("sign");
 
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, SIGN_TYPE);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
@@ -137,7 +144,7 @@ public class CashierSdk {
     public static void startQy(OrderData orderData, final CashierListener listener) {
         String str = orderData.txamt;
         if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
+            if (orderData.currency.equals(SDK_CURRENCY)) {
                 orderData.txamt = TxamtUtil.getTxamtUtil(str);
                 if (orderData.txamt == null) {
                     listener.onError(1);
@@ -157,7 +164,7 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, SIGN_TYPE);
                     Log.i(TAG, "verisign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
@@ -181,7 +188,7 @@ public class CashierSdk {
 
         String str = orderData.txamt;
         if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
+            if (orderData.currency.equals(SDK_CURRENCY)) {
                 orderData.txamt = TxamtUtil.getTxamtUtil(str);
                 if (orderData.txamt == null) {
                     listener.onError(1);
@@ -202,7 +209,7 @@ public class CashierSdk {
                 if (sign != null) {
                     map.remove("sign");
 
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, SIGN_TYPE);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
@@ -224,7 +231,7 @@ public class CashierSdk {
     public static void startRefd(OrderData orderData, final CashierListener listener) {
         String str = orderData.txamt;
         if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
+            if (orderData.currency.equals(SDK_CURRENCY)) {
                 orderData.txamt = TxamtUtil.getTxamtUtil(str);
                 if (orderData.txamt == null) {
                     listener.onError(1);
@@ -245,7 +252,7 @@ public class CashierSdk {
                 if (sign != null) {
                     map.remove("sign");
 
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, SIGN_TYPE);
                     Log.i(TAG, "veriSign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
@@ -269,7 +276,7 @@ public class CashierSdk {
 
         String str = orderData.txamt;
         if (str != null && orderData.currency != null) {
-            if (orderData.currency.equals("156")) {
+            if (orderData.currency.equals(SDK_CURRENCY)) {
                 orderData.txamt = TxamtUtil.getTxamtUtil(str);
                 if (orderData.txamt == null) {
                     listener.onError(1);
@@ -290,7 +297,7 @@ public class CashierSdk {
                 if (sign != null) {
                     map.remove("sign");
 
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, SIGN_TYPE);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
