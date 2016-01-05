@@ -37,19 +37,21 @@ var (
 	scanPayQrCodeOfflinePay = &model.ScanPayRequest{
 		GoodsInfo: "鞋子,1000,2;衣服,1500,3",
 		OrderNum:  util.Millisecond(),
-		AgentCode: "10134001",
-		Txamt:     "000000000001",
+		AgentCode: "19992900",
+		Txamt:     "000000000051",
 		Busicd:    "PAUT",
-		Mchntid:   "100000000010001",
+		Mchntid:   "200000000010002",
+		Currency:  "TWD",
 		Chcd:      "WXP",
+		// SignType:  "HMAC-SHA256",
 		// TimeExpire: "201510201050000",
 	}
 	// 查询
 	scanPayEnquiry = &model.ScanPayRequest{
 		Busicd:       "INQY",
-		Mchntid:      "200000000010001",
+		Mchntid:      "200000000010002",
 		AgentCode:    "19992900",
-		OrigOrderNum: "1447168085242",
+		OrigOrderNum: "1451958955755",
 	}
 	// 退款
 	scanPayRefund = &model.ScanPayRequest{
@@ -209,7 +211,9 @@ func TestConcurrentScanPay(t *testing.T) {
 func TestScanPay(t *testing.T) {
 	// scanPayEnterprise.OrderNum = "1444639800979"
 	// scanPayClose.OrigOrderNum = "14417647179551"
-	err := doOneScanPay(scanPayBarcodePay)
+	err := doOneScanPay(scanPayEnquiry)
+	// err := doOneScanPay(scanPayQrCodeOfflinePay)
+	// err := doOneScanPay(scanPayBarcodePay)
 	if err != nil {
 		t.Error(err)
 	}
