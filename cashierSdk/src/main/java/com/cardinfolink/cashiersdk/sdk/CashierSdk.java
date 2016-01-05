@@ -40,8 +40,17 @@ public class CashierSdk {
 
     }
 
+    public static final String CHARSET_GBK = "gbk";
+    public static final String CHARSET = CHARSET_GBK;
+
+    public static final String SIGN_TYPE_SHA_1 = "SHA-1";
+    public static final String SIGN_TYPE_SHA_256 = "SHA-256";
+    public static final String SIGN_TYPE = SIGN_TYPE_SHA_1;
+
+    public static final String SDK_TRADE_FROM = "android";
+
     public static final String SDK_CURRENCY_RMB = "156";//币种类型，这里表示的人民币
-    public static final String SDK_CURRENCY = "156";//币种类型，这里表示的人民币
+    public static final String SDK_CURRENCY = SDK_CURRENCY_RMB;//币种类型，这里表示的人民币
 
     public static final int SDK_ERROR_RESULT_FORMAT = 0;//socket 返回的结果格式不对
     public static final int SDK_ERROR_RESULT_NULL = 5;//socket 返回的结果是空
@@ -83,7 +92,7 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
@@ -132,7 +141,7 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
@@ -252,7 +261,7 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey);
                     Log.i(TAG, "veriSign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
@@ -288,7 +297,7 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey);
                     Log.i(TAG, "veriSign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
@@ -322,7 +331,7 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
@@ -352,7 +361,7 @@ public class CashierSdk {
                 String sign = (String) map.get("sign");
                 if (sign != null) {
                     map.remove("sign");
-                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+                    String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);

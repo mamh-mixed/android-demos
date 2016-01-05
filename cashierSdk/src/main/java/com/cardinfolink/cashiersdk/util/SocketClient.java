@@ -6,6 +6,8 @@ package com.cardinfolink.cashiersdk.util;
 
 import android.util.Log;
 
+import com.cardinfolink.cashiersdk.sdk.CashierSdk;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -37,17 +39,14 @@ public class SocketClient {
             lengthStr = "0" + lengthStr;
         }
         msg = lengthStr + msg;
-        Log.e(TAG, "json :" + msg);
         PrintWriter out = null;
         BufferedReader in = null;
-
-
         try {
             this.sk = new Socket(this.host, Integer.parseInt(this.port));
             this.sk.setSoTimeout(timeout);
 
-            out = new PrintWriter(new OutputStreamWriter(this.sk.getOutputStream(), "gbk"));
-            in = new BufferedReader(new InputStreamReader(this.sk.getInputStream(), "gbk"));
+            out = new PrintWriter(new OutputStreamWriter(this.sk.getOutputStream(), CashierSdk.CHARSET));
+            in = new BufferedReader(new InputStreamReader(this.sk.getInputStream(), CashierSdk.CHARSET));
 
             out.print(msg);
             out.flush();
@@ -55,11 +54,8 @@ public class SocketClient {
             //get response
             char[] cbuf = new char[4096];
             int ret = in.read(cbuf);
-
             String retstr = String.copyValueOf(cbuf);
-
             return retstr;
-
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -73,7 +69,6 @@ public class SocketClient {
                 }
         }
         return "error";
-
     }
 
 }
