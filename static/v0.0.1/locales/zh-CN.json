@@ -988,10 +988,6 @@
     "message": "城市"
   },
   "MERCHANT.COMMODITYNAME": {
-    "description": "开户行名称",
-    "message": "开户行名称"
-  },
-  "MERCHANT.TRANSCURR": {
     "description": "商品名称",
     "message": "商品名称"
   },
