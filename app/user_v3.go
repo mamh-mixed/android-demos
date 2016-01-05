@@ -126,3 +126,32 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 
 	return result
 }
+
+// getDaySummary 获取单日汇总的处理
+func (u *userV3) getDaySummary(req *reqParams) (result model.AppResult) {
+	// // req.BusinessType 表示 报表类型。"1":收款账单；"2":卡券账单
+	// // 必填字段不为空
+	// if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.BusinessType == "" || req.Date == "" {
+	// 	return model.PARAMS_EMPTY
+	// }
+	//
+	// // 字段长度验证
+	// if result, ok := requestDataValidate(req); !ok {
+	// 	return result
+	// }
+	//
+	// // 报表类型
+	// if req.BusinessType != "1" && req.BusinessType != "2" {
+	// 	return model.INVALID_REPORT_TYPE
+	// }
+	//
+	// // 验证日期格式
+	// startTime, err := time.Parse("20060102", req.Date)
+	// if err != nil {
+	// 	return model.TIME_ERROR
+	// }
+	// endTime := startTime.AddDate(0, 0, 1).Add(-time.Second)
+	// startTimeStr, endTimeStr := startTime.Format("2006-01-02 15:04:05"), endTime.Format("2006-01-02 15:04:05")
+
+	return result
+}

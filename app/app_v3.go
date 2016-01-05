@@ -186,6 +186,19 @@ func billsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonMarshal(result))
 }
 
+// totalSummaryHandler 单日汇总处理
+func totalSummaryHandler(w http.ResponseWriter, r *http.Request) {
+	result := UserV3.getDaySummary(&reqParams{
+		UserName:     r.FormValue("username"),
+		Password:     r.FormValue("password"),
+		Transtime:    r.FormValue("transtime"),
+		BusinessType: r.FormValue("reportType"), // 报表类型。1:收款账单；2:卡券账单
+		Date:         r.FormValue("day"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
 // ordersHandler 查询订单
 func ordersHandler(w http.ResponseWriter, r *http.Request) {
 	result := User.ordersHandler(&reqParams{
