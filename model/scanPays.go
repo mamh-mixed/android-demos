@@ -80,7 +80,7 @@ type QueryCondition struct {
 	WriteoffStatus     string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
 	Terminalid         string `bson:"terminalid,omitempty" json:"terminalid,omitempty"`         // 终端代码
 	BlendType          string
-	CouTransStatus     []string `json:"couTransStatus,omitempty"`
+	IsRelatedCoupon    bool //支付是否关联卡券
 }
 
 // QueryResult 查询结果值
@@ -149,9 +149,10 @@ type MerGroup struct {
 
 // TransTypeGroup 按单个商户交易类型分组
 type TransTypeGroup struct {
-	TransType int   `bson:"transType"`
-	TransAmt  int64 `bson:"transAmt"`
-	TransNum  int   `bson:"transNum"`
+	TransType   int   `bson:"transType"`
+	TransAmt    int64 `bson:"transAmt"`
+	TransNum    int   `bson:"transNum"`
+	DiscountAmt int64 `bson:"discountAmt"`
 }
 
 // SettRoleGroup 按清算角色分组
