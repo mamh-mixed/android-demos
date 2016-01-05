@@ -50,8 +50,8 @@ public class SocketClient {
             this.sk = new Socket(this.host, Integer.parseInt(this.port));
             this.sk.setSoTimeout(timeout);
 
-            out = new PrintWriter(new OutputStreamWriter(this.sk.getOutputStream(), "gbk"));
-            in = new BufferedReader(new InputStreamReader(this.sk.getInputStream(), "gbk"));
+            out = new PrintWriter(new OutputStreamWriter(this.sk.getOutputStream(), "UTF-8"));
+            in = new BufferedReader(new InputStreamReader(this.sk.getInputStream(), "UTF-8"));
 
             out.print(msg);
             out.flush();
