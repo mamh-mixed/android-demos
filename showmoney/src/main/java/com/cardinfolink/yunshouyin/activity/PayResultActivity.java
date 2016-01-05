@@ -24,6 +24,10 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.view.HintDialog;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+
 
 /**
  * Created by charles on 2015/12/20.
@@ -87,7 +91,7 @@ public class PayResultActivity extends Activity {
             mActualTotalMoney.setVisibility(View.VISIBLE);
             mActualDiscount.setVisibility(View.VISIBLE);
 
-            mCouponContent.setRightText(SessonData.loginUser.getResultData().cardId);//卡券内容
+            mCouponContent.setRightText(Coupon.getInstance().getCardId());//卡券内容
             mActualTotalMoney.setRightText(tradeBill.originalTotal);//消费金额
             mActualDiscount.setRightText(String.valueOf(new BigDecimal(tradeBill.originalTotal).subtract(new BigDecimal(tradeBill.total)).doubleValue()));//优惠金额
         } else {
@@ -118,13 +122,27 @@ public class PayResultActivity extends Activity {
             mReceiveMoney.setTextColor(Color.RED);
             mReceiveMoneyStatus.setText(R.string.pay_total_state_fail);
             if (hasCouponDiscount) {
+                Boolean preferenceScancode = Coupon.getInstance().getVoucherType() != null && (Coupon.getInstance().getVoucherType().startsWith("4")
+                        || Coupon.getInstance().getVoucherType().startsWith("5"));
                 mActionBar.setLeftText(getString(R.string.coupon_getmoney));
-                mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        showPayFail();
-                    }
-                });
+                //指定扫码支付
+                if (preferenceScancode) {
+                    mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showPayFailPref();
+                        }
+                    });
+                }
+                else{
+                    //未指定扫码支付
+                    mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showPayFailUnPref();
+                        }
+                    });
+                }
             } else {
                 mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
                     @Override
@@ -156,16 +174,40 @@ public class PayResultActivity extends Activity {
         });
     }
 
+    private void showPayFailUnPref() {
+        mHintDialog.setText(getString(R.string.coupon_abandom_verial_or_not), getString(R.string.coupon_pay_again), getString(R.string.coupon_payby_cash));
+        mHintDialog.setCancelOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Coupon.getInstance().clear();
+                mHintDialog.hide();
+                finish();
+            }
+        });
+        mHintDialog.setOkOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //重新支付
+                MainActivity.getHandler().sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
+                mHintDialog.hide();
+                finish();
+            }
+
+        });
+        mHintDialog.show();
+
+    }
+
     //弹出是否放弃本子核销对话框
-    public void showPayFail() {
-        mHintDialog.setText(getString(R.string.coupon_abandom_verial_or_not), getString(R.string.coupon_abandom), getString(R.string.coupon_pay_again));
+    public void showPayFailPref() {
+        mHintDialog.setText(getString(R.string.coupon_abandom_verial_or_not), getString(R.string.coupon_pay_again), getString(R.string.coupon_abandom));
         mHintDialog.setCancelOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //卡券冲正
                 OrderData orderData = new OrderData();
-                orderData.orderNum = SessonData.loginUser.getResultData().orderNum;//订单号
-                orderData.origOrderNum = "";//原始订单号
+                orderData.orderNum = geneOrderNumber();//订单号
+                orderData.origOrderNum = Coupon.getInstance().getOrderNum();//设置原始订单号
                 CashierSdk.startReversal(orderData, new CashierListener() {
                     @Override
                     public void onResult(ResultData resultData) {
@@ -209,5 +251,19 @@ public class PayResultActivity extends Activity {
 
         });
         mHintDialog.show();
+    }
+
+
+    private String geneOrderNumber() {
+        String mOrderNum;
+
+        Date now = new Date();
+        SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
+        mOrderNum = spf.format(now);
+        Random random = new Random();//订单号末尾随机的生成一个数
+        for (int i = 0; i < 5; i++) {
+            mOrderNum = mOrderNum + random.nextInt(10);
+        }
+        return mOrderNum;
     }
 }
