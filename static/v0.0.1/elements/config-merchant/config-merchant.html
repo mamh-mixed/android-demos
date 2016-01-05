@@ -1383,7 +1383,7 @@
         var files = e.srcElement.files;
         if (files.length) {
           var file = files[0];
-          if ('application/x-x509-ca-cert' === file.type) {
+          // if ('application/x-x509-ca-cert' === file.type) {
             var reader = new FileReader();
             reader.onload = function() {
               if (/BEGIN CERTIFICATE/.test(this.result) === false) {
@@ -1393,9 +1393,9 @@
               _this.set('weixin.httpCert', this.result);
             };
             reader.readAsText(file);
-          } else {
-            Util.toast('CHAN_MERCHANT.HTTP_CERT_FORMAT_ERROR_PEM', 3000, true);
-          }
+          // } else {
+          //   Util.toast('CHAN_MERCHANT.HTTP_CERT_FORMAT_ERROR_PEM', 3000, true);
+          // }
         }
       },
       handleWeixinHttpKeyFile: function(e) {
@@ -1403,7 +1403,7 @@
         var files = e.srcElement.files;
         if (files.length) {
           var file = files[0];
-          if ('application/x-x509-ca-cert' === file.type) {
+          // if ('application/x-x509-ca-cert' === file.type) {
             var reader = new FileReader();
             reader.onload = function() {
               if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
@@ -1413,9 +1413,9 @@
               _this.set('weixin.httpKey', this.result);
             };
             reader.readAsText(file);
-          } else {
-            Util.toast('CHAN_MERCHANT.HTTP_KEY_FORMAT_ERROR_PEM', 3000, true);
-          }
+          // } else {
+          //   Util.toast('CHAN_MERCHANT.HTTP_KEY_FORMAT_ERROR_PEM', 3000, true);
+          // }
         }
       },
       // 代理列表响应
