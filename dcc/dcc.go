@@ -23,7 +23,7 @@ func New(localCurr, targetCurr string) Dcc {
 
 // NewUSD 对美元
 func NewUSD(localCurr string) Dcc {
-	return Dcc{localCurr: localCurr, targetCurr: "HKD"}
+	return Dcc{localCurr: localCurr, targetCurr: "USD"}
 }
 
 // Do 汇率转换

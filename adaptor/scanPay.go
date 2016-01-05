@@ -85,7 +85,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 		if err != nil {
 			return ReturnWithErrorCode("RATE_TRANSFROM_ERROR")
 		}
-		t.SettCurr = "HKD"
+		t.SettCurr = "USD"
 		t.SettCurrAmt = settAmt
 		t.SettExchangeRate = settRate
 		req.ActTxamt = fmt.Sprintf("%d", settAmt)
@@ -142,7 +142,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 		if err != nil {
 			return ReturnWithErrorCode("RATE_TRANSFROM_ERROR")
 		}
-		t.SettCurr = "HKD"
+		t.SettCurr = "USD"
 		t.SettCurrAmt = settAmt
 		t.SettExchangeRate = settRate
 		req.ActTxamt = fmt.Sprintf("%d", settAmt)
@@ -227,7 +227,7 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 
 		req.AppID = chanMer.WxpAppId
 		req.ActTxamt = fmt.Sprintf("%d", req.IntTxamt)
-		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
+		req.TotalTxamt = fmt.Sprintf("%d", orig.SettCurrAmt)
 		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(chanMer.HttpCert)
 		req.WeixinClientKey = []byte(chanMer.HttpKey)
