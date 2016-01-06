@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.api;
 
 import android.text.TextUtils;
 
+import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.Message;
@@ -385,6 +386,47 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    /**
+     * 提供给APP获取卡券列表信息的接口
+     * 卡券列表
+     *
+     * @param user
+     * @param month
+     * @param index
+     * @param size
+     * @return
+     */
+    @Override
+    public ServerPacket getHistoryCoupons(User user, String month, String index, String size) {
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_COUPONS;
+
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("username", user.getUsername());
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
+        params.put("password", password);
+
+        params.put("clientId", user.getClientid());//用户ID
+        params.put("month", month);//如果传送，返回该月账单情况，见返回字段. YYYYMM
+        params.put("index", index);//分页起始位置
+        params.put("size", size); //每页条数，默认15条
+
+        params.put("transtime", getTransTime());
+        params.put("sign", createSign(params));
+
+        try {
+            String response = postEngine.post(url, params);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
+            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+                return serverPacket;
+            } else {
+                throw new QuickPayException(serverPacket.getError());
+            }
+        } catch (IOException e) {
+            throw new QuickPayException();
+        }
+    }
+
+
     //两个参数的用来精确查找某个订单的
     @Override
     public ServerPacket findOrder(User user, String orderNum) {
@@ -447,6 +489,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             throw new QuickPayException();
         }
     }
+
 
     /**
      * 这个有替代的方案   /summary/day:
