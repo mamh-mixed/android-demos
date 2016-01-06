@@ -1598,8 +1598,11 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 
 func transToCoupon(t *model.Trans) *model.Coupon {
 	coupon := &model.Coupon{
-		Name:    t.Prodname,
-		Channel: t.ChanCode,
+		Name:      t.Prodname,
+		Channel:   t.ChanCode,
+		TradeFrom: t.TradeFrom,
+		Respcd:    t.RespCode,
+		TransTime: t.CreateTime,
 	}
 	couponType := ""
 	if len(t.VoucherType) == 2 {
