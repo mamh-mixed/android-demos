@@ -18,6 +18,7 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	req.SysOrderNum = t.SysOrderNum
 	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
+	req.AppID = c.WxpAppId
 
 	// 交易参数
 	t.SysOrderNum = req.SysOrderNum
@@ -29,7 +30,6 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	// 	req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
-		req.AppID = c.WxpAppId
 		req.PemCert = []byte(c.HttpCert)
 		req.PemKey = []byte(c.HttpKey)
 		// req.SubMchId = c.SubMchId // remark:暂不支持受理商模式
@@ -60,6 +60,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	req.Subject = req.M.Detail.CommodityName
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
@@ -72,10 +73,10 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 		// } else {
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 		req.ExtendParams = genExtendParams(req.M, chanMer)
+		req.PemKey = []byte(chanMer.PrivateKey)
 		// }
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
-		req.AppID = chanMer.WxpAppId
 		req.SubAppID = subAppId
 		req.SubMchId = subMchId
 		req.GoodsTag = req.M.Detail.GoodsTag
@@ -122,9 +123,9 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 		req.ExtendParams = genExtendParams(req.M, chanMer)
+		req.PemKey = []byte(chanMer.PrivateKey)
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
-		req.AppID = chanMer.WxpAppId
 		req.SubAppID = subAppId
 		req.SubMchId = subMchId
 		req.GoodsTag = req.M.Detail.GoodsTag
@@ -137,6 +138,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	req.Subject = req.M.Detail.CommodityName
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 
 	// 获得渠道实例，请求
 	sp := channel.GetScanPayChan(req.Chcd, c.Version)
@@ -165,13 +167,15 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 	// 渠道参数
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 
 	// 不同渠道参数转换
 	switch orig.ChanCode {
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(req.IntTxamt)/100)
+		req.OrigChanOrderNum = orig.ChanOrderNum
+		req.PemKey = []byte(chanMer.PrivateKey)
 	case channel.ChanCodeWeixin:
-		req.AppID = chanMer.WxpAppId
 		req.ActTxamt = fmt.Sprintf("%d", req.IntTxamt)
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 		req.SubAppID = subAppId
@@ -226,13 +230,14 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 	// 上送参数
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		// do nothing...
+		req.PemKey = []byte(chanMer.PrivateKey)
 	case channel.ChanCodeWeixin:
-		req.AppID = chanMer.WxpAppId
 		req.SubAppID = subAppId
 		req.SubMchId = subMchId
 		req.PemCert = []byte(chanMer.HttpCert)
@@ -277,6 +282,7 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 	// 渠道参数
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 
 	// 请求撤销
 	sp := channel.GetScanPayChan(orig.ChanCode, c.Version)
@@ -284,7 +290,6 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 	switch orig.ChanCode {
 	case channel.ChanCodeWeixin:
 		// 微信用退款接口
-		req.AppID = chanMer.WxpAppId
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 		req.ActTxamt = req.TotalTxamt
 		req.SubAppID = subAppId
@@ -293,6 +298,7 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 		req.PemKey = []byte(chanMer.HttpKey)
 		ret, err = sp.ProcessRefund(req)
 	case channel.ChanCodeAlipay:
+		req.PemKey = []byte(chanMer.PrivateKey)
 		ret, err = sp.ProcessCancel(req)
 	default:
 		err = fmt.Errorf("unknown scan pay channel `%s`", orig.ChanCode)

@@ -13,7 +13,7 @@ type dmf2 struct{}
 func getCommonParams(m *model.ScanPayRequest) *CommonParams {
 	return &CommonParams{
 		AppID:      m.AppID,
-		PrivateKey: LoadPrivateKey([]byte(m.PemKey)), // TODO 做个缓存处理
+		PrivateKey: LoadPrivateKey(m.PemKey), // TODO 做个缓存处理
 		Req:        m,
 		// TODO 预留authToken
 	}
@@ -28,7 +28,7 @@ func (d *dmf2) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespo
 	p.AuthCode = req.ScanCodeId
 	p.Subject = req.Subject
 	p.TotalAmount = req.ActTxamt
-	p.GoodsDetail = req.AlpMarshalGoods()
+	// p.GoodsDetail = req.AlpMarshalGoods()
 	_, p.TimeExpire = handleExpireTime(req.TimeExpire)
 
 	p.Body = ""
@@ -60,7 +60,7 @@ func (d *dmf2) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPa
 	p.OutTradeNo = req.OrderNum
 	p.Subject = req.Subject
 	p.TotalAmount = req.ActTxamt
-	p.GoodsDetail = req.AlpMarshalGoods()
+	// p.GoodsDetail = req.AlpMarshalGoods()
 	_, p.TimeExpire = handleExpireTime(req.TimeExpire)
 
 	q := &PrecreateResp{}
@@ -80,7 +80,7 @@ func (d *dmf2) ProcessRefund(req *model.ScanPayRequest) (*model.ScanPayResponse,
 	p := &RefundReq{}
 	p.CommonParams = *getCommonParams(req)
 	p.RefundAmount = req.ActTxamt
-	p.TradeNo = req.OrigOrderNum // TODO
+	p.TradeNo = req.OrigChanOrderNum
 	p.OutRequestNo = req.OrderNum
 
 	// RefundReason  string `json:"refund_reason,omitempty"`          // 退款原因

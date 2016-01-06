@@ -243,6 +243,10 @@
           <paper-input id="asignCert" label="MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
           <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项"></x-select>
         </div>
+        <div class="row">
+          <paper-input id="wxpAppId" label="支付宝 AppId" value="{{alipay.wxpAppId::input}}" ></paper-input>
+           <x-select id="aversion" items="[[aversions]]" selected-item="{{aversion}}" class="validate-container" label="支付宝接口" required error-message="必填项"></x-select>
+        </div>
         <div class="row button">
           <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
         </div>
@@ -399,9 +403,24 @@
             value: '天奕通 11719712a1'
           }]
         },
+         // 支付宝接口版本
+        aversions: {
+          type: Array,
+          value: [{
+            key: 'ALP2_0',
+            value: '当面付2.0'
+          }, {
+            key: 'ALP1_0',
+            value: '当面付1.0'
+          }]
+        },
         aagentCode: {
           type: Object,
           observer: '_aagentCodeChanged'
+        },
+        aversion: {
+          type: Object,
+          observer: '_aversionChanged'
         },
         settFlags: {
           type: Object,
@@ -566,6 +585,12 @@
       _aagentCodeChanged: function(value) {
         if (value) {
           this.set('alipay.agentCode', value.key);
+        }
+      },
+      // 支付宝接口选择
+      _aversionChanged: function(value) {
+        if (value) {
+          this.set('alipay.version', value.key);
         }
       },
       // 支付宝清算标识改变
@@ -740,6 +765,12 @@
             value: this.aagentCodeMap[this.alipay.agentCode],
           };
         }
+        if (this.alipay.version) {
+          this.aversion = {
+            key: this.alipay.version,
+            value: this.aversionMap[this.alipay.version],
+          };
+        }
       },
       // 编辑的时候查询微信路由渠道商户请求的响应事件
       handleWxpChanMerResponse: function(e) {
@@ -872,6 +903,10 @@
           '12010128a1': '讯联 12010128a1',
           '11719712a1': '天奕通 11719712a1'
         };
+        this.aversionMap = {
+          'ALP2_0': '当面付2.0',
+          'ALP1_0': '当面付1.0'
+        };
 
         // 默认选择我们的代理
         this.wbigchanMerId = {
@@ -890,6 +925,11 @@
         this.aagentCode = {
           key: '12010128a1',
           value: '讯联 12010128a1',
+        };
+        // 默认支付宝接口为2.0
+        this.aversion = {
+          key: 'ALP2_0',
+          value: '当面付2.0',
         };
         // 支付宝路由
         this.alipayRoute = {
@@ -984,6 +1024,12 @@
           this.aagentCode = {
             key: this.alipay.agentCode,
             value: this.aagentCodeMap[this.alipay.agentCode],
+          };
+        }
+         if (this.alipay.aversion) {
+          this.aversion = {
+            key: this.alipay.version,
+            value: this.aversionMap[this.alipay.version],
           };
         }
         this.set('alipayRoute.acqFee', '');
@@ -1120,7 +1166,7 @@
       },
       // 判断支付宝必填项是否为空, 返回false表示都填写了
       isALPConfigEmpty: function() {
-        if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.asettFlag && this.$.asettRole.validate() && this.$.asignCert.validate() && this.aagentCode) {
+        if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.asettFlag && this.$.asettRole.validate() && this.$.asignCert.validate() && this.aagentCode && this.aversion) {
           return false;
         }
         return true;

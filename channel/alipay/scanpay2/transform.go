@@ -15,6 +15,9 @@ func transform(transType, code, msg, subCode, subMsg string) (respCode, respMsg 
 
 	switch code {
 	case "10000":
+		if transType == "precreate" {
+			return inprocessCode, inprocessMsg
+		}
 		// 业务处理成功
 		respCode, respMsg = successCode, successMsg
 	case "40004":
