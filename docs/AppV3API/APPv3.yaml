@@ -910,6 +910,10 @@ definitions:
         type: number
         format: int64
         description: 总纪录数
+      size:
+        type: number
+        format: int
+        description: 当前返回的txn长度
       txn:
         type: array
         items:
