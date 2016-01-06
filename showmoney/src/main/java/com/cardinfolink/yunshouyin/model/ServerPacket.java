@@ -25,7 +25,7 @@ public class ServerPacket {
      * json里面会对应为totalFee
      */
     @SerializedName("totalFee")
-    private int total;
+    private String total;
 
     /**
      * 该月支付笔数。如果传入month字段，则必须返回。
@@ -38,7 +38,7 @@ public class ServerPacket {
      * 如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
      */
     @SerializedName("refdTotalFee")
-    private int refdtotal;
+    private String refdtotal;
 
     /**
      * 该月退款笔数。如果传入month字段，则必须返回。
@@ -115,11 +115,11 @@ public class ServerPacket {
         this.count = count;
     }
 
-    public int getTotal() {
+    public String getTotal() {
         return total;
     }
 
-    public void setTotal(int total) {
+    public void setTotal(String total) {
         this.total = total;
     }
 
@@ -131,11 +131,11 @@ public class ServerPacket {
         this.refdcount = refdcount;
     }
 
-    public int getRefdtotal() {
+    public String getRefdtotal() {
         return refdtotal;
     }
 
-    public void setRefdtotal(int refdtotal) {
+    public void setRefdtotal(String refdtotal) {
         this.refdtotal = refdtotal;
     }
 
