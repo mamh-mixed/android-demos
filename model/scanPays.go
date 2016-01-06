@@ -546,8 +546,9 @@ type ScanPayCSV struct {
 	IsUseISO    bool   `bson:"isUseISO"`
 	ErrorCode   string `bson:"errorCode"`
 
-	Alp []*SpChanCSV `bson:"alp,omitempty"`
-	Wxp []*SpChanCSV `bson:"wxp,omitempty"`
+	Alp  []*SpChanCSV `bson:"alp,omitempty"`
+	Alp2 []*SpChanCSV `bson:"alp2,omitempty"`
+	Wxp  []*SpChanCSV `bson:"wxp,omitempty"`
 	//...
 }
 

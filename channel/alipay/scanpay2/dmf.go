@@ -1,6 +1,7 @@
 package scanpay2
 
 import (
+	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"time"
 )
@@ -45,7 +46,9 @@ func (d *dmf2) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespo
 	ret.Respcd, ret.ErrorDetail = transform("pay", q.Code, q.Msg, q.SubCode, q.SubMsg)
 	ret.ChannelOrderNum = q.TradeNo
 	ret.PayTime = q.GmtPayment
-	// TODO...
+	ret.ConsumerAccount = q.BuyerLogonID
+	ret.ConsumerId = q.OpenID
+	// TODO...金额如何处理
 
 	return ret, err
 }
@@ -109,31 +112,64 @@ func (d *dmf2) ProcessRefund(req *model.ScanPayRequest) (*model.ScanPayResponse,
 }
 
 func (d *dmf2) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
-	ret := new(model.ScanPayResponse)
-	var err error
+	p := &QueryReq{}
+	p.CommonParams = *getCommonParams(req)
+	p.OutTradeNo = req.OrigOrderNum
+
+	q := &QueryResp{}
+	err := Execute(p, q)
+	if err != nil {
+		return nil, err
+	}
+
+	ret := &model.ScanPayResponse{}
+	// 查询操作如果不成功，返回09
+	if q.Code != "10000" {
+		ret.Respcd, ret.ErrorDetail = inprocessCode, inprocessMsg
+		return ret, nil
+	}
+
+	switch q.TradeStatus {
+	case "TRADE_SUCCESS":
+		ret.Respcd, ret.ErrorDetail = successCode, successMsg
+		ret.ChannelOrderNum = q.TradeNo
+		// ret.PayTime = q.GmtPayment
+		ret.ConsumerAccount = q.BuyerLogonID
+		ret.ConsumerId = q.OpenID
+	case "WAIT_BUYER_PAY":
+		ret.Respcd, ret.ErrorDetail = inprocessCode, inprocessMsg
+	case "TRADE_FINISHED", "TRADE_CLOSED":
+		ret.Respcd, ret.ErrorDetail = closeCode, closeMsg
+	}
 
 	return ret, err
 }
 
 func (d *dmf2) ProcessCancel(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
-	ret := new(model.ScanPayResponse)
-	var err error
+
+	p := &CancelReq{}
+	p.CommonParams = *getCommonParams(req)
+	p.OutTradeNo = req.OrigOrderNum
+
+	q := &CancelResp{}
+	err := Execute(p, q)
+	if err != nil {
+		return nil, err
+	}
+	ret := &model.ScanPayResponse{}
+	ret.Respcd, ret.ErrorDetail = transform("cancel", q.Code, q.Msg, q.SubCode, q.SubMsg)
+	ret.ChannelOrderNum = q.TradeNo
 
 	return ret, err
 }
 
+// ProcessClose 取消走撤销接口
 func (d *dmf2) ProcessClose(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
-	ret := new(model.ScanPayResponse)
-	var err error
-
-	return ret, err
+	return d.ProcessCancel(req)
 }
 
 func (d *dmf2) ProcessRefundQuery(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
-	ret := new(model.ScanPayResponse)
-	var err error
-
-	return ret, err
+	return nil, fmt.Errorf("%s", "not support yet!")
 }
 
 func handleExpireTime(expirtTime string) (string, string) {

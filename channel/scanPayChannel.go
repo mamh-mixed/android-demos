@@ -19,6 +19,12 @@ const (
 	Oversea  = 1
 )
 
+// 支付宝版本
+const (
+	ALP2_0 = "ALP2_0"
+	ALP1_0 = ""
+)
+
 // ScanPayChan 扫码支付
 type ScanPayChan interface {
 	// ProcessBarcodePay 扫条码下单
@@ -44,15 +50,19 @@ type ScanPayChan interface {
 }
 
 // GetScanPayChan 扫码支付渠道
-func GetScanPayChan(chanCode string, areaType int) ScanPayChan {
+func GetScanPayChan(chanCode string, version string) ScanPayChan {
 	switch chanCode {
 	// 微信
 	case ChanCodeWeixin:
 		return &scanpay.DefaultWeixinScanPay
 	// 支付宝
 	case ChanCodeAlipay:
-		if areaType == Oversea {
-			return alipay.Oversea
+		// if areaType == Oversea {
+		// 	return alipay.Oversea
+		// }
+		// return alipay.Domestic
+		if version == ALP2_0 {
+			return alipay.Alipay2
 		}
 		return alipay.Domestic
 	default:

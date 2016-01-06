@@ -61,9 +61,8 @@ func (c *routerPolicyCollection) BatchRemove(routers []model.RouterPolicy) error
 func (c *routerPolicyCollection) Find(merId, cardBrand string) (r *model.RouterPolicy) {
 	r = &model.RouterPolicy{}
 	q := bson.M{"merId": merId, "cardBrand": cardBrand}
-	err := database.C(c.name).Find(q).One(r)
+	err := database.C(c.name).Find(q).Sort("priority").One(r)
 	if err != nil {
-		// log.Errorf("FindRouter Error message is: %s", err)
 		return nil
 	}
 	return r

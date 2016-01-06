@@ -40,6 +40,10 @@ type CommonParams struct {
 	PrivateKey *rsa.PrivateKey `json:"-" bson:"-"` // 商户 RSA 私钥
 }
 
+func (c *CommonParams) GetSpReq() *model.ScanPayRequest {
+	return c.Req
+}
+
 // Values 组装公共参数
 func (c *CommonParams) Values() (v url.Values) {
 	v = url.Values{}
