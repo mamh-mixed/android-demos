@@ -4,7 +4,6 @@ import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.Message;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
-import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 
 import java.util.Map;
 
@@ -18,18 +17,17 @@ public interface QuickPayApi {
 
     ServerPacket forgetPassword(String username);
 
-
     void activate(String username, String password);
 
     // bank related
     User improveInfo(User user);
 
-
     BankInfo getBankInfo(User user);
-
 
     // txn related
     ServerPacket getHistoryBills(User user, String month, String index, String size, String status);
+
+    ServerPacket getHistoryCoupons(User user, String month, String index, String size);
 
     ServerPacket findOrder(User user, String orderNum);
 
@@ -38,7 +36,6 @@ public interface QuickPayApi {
     ServerPacket findOrder(User user, String index, String size, String orderNum, String recType, String payType, String txnStatus);
 
     String getTotal(User user, String date);
-
 
     ServerPacket getSummaryDay(User user, String date, String reportType);
 
