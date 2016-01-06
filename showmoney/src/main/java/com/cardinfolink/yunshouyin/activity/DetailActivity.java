@@ -4,22 +4,23 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.cardinfolink.cashiersdk.listener.CashierListener;
 import com.cardinfolink.cashiersdk.model.OrderData;
-import com.cardinfolink.cashiersdk.model.ResultData;
-import com.cardinfolink.cashiersdk.sdk.CashierSdk;
+import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
+import com.cardinfolink.yunshouyin.model.QRequest;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
+import com.cardinfolink.yunshouyin.model.Txn;
 import com.cardinfolink.yunshouyin.ui.ResultInfoItem;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
@@ -29,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DetailActivity extends BaseActivity {
+    private static final String TAG = "DetailActivity";
 
     private TradeBill mTradeBill;
     private SettingActionBarItem mActionBar;
@@ -204,33 +206,47 @@ public class DetailActivity extends BaseActivity {
         OrderData orderData = new OrderData();
         orderData.origOrderNum = mTradeBill.orderNum;
         startLoading(mPayResultImage);
-        CashierSdk.startQy(orderData, new CashierListener() {
 
+        quickPayService.getOrderAsync(SessonData.loginUser, mTradeBill.orderNum, new QuickPayCallbackListener<ServerPacket>() {
             @Override
-            public void onResult(ResultData resultData) {
-                quickPayService.getOrderAsync(SessonData.loginUser, mTradeBill.orderNum, new QuickPayCallbackListener<ServerPacket>() {
-                    @Override
-                    public void onSuccess(ServerPacket data) {
-                        //注意这里使用了findOrder的新的的接口，这里txn返回的数组，不再是一个字段了，
-                        // 这时候就没必要使用新的com.cardinfolink.yunshouyin.model.ServerPacketOrder的这个类了
-                        mTradeBill.response = data.getTxn()[0].getResponse();
-                        endLoading(mPayResultImage);
-                        initData();
-                    }
+            public void onSuccess(ServerPacket data) {
+                Log.e(TAG, "[getOrderAsync][onSuccess]  data = " + data);
+                //注意这里使用了findOrder的新的的接口，这里txn返回的数组，不再是一个字段了，
+                // 这时候就没必要使用新的com.cardinfolink.yunshouyin.model.ServerPacketOrder的这个类了
+                Txn[] txn = data.getTxn();
+                //获取txn数组，判断是否为null，且长度是否为1.这里是精确查找账单的txn返回的数组必须是1个长度的
+                if (txn != null && txn.length == 1) {
+                    mTradeBill.response = txn[0].getResponse();
+                    mTradeBill.tandeDate = txn[0].getSystemDate();
+                    mTradeBill.consumerAccount = txn[0].getConsumerAccount();
+                    mTradeBill.transStatus = txn[0].getTransStatus();
+                    mTradeBill.refundAmt = TxamtUtil.getNormal(txn[0].getRefundAmt());
 
-                    @Override
-                    public void onFailure(QuickPayException ex) {
-                        endLoading(mPayResultImage);
-                        initData();
-                    }
-                });
-            }
+                    QRequest req = txn[0].getmRequest();
+                    if (req != null) {
+                        mTradeBill.orderNum = req.getOrderNum();
+                        mTradeBill.amount = TxamtUtil.getNormal(req.getTxamt());
+                        mTradeBill.busicd = req.getBusicd();
 
-            @Override
-            public void onError(int errorCode) {
+                        //使用/v3/bill接口 退款的好像也没有拉取到
+                        if ("REFD".equals(mTradeBill.busicd)) {
+                            mTradeBill.amount = "-" + mTradeBill.amount;
+                        }
+                        mTradeBill.chcd = req.getChcd();
+                        mTradeBill.tradeFrom = req.getTradeFrom();
+                        mTradeBill.goodsInfo = req.getGoodsInfo();
+                    }
+                }//end if()
                 endLoading(mPayResultImage);
+                initData();
             }
 
+            @Override
+            public void onFailure(QuickPayException ex) {
+                Log.e(TAG, "[getOrderAsync][onFailure]  ex = " + ex);
+                endLoading(mPayResultImage);
+                initData();
+            }
         });
 
 
