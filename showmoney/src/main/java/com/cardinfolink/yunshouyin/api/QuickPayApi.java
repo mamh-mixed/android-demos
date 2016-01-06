@@ -40,6 +40,8 @@ public interface QuickPayApi {
     String getTotal(User user, String date);
 
 
+    ServerPacket getSummaryDay(User user, String date, String reportType);
+
     ServerPacket getRefd(User user, String orderNum);
 
     //获取七牛的token的方法
