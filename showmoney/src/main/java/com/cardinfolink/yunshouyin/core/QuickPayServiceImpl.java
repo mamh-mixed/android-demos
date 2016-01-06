@@ -142,8 +142,6 @@ public class QuickPayServiceImpl implements QuickPayService {
     }
 
 
-
-
     @Override
     public void getBankInfoAsync(final User user, final QuickPayCallbackListener<BankInfo> listener) {
         new AsyncTask<Void, Integer, AsyncTaskResult<BankInfo>>() {
@@ -220,6 +218,31 @@ public class QuickPayServiceImpl implements QuickPayService {
             }
         }.execute();
     }
+
+    @Override
+    public void getHistoryCouponsAsync(final User user, final String month, final String index, final String size, final QuickPayCallbackListener<ServerPacket> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
+            @Override
+            protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
+                try {
+                    ServerPacket serverPacket = quickPayApi.getHistoryCoupons(user, month, index, size);
+                    return new AsyncTaskResult<ServerPacket>(serverPacket, null);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<ServerPacket>(null, ex);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<ServerPacket> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
+    }
+
 
     //这个是通过条件来查找订单的，里面使用的是新的接口findOrder
     @Override
