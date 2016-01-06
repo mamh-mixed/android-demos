@@ -135,6 +135,9 @@
         <paper-input required$="{{requiredDetector.cardbin}}" class="col" id="cardbin" name="cardbin" label="银行卡bin(cardbin)" value="{{scanCode.cardbin::input}}"></paper-input>
         <paper-input required$="{{requiredDetector.payType}}" class="col" id="payType" name="scanCodeId" label="支付方式(payType)" value="{{scanCode.payType::input}}"></paper-input>
       </div>
+      <div class="row">
+        <paper-input required$="{{requiredDetector.tradeFrom}}" class="col" id="tradeFrom" name="tradeFrom" label="来源(tradeFrom)" value="{{scanCode.tradeFrom::input}}"></paper-input>
+      </div>
       <div class="divider"></div>
 
       <div class="row">
