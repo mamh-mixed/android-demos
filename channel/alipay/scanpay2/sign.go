@@ -46,13 +46,16 @@ func LoadPrivateKey(privateKeyPem []byte) *rsa.PrivateKey {
 	pemBlock, _ := pem.Decode(privateKeyPem)
 	if pemBlock == nil {
 		log.Errorf("Could not parse RSA Private Key PEM")
+		return nil
 	}
 	if pemBlock.Type != "RSA PRIVATE KEY" {
 		log.Errorf("Found wrong key type: %s", pemBlock.Type)
+		return nil
 	}
 	privateKey, err := x509.ParsePKCS1PrivateKey(pemBlock.Bytes)
 	if err != nil {
 		log.Errorf("parse PKCS1 private key error: %s", err)
+		return nil
 	}
 	return privateKey
 }
