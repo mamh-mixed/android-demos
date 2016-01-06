@@ -54,7 +54,7 @@ func initPrivKey(priKeyPem string) (*rsa.PrivateKey, error) {
 }
 
 // 读证书
-func init() {
+func initCert() {
 	certPemFile := goconf.Config.CFCA.CheckSignPublicKey
 	certPem, err := ioutil.ReadFile(certPemFile)
 	if err != nil {
