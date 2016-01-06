@@ -69,13 +69,13 @@ type AppResult struct {
 	User         *AppUser    `json:"user,omitempty"`
 	Users        []*AppUser  `json:"users,omitempty"`
 	TotalAmt     string      `json:"total,omitempty"`
-	TotalFee     int64       `json:"totalFee,omitempty"` //总金额，和totalAmt类似，只是类型不一样。根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
+	TotalFee     int64       `json:"totalFee"` //总金额，和totalAmt类似，只是类型不一样。根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
 	Count        int         `json:"count"`
 	TotalRecord  int         `json:"totalRecord"`
 	Size         int         `json:"size"`
 	RefdCount    int         `json:"refdcount"`
 	RefdTotalAmt string      `json:"refdtotal,omitempty"`
-	RefdTotalFee int64       `json:"refdTotalFee,omitempty"` // 退款总金额，和refdTotalAmt类似，只是类型不一样。根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
+	RefdTotalFee int64       `json:"refdTotalFee"` // 退款总金额，和refdTotalAmt类似，只是类型不一样。根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
 	SettInfo     *SettInfo   `json:"info,omitempty"`
 	Txn          interface{} `json:"txn,omitempty"` // 交易，可存放数组或对象
 	Message      interface{} `json:"message,omitempty"`

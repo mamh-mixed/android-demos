@@ -96,6 +96,7 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 		txns = append(txns, transToTxn(t))
 	}
 	result.Txn = txns
+	result.Size = len(txns)
 	result.TotalRecord = total
 
 	// 如果APP传递了月份，则需要返回total，count，fefdtotal，refdcount
