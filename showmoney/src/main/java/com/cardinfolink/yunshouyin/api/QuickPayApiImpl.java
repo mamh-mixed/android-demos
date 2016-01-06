@@ -2,6 +2,7 @@ package com.cardinfolink.yunshouyin.api;
 
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
@@ -458,21 +459,19 @@ public class QuickPayApiImpl implements QuickPayApi {
      */
     @Override
     public String getTotal(User user, String date) {
-        //result =={"state":"success","total":"0.00","count":5,"size":0,"refdcount":0}
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_SUMMARY_DAY;
 
-        String url = quickPayConfigStorage.getUrl() + "/getTotal";
         Map<String, String> params = new LinkedHashMap<>();
         params.put("username", user.getUsername());
         String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
-        params.put("clientid", user.getClientid());
-        params.put("date", date);
+        params.put("reportType", "1");
+        params.put("day", date);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, SIGN_TYPE_SHA_1));
+        params.put("sign", createSign(params));
 
         try {
             String response = postEngine.post(url, params);
-
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getTotal();
