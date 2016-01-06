@@ -6,6 +6,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Arrays;
+
 public class ServerPacket {
 
     /**
@@ -59,18 +61,26 @@ public class ServerPacket {
     private BankInfo info;
 
     /**
-     * 订单数组，成功返回
-     */
-    private Txn[] txn;
-
-    private User user;
-
-    /**
      * 七牛上传token，成功返回
      */
     private String uploadToken;
 
+    private User user;
+
+    /**
+     * 订单数组，成功返回
+     */
+    private Txn[] txn;
+
+    /**
+     * 获取用户消息的数组
+     */
     private Message[] message;
+
+    /**
+     * 卡券数组。每个卡券需包含：卡券类型：（减、兑、折）、卡券名称、卡券渠道等等
+     */
+    private CouponInfo[] coupons;
 
 
     public static ServerPacket getServerPacketFrom(String json) {
@@ -99,12 +109,12 @@ public class ServerPacket {
         this.error = error;
     }
 
-    public User getUser() {
-        return user;
+    public String getTotal() {
+        return total;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setTotal(String total) {
+        this.total = total;
     }
 
     public int getCount() {
@@ -115,12 +125,12 @@ public class ServerPacket {
         this.count = count;
     }
 
-    public String getTotal() {
-        return total;
+    public String getRefdtotal() {
+        return refdtotal;
     }
 
-    public void setTotal(String total) {
-        this.total = total;
+    public void setRefdtotal(String refdtotal) {
+        this.refdtotal = refdtotal;
     }
 
     public int getRefdcount() {
@@ -131,45 +141,12 @@ public class ServerPacket {
         this.refdcount = refdcount;
     }
 
-    public String getRefdtotal() {
-        return refdtotal;
-    }
-
-    public void setRefdtotal(String refdtotal) {
-        this.refdtotal = refdtotal;
-    }
-
     public int getSize() {
         return size;
     }
 
     public void setSize(int size) {
         this.size = size;
-    }
-
-    public BankInfo getInfo() {
-        return info;
-    }
-
-    public void setInfo(BankInfo info) {
-        this.info = info;
-    }
-
-    public Txn[] getTxn() {
-        return txn;
-    }
-
-    public void setTxn(Txn[] txn) {
-        this.txn = txn;
-    }
-
-
-    public String getUploadToken() {
-        return uploadToken;
-    }
-
-    public void setUploadToken(String uploadToken) {
-        this.uploadToken = uploadToken;
     }
 
     public int getTotalRecord() {
@@ -180,11 +157,71 @@ public class ServerPacket {
         this.totalRecord = totalRecord;
     }
 
+    public BankInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(BankInfo info) {
+        this.info = info;
+    }
+
+    public String getUploadToken() {
+        return uploadToken;
+    }
+
+    public void setUploadToken(String uploadToken) {
+        this.uploadToken = uploadToken;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Txn[] getTxn() {
+        return txn;
+    }
+
+    public void setTxn(Txn[] txn) {
+        this.txn = txn;
+    }
+
     public Message[] getMessage() {
         return message;
     }
 
     public void setMessage(Message[] message) {
         this.message = message;
+    }
+
+    public CouponInfo[] getCoupons() {
+        return coupons;
+    }
+
+    public void setCoupons(CouponInfo[] coupons) {
+        this.coupons = coupons;
+    }
+
+    @Override
+    public String toString() {
+        return "ServerPacket{" +
+                "state='" + state + '\'' +
+                ", error='" + error + '\'' +
+                ", total='" + total + '\'' +
+                ", count=" + count +
+                ", refdtotal='" + refdtotal + '\'' +
+                ", refdcount=" + refdcount +
+                ", size=" + size +
+                ", totalRecord=" + totalRecord +
+                ", info=" + info +
+                ", uploadToken='" + uploadToken + '\'' +
+                ", user=" + user +
+                ", txn=" + Arrays.toString(txn) +
+                ", message=" + Arrays.toString(message) +
+                ", coupons=" + Arrays.toString(coupons) +
+                '}';
     }
 }
