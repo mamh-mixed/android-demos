@@ -1,9 +1,10 @@
 package mongo
 
 import (
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"gopkg.in/mgo.v2/bson"
-	"time"
 )
 
 type pushMessage struct {
@@ -23,7 +24,7 @@ func (col *pushMessage) UpdateStatusByID(msgId string, status int) error {
 
 	update := bson.M{
 		"$set": bson.M{
-			"updateTime": time.Now().Format("2006-01-02 15:04:05"),
+			"updateTime": time.Now().Format("20060102150405"),
 			"status":     status,
 		},
 	}

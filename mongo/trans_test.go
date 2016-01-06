@@ -10,6 +10,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestFindToSett(t *testing.T) {
@@ -34,8 +35,8 @@ func TestTransFindAndGroupBy(t *testing.T) {
 		EndTime:            "2015-11-09 23:59:59",
 		TransStatus:        []string{model.TransSuccess},
 		TransType:          model.PayTrans,
-		RefundStatus:       model.TransRefunded,
 		IsAggregateByGroup: true,
+		// RefundStatus:       model.TransRefunded,
 		// MerIds:       []string{"999118880000312"},
 		Page: 1,
 		Size: 20,
@@ -97,21 +98,25 @@ func TestTransAdd(t *testing.T) {
 }
 
 func TestTransUpdate(t *testing.T) {
-	objectId := bson.ObjectIdHex(hexId)
+	hi := "56248e894fde83cf36000001"
+	objectId := bson.ObjectIdHex(hi)
+	on := time.Now().Unix()
+	t.Logf("OrderNo is %d", on)
 	trans := &model.Trans{
 		// CreateTime:  time.Now().Unix(),
 		Id:          objectId,
 		MerId:       merId,
-		OrderNum:    orderNum,
+		OrderNum:    "100000000182979",
 		TransType:   int8(transType),
 		TransStatus: transStatus,
+		DiscountAmt: 1,
 	}
 	err := TransColl.Update(trans)
 	if err != nil {
 		t.Errorf("modify trans unsunccessful: %s", err)
 		t.FailNow()
 	}
-	log.Debugf("modify trans success %s", trans)
+	log.Debugf("modify trans success %+v", trans)
 
 }
 

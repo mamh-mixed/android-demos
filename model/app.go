@@ -48,6 +48,7 @@ var (
 	TOKEN_ERROR             = NewAppResult(FAIL, "accessToken_error")
 	USER_DATA_ERROR         = NewAppResult(FAIL, "user_data_error")
 	NOT_SUPPORT             = NewAppResult(FAIL, "请联系您的服务商为您修改清算信息。")
+	INVALID_REPORT_TYPE     = NewAppResult(FAIL, "INVALID_REPORT_TYPE")
 )
 
 // AppUserContiditon app用户查找条件
@@ -68,17 +69,20 @@ type AppResult struct {
 	User         *AppUser    `json:"user,omitempty"`
 	Users        []*AppUser  `json:"users,omitempty"`
 	TotalAmt     string      `json:"total,omitempty"`
+	TotalFee     int64       `json:"totalFee,omitempty"` //总金额，和totalAmt类似，只是类型不一样。根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
 	Count        int         `json:"count"`
 	TotalRecord  int         `json:"totalRecord"`
 	Size         int         `json:"size"`
 	RefdCount    int         `json:"refdcount"`
 	RefdTotalAmt string      `json:"refdtotal,omitempty"`
+	RefdTotalFee int64       `json:"refdTotalFee,omitempty"` // 退款总金额，和refdTotalAmt类似，只是类型不一样。根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
 	SettInfo     *SettInfo   `json:"info,omitempty"`
 	Txn          interface{} `json:"txn,omitempty"` // 交易，可存放数组或对象
 	Message      interface{} `json:"message,omitempty"`
 	UploadToken  string      `json:"uploadToken,omitempty"`
 	AccessToken  string      `json:"accessToken,omitempty"`
 	DownloadUrl  string      `json:"downloadUrl,omitempty"`
+	Coupons      []*Coupon   `json:"coupons,omitempty"`
 }
 
 type SettInfo struct {
@@ -101,13 +105,20 @@ func NewAppResult(state, err string) (ret AppResult) {
 }
 
 type AppTxn struct {
-	Response        string `json:"response" bson:"response"`
-	SystemDate      string `json:"system_date"`
-	ConsumerAccount string `json:"consumerAccount,omitempty"`
-	TransStatus     string `json:"transStatus,omitempty"`
-	TicketNum       string `json:"receiptnum,omitempty"`
-	RefundAmt       int64  `json:"refundAmt"`
-	ReqData         struct {
+	Response          string `json:"response" bson:"response"`
+	SystemDate        string `json:"system_date"`
+	ConsumerAccount   string `json:"consumerAccount,omitempty"`
+	TransStatus       string `json:"transStatus,omitempty"`
+	TicketNum         string `json:"receiptnum,omitempty"`
+	RefundAmt         int64  `json:"refundAmt"`
+	NickName          string `json:"nickName,omitempty"`          // 微信昵称，如果是使用微信扫描收款码支付需要有
+	AvatarUrl         string `json:"avatarUrl,omitempty"`         // 微信头像，如果是使用微信扫描收款码支付需要有
+	CheckCode         string `json:"checkCode,omitempty"`         // 校验码，微信扫描固定码支付有这个数据
+	CouponName        string `json:"couponName,omitempty"`        // 卡券名称
+	CouponChannel     string `json:"couponChannel,omitempty"`     // 卡券渠道
+	CouponOrderNo     string `json:"couponOrderNo,omitempty"`     // 卡券核销订单号
+	CouponDiscountAmt int64  `json:"couponDiscountAmt,omitempty"` // 卡券优惠金额
+	ReqData           struct {
 		Busicd       string `json:"busicd,omitempty"`
 		AgentCode    string `json:"inscd,omitempty"`
 		Txndir       string `json:"txndir,omitempty"`
@@ -117,6 +128,7 @@ type AppTxn struct {
 		MerId        string `json:"mchntid,omitempty"`
 		TradeFrom    string `json:"tradeFrom,omitempty"`
 		Txamt        string `json:"txamt,omitempty"`
+		TotalFee     int64  `json:"totalFee,omitempty"` // 根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
 		ChanCode     string `json:"chcd,omitempty"`
 		Currency     string `json:"currency,omitempty"`
 	} `json:"m_request"`
@@ -192,4 +204,10 @@ type PushMessage struct {
 	LastTime string `json:"-" bson:"-"`
 	MaxTime  string `json:"-" bson:"-"`
 	Size     int    `json:"-" bson:"-"`
+}
+
+type Coupon struct {
+	Type    string `json:"type,omitempty"` // 1:减 2:兑 3:折
+	Name    string `json:"name,omitempty"`
+	Channel string `json:"channel,omitempty"`
 }

@@ -106,8 +106,7 @@ func (col *transCollection) Update(t *model.Trans) error {
 
 	t.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	// 查找条件
-	update := bson.M{"_id": t.Id}
-	err := database.C(col.name).Update(update, t)
+	err := database.C(col.name).UpdateId(t.Id, t)
 	if err != nil {
 		log.Errorf("update trans(%+v) fail: %s", t, err)
 	}
@@ -650,19 +649,25 @@ func (col *transCollection) MerBills(q *model.QueryCondition) ([]model.TransType
 	// 过滤掉取消不成功的订单
 	find["transAmt"] = bson.M{"$ne": 0}
 
+	if q.IsRelatedCoupon {
+		find["couponOrderNum"] = bson.M{"$ne": nil}
+	}
+
 	var results []model.TransTypeGroup
 	err := database.C(col.name).Pipe([]bson.M{
 		{"$match": find},
 		{"$group": bson.M{"_id": "$transType",
 			"transAmt": bson.M{"$sum": "$transAmt"},
 			// "refundAmt": bson.M{"$sum": "$refundAmt"},
-			"transNum": bson.M{"$sum": 1},
+			"transNum":    bson.M{"$sum": 1},
+			"discountAmt": bson.M{"$sum": "$discountAmt"},
 		}},
 		{"$project": bson.M{
 			"transType": "$_id",
 			"transAmt":  1,
 			"transNum":  1,
 			// "refundAmt": 1,
+			"discountAmt": 1,
 		}},
 	}).All(&results)
 	return results, err
