@@ -2,13 +2,11 @@ package com.cardinfolink.yunshouyin.api;
 
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.model.Message;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
-import com.cardinfolink.yunshouyin.model.ServerPacketOrder;
 import com.cardinfolink.yunshouyin.util.EncoderUtil;
 
 import java.io.IOException;
@@ -483,6 +481,40 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
     }
 
+    /**
+     * 提供给APP取当日的收款账单、卡券账单汇总的接口
+     * 取单日的收款账单、卡券账单汇总信息
+     *
+     * @param user
+     * @param date
+     * @param reportType
+     * @return
+     */
+    @Override
+    public ServerPacket getSummaryDay(User user, String date, String reportType) {
+        String url = quickPayConfigStorage.getUrl() + URL_PATH_SUMMARY_DAY;
+
+        Map<String, String> params = new LinkedHashMap<>();
+        params.put("username", user.getUsername());
+        String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
+        params.put("password", password);
+        params.put("reportType", reportType);//报表类型。1:收款账单；2:卡券账单
+        params.put("day", date);//yyyyMMdd
+        params.put("transtime", getTransTime());
+        params.put("sign", createSign(params));
+
+        try {
+            String response = postEngine.post(url, params);
+            ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
+            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+                return serverPacket;
+            } else {
+                throw new QuickPayException(serverPacket.getError());
+            }
+        } catch (IOException e) {
+            throw new QuickPayException();
+        }
+    }
 
     /**
      * 这个暂时还不确定 新的接口 v3里面要不要？？？？！！！！
