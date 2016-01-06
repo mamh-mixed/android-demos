@@ -35,6 +35,7 @@ type CommonParams struct {
 	Sign      string                `json:"-"`                    // 商户请求参数的签名串，详见安全规范中的签名生成算法
 	Timestamp string                `json:"-"`                    // 发送请求的时间，格式“yyyy-MM-dd HH:mm:ss”
 	Version   string                `json:"-"`                    // 调用的接口版本，固定为:1.0
+	NotifyUrl string                `json:"-"`                    // 异步通知地址
 	Req       *model.ScanPayRequest `json:"-" bson:"-"`
 
 	PrivateKey *rsa.PrivateKey `json:"-" bson:"-"` // 商户 RSA 私钥
@@ -70,6 +71,11 @@ func (c *CommonParams) Values() (v url.Values) {
 	} else {
 		v.Set("version", c.Version)
 	}
+
+	if c.NotifyUrl != "" {
+		v.Set("notify_url", c.NotifyUrl)
+	}
+
 	return v
 }
 

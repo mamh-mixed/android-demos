@@ -15,6 +15,7 @@ func getCommonParams(m *model.ScanPayRequest) *CommonParams {
 		AppID:      m.AppID,
 		PrivateKey: LoadPrivateKey(m.PemKey), // TODO 做个缓存处理
 		Req:        m,
+		NotifyUrl:  "",
 		// TODO 预留authToken
 	}
 }
