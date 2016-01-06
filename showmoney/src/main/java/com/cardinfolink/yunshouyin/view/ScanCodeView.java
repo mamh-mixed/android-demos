@@ -328,6 +328,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             quickPayService.getTotalAsync(user, date, new QuickPayCallbackListener<String>() {
                 @Override
                 public void onSuccess(String data) {
+                    if (TextUtils.isEmpty(data)) {
+                        data = "0";
+                    }
                     double limitValue = Double.parseDouble(data);
                     if (limitValue >= MAX_LIMIT_MONEY) {
                         //"当日交易已超过限额,请申请提升限额!";
