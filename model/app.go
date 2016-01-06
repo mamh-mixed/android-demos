@@ -207,11 +207,11 @@ type PushMessage struct {
 }
 
 type Coupon struct {
-	Type      string `json:"type,omitempty"` // 1:减 2:兑 3:折
-	Name      string `json:"name,omitempty"`
-	Channel   string `json:"channel,omitempty"`
-	TradeFrom string `json:"tradeFrom,omitempty"`
-	OrderNum  string `json:"orderNum,omitempty"`
-	Respcd    string `json:"respcd,omitempty"`
-	TransTime string `json:"TransTime,omitempty"`
+	Type       string `json:"type,omitempty"` // 1:减 2:兑 3:折
+	Name       string `json:"name,omitempty"`
+	Channel    string `json:"channel,omitempty"`
+	TradeFrom  string `json:"tradeFrom,omitempty"`
+	OrderNum   string `json:"orderNum,omitempty"`
+	Response   string `json:"response,omitempty"`
+	SystemDate string `json:"system_date,omitempty"`
 }
