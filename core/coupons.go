@@ -546,6 +546,7 @@ func RecoverCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ChanCode:     req.Chcd,
 		Terminalid:   req.Terminalid,
 		OrigOrderNum: req.OrigOrderNum,
+		TradeFrom:    req.TradeFrom,
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)

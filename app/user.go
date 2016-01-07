@@ -1367,13 +1367,18 @@ func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
 		log.Errorf("find user coupon trans error: %s", err)
 		return model.SYSTEM_ERROR
 	}
-	result.Count = total
-
 	var coupons []*model.Coupon
 	for _, t := range trans {
 		coupons = append(coupons, transToCoupon(t))
 	}
 	result.Coupons = coupons
+	result.Size = len(coupons)
+	result.TotalRecord = total
+
+	if req.Month != "" {
+		result.Count = total
+	}
+
 	return result
 }
 
@@ -1598,8 +1603,11 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 
 func transToCoupon(t *model.Trans) *model.Coupon {
 	coupon := &model.Coupon{
-		Name:    t.Prodname,
-		Channel: t.ChanCode,
+		Name:       t.Prodname,
+		Channel:    t.ChanCode,
+		TradeFrom:  t.TradeFrom,
+		Response:   t.RespCode,
+		SystemDate: timeReplacer.Replace(t.CreateTime),
 	}
 	couponType := ""
 	if len(t.VoucherType) == 2 {

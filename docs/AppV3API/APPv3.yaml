@@ -849,6 +849,14 @@ definitions:
       count:
         type: number
         description: 如果传了month，返回当月卡券核销数
+      totalRecord:
+        type: number
+        format: int64
+        description: 总纪录数
+      size:
+        type: number
+        format: int
+        description: 当前返回的txn长度
       coupons:
         type: array
         items:
@@ -865,6 +873,15 @@ definitions:
       channel:
         type: string
         description: 卡券渠道
+      tradeFrom:
+        type: string
+        description: 请求来源，例如ios
+      response:
+        type: string
+        description: 响应码，例如00
+      system_date:
+        type: string
+        description: 交易时间，格式yyyyMMddHHmmss，例如20151229190742
   OrdersResponse:
     type: object
     required:
