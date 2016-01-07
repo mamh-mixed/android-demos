@@ -468,6 +468,15 @@ public class TransManageView extends LinearLayout {
 
         getCollectionBill();
 
+        ticketIndex = 0;
+        mMonthTicketAgo = 0;
+        mMonthTicketBillMap.clear();
+        mMonthTicketBilltList.clear();
+        mTicketBillList.clear();
+        mTicketBillMap.clear();
+        mTicketAdapter.notifyDataSetChanged();
+        mTicketCurrentYearMonth = spf.format(new Date());
+
         getTicketBill();
     }
 
