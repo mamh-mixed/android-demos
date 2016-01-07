@@ -235,31 +235,23 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                                 mHintDialog.setOkOnClickListener(new OnClickListener() {
                                                     @Override
                                                     public void onClick(View v) {
-                                                        runOnUiThread(new Runnable() {
-                                                            @Override
-                                                            public void run() {
-                                                                Intent intent = new Intent(mContext, CaptureActivity.class);
-                                                                Bundle bundle = new Bundle();
-                                                                bundle.putString("original", "ticketview");
-                                                                intent.putExtras(bundle);
-                                                                mContext.startActivity(intent);
-                                                                mHintDialog.hide();
-                                                            }
-                                                        });
-
+                                                        Intent intent = new Intent(mContext, CaptureActivity.class);
+                                                        Bundle bundle = new Bundle();
+                                                        bundle.putString("original", "ticketview");
+                                                        intent.putExtras(bundle);
+                                                        mContext.startActivity(intent);
+                                                        mHintDialog.hide();
                                                     }
-
                                                 });
-
                                             }
                                         });
-
-                                    }
+                                    }//end if()
                                 }
 
                                 @Override
                                 public void onError(int errorCode) {
                                     Log.e(TAG, " starVeri fail===" + errorCode);
+                                    finish();
                                 }
                             });
                             break;
