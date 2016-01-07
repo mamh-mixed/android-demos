@@ -65,9 +65,21 @@ public class TransManageView extends LinearLayout {
     private int billIndex;
     private int mMonthBillAgo;
 
+    private String mCurrentYearMonth;//当前年份+月份的一个字符串
+
     //***卡券账单*************************************************************************************
     private PullToRefreshExpandableListView mTicketPullRefreshListView;//第2个第2个卡券账单的listview
+    private BillExpandableListAdapter mTicketAdapter;
 
+    private Map<String, MonthBill> mMonthTicketBillMap;
+    private List<MonthBill> mMonthTicketBilltList;
+
+    private List<List<TradeBill>> mTicketBillList;
+    private Map<String, List<TradeBill>> mTicketBillMap;
+
+    private int ticketIndex;
+    private int mMonthTicketAgo;
+    private String mTicketCurrentYearMonth;
 
     //**收款码账单**************************************************************************************
     private PullToRefreshExpandableListView mCollectionPullRefreshListView;//第3个第3个收款码账单的listview
@@ -81,8 +93,6 @@ public class TransManageView extends LinearLayout {
 
     private int collectionIndex;//收款码账单 使用到的 index索引值
     //****************************************************************************************
-
-    private String mCurrentYearMonth;//当前年份+月份的一个字符串
 
 
     private TextView mTitle;
@@ -134,6 +144,8 @@ public class TransManageView extends LinearLayout {
     private void initLayout() {
         SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
         mCurrentYearMonth = spf.format(new Date());
+        mTicketCurrentYearMonth = mCurrentYearMonth;
+        billIndex = ticketIndex = 0;
 
         mTitle = (TextView) findViewById(R.id.tv_title);
         mLoadingDialog = new LoadingDialog(mContext, findViewById(R.id.loading_dialog));
@@ -185,8 +197,39 @@ public class TransManageView extends LinearLayout {
 
         //***卡券账单***************************************************************************************
         mTicketPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.ticket_list_view);
+        mTicketPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
         mTicketPullRefreshListView.setVisibility(GONE);
+        mTicketPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ExpandableListView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
+                ticketIndex = 0;
+                mMonthTicketAgo = 0;
+                mMonthTicketBillMap.clear();
+                mMonthTicketBilltList.clear();
+                mTicketBillList.clear();
+                mTicketBillMap.clear();
 
+                mTicketAdapter.notifyDataSetChanged();
+                SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
+                mTicketCurrentYearMonth = spf.format(new Date());
+                getTicketBill();
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
+                getTicketBill();
+            }
+        });
+
+        mMonthTicketBillMap = new HashMap<>();
+        mMonthTicketBilltList = new ArrayList<>();
+        mTicketBillList = new ArrayList<>();
+        mTicketBillMap = new HashMap<>();
+
+        mTicketAdapter = new BillExpandableListAdapter(mContext, mMonthTicketBilltList, mTicketBillList);
+        ExpandableListView ticketActualView = mTicketPullRefreshListView.getRefreshableView();
+        ticketActualView.setAdapter(mTicketAdapter);
+        ticketActualView.setGroupIndicator(null);
 
         //***收款码账单***************************************************************************************
         mCollectionPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.colloction_list_view);
@@ -496,7 +539,7 @@ public class TransManageView extends LinearLayout {
             @Override
             public void onSuccess(ServerPacket data) {
                 //这里可以在ui线程里执行的
-                //这里特殊一些，需要用的size。
+                //这里特殊一些，需要用的size
                 final int size = data.getSize();
                 //这里还需要这个字段
                 final int totalRecord = data.getTotalRecord();//这个字段表示当月的总条数
@@ -514,8 +557,8 @@ public class TransManageView extends LinearLayout {
                     mMonthBillAgo += 1;
                     Calendar calendar = Calendar.getInstance();
                     calendar.add(Calendar.MONTH, 0 - mMonthBillAgo);    //得到前一个月
-                    String year = String.valueOf(calendar.get(Calendar.YEAR));
-                    String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
+                    String year = String.format("%4d", calendar.get(Calendar.YEAR));
+                    String month = String.format("%02d", calendar.get(Calendar.MONTH) + 1);
                     mCurrentYearMonth = year + month;//走到这里说明 下次调用这个 getBill()方法的时候拉取的就是上个月的账单了
                 }
 
@@ -532,6 +575,22 @@ public class TransManageView extends LinearLayout {
 
     //获取卡券账单
     public void getTicketBill() {
+        mLoadingDialog.startLoading();
+        quickPayService.getHistoryCouponsAsync(SessonData.loginUser, "201512", String.valueOf(ticketIndex), "100", new QuickPayCallbackListener<ServerPacket>() {
+            @Override
+            public void onSuccess(ServerPacket data) {
+                Log.e(TAG, " data " + data);
+                mTicketPullRefreshListView.onRefreshComplete();
+                mLoadingDialog.endLoading();
+            }
+
+            @Override
+            public void onFailure(QuickPayException ex) {
+                Log.e(TAG, " ex " + ex);
+                mTicketPullRefreshListView.onRefreshComplete();
+                mLoadingDialog.endLoading();
+            }
+        });
 
     }
 
@@ -611,8 +670,8 @@ public class TransManageView extends LinearLayout {
         // List<MonthBill> monthList, 这个是map转换来的
         // List<List<TradeBill>> tradeBillList) { 这个是map转换来的 }
         final int totalRecord = data.getTotalRecord();//这个字段表示当月的总条数
-        final int count = data.getCount();//返回的条数
-        final String total = data.getTotal();
+        final int count = data.getCount();//返回的条数,这个基本上没有用到
+        final String total = TxamtUtil.getNormal(data.getTotal());
         final int refdcount = data.getRefdcount();
         final String refdtotal = data.getRefdtotal();
         final int size = data.getSize();
@@ -624,12 +683,14 @@ public class TransManageView extends LinearLayout {
             tradeBill.tandeDate = txn.getSystemDate();
             tradeBill.consumerAccount = txn.getConsumerAccount();
             tradeBill.transStatus = txn.getTransStatus();
-            tradeBill.refundAmt = TxamtUtil.getNormal(txn.getRefundAmt());
+            tradeBill.refundAmt = TxamtUtil.getNormal(txn.getRefundAmt());//对于人民币的金额都需要除以100
+            tradeBill.couponDiscountAmt = TxamtUtil.getNormal(txn.getCouponDiscountAmt());//卡券优惠金额，人民币需要除以100
+
 
             QRequest req = txn.getmRequest();
             if (req != null) {
                 tradeBill.orderNum = req.getOrderNum();
-                tradeBill.amount = TxamtUtil.getNormal(req.getTxamt());
+                tradeBill.amount = TxamtUtil.getNormal(req.getTxamt());//对于人民币的金额都需要除以100
                 tradeBill.busicd = req.getBusicd();
 
                 //使用/v3/bill接口 退款的好像也没有拉取到
