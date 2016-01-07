@@ -1,16 +1,41 @@
 package com.cardinfolink.yunshouyin.model;
 
 public class QRequest {
+
     private String busicd;
+
     private String inscd;
+
     private String txndir;
+
     private String terminalid;
+
     private String origOrderNum;
+
     private String orderNum;
+
     private String mchntid;
+
+    /**
+     * 交易来源，例如android，pc，ios等
+     */
     private String tradeFrom;
+
+    /**
+     * 交易总金额
+     */
     private String txamt;
+
+    /**
+     * 总金额
+     */
+    private String totalFee;
+
+    /**
+     * 交易渠道
+     */
     private String chcd;
+
     private String goodsInfo;
 
 
@@ -100,5 +125,31 @@ public class QRequest {
 
     public void setGoodsInfo(String goodsInfo) {
         this.goodsInfo = goodsInfo;
+    }
+
+    public String getTotalFee() {
+        return totalFee;
+    }
+
+    public void setTotalFee(String totalFee) {
+        this.totalFee = totalFee;
+    }
+
+    @Override
+    public String toString() {
+        return "QRequest{" +
+                "busicd='" + busicd + '\'' +
+                ", inscd='" + inscd + '\'' +
+                ", txndir='" + txndir + '\'' +
+                ", terminalid='" + terminalid + '\'' +
+                ", origOrderNum='" + origOrderNum + '\'' +
+                ", orderNum='" + orderNum + '\'' +
+                ", mchntid='" + mchntid + '\'' +
+                ", tradeFrom='" + tradeFrom + '\'' +
+                ", txamt='" + txamt + '\'' +
+                ", totalFee='" + totalFee + '\'' +
+                ", chcd='" + chcd + '\'' +
+                ", goodsInfo='" + goodsInfo + '\'' +
+                '}';
     }
 }
