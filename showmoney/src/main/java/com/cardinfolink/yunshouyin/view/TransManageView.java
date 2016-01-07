@@ -27,6 +27,7 @@ import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.MonthBill;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
+import com.cardinfolink.yunshouyin.model.CouponInfo;
 import com.cardinfolink.yunshouyin.model.QRequest;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.Txn;
@@ -576,11 +577,30 @@ public class TransManageView extends LinearLayout {
     //获取卡券账单
     public void getTicketBill() {
         mLoadingDialog.startLoading();
-        quickPayService.getHistoryCouponsAsync(SessonData.loginUser, "201512", String.valueOf(ticketIndex), "100", new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.getHistoryCouponsAsync(SessonData.loginUser, mTicketCurrentYearMonth, String.valueOf(ticketIndex), "100", new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
-                Log.e(TAG, " data " + data);
+                int size = data.getSize();
+                int totalRecord = data.getTotalRecord();
+
+                parseServerPacket(data, mMonthTicketBillMap, mTicketBillMap, mMonthTicketBilltList, mTicketBillList);
+
+                mTicketAdapter.notifyDataSetChanged();
                 mTicketPullRefreshListView.onRefreshComplete();
+
+                ticketIndex += size;
+                if (ticketIndex == totalRecord) {
+                    //之前用的是size来判断的。size等于零 表示 加载到这个月的全部的了，这时候就要加载前一个月的数据了
+                    //现在用totalRecord来判断，相等表明这个月的数据加载完了，这个时候就要加载前一个月的数据了
+                    ticketIndex = 0;
+                    mMonthTicketAgo += 1;
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.MONTH, 0 - mMonthTicketAgo);    //得到前一个月
+                    String year = String.format("%4d", calendar.get(Calendar.YEAR));
+                    String month = String.format("%02d", calendar.get(Calendar.MONTH) + 1);
+                    mTicketCurrentYearMonth = year + month;//走到这里说明 下次调用这个 getTicketBill()方法的时候拉取的就是上个月的账单了
+                }
+
                 mLoadingDialog.endLoading();
             }
 
@@ -677,70 +697,123 @@ public class TransManageView extends LinearLayout {
         final int size = data.getSize();
 
         //这里开始遍历这个账单的数组************************************************************
-        for (Txn txn : data.getTxn()) {
-            TradeBill tradeBill = new TradeBill();
-            tradeBill.response = txn.getResponse();
-            tradeBill.tandeDate = txn.getSystemDate();
-            tradeBill.consumerAccount = txn.getConsumerAccount();
-            tradeBill.transStatus = txn.getTransStatus();
-            tradeBill.refundAmt = TxamtUtil.getNormal(txn.getRefundAmt());//对于人民币的金额都需要除以100
-            tradeBill.couponDiscountAmt = TxamtUtil.getNormal(txn.getCouponDiscountAmt());//卡券优惠金额，人民币需要除以100
+        if (data.getTxn() != null) {
+            for (Txn txn : data.getTxn()) {
+                TradeBill tradeBill = new TradeBill();
+                tradeBill.response = txn.getResponse();
+                tradeBill.tandeDate = txn.getSystemDate();
+                tradeBill.consumerAccount = txn.getConsumerAccount();
+                tradeBill.transStatus = txn.getTransStatus();
+                tradeBill.refundAmt = TxamtUtil.getNormal(txn.getRefundAmt());//对于人民币的金额都需要除以100
+                tradeBill.couponDiscountAmt = TxamtUtil.getNormal(txn.getCouponDiscountAmt());//卡券优惠金额，人民币需要除以100
 
 
-            QRequest req = txn.getmRequest();
-            if (req != null) {
-                tradeBill.orderNum = req.getOrderNum();
-                tradeBill.amount = TxamtUtil.getNormal(req.getTxamt());//对于人民币的金额都需要除以100
-                tradeBill.busicd = req.getBusicd();
+                QRequest req = txn.getmRequest();
+                if (req != null) {
+                    tradeBill.orderNum = req.getOrderNum();
+                    tradeBill.amount = TxamtUtil.getNormal(req.getTxamt());//对于人民币的金额都需要除以100
+                    tradeBill.busicd = req.getBusicd();
 
-                //使用/v3/bill接口 退款的好像也没有拉取到
-                if (tradeBill.busicd.equals("REFD")) {
-                    tradeBill.amount = "-" + tradeBill.amount;
+                    //使用/v3/bill接口 退款的好像也没有拉取到
+                    if (tradeBill.busicd.equals("REFD")) {
+                        tradeBill.amount = "-" + tradeBill.amount;
+                    }
+                    tradeBill.chcd = req.getChcd();
+                    tradeBill.tradeFrom = req.getTradeFrom();
+                    tradeBill.goodsInfo = req.getGoodsInfo();
                 }
-                tradeBill.chcd = req.getChcd();
-                tradeBill.tradeFrom = req.getTradeFrom();
-                tradeBill.goodsInfo = req.getGoodsInfo();
-            }
 
-            //获取这个账单里面的日期,年月日 的 日
-            String currentDay = tradeBill.tandeDate.substring(6, 8);
-            String currentYear = tradeBill.tandeDate.substring(0, 4);
-            String currentMonth = tradeBill.tandeDate.substring(4, 6);
-            String currentYearMonth = tradeBill.tandeDate.substring(0, 6);
+                //获取这个账单里面的日期,年月日 的 日
+                String currentDay = tradeBill.tandeDate.substring(6, 8);
+                String currentYear = tradeBill.tandeDate.substring(0, 4);
+                String currentMonth = tradeBill.tandeDate.substring(4, 6);
+                String currentYearMonth = tradeBill.tandeDate.substring(0, 6);
 
-            //渠道为空的 不列入统计，这样totalRecord和实际的list的size可能不一样
-            if (TextUtils.isEmpty(tradeBill.chcd)) {
-                continue;
-            }
+                //渠道为空的 不列入统计，这样totalRecord和实际的list的size可能不一样
+                if (TextUtils.isEmpty(tradeBill.chcd)) {
+                    continue;
+                }
 
-            //添加到相应的map中，最后再转换到list中，按照月份的先后排序转换到list中
-            if (monthMap.containsKey(currentYearMonth)) {
-                monthMap.get(currentYearMonth).setCount(count);
-                monthMap.get(currentYearMonth).setTotal(total);
-                monthMap.get(currentYearMonth).setRefdcount(refdcount);
-                monthMap.get(currentYearMonth).setRefdtotal(refdtotal);
-                monthMap.get(currentYearMonth).setSize(size);
-                monthMap.get(currentYearMonth).setTotalRecord(totalRecord);
-            } else {
-                MonthBill monthBill = new MonthBill(currentYear, currentMonth);
-                monthBill.setCount(count);
-                monthBill.setTotal(total);
-                monthBill.setRefdcount(refdcount);
-                monthBill.setRefdtotal(refdtotal);
-                monthBill.setSize(size);
-                monthBill.setTotalRecord(totalRecord);
-                monthMap.put(currentYearMonth, monthBill);
-            }
+                //添加到相应的map中，最后再转换到list中，按照月份的先后排序转换到list中
+                if (monthMap.containsKey(currentYearMonth)) {
+                    monthMap.get(currentYearMonth).setCount(count);
+                    monthMap.get(currentYearMonth).setTotal(total);
+                    monthMap.get(currentYearMonth).setRefdcount(refdcount);
+                    monthMap.get(currentYearMonth).setRefdtotal(refdtotal);
+                    monthMap.get(currentYearMonth).setSize(size);
+                    monthMap.get(currentYearMonth).setTotalRecord(totalRecord);
+                } else {
+                    MonthBill monthBill = new MonthBill(currentYear, currentMonth);
+                    monthBill.setCount(count);
+                    monthBill.setTotal(total);
+                    monthBill.setRefdcount(refdcount);
+                    monthBill.setRefdtotal(refdtotal);
+                    monthBill.setSize(size);
+                    monthBill.setTotalRecord(totalRecord);
+                    monthMap.put(currentYearMonth, monthBill);
+                }
 
-            if (tradeBillMap.containsKey(currentYearMonth)) {
-                tradeBillMap.get(currentYearMonth).add(tradeBill);
-            } else {
-                List<TradeBill> list = new ArrayList<TradeBill>();
-                list.add(tradeBill);
-                tradeBillMap.put(currentYearMonth, list);
-            }
+                if (tradeBillMap.containsKey(currentYearMonth)) {
+                    tradeBillMap.get(currentYearMonth).add(tradeBill);
+                } else {
+                    List<TradeBill> list = new ArrayList<TradeBill>();
+                    list.add(tradeBill);
+                    tradeBillMap.put(currentYearMonth, list);
+                }
+            }//end for()
         }
         //**********************************************************************************
+
+        //***这里是获取卡券账单数组**这个和上面的不可能同时有数据的*********************************
+        if (data.getCoupons() != null) {
+            for (CouponInfo couponInfo : data.getCoupons()) {
+                TradeBill tradeBill = new TradeBill();
+                tradeBill.response = couponInfo.getResponse();
+                tradeBill.tandeDate = couponInfo.getSystemDate();
+                tradeBill.tradeFrom = couponInfo.getTradeFrom();
+                tradeBill.couponType = couponInfo.getType();
+                tradeBill.couponName = couponInfo.getName();
+                tradeBill.couponChannel = couponInfo.getChannel();
+
+
+                //获取这个账单里面的日期,年月日 的 日
+                String currentDay = tradeBill.tandeDate.substring(6, 8);
+                String currentYear = tradeBill.tandeDate.substring(0, 4);
+                String currentMonth = tradeBill.tandeDate.substring(4, 6);
+                String currentYearMonth = tradeBill.tandeDate.substring(0, 6);
+
+
+                //添加到相应的map中，最后再转换到list中，按照月份的先后排序转换到list中
+                if (monthMap.containsKey(currentYearMonth)) {
+                    monthMap.get(currentYearMonth).setCount(count);
+                    monthMap.get(currentYearMonth).setTotal(total);
+                    monthMap.get(currentYearMonth).setRefdcount(refdcount);
+                    monthMap.get(currentYearMonth).setRefdtotal(refdtotal);
+                    monthMap.get(currentYearMonth).setSize(size);
+                    monthMap.get(currentYearMonth).setTotalRecord(totalRecord);
+                } else {
+                    MonthBill monthBill = new MonthBill(currentYear, currentMonth);
+                    monthBill.setCount(count);
+                    monthBill.setTotal(total);
+                    monthBill.setRefdcount(refdcount);
+                    monthBill.setRefdtotal(refdtotal);
+                    monthBill.setSize(size);
+                    monthBill.setTotalRecord(totalRecord);
+                    monthMap.put(currentYearMonth, monthBill);
+                }
+
+                if (tradeBillMap.containsKey(currentYearMonth)) {
+                    tradeBillMap.get(currentYearMonth).add(tradeBill);
+                } else {
+                    List<TradeBill> list = new ArrayList<TradeBill>();
+                    list.add(tradeBill);
+                    tradeBillMap.put(currentYearMonth, list);
+                }
+
+            }
+        }
+
+
         //这是里把相应的map类型转换成list类型，因为expandablelistview里面group和child的数据需要是list类型的
         //也不一定没要是list类型，不过list类型在expandablelistview里面用起来方便。
         mapToMonthBillList(monthMap, monthList);
