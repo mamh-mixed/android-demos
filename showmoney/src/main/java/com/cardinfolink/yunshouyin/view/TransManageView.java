@@ -21,6 +21,7 @@ import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.adapter.BillExpandableListAdapter;
 import com.cardinfolink.yunshouyin.adapter.CollectionExpandableListAdapter;
+import com.cardinfolink.yunshouyin.adapter.TicketExpandableListAdapter;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
@@ -70,7 +71,7 @@ public class TransManageView extends LinearLayout {
 
     //***卡券账单*************************************************************************************
     private PullToRefreshExpandableListView mTicketPullRefreshListView;//第2个第2个卡券账单的listview
-    private BillExpandableListAdapter mTicketAdapter;
+    private TicketExpandableListAdapter mTicketAdapter;
 
     private Map<String, MonthBill> mMonthTicketBillMap;
     private List<MonthBill> mMonthTicketBilltList;
@@ -227,7 +228,7 @@ public class TransManageView extends LinearLayout {
         mTicketBillList = new ArrayList<>();
         mTicketBillMap = new HashMap<>();
 
-        mTicketAdapter = new BillExpandableListAdapter(mContext, mMonthTicketBilltList, mTicketBillList);
+        mTicketAdapter = new TicketExpandableListAdapter(mContext, mMonthTicketBilltList, mTicketBillList);
         ExpandableListView ticketActualView = mTicketPullRefreshListView.getRefreshableView();
         ticketActualView.setAdapter(mTicketAdapter);
         ticketActualView.setGroupIndicator(null);
@@ -466,6 +467,8 @@ public class TransManageView extends LinearLayout {
         }
 
         getCollectionBill();
+
+        getTicketBill();
     }
 
     //精确查找某个账单
@@ -513,7 +516,9 @@ public class TransManageView extends LinearLayout {
 
                 mBillAdapter.notifyDataSetChanged();
                 mBillPullRefreshListView.onRefreshComplete();
-
+                if (mBillAdapter.getGroupCount() >= 1) {
+                    mBillPullRefreshListView.getRefreshableView().expandGroup(0);
+                }
                 billIndex += size;
                 if (mMonthBilList.size() <= 0) {
                     String msg = mContext.getString(R.string.bill_search_result_message3);
@@ -549,7 +554,9 @@ public class TransManageView extends LinearLayout {
 
                 mBillAdapter.notifyDataSetChanged();
                 mBillPullRefreshListView.onRefreshComplete();
-
+                if (mBillAdapter.getGroupCount() >= 1) {
+                    mBillPullRefreshListView.getRefreshableView().expandGroup(0);
+                }
                 billIndex += size;
                 if (billIndex == totalRecord) {
                     //之前用的是size来判断的。size等于零 表示 加载到这个月的全部的了，这时候就要加载前一个月的数据了
@@ -588,6 +595,9 @@ public class TransManageView extends LinearLayout {
                 mTicketAdapter.notifyDataSetChanged();
                 mTicketPullRefreshListView.onRefreshComplete();
 
+                if (mTicketAdapter.getGroupCount() >= 1) {
+                    mTicketPullRefreshListView.getRefreshableView().expandGroup(0);
+                }
                 ticketIndex += size;
                 if (ticketIndex == totalRecord) {
                     //之前用的是size来判断的。size等于零 表示 加载到这个月的全部的了，这时候就要加载前一个月的数据了
@@ -662,7 +672,9 @@ public class TransManageView extends LinearLayout {
 
                 mCollectionAdapter.notifyDataSetChanged();//这一句很重要的
                 mCollectionPullRefreshListView.onRefreshComplete();
-
+                if (mCollectionAdapter.getGroupCount() >= 1) {
+                    mCollectionPullRefreshListView.getRefreshableView().expandGroup(0);
+                }
                 collectionIndex += size;
 
                 mLoadingDialog.endLoading();
