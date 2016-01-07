@@ -95,6 +95,10 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 		// 遍历查询结果
 		txns = append(txns, transToTxn(t))
 	}
+
+	if len(txns) == 0 {
+		txns = make([]*model.AppTxn, 0)
+	}
 	result.Txn = txns
 	result.Size = len(txns)
 	result.TotalRecord = total
