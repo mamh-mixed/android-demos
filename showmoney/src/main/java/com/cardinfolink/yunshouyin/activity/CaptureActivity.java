@@ -217,51 +217,41 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                         bundle.putBoolean("check_coupon_result_flag", true);
                                         intent.putExtras(bundle);
                                         mContext.startActivity(intent);
+                                        finish();
                                     } else {
                                         //核销失败
-                                        mHintDialog.setText(getResources().getString(R.string.coupon_ver_fail),getResources().getString(R.string.coupon_ver_try_again) , getResources().getString(R.string.coupon_ver_close));
-                                        mHintDialog.show();
-                                        mHintDialog.setCancelOnClickListener(new OnClickListener() {
+                                        runOnUiThread(new Runnable() {
                                             @Override
-                                            public void onClick(View v) {
-                                                Coupon.getInstance().clear();
-                                                finish();
-                                            }
-                                        });
-                                        mHintDialog.setOkOnClickListener(new OnClickListener() {
-                                            @Override
-                                            public void onClick(View v) {
-                                                CashierSdk.startVeri(orderData, new CashierListener() {
+                                            public void run() {
+                                                mHintDialog.setText(getResources().getString(R.string.coupon_ver_fail), getResources().getString(R.string.coupon_ver_try_again), getResources().getString(R.string.coupon_ver_close));
+                                                mHintDialog.show();
+                                                mHintDialog.setCancelOnClickListener(new OnClickListener() {
                                                     @Override
-                                                    public void onResult(ResultData resultData) {
-                                                        if ("00".equals(mResultData.respcd)) {
-                                                            runOnUiThread(new Runnable() {
-                                                                @Override
-                                                                public void run() {
-                                                                    Intent intent = new Intent(mContext, CouponResultActivity.class);
-                                                                    Bundle bundle = new Bundle();
-                                                                    bundle.putBoolean("check_coupon_result_flag", true);
-                                                                    intent.putExtras(bundle);
-                                                                    mContext.startActivity(intent);
-                                                                    mHintDialog.hide();
-                                                                }
-                                                            });
-                                                        }
+                                                    public void onClick(View v) {
+                                                        Coupon.getInstance().clear();
+                                                        finish();
                                                     }
-
+                                                });
+                                                mHintDialog.setOkOnClickListener(new OnClickListener() {
                                                     @Override
-                                                    public void onError(final int errorCode) {
+                                                    public void onClick(View v) {
                                                         runOnUiThread(new Runnable() {
                                                             @Override
                                                             public void run() {
-                                                                Log.e(TAG, " starVeri fail===" + errorCode);
+                                                                Intent intent = new Intent(mContext, CaptureActivity.class);
+                                                                Bundle bundle = new Bundle();
+                                                                bundle.putString("original", "ticketview");
+                                                                intent.putExtras(bundle);
+                                                                mContext.startActivity(intent);
+                                                                mHintDialog.hide();
                                                             }
                                                         });
 
                                                     }
-                                                });
-                                            }
 
+                                                });
+
+                                            }
                                         });
 
                                     }
