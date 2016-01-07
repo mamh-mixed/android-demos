@@ -1062,6 +1062,7 @@ func (u *user) findOrderHandle(req *reqParams) (result model.AppResult) {
 	// 初始化查询参数
 	findOrderParams(req, q)
 	trans, total, err := mongo.SpTransColl.Find(q)
+
 	if err != nil {
 		return model.SYSTEM_ERROR
 	}
@@ -1265,21 +1266,6 @@ func (u *user) findPushMessage(req *reqParams) (result model.AppResult) {
 
 	result.Count = len(messages)
 	result.Message = messages
-	return result
-}
-
-// 查询订单
-func (u *user) ordersHandler(req *reqParams) (result model.AppResult) {
-	if req.OrderNum != "" {
-		req.BusinessType = "getOrder"
-		result = u.getUserTrans(req)
-	} else {
-		if req.Size == "" {
-			req.Size = "15"
-		}
-		result = u.findOrderHandle(req)
-	}
-
 	return result
 }
 
