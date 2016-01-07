@@ -1608,7 +1608,28 @@ func transToCoupon(t *model.Trans) *model.Coupon {
 		TradeFrom:  t.TradeFrom,
 		Response:   t.RespCode,
 		SystemDate: timeReplacer.Replace(t.CreateTime),
+		Terminalid: t.Terminalid,
+		OrderNum:   t.OrderNum,
 	}
+	if t.ScanPayCoupon != nil {
+		coupon.ReqData.Busicd = t.ScanPayCoupon.Busicd
+		coupon.ReqData.AgentCode = t.ScanPayCoupon.AgentCode
+		coupon.ReqData.Txndir = "Q"
+		coupon.ReqData.Terminalid = t.ScanPayCoupon.Terminalid
+		coupon.ReqData.OrderNum = t.ScanPayCoupon.OrderNum
+		coupon.ReqData.MerId = t.ScanPayCoupon.MerId
+		coupon.ReqData.TradeFrom = t.ScanPayCoupon.TradeFrom
+		coupon.ReqData.Txamt = fmt.Sprintf("%012d", t.ScanPayCoupon.TransAmt+t.ScanPayCoupon.DiscountAmt)
+		coupon.ReqData.TotalFee = t.ScanPayCoupon.TransAmt + t.ScanPayCoupon.DiscountAmt
+		coupon.ReqData.ChanCode = t.ScanPayCoupon.ChanCode
+		coupon.ReqData.Currency = t.ScanPayCoupon.Currency
+		if t.ScanPayCoupon.Currency == "" {
+			coupon.ReqData.Currency = "CNY"
+		}
+		coupon.ReqData.CouponDiscountAmt = t.ScanPayCoupon.DiscountAmt
+	}
+
+	// coupon.ReqData.OrigTransAmt = t.ScanPayCoupon.TransAmt + t.ScanPayCoupon.DiscountAmt
 	couponType := ""
 	if len(t.VoucherType) == 2 {
 		couponType = t.VoucherType[1:2]

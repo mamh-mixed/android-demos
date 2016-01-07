@@ -317,6 +317,16 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
 		}
 	}
+	couponTrans := &model.Trans{}
+	// 如果卡券订单号不为空，则查询出卡券订单
+	if req.CouponOrderNum != "" {
+		// 判断是否存在该订单
+		couponTransTemp, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
+		if err != nil {
+			return adaptor.LogicErrorHandler(t, "TRADE_NOT_EXIST")
+		}
+		couponTrans = couponTransTemp
+	}
 
 	// 下单时忽略渠道，以免误送渠道导致交易失败
 	// 上送渠道与付款码不符
@@ -360,6 +370,35 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 更新交易信息
 	updateTrans(t, ret)
+	// 如果成功，则将支付信息更新到卡券交易中
+	if ret.Respcd == "00" {
+		scanPayCoupon := &model.ScanPayCoupon{
+			OrderNum:     t.OrderNum,
+			RespCode:     t.RespCode,
+			TransAmt:     t.TransAmt,
+			TransStatus:  t.TransStatus,
+			TransType:    t.TransType,
+			ChanCode:     t.ChanCode,
+			CreateTime:   t.CreateTime,
+			UpdateTime:   t.UpdateTime,
+			TradeFrom:    t.TradeFrom,
+			PayTime:      t.PayTime,
+			Currency:     t.Currency,
+			ExchangeRate: t.ExchangeRate,
+			DiscountAmt:  t.DiscountAmt,
+			PayType:      t.PayType,
+			MerId:        t.MerId,
+			Busicd:       t.Busicd,
+			AgentCode:    t.AgentCode,
+			Terminalid:   t.Terminalid,
+		}
+		couponTrans.ScanPayCoupon = scanPayCoupon
+		err = mongo.CouTransColl.UpdateAndUnlock(couponTrans)
+		if err != nil {
+			log.Errorf("save scanPayTrans to couponTrans fail,scanPayOrderNum:%s", scanPayCoupon.OrderNum)
+		}
+
+	}
 
 	return ret
 }
@@ -395,6 +434,16 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
+	couponTrans := &model.Trans{}
+	// 如果卡券订单号不为空，则查询出卡券订单
+	if req.CouponOrderNum != "" {
+		// 判断是否存在该订单
+		couponTransTemp, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
+		if err != nil {
+			return adaptor.LogicErrorHandler(t, "TRADE_NOT_EXIST")
+		}
+		couponTrans = couponTransTemp
+	}
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
@@ -431,6 +480,36 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 更新交易信息
 	updateTrans(t, ret)
+
+	// 如果成功，则将支付信息更新到卡券交易中
+	if ret.Respcd == "00" {
+		scanPayCoupon := &model.ScanPayCoupon{
+			OrderNum:     t.OrderNum,
+			RespCode:     t.RespCode,
+			TransAmt:     t.TransAmt,
+			TransStatus:  t.TransStatus,
+			TransType:    t.TransType,
+			ChanCode:     t.ChanCode,
+			CreateTime:   t.CreateTime,
+			UpdateTime:   t.UpdateTime,
+			TradeFrom:    t.TradeFrom,
+			PayTime:      t.PayTime,
+			Currency:     t.Currency,
+			ExchangeRate: t.ExchangeRate,
+			DiscountAmt:  t.DiscountAmt,
+			PayType:      t.PayType,
+			MerId:        t.MerId,
+			Busicd:       t.Busicd,
+			AgentCode:    t.AgentCode,
+			Terminalid:   t.Terminalid,
+		}
+		couponTrans.ScanPayCoupon = scanPayCoupon
+		err = mongo.CouTransColl.UpdateAndUnlock(couponTrans)
+		if err != nil {
+			log.Errorf("save scanPayTrans to couponTrans fail,scanPayOrderNum:%s", scanPayCoupon.OrderNum)
+		}
+
+	}
 
 	return ret
 }

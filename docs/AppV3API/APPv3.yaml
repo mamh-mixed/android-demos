@@ -866,7 +866,7 @@ definitions:
     properties:
       type:
         type: string
-        description: 卡券类型
+        description: 卡券类型,1:减 2:兑 3:折
       name:
         type: string
         description: 卡券名称

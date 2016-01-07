@@ -214,4 +214,21 @@ type Coupon struct {
 	OrderNum   string `json:"orderNum,omitempty"`
 	Response   string `json:"response,omitempty"`
 	SystemDate string `json:"system_date,omitempty"`
+	Terminalid string `json:"terminalid,omitempty"`
+	ReqData    struct {
+		Busicd            string `json:"busicd,omitempty"`
+		AgentCode         string `json:"inscd,omitempty"`
+		Txndir            string `json:"txndir,omitempty"`
+		Terminalid        string `json:"terminalid,omitempty"`
+		OrigOrderNum      string `json:"origOrderNum,omitempty"`
+		OrderNum          string `json:"orderNum,omitempty"`
+		MerId             string `json:"mchntid,omitempty"`
+		TradeFrom         string `json:"tradeFrom,omitempty"`
+		Txamt             string `json:"txamt,omitempty"`
+		TotalFee          int64  `json:"totalFee,omitempty"` // 根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
+		ChanCode          string `json:"chcd,omitempty"`
+		Currency          string `json:"currency,omitempty"`
+		CouponDiscountAmt int64  `json:"couponDiscountAmt,omitempty"` // 卡券优惠金额
+		// OrigTransAmt      int64  `json:"origTransAmt,omitempty"`      // 交易原始金额=交易金额+优惠金额
+	} `json:"m_request,omitempty"`
 }
