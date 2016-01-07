@@ -3,9 +3,9 @@ package com.cardinfolink.yunshouyin.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -17,6 +17,7 @@ import com.cardinfolink.yunshouyin.activity.DetailActivity;
 import com.cardinfolink.yunshouyin.data.MonthBill;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -131,6 +132,8 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             childViewHolder.billTradeFromImage = (ImageView) convertView.findViewById(R.id.bill_iv_tradefrom);
             childViewHolder.billTradeStatus = (TextView) convertView.findViewById(R.id.bill_tradestatus);
             childViewHolder.billTradeAmount = (TextView) convertView.findViewById(R.id.bill_tradeamount);
+            childViewHolder.billOriginTradeAmount = (TextView) convertView.findViewById(R.id.bill_origin_trademount);
+            childViewHolder.billDiscount = (ImageView) convertView.findViewById(R.id.bill_descount);
 
             convertView.setTag(childViewHolder);
         } else {
@@ -211,8 +214,30 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             childViewHolder.billTradeStatus.setTextColor(Color.RED);
         }
         childViewHolder.billTradeStatus.setText(tradeStatus);
-        childViewHolder.billTradeAmount.setText("￥" + bill.amount);
 
+        childViewHolder.billTradeAmount.setText("￥" + bill.amount);//实际支付金额
+
+        try {
+            //如果有优惠
+            BigDecimal discountAmt = new BigDecimal(bill.couponDiscountAmt);//优惠的金额
+            BigDecimal txAmt = new BigDecimal(bill.amount);
+            BigDecimal b0 = new BigDecimal("0");
+            if (discountAmt.compareTo(b0) > 0) {
+                //大于0 说明有优惠金额
+                childViewHolder.billOriginTradeAmount.setVisibility(View.VISIBLE);
+                childViewHolder.billDiscount.setVisibility(View.VISIBLE);
+                String origin = discountAmt.add(txAmt).toString();
+                childViewHolder.billOriginTradeAmount.setText("￥" + origin);
+                childViewHolder.billOriginTradeAmount.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
+            } else {
+                childViewHolder.billOriginTradeAmount.setVisibility(View.INVISIBLE);
+                childViewHolder.billDiscount.setVisibility(View.INVISIBLE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            childViewHolder.billOriginTradeAmount.setVisibility(View.INVISIBLE);
+            childViewHolder.billDiscount.setVisibility(View.INVISIBLE);
+        }
 
         childViewHolder.linearLayoutDay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -256,7 +281,12 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         public TextView billTradeFrom;
         public ImageView billTradeFromImage;
         public TextView billTradeStatus;
-        public TextView billTradeAmount;
+
+        public TextView billTradeAmount;//优惠后的实际支付的金额
+        public TextView billOriginTradeAmount;//优惠之前的金额
+
+        public ImageView billDiscount;//显示折扣的一个图片
+
         public View linearLayoutDay;//左边显示日期，周几的一个线性布局
         public View linearLayoutBillItem;//右边显示详情账单信息的一个线性布局
     }
