@@ -72,11 +72,11 @@ public class ShowMoneyApp extends Application {
 
         //default is pro
         SystemConfig.IS_PRODUCE = true;
-        SystemConfig.Server = "https://wpay.hncb.com.tw";
+        SystemConfig.Server = "https://wpay.hncb.com.tw/app";
         switch (ENVIRONMENT) {
             case "pro":
                 SystemConfig.IS_PRODUCE = true;
-                SystemConfig.Server = "https://wpay.hncb.com.tw";
+                SystemConfig.Server = "https://wpay.hncb.com.tw/app";
                 break;
             case "test":
                 SystemConfig.IS_PRODUCE = false;
