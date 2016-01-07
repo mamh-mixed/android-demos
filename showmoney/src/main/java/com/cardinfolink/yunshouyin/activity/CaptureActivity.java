@@ -251,6 +251,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                 @Override
                                 public void onError(int errorCode) {
                                     Log.e(TAG, " starVeri fail===" + errorCode);
+                                    MainActivity.getHandler().sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_FAIL);
                                     finish();
                                 }
                             });
