@@ -16,8 +16,12 @@ public class TradeBill implements Serializable {
     public String goodsInfo;
     public String refundAmt;
     public String transStatus;//这个是新增的一个表示订单状态的字段
+
+    public String couponType;
+    public String couponName;
     public String couponChannel;//卡券渠道
     public String couponDiscountAmt;//卡券优惠金额
+
 
     public String errorDetail;//错误信息
     public String total;//交易金额
