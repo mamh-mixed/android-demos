@@ -12,12 +12,14 @@ import (
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/crontab"
 	// "github.com/CardInfoLink/quickpay/data"
+	"fmt"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/scanpay"
 	"github.com/CardInfoLink/quickpay/settle"
+	"github.com/CardInfoLink/quickpay/util"
 	"github.com/omigo/log"
-
+	"os"
 	// _ "net/http/pprof"
 )
 
@@ -27,7 +29,14 @@ import (
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
+	logFile, err := os.Create(util.WorkDir + "\\logs\\quickpay.txt")
+	if err != nil {
+		fmt.Println("create logs file error: %s", err)
+		os.Exit(1)
+	}
+
 	log.SetOutputLevel(goconf.Config.App.LogLevel)
+	log.SetOutput(logFile)
 	// log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Llevel | log.Lprojectfile)
 
 	startScanpay() // 扫码支付
