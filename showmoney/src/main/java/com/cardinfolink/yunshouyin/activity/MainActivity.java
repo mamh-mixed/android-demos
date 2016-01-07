@@ -159,6 +159,8 @@ public class MainActivity extends BaseActivity {
         PagerAdapter mPagerAdapter = new MainPagerAdapter();
         mTabPager.setAdapter(mPagerAdapter);
         mTab1.setImageResource(R.drawable.gathering_selected);
+
+        mTransManageView.refresh();
     }
 
     @Override
