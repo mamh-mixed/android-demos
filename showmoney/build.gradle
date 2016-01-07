@@ -16,23 +16,32 @@ android {
     }
 
     productFlavors {
+        //this is 生产环境
         cardinfolink {
             manifestPlaceholders = [UMENG_APPKEY_VALUE  : "55ebd98367e58e0f13002f2a",
                                     UMENG_MESSAGE_SECRET: "2ca19c22883bbdd491ea3569299fee9c",
                                     UMENG_CHANNEL_VALUE : "yunshouyin",
                                     PACKAGE             : "com.cardinfolink.yunshouyin"]
-            //comment out below for go live
             applicationId "com.cardinfolink.yunshouyin"
             buildConfigField 'String', 'ENVIRONMENT', '"pro"'
         }
+        //this is 测试环境
         _test {
             manifestPlaceholders = [UMENG_APPKEY_VALUE  : "55ebd98367e58e0f13002f2a",
                                     UMENG_MESSAGE_SECRET: "2ca19c22883bbdd491ea3569299fee9c",
                                     UMENG_CHANNEL_VALUE : "yunshouyin",
                                     PACKAGE             : "com.cardinfolink.yunshouyin.test"]
-            //comment out below for go live
             applicationId "com.cardinfolink.yunshouyin.test"
             buildConfigField 'String', 'ENVIRONMENT', '"test"'
+        }
+        //this is 开发环境
+        dev {
+            manifestPlaceholders = [UMENG_APPKEY_VALUE  : "55ebd98367e58e0f13002f2a",
+                                    UMENG_MESSAGE_SECRET: "2ca19c22883bbdd491ea3569299fee9c",
+                                    UMENG_CHANNEL_VALUE : "yunshouyin",
+                                    PACKAGE             : "com.cardinfolink.yunshouyin.test"]
+            applicationId "com.cardinfolink.yunshouyin.test"
+            buildConfigField 'String', 'ENVIRONMENT', '"dev"'
         }
     }
 
