@@ -212,7 +212,6 @@ func (u *userV3) getDaySummary(req *reqParams) (result model.AppResult) {
 			case model.PayTrans:
 				origTransAmt := v.TransAmt + v.DiscountAmt
 				result.TotalFee += origTransAmt
-				result.Count += v.TransNum
 			}
 		}
 		q := &model.QueryCondition{
