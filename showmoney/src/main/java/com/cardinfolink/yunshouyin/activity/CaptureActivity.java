@@ -19,6 +19,7 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 
 import com.cardinfolink.cashiersdk.listener.CashierListener;
 import com.cardinfolink.cashiersdk.model.OrderData;
@@ -90,6 +91,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private String originalFromFlag;
 
     private String chcd;//渠道
+    private TradingLoadDialog mCouponLoadDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,6 +115,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         //初始化对话框
         mTradingLoadDialog = new TradingLoadDialog(mContext, mHandler, findViewById(R.id.trading_load_dialog), mOrderNum);
         mHintDialog = new HintDialog(mContext, findViewById(R.id.hint_dialog));
+        mCouponLoadDialog = new TradingLoadDialog(mContext, mHandler, findViewById(R.id.coupon_load_dialog), mOrderNum);
     }
 
     private void initListener() {
@@ -196,7 +199,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                             final OrderData orderData = new OrderData();
                             orderData.orderNum = geneOrderNumber();
                             orderData.scanCodeId = scancode;
-
+                            mCouponLoadDialog.waiting();
                             CashierSdk.startVeri(orderData, new CashierListener() {
                                 @Override
                                 public void onResult(ResultData resultData) {
@@ -217,12 +220,20 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                         bundle.putBoolean("check_coupon_result_flag", true);
                                         intent.putExtras(bundle);
                                         mContext.startActivity(intent);
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                mCouponLoadDialog.hide();
+                                            }
+                                        });
+
                                         finish();
                                     } else {
                                         //核销失败
                                         runOnUiThread(new Runnable() {
                                             @Override
                                             public void run() {
+                                                mCouponLoadDialog.hide();
                                                 mHintDialog.setText(getResources().getString(R.string.coupon_ver_fail), getResources().getString(R.string.coupon_ver_try_again), getResources().getString(R.string.coupon_ver_close));
                                                 mHintDialog.show();
                                                 mHintDialog.setCancelOnClickListener(new OnClickListener() {
@@ -252,7 +263,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                 public void onError(int errorCode) {
                                     Log.e(TAG, " starVeri fail===" + errorCode);
                                     MainActivity.getHandler().sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_FAIL);
-                                    finish();
                                 }
                             });
                             break;
@@ -296,11 +306,22 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         showPayTimeoutDialog();
                         break;
                     }
+                    case Msg.MSG_COUPON_CANCEL:
+                        cancelCouponVerial();
+                        break;
                 }
                 super.handleMessage(msg);
             }
         };
     }
+
+    /**
+     * 取消核销卡券
+     */
+    public void cancelCouponVerial() {
+        finish();
+    }
+
 
 
     // 未付款对话框，上面文本，下面一个按钮的对话框
