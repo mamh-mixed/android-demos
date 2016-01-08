@@ -301,7 +301,8 @@
             android:gravity="center"
             android:padding="7dp"
             android:text="@string/scancode_view_scaning_pay_zhifubao"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            android:visibility="invisible"/>
 
         <RadioButton
             android:id="@+id/btnweixin"
@@ -314,7 +315,8 @@
             android:gravity="center"
             android:padding="7dp"
             android:text="@string/scancode_view_scaning_pay_weixin"
-            android:textColor="#FFFFFF" />
+            android:textColor="#FFFFFF"
+            android:visibility="invisible"/>
     </RadioGroup>
 
 </LinearLayout>

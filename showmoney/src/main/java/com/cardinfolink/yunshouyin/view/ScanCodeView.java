@@ -110,9 +110,13 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                 if (switchFlag) {
                     btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_create_code));
                     switchFlag = false;
+                    btnzhifubao.setVisibility(View.VISIBLE);
+                    btnweixin.setVisibility(View.VISIBLE);
                 } else {
                     btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_scaning_code));
                     switchFlag = true;
+                    btnzhifubao.setVisibility(View.INVISIBLE);
+                    btnweixin.setVisibility(View.INVISIBLE);
                 }
 
             }
