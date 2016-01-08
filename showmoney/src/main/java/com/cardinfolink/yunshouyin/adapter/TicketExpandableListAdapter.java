@@ -183,33 +183,11 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         String tradeStatus;
-        if ("10".equals(bill.transStatus)) {
-            //处理中
-            tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_nopay);
+        if ("00".equals(bill.response)) {
+            tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_success);
             childViewHolder.couponTradeStatus.setTextColor(Color.parseColor("#888888"));
-        } else if ("30".equals(bill.transStatus)) {
-            double amt = Double.parseDouble(bill.refundAmt);
-            if (amt == 0) {
-                //成功的
-                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_success);
-                childViewHolder.couponTradeStatus.setTextColor(Color.parseColor("#888888"));
-            } else {
-                //部分退款的
-                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_partrefd);
-                childViewHolder.couponTradeStatus.setTextColor(Color.parseColor("#888888"));
-            }
-        } else if ("40".equals(bill.transStatus)) {
-            if ("09".equals(bill.response)) {
-                //已关闭
-                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_closed);
-                childViewHolder.couponTradeStatus.setTextColor(Color.parseColor("#888888"));
-            } else {
-                //全额退款
-                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_partrefd);
-                childViewHolder.couponTradeStatus.setTextColor(Color.parseColor("#888888"));
-            }
         } else {
-            //失败的
+            //失败的,这里估计不会有失败的吧
             tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_fail);
             childViewHolder.couponTradeStatus.setTextColor(Color.RED);
         }
