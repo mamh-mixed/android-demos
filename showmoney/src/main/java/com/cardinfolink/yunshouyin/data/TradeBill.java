@@ -5,6 +5,26 @@ import java.io.Serializable;
 public class TradeBill implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    public static final String BILL_TYPE = "bill";
+
+    public static final String COUPON_TYPE = "coupon";
+
+    /**
+     * 默认的构造方法是new出来的是 普通的账单
+     */
+    public TradeBill() {
+        this.billType = BILL_TYPE;
+    }
+
+    public TradeBill(String billType) {
+        this.billType = billType;
+    }
+
+    /**
+     * 这个字段用来区分是普通的账单 还是 卡券账单
+     */
+    public String billType;
+
     public String chcd;//交易渠道
     public String tradeFrom;//交易来自哪里
     public String busicd;
@@ -27,4 +47,29 @@ public class TradeBill implements Serializable {
     public String total;//交易金额
     public String originalTotal;//消费金额
 
+
+    @Override
+    public String toString() {
+        return "TradeBill{" +
+                "billType='" + billType + '\'' +
+                ", chcd='" + chcd + '\'' +
+                ", tradeFrom='" + tradeFrom + '\'' +
+                ", busicd='" + busicd + '\'' +
+                ", orderNum='" + orderNum + '\'' +
+                ", tandeDate='" + tandeDate + '\'' +
+                ", response='" + response + '\'' +
+                ", amount='" + amount + '\'' +
+                ", consumerAccount='" + consumerAccount + '\'' +
+                ", goodsInfo='" + goodsInfo + '\'' +
+                ", refundAmt='" + refundAmt + '\'' +
+                ", transStatus='" + transStatus + '\'' +
+                ", couponType='" + couponType + '\'' +
+                ", couponName='" + couponName + '\'' +
+                ", couponChannel='" + couponChannel + '\'' +
+                ", couponDiscountAmt='" + couponDiscountAmt + '\'' +
+                ", errorDetail='" + errorDetail + '\'' +
+                ", total='" + total + '\'' +
+                ", originalTotal='" + originalTotal + '\'' +
+                '}';
+    }
 }
