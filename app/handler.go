@@ -132,6 +132,27 @@ func getOrderHandle(w http.ResponseWriter, r *http.Request) {
 	w.Write(jsonMarshal(result))
 }
 
+// refundOrdersHandle 获得单个订单关联的退款的订单
+func refundOrdersHandle(w http.ResponseWriter, r *http.Request) {
+
+	// 可跨域
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	if !checkSign(r) {
+		w.Write(jsonMarshal(model.SIGN_FAIL))
+		return
+	}
+
+	result := User.FindRefundOrdersOfOrder(&reqParams{
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		OrderNum:  r.FormValue("orderNum"),
+		Transtime: r.FormValue("transtime"),
+	})
+
+	w.Write(jsonMarshal(result))
+}
+
 // billHandle 获取账单信息
 func billHandle(w http.ResponseWriter, r *http.Request) {
 
