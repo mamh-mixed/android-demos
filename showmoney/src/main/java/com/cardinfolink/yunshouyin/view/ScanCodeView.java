@@ -59,6 +59,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private static final int MAX_LIMIT_MONEY = 500;//单日限额的最大金额数
     private TranslateAnimation mShowAnimation;
     private TranslateAnimation mHideAnimation;
+    private static final int SPLASH_DISPLAY_LENGHT = 2000;
 
     private TextView mScanTitle;//二维码界面中间上边的 标题文本
     private TextView mAccount;//显示账号的
@@ -158,6 +159,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
+
+        initHandler();
 
         initAnimation();//初始化一个动画
 
@@ -495,6 +498,10 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 bundle.putString("original", "scancodeview");
                 intent.putExtras(bundle);
                 mContext.startActivity(intent);
+
+                Message msg = Message.obtain();
+                msg.what = Msg.MSG_SCAN_CODE_VIEW_CLEAR_INPUT_OUTPUT;
+                mHandler.sendMessageDelayed(msg, SPLASH_DISPLAY_LENGHT);
             }
         });
     }
@@ -745,7 +752,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         mOrderNum = orderData.orderNum;//保存为原始订单
 
-        initHandler();//初始化handler
 
         startLoading();
 
@@ -1040,6 +1046,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                         mUpdateMessage.setText(mContext.getString(R.string.scancode_view_cancel_fail));
                         mQRImage.setImageDrawable(null);
                         break;
+                    }
+                    case Msg.MSG_SCAN_CODE_VIEW_CLEAR_INPUT_OUTPUT: {
+                        clearValue();
                     }
                 }
                 super.handleMessage(msg);
