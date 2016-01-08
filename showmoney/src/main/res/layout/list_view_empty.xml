@@ -7,8 +7,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_marginTop="150dp"
+        android:layout_centerHorizontal="true"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -18,7 +17,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/setting_no_message"
-            android:textSize="30sp" />
+            android:textSize="20sp" />
     </LinearLayout>
 
     <LinearLayout
