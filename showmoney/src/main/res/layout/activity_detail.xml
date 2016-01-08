@@ -49,6 +49,24 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_coupon_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
             android:orientation="vertical">
 
             <RelativeLayout
@@ -56,6 +74,7 @@
                 android:layout_height="wrap_content">
 
                 <TextView
+                    android:id="@+id/pay_money_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/detail_activity_pay_money"
@@ -110,6 +129,14 @@
             android:orientation="vertical">
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                android:id="@+id/veri_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                cardinfolink:left_text="@string/detail_activity_veri_order_number"
+                cardinfolink:right_text="" />
+
+            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/pay_order"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -148,7 +175,7 @@
                 cardinfolink:left_text="@string/detail_activity_comments" />
 
             <LinearLayout
-                android:id="@+id/ll_pay_commets"
+                android:id="@+id/ll_pay_comments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
