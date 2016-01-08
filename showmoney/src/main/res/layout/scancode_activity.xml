@@ -65,7 +65,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="40dp"
         android:text="@string/scancode_qrcode"
-        android:textColor="#ffffff"
+        android:textColor="@color/white"
         android:textSize="14sp"
 
         />

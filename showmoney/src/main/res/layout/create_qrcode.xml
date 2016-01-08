@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
                 android:layout_marginTop="30dp"
                 android:gravity="center_horizontal"
                 android:text="@string/main_activity_menu_scancode"
-                android:textColor="#ffffff"
+                android:textColor="@color/white"
                 android:textSize="20sp" />
         </RelativeLayout>
 
@@ -76,7 +76,7 @@
                 android:gravity="center"
                 android:padding="5dp"
                 android:text="@string/create_qrcode_search_deal"
-                android:textColor="#ffffff"
+                android:textColor="@color/white"
                 android:textSize="15sp" />
         </LinearLayout>
     </LinearLayout>

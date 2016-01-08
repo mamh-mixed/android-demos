@@ -26,7 +26,7 @@
             android:layout_marginTop="20dp"
             android:adjustViewBounds="true"
             android:text="@string/register_register"
-            android:textColor="#ffffff"
+            android:textColor="@color/white"
             android:textSize="18sp"
             android:textStyle="bold" />
 

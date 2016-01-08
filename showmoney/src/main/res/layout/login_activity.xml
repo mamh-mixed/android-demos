@@ -97,7 +97,7 @@
                 android:layout_height="wrap_content"
                 android:button="@drawable/checkbox"
                 android:text="@string/login_auto_login"
-                android:textColor="#ffffff" />
+                android:textColor="@color/white" />
 
 
         </LinearLayout>
@@ -136,7 +136,7 @@
             android:maxHeight="50dp"
             android:minHeight="20dp"
             android:text="@string/copyright"
-            android:textColor="#ffffff"
+            android:textColor="@color/white"
             android:textSize="17sp" />
     </LinearLayout>
 
