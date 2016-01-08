@@ -1,6 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/coupon_load_dialog"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_centerInParent="true"
+    android:background="#40000000"
+    android:visibility="gone">
 
-</LinearLayout>
+    <!-- 卡券核销时候的 loading 的对话框 -->
+    <RelativeLayout
+        android:layout_width="300dp"
+        android:layout_height="200dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/dialog_bg"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp">
+
+            <ImageView
+                android:id="@+id/trading_load_img"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentLeft="true"
+                android:src="@drawable/ticket_wait" />
+
+            <TextView
+                android:id="@+id/trading_load_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="30dp"
+                android:layout_toRightOf="@id/trading_load_img"
+                android:text="@string/coupon_doing_info"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/trading_load_second"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#00bbd3"
+                android:textSize="17sp"
+                android:visibility="gone" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/trading_load_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/dialog_button_selector"
+                android:gravity="center"
+                android:text="@string/txt_cancel"
+                android:textColor="#ffffff"
+                android:textSize="17sp" />
+
+
+        </LinearLayout>
+
+    </RelativeLayout>
+    <!-- 读取交易 loading 的对话框 -->
+
+</RelativeLayout><!-- trading_custom_dialog 对话框-->
