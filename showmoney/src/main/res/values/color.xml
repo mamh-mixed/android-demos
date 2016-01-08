@@ -31,6 +31,7 @@
     <color name="viewfinder_mask">#60000000</color>
 
     <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
     <color name="background_blue">#1EBED6</color>
 
 </resources>
