@@ -55,7 +55,8 @@ public class Msg {
 
 
     //卡券用到的
-    public static final int MSG_FROM_SERVER_COUPON_SUCCESS=602;
-    public static final int MSG_FROM_SERVER_COUPON_FAIL=603;
+    public static final int MSG_FROM_SERVER_COUPON_SUCCESS = 602;
+    public static final int MSG_FROM_SERVER_COUPON_FAIL = 603;
+    public static final int MSG_COUPON_CANCEL = 604;
 
 }
