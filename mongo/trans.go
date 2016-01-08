@@ -176,7 +176,7 @@ func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err
 }
 
 // FindOneByOrigOrderNum 通过订单号、商户号查找一条交易记录
-func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (ts []model.Trans, err error) {
+func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (ts []*model.Trans, err error) {
 	match := bson.M{
 		"busicd":       q.Busicd,
 		"origOrderNum": q.OrigOrderNum,
