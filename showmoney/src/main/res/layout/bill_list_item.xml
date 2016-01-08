@@ -78,7 +78,7 @@
                 android:background="@drawable/white_selector"
                 android:padding="5dp"
                 android:text="@string/txt_txn_detail"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:textSize="12sp" />
 
 
