@@ -69,6 +69,9 @@ public class TransManageView extends LinearLayout {
 
     private String mCurrentYearMonth;//当前年份+月份的一个字符串
 
+    private View mEmptyViewBill;
+    private TextView mEmptyTextviewBill;
+
     //***卡券账单*************************************************************************************
     private PullToRefreshExpandableListView mTicketPullRefreshListView;//第2个第2个卡券账单的listview
     private TicketExpandableListAdapter mTicketAdapter;
@@ -83,6 +86,9 @@ public class TransManageView extends LinearLayout {
     private int mMonthTicketAgo;
     private String mTicketCurrentYearMonth;
 
+    private View mEmptyViewTicket;
+    private TextView mEmptyTextviewTicket;
+
     //**收款码账单**************************************************************************************
     private PullToRefreshExpandableListView mCollectionPullRefreshListView;//第3个第3个收款码账单的listview
     private CollectionExpandableListAdapter mCollectionAdapter;
@@ -94,6 +100,10 @@ public class TransManageView extends LinearLayout {
     private Map<String, List<TradeBill>> mCollectionBillMap;
 
     private int collectionIndex;//收款码账单 使用到的 index索引值
+
+    private View mEmptyViewCollection;
+    private TextView mEmptyTextviewCollection;
+
     //****************************************************************************************
 
 
@@ -151,6 +161,7 @@ public class TransManageView extends LinearLayout {
 
         mTitle = (TextView) findViewById(R.id.tv_title);
         mLoadingDialog = new LoadingDialog(mContext, findViewById(R.id.loading_dialog));
+
 
         //***普通的收款账单***************************************************************************************
         mBillPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.bill_list_view);
@@ -383,6 +394,21 @@ public class TransManageView extends LinearLayout {
         mPayWxCheckBox = (CheckBox) findViewById(R.id.cb_pay_type2);//微信支付的    2
         mPayWxCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
 
+        //设置一个空的view，当listview为空的时候
+        mEmptyViewBill = View.inflate(mContext, R.layout.list_view_empty, null);
+        mEmptyTextviewBill = (TextView) mEmptyViewBill.findViewById(R.id.tv_message);
+        mEmptyTextviewBill.setText(mRaidoBill.getText());
+        mBillPullRefreshListView.setEmptyView(mEmptyViewBill);
+
+        mEmptyViewTicket = View.inflate(mContext, R.layout.list_view_empty, null);
+        mEmptyTextviewTicket = (TextView) mEmptyViewTicket.findViewById(R.id.tv_message);
+        mEmptyTextviewTicket.setText(mRadioTicket.getText());
+        mTicketPullRefreshListView.setEmptyView(mEmptyViewTicket);
+
+        mEmptyViewCollection = View.inflate(mContext, R.layout.list_view_empty, null);
+        mEmptyTextviewCollection = (TextView) mEmptyViewCollection.findViewById(R.id.tv_message);
+        mEmptyTextviewCollection.setText(mRadioCollection.getText());
+        mCollectionPullRefreshListView.setEmptyView(mEmptyViewCollection);
     }
 
     private class SearchCheckBoxOnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
@@ -501,7 +527,6 @@ public class TransManageView extends LinearLayout {
 
             @Override
             public void onFailure(QuickPayException ex) {
-                Log.e(TAG, " on failure = " + ex);
                 mBillPullRefreshListView.onRefreshComplete();
                 String msg = mContext.getString(R.string.bill_search_result_message2) + ex.getErrorMsg();
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
