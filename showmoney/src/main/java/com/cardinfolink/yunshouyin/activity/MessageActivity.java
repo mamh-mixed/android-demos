@@ -106,6 +106,8 @@ public class MessageActivity extends BaseActivity {
             }
         });
 
+        mUnreadMessageListView.setEmptyView(View.inflate(mContext, R.layout.list_view_empty, null));
+
         initMessageList(null);
     }
 
