@@ -370,34 +370,9 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 更新交易信息
 	updateTrans(t, ret)
-	// 如果成功，则将支付信息更新到卡券交易中
-	if ret.Respcd == "00" {
-		scanPayCoupon := &model.ScanPayCoupon{
-			OrderNum:     t.OrderNum,
-			RespCode:     t.RespCode,
-			TransAmt:     t.TransAmt,
-			TransStatus:  t.TransStatus,
-			TransType:    t.TransType,
-			ChanCode:     t.ChanCode,
-			CreateTime:   t.CreateTime,
-			UpdateTime:   t.UpdateTime,
-			TradeFrom:    t.TradeFrom,
-			PayTime:      t.PayTime,
-			Currency:     t.Currency,
-			ExchangeRate: t.ExchangeRate,
-			DiscountAmt:  t.DiscountAmt,
-			PayType:      t.PayType,
-			MerId:        t.MerId,
-			Busicd:       t.Busicd,
-			AgentCode:    t.AgentCode,
-			Terminalid:   t.Terminalid,
-		}
-		couponTrans.ScanPayCoupon = scanPayCoupon
-		err = mongo.CouTransColl.UpdateAndUnlock(couponTrans)
-		if err != nil {
-			log.Errorf("save scanPayTrans to couponTrans fail,scanPayOrderNum:%s", scanPayCoupon.OrderNum)
-		}
-
+	// 如果成功或者09，则将支付信息更新到卡券交易中
+	if ret.Respcd == "00" || ret.Respcd == "09" {
+		updateScanPayTransToCouponTrans(t, couponTrans)
 	}
 
 	return ret
@@ -481,34 +456,9 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 更新交易信息
 	updateTrans(t, ret)
 
-	// 如果成功，则将支付信息更新到卡券交易中
-	if ret.Respcd == "00" {
-		scanPayCoupon := &model.ScanPayCoupon{
-			OrderNum:     t.OrderNum,
-			RespCode:     t.RespCode,
-			TransAmt:     t.TransAmt,
-			TransStatus:  t.TransStatus,
-			TransType:    t.TransType,
-			ChanCode:     t.ChanCode,
-			CreateTime:   t.CreateTime,
-			UpdateTime:   t.UpdateTime,
-			TradeFrom:    t.TradeFrom,
-			PayTime:      t.PayTime,
-			Currency:     t.Currency,
-			ExchangeRate: t.ExchangeRate,
-			DiscountAmt:  t.DiscountAmt,
-			PayType:      t.PayType,
-			MerId:        t.MerId,
-			Busicd:       t.Busicd,
-			AgentCode:    t.AgentCode,
-			Terminalid:   t.Terminalid,
-		}
-		couponTrans.ScanPayCoupon = scanPayCoupon
-		err = mongo.CouTransColl.UpdateAndUnlock(couponTrans)
-		if err != nil {
-			log.Errorf("save scanPayTrans to couponTrans fail,scanPayOrderNum:%s", scanPayCoupon.OrderNum)
-		}
-
+	// 如果成功或者09，则将支付信息更新到卡券交易中
+	if ret.Respcd == "00" || ret.Respcd == "09" {
+		updateScanPayTransToCouponTrans(t, couponTrans)
 	}
 
 	return ret
@@ -732,6 +682,9 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 		// 更新
 		updateTrans(t, ret)
+		if ret.Respcd == "00" {
+			updateScanPayTransToCouponTrans(t, nil)
+		}
 	case model.TransClosed:
 		// 订单被关闭时，返回关闭的应答码。
 		t.RespCode = adaptor.CloseCode
@@ -1316,4 +1269,46 @@ func addRelatedProperties(current *model.Trans, m model.Merchant) {
 	current.ShortName = m.Detail.ShortName
 	current.SubAgentCode = m.SubAgentCode
 	current.SubAgentName = m.SubAgentName
+}
+
+func updateScanPayTransToCouponTrans(t *model.Trans, couponTrans *model.Trans) {
+	if t.CouponOrderNum == "" {
+		return
+	}
+	if couponTrans == nil {
+		// 判断是否存在该订单
+		couponTransTemp, err := mongo.CouTransColl.FindOne(t.MerId, t.CouponOrderNum)
+		if err != nil {
+			log.Warnf("COUPON TRADE NOT EXIST,ScanPayOrderNum:%s", t.OrderNum)
+			return
+		}
+		couponTrans = couponTransTemp
+	}
+
+	// 如果卡券订单号不为空，则查询出卡券订单
+	scanPayCoupon := &model.ScanPayCoupon{
+		OrderNum:     t.OrderNum,
+		RespCode:     t.RespCode,
+		TransAmt:     t.TransAmt,
+		TransStatus:  t.TransStatus,
+		TransType:    t.TransType,
+		ChanCode:     t.ChanCode,
+		CreateTime:   t.CreateTime,
+		UpdateTime:   t.UpdateTime,
+		TradeFrom:    t.TradeFrom,
+		PayTime:      t.PayTime,
+		Currency:     t.Currency,
+		ExchangeRate: t.ExchangeRate,
+		DiscountAmt:  t.DiscountAmt,
+		PayType:      t.PayType,
+		MerId:        t.MerId,
+		Busicd:       t.Busicd,
+		AgentCode:    t.AgentCode,
+		Terminalid:   t.Terminalid,
+	}
+	couponTrans.ScanPayCoupon = scanPayCoupon
+	err := mongo.CouTransColl.UpdateAndUnlock(couponTrans)
+	if err != nil {
+		log.Errorf("save scanPayTrans to couponTrans fail,scanPayOrderNum:%s", scanPayCoupon.OrderNum)
+	}
 }

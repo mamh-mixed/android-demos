@@ -159,6 +159,10 @@ func ProcessAlipayNotify(params url.Values) error {
 		sendNotifyToMerchant(t, nr, ret)
 	}
 	mongo.NotifyRecColl.Add(nr)
+	// 如果成功，则将支付信息更新到卡券交易中
+	if t.RespCode == "00" {
+		updateScanPayTransToCouponTrans(t, nil)
+	}
 	return nil
 }
 
@@ -262,7 +266,10 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 		sendNotifyToMerchant(t, nr, ret)
 	}
 	mongo.NotifyRecColl.Add(nr)
-
+	// 如果成功，则将支付信息更新到卡券交易中
+	if t.RespCode == "00" {
+		updateScanPayTransToCouponTrans(t, nil)
+	}
 	return nil
 }
 
