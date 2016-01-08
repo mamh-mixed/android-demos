@@ -1605,8 +1605,8 @@ func transToCoupon(t *model.Trans) *model.Coupon {
 		coupon.ReqData.OrderNum = t.ScanPayCoupon.OrderNum
 		coupon.ReqData.MerId = t.ScanPayCoupon.MerId
 		coupon.ReqData.TradeFrom = t.ScanPayCoupon.TradeFrom
-		coupon.ReqData.Txamt = fmt.Sprintf("%012d", t.ScanPayCoupon.TransAmt+t.ScanPayCoupon.DiscountAmt)
-		coupon.ReqData.TotalFee = t.ScanPayCoupon.TransAmt + t.ScanPayCoupon.DiscountAmt
+		coupon.ReqData.Txamt = fmt.Sprintf("%012d", t.ScanPayCoupon.TransAmt)
+		coupon.ReqData.TotalFee = t.ScanPayCoupon.TransAmt
 		coupon.ReqData.ChanCode = t.ScanPayCoupon.ChanCode
 		coupon.ReqData.Currency = t.ScanPayCoupon.Currency
 		if t.ScanPayCoupon.Currency == "" {

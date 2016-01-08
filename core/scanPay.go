@@ -323,7 +323,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		// 判断是否存在该订单
 		couponTransTemp, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
 		if err != nil {
-			return adaptor.LogicErrorHandler(t, "TRADE_NOT_EXIST")
+			return adaptor.ReturnWithErrorCode("COUPON_TRADE_NOT_EXIST")
 		}
 		couponTrans = couponTransTemp
 	}
@@ -440,7 +440,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		// 判断是否存在该订单
 		couponTransTemp, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
 		if err != nil {
-			return adaptor.LogicErrorHandler(t, "TRADE_NOT_EXIST")
+			return adaptor.ReturnWithErrorCode("COUPON_TRADE_NOT_EXIST")
 		}
 		couponTrans = couponTransTemp
 	}
