@@ -60,4 +60,6 @@
 
     <include layout="@layout/hint_dialog" />
 
+    <include layout="@layout/coupon_load_dialog" />
+
 </RelativeLayout>
