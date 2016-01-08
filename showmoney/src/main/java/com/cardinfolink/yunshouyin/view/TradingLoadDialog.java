@@ -16,6 +16,7 @@ import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
+import com.cardinfolink.yunshouyin.data.Coupon;
 
 /**
  * 和交易相关的几个对话框。
@@ -54,6 +55,22 @@ public class TradingLoadDialog {
         mOrderNum = orderNum;
     }
 
+    /**
+     * 核销卡券时用的waiting对话框
+     */
+
+    public void waiting(){
+        dialogView.setVisibility(View.VISIBLE);//先让 对话框显示
+        mCancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Coupon.getInstance().clear();
+                mHandler.sendEmptyMessage(Msg.MSG_COUPON_CANCEL);
+                dialogView.setVisibility(View.INVISIBLE);
+
+            }
+        });
+    }
 
     /**
      * 交易时候用的 loading的对话框
