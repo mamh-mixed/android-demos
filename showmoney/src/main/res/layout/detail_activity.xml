@@ -85,7 +85,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#cccccc" />
+            android:background="@color/gray1" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -109,7 +109,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
                 android:text="￥100"
-                android:textColor="#ff0000"
+                android:textColor="@color/red"
                 android:textSize="19sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -117,7 +117,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#cccccc" />
+            android:background="@color/gray1" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -138,7 +138,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/custom_account"
-                    android:textColor="#777777"
+                    android:textColor="@color/gray"
                     android:textSize="17sp" />
 
                 <TextView
@@ -146,7 +146,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="330961193@qq.com"
-                    android:textColor="#777777"
+                    android:textColor="@color/gray"
                     android:textSize="17sp" />
             </LinearLayout>
 
@@ -162,7 +162,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/txn_time"
-                    android:textColor="#777777"
+                    android:textColor="@color/gray"
                     android:textSize="17sp" />
 
                 <TextView
@@ -170,7 +170,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="2015-09-07 13:56:13"
-                    android:textColor="#777777"
+                    android:textColor="@color/gray"
                     android:textSize="17sp" />
             </LinearLayout>
 
@@ -186,7 +186,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/txn_status"
-                    android:textColor="#777777"
+                    android:textColor="@color/gray"
                     android:textSize="17sp" />
 
                 <TextView
@@ -194,7 +194,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="交易成功"
-                    android:textColor="#777777"
+                    android:textColor="@color/gray"
                     android:textSize="17sp" />
             </LinearLayout>
 
@@ -210,7 +210,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/txn_order_num"
-                    android:textColor="#777777"
+                    android:textColor="@color/gray"
                     android:textSize="17sp" />
 
                 <TextView
@@ -218,7 +218,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="20150907135613"
-                    android:textColor="#777777"
+                    android:textColor="@color/gray"
                     android:textSize="17sp" />
             </LinearLayout>
 
@@ -234,7 +234,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/txn_description"
-                    android:textColor="#777777"
+                    android:textColor="@color/gray"
                     android:textSize="17sp" />
 
                 <TextView
@@ -242,7 +242,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textColor="#777777"
+                    android:textColor="@color/gray"
                     android:textSize="17sp" />
             </LinearLayout>
 

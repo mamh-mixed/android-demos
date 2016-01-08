@@ -73,7 +73,7 @@
                         android:hint="开户行所在省份"
                         android:singleLine="true"
                         android:textColor="@color/white"
-                        android:textColorHint="#dddddd"
+                        android:textColorHint="@color/gray2"
                         android:textSize="15sp" />
 
                     <Spinner
@@ -108,7 +108,7 @@
                         android:hint="开户行所在市(县)"
                         android:singleLine="true"
                         android:textColor="@color/white"
-                        android:textColorHint="#eeeeee"
+                        android:textColorHint="@color/gray3"
                         android:textSize="15sp" />
 
                     <Spinner
@@ -145,7 +145,7 @@
                         android:hint="请填写开户银行"
                         android:singleLine="true"
                         android:textColor="@color/white"
-                        android:textColorHint="#eeeeee"
+                        android:textColorHint="@color/gray3"
                         android:textSize="15sp" />
 
                     <Spinner
@@ -181,7 +181,7 @@
                         android:hint="请填写开户支行"
                         android:singleLine="true"
                         android:textColor="@color/white"
-                        android:textColorHint="#eeeeee"
+                        android:textColorHint="@color/gray3"
                         android:textSize="15sp" />
 
                     <Spinner
@@ -295,7 +295,7 @@
                         android:hint="@string/register_next_hint_name"
                         android:singleLine="true"
                         android:textColor="@color/white"
-                        android:textColorHint="#eeeeee"
+                        android:textColorHint="@color/gray3"
                         android:textSize="15sp" />
                 </LinearLayout>
 
@@ -322,7 +322,7 @@
                         android:maxLength="23"
                         android:singleLine="true"
                         android:textColor="@color/white"
-                        android:textColorHint="#eeeeee"
+                        android:textColorHint="@color/gray3"
                         android:textSize="15sp" />
                 </LinearLayout>
 
@@ -348,7 +348,7 @@
                         android:inputType="number"
                         android:singleLine="true"
                         android:textColor="@color/white"
-                        android:textColorHint="#eeeeee"
+                        android:textColorHint="@color/gray3"
                         android:textSize="15sp" />
                 </LinearLayout>
 

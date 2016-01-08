@@ -145,7 +145,7 @@
                         android:id="@+id/refd_value_edit"
                         android:layout_width="100dp"
                         android:layout_height="30dp"
-                        android:background="#dddddd"
+                        android:background="@color/gray2"
                         android:inputType="numberDecimal"
                         android:textSize="17sp"
 
@@ -181,7 +181,7 @@
                         android:id="@+id/refd_password_edit"
                         android:layout_width="100dp"
                         android:layout_height="30dp"
-                        android:background="#dddddd"
+                        android:background="@color/gray2"
                         android:inputType="textPassword"
                         android:textSize="17sp"
 

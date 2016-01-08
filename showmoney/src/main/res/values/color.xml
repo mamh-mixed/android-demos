@@ -32,6 +32,21 @@
 
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
+    <!-- 比较深一点的 灰色 -->
+    <color name="gray">#777777</color>
+
+    <!-- 再浅一点的灰色 -->
+    <color name="gray1">#CCCCCC</color>
+
+    <color name="gray2">#DDDDDD</color>
+
+    <!-- 再浅一点的灰色 -->
+    <color name="gray3">#EEEEEE</color>
+
+
+    <!-- 红色 -->
+    <color name="red">#FF0000</color>
+
     <color name="background_blue">#1EBED6</color>
 
 </resources>
