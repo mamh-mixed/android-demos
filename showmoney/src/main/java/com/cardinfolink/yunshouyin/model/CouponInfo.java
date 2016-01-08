@@ -30,6 +30,11 @@ public class CouponInfo {
     private String tradeFrom;
 
     /**
+     * 订单号
+     */
+    private String orderNum;
+
+    /**
      * 响应码，例如00
      */
     private String response;
@@ -40,6 +45,10 @@ public class CouponInfo {
     @SerializedName("system_date")
     private String systemDate;
 
+    /**
+     * 终端号
+     */
+    private String terminalid;
 
     public String getType() {
         return type;
@@ -89,6 +98,23 @@ public class CouponInfo {
         this.systemDate = systemDate;
     }
 
+
+    public String getOrderNum() {
+        return orderNum;
+    }
+
+    public void setOrderNum(String orderNum) {
+        this.orderNum = orderNum;
+    }
+
+    public String getTerminalid() {
+        return terminalid;
+    }
+
+    public void setTerminalid(String terminalid) {
+        this.terminalid = terminalid;
+    }
+
     @Override
     public String toString() {
         return "CouponInfo{" +
@@ -96,8 +122,10 @@ public class CouponInfo {
                 ", name='" + name + '\'' +
                 ", channel='" + channel + '\'' +
                 ", tradeFrom='" + tradeFrom + '\'' +
+                ", orderNum='" + orderNum + '\'' +
                 ", response='" + response + '\'' +
                 ", systemDate='" + systemDate + '\'' +
+                ", terminalid='" + terminalid + '\'' +
                 '}';
     }
 }
