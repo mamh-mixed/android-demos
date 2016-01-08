@@ -380,26 +380,26 @@ type Trans struct {
 	MerFee float64 `bson:"-" json:"-"` // 商户费率，方便计算
 
 	//卡券字段
-	CouponsNo       string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`              // 卡券号
-	CouponOrderNum  string `json:"couponOrderNum,omitempty" bson:"couponOrderNum,omitempty"`    // 卡券的系统订单号，使用优惠券支付的时候需要存储该字段
-	Prodname        string `bson:"prodname,omitempty" json:"prodname,omitempty"`                // 卡券名称
-	WriteoffStatus  string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"`    // 核销状态
-	VeriTime        string `json:"veriTime,omitempty" bson:"veriTime,omitempty"`                // 核销次数
-	CardInfo        string `json:"cardInfo,omitempty"  bson:"cardInfo,omitempty"`               // 卡券详情
-	AvailCount      string `json:"availCount,omitempty"  bson:"availCount,omitempty"`           // 卡券剩余可用次数
-	ExpDate         string `json:"expDate,omitempty"  bson:"expDate,omitempty"`                 // 卡券有效期
-	Authcode        int    `json:"authcode,omitempty"  bson:"authcode,omitempty"`               // 卡券有效期
-	VoucherType     string `json:"voucherType,omitempty"  bson:"voucherType,omitempty"`         // 券类型
-	SaleMinAmount   string `json:"saleMinAmount,omitempty" bson:"saleMinAmount,omitempty"`      // 满足优惠条件的最小金额
-	SaleDiscount    string `json:"saleDiscount,omitempty"  bson:"saleDiscount,omitempty"`       // 抵扣值
-	Cardbin         string `json:"cardbin,omitempty" bson:"cardbin,omitempty"`                  // 银行卡cardbin或者用户标识等
-	TransAmount     string `json:"transAmount,omitempty"  bson:"transAmount,omitempty"`         // 交易原始金额
-	PayType         string `json:"payType,omitempty"  bson:"payType,omitempty"`                 // 支付方式
-	ActualPayAmount string `json:"actualPayAmount,omitempty" bson:"actualPayAmount,omitempty"`  // 实际支付金额
-	ChannelTime     string `json:"channelTime,omitempty"  bson:"channelTime,omitempty"`         // 渠道处理时间
-	OrigRespCode    string `bson:"origRespCode,omitempty" json:"origRespcd,omitempty"`          // 网关应答码
-	OrigErrorDetail string `json:"origErrorDetail,omitempty"  bson:"origErrorDetail,omitempty"` // 原错误信息   C
-
+	CouponsNo       string         `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`              // 卡券号
+	CouponOrderNum  string         `json:"couponOrderNum,omitempty" bson:"couponOrderNum,omitempty"`    // 卡券的系统订单号，使用优惠券支付的时候需要存储该字段
+	Prodname        string         `bson:"prodname,omitempty" json:"prodname,omitempty"`                // 卡券名称
+	WriteoffStatus  string         `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"`    // 核销状态
+	VeriTime        string         `json:"veriTime,omitempty" bson:"veriTime,omitempty"`                // 核销次数
+	CardInfo        string         `json:"cardInfo,omitempty"  bson:"cardInfo,omitempty"`               // 卡券详情
+	AvailCount      string         `json:"availCount,omitempty"  bson:"availCount,omitempty"`           // 卡券剩余可用次数
+	ExpDate         string         `json:"expDate,omitempty"  bson:"expDate,omitempty"`                 // 卡券有效期
+	Authcode        int            `json:"authcode,omitempty"  bson:"authcode,omitempty"`               // 卡券有效期
+	VoucherType     string         `json:"voucherType,omitempty"  bson:"voucherType,omitempty"`         // 券类型
+	SaleMinAmount   string         `json:"saleMinAmount,omitempty" bson:"saleMinAmount,omitempty"`      // 满足优惠条件的最小金额
+	SaleDiscount    string         `json:"saleDiscount,omitempty"  bson:"saleDiscount,omitempty"`       // 抵扣值
+	Cardbin         string         `json:"cardbin,omitempty" bson:"cardbin,omitempty"`                  // 银行卡cardbin或者用户标识等
+	TransAmount     string         `json:"transAmount,omitempty"  bson:"transAmount,omitempty"`         // 交易原始金额
+	PayType         string         `json:"payType,omitempty"  bson:"payType,omitempty"`                 // 支付方式
+	ActualPayAmount string         `json:"actualPayAmount,omitempty" bson:"actualPayAmount,omitempty"`  // 实际支付金额
+	ChannelTime     string         `json:"channelTime,omitempty"  bson:"channelTime,omitempty"`         // 渠道处理时间
+	OrigRespCode    string         `bson:"origRespCode,omitempty" json:"origRespcd,omitempty"`          // 网关应答码
+	OrigErrorDetail string         `json:"origErrorDetail,omitempty"  bson:"origErrorDetail,omitempty"` // 原错误信息   C
+	ScanPayCoupon   *ScanPayCoupon `json:"scanPayCoupon,omitempty"  bson:"scanPayCoupon,omitempty"`     //支付信息
 }
 
 // SummarySettData 交易汇总
@@ -546,4 +546,26 @@ type Task struct {
 	F          func()        `bson:"-"`
 	CreateTime string        `bson:"createTime"`
 	UpdateTime string        `bson:"updateTime"`
+}
+
+//ScanPayCoupon 保存在卡券交易表中和支付做关联
+type ScanPayCoupon struct {
+	OrderNum     string `bson:"orderNum,omitempty" json:"orderNum"`               // 商户订单流水号、退款流水号
+	RespCode     string `bson:"respCode,omitempty" json:"respcd,omitempty"`       // 网关应答码
+	TransAmt     int64  `bson:"transAmt" json:"transAmt"`                         // 交易金额 没有即为0
+	TransStatus  string `bson:"transStatus,omitempty" json:"transStatus"`         // 交易状态 10-处理中 20-失败 30-成功 40-已关闭
+	TransType    int8   `bson:"transType,omitempty" json:"transType"`             // 交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
+	ChanCode     string `bson:"chanCode,omitempty" json:"chanCode"`               // 渠道代码
+	CreateTime   string `bson:"createTime,omitempty" json:"transTime,omitempty"`  // 交易创建时间 yyyy-mm-dd hh:mm:ss
+	UpdateTime   string `bson:"updateTime,omitempty" json:"updateTime,omitempty"` // 交易更新时间 yyyy-mm-dd hh:mm:ss
+	TradeFrom    string `bson:"tradeFrom,omitempty" json:"-"`                     // 交易来源
+	PayTime      string `bson:"payTime,omitempty" json:"payTime,omitempty"`       // 支付时间
+	Currency     string `bson:"currency,omitempty" json:"currency"`
+	ExchangeRate string `bson:"exchangeRate,omitempty" json:"-"`
+	DiscountAmt  int64  `bson:"discountAmt" json:"discountAmt"`                   // 卡券优惠金额
+	PayType      string `json:"payType,omitempty"  bson:"payType,omitempty"`      // 支付方式
+	MerId        string `bson:"merId,omitempty" json:"merId"`                     // 商户号
+	Busicd       string `bson:"busicd,omitempty" json:"busicd"`                   // 业务id
+	AgentCode    string `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理/机构号
+	Terminalid   string `bson:"terminalid,omitempty" json:"terminalid,omitempty"` // 终端号
 }

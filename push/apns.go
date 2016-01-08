@@ -3,6 +3,7 @@ package push
 import (
 	"errors"
 	"fmt"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/anachronistic/apns"
@@ -37,7 +38,7 @@ func (*apnsPush) APush(req *model.PushMessageReq) error {
 	payload := apns.NewPayload()
 	payload.Alert = req.Title
 	payload.Category = req.Message
-	payload.Sound = "push.mp3"
+	payload.Sound = "ding.mp3"
 
 	pn := apns.NewPushNotification()
 	pn.DeviceToken = req.DeviceToken
