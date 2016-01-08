@@ -29,6 +29,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * 这个是显示账单 详情界面，只会卡券还有个详情界面
+ */
 public class DetailActivity extends BaseActivity {
     private static final String TAG = "DetailActivity";
 
@@ -187,17 +190,42 @@ public class DetailActivity extends BaseActivity {
             mPayResultImage.setImageResource(R.drawable.pay_result_fail);
         }
 
-        mPayMoney.setText(mTradeBill.amount);//支付金额
-        mRefdMoney.setRightText(mTradeBill.refundAmt);//退款金额
+
+        String amount = "";
+        String refd = "";
         String arriavl = "";
+        String discount = "";
         try {
-            BigDecimal bg1 = new BigDecimal(mTradeBill.amount);
-            BigDecimal bg2 = new BigDecimal(mTradeBill.refundAmt);
-            arriavl = bg1.subtract(bg2).toString();
+            BigDecimal bg0 = new BigDecimal("0");//这个是数字0
+
+            BigDecimal txamtBD = new BigDecimal(mTradeBill.amount);//这个是txamt传来的，就是交易时给的金额
+
+            BigDecimal refdBD = new BigDecimal(mTradeBill.refundAmt);//退款金额
+
+            //txamt - refd == arriavl 交易的 - 退款的 == 到账的
+            arriavl = txamtBD.subtract(refdBD).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+
+            //退款金额
+            refd = refdBD.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+
+            //卡券优惠金额
+            BigDecimal discountBD = new BigDecimal(mTradeBill.couponDiscountAmt);
+            discount = discountBD.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+
+            amount = txamtBD.add(discountBD).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+            if (discountBD.compareTo(bg0) > 0) {
+                //大于零说明有优惠金额
+
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        mPayMoney.setText(amount);//金额，最上面显示的那个数字
+        mRefdMoney.setRightText(refd);//退款金额
         mArriavlMoney.setRightText(arriavl);//到款金额
+        mCardDiscount.setRightText(discount);//卡券金额
+
     }
 
 
