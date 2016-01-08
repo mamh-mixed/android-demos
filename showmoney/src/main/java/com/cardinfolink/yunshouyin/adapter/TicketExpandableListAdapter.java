@@ -205,6 +205,12 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
         childViewHolder.linearLayoutBillItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                bill.billType = TradeBill.COUPON_TYPE;
+                Intent intent = new Intent(mContext, DetailActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("TradeBill", bill);
+                intent.putExtra("BillBundle", bundle);
+                mContext.startActivity(intent);
             }
         });
 
