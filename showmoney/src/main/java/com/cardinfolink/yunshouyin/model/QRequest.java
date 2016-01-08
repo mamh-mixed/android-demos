@@ -36,8 +36,20 @@ public class QRequest {
      */
     private String chcd;
 
+    /**
+     * 商品信息，现在估计用不到了
+     */
     private String goodsInfo;
 
+    /**
+     * 交易币种类型
+     */
+    private String currency;
+
+    /**
+     * 卡券优惠金额
+     */
+    private String couponDiscountAmt;
 
     public String getBusicd() {
         return busicd;
@@ -135,6 +147,14 @@ public class QRequest {
         this.totalFee = totalFee;
     }
 
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
     @Override
     public String toString() {
         return "QRequest{" +
@@ -150,6 +170,7 @@ public class QRequest {
                 ", totalFee='" + totalFee + '\'' +
                 ", chcd='" + chcd + '\'' +
                 ", goodsInfo='" + goodsInfo + '\'' +
+                ", currency='" + currency + '\'' +
                 '}';
     }
 }
