@@ -1005,7 +1005,7 @@ definitions:
         type: number
         format: int64
         example: 212
-        description: 根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
+        description: 该交易请求的金额。根据币种不同单位不一样。如果币种是CNY，则212表示2.12元，单位是分；如果是JPY，则212表示212元，单位是元。
       chcd:
         type: string
         example: ALP
