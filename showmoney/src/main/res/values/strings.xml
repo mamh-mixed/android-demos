@@ -394,6 +394,8 @@
     <string name="coupon_pay_again">重新支付</string>
     <string name="coupon_verial_success">冲正成功</string>
     <string name="coupon_verial_fail">冲正失败</string>
+    <string name="coupon_doing_info">正在销券中，请稍等</string>
+
 
     <!--  欢迎界面 要用到的文本 -->
     <string name="splash_activity_message">一天让你的店铺进入互联网 + 收款时代"</string>
