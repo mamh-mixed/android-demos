@@ -4,14 +4,18 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.cardinfolink.yunshouyin.model.Message;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MessageDB {
+    private static final String TAG = "MessagDB";
 
     private MessageSQLiteOpenHelper helper = null;
 
@@ -66,6 +70,11 @@ public class MessageDB {
         }
         cursor.close();
         database.close();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        final String currentTime = format.format(new Date());
+        if (TextUtils.isEmpty(lastTime)) {
+            lastTime = currentTime;
+        }
         return lastTime;
     }
 
