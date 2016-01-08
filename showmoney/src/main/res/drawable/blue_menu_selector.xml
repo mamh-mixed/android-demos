@@ -2,9 +2,9 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="false">
         <shape>
-            <stroke android:width="2px" android:color="#1EBED6" />
+            <stroke android:width="2px" android:color="@color/background_blue" />
             <!--边框颜色-->
-            <solid android:color="#1EBED6" />
+            <solid android:color="@color/background_blue" />
             <!--填充色-->
 
         </shape>

@@ -4,6 +4,6 @@
     android:id="@+id/tv"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#1EBED6"
+    android:background="@color/background_blue"
     android:padding="8dp"
     android:textColor="@color/white" />
