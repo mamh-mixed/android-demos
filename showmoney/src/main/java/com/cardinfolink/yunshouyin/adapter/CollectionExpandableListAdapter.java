@@ -154,7 +154,7 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
         SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHmmss");
         SimpleDateFormat spf2 = new SimpleDateFormat("HH:mm:ss");
         SimpleDateFormat spf3 = new SimpleDateFormat("dd");
-        SimpleDateFormat spf4 = new SimpleDateFormat("EEEE");
+        SimpleDateFormat spf4 = new SimpleDateFormat("E");
         try {
             Date tandeDate = spf1.parse(bill.tandeDate);
             childViewHolder.billTradeDate.setText(spf2.format(tandeDate));
