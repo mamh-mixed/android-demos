@@ -306,11 +306,12 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
     public void clearValue() {
         numFlag = true;
-        input.setText("=0");
+        input.setText("0");
         output.setText("0");
         addFlag = true;
         pointFlag = true;
         clearFlag = true;
+        mHasDiscount.setVisibility(View.INVISIBLE);
     }
 
 
@@ -455,7 +456,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        mTotal = Double.parseDouble(input.getText().toString().substring(1));
+        mTotal = Double.parseDouble(input.getText().toString());
 
         int currentY = 0;
         switch (event.getAction()) {
@@ -527,7 +528,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     @Override
     public void onClick(View v) {
         String outputText = output.getText().toString();
-        mTotal = Double.parseDouble(input.getText().toString().substring(1));
+        mTotal = Double.parseDouble(input.getText().toString());
         switch (v.getId()) {
             case R.id.scancodepay:
                 startCapturePay(mTotal, mOriginalTotal);
@@ -689,13 +690,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 }
                 break;
             case R.id.tv_clear:
-                numFlag = true;
-                input.setText("=0");
-                output.setText("0");
-                addFlag = true;
-                pointFlag = true;
-                clearFlag = true;
-                mHasDiscount.setVisibility(View.INVISIBLE);
+                clearValue();
                 break;
             case R.id.iv_del:
                 String r = input.getText().toString();
@@ -1137,7 +1132,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         if (x.indexOf("+") == -1) {
             mOriginalTotal = Double.parseDouble(x);
             tempInputResult = discountMoneyResult(mOriginalTotal);
-            input.setText("=" + String.format("%.2f", tempInputResult));
+            input.setText( String.format("%.2f", tempInputResult));
         } else {
             while (x.contains("+")) {
                 t = x.substring(0, x.indexOf("+"));
@@ -1152,7 +1147,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             }
             //优惠后的金额，
             tempInputResult = discountMoneyResult(mOriginalTotal);
-            input.setText("=" + String.format("%.2f", tempInputResult));//下面的文本框
+            input.setText(String.format("%.2f", tempInputResult));//下面的文本框
         }
 
 
@@ -1187,7 +1182,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         }
         //优惠后的金额，
         double tempInputResult = discountMoneyResult(mOriginalTotal);
-        input.setText("=" + String.format("%.2f", tempInputResult));
+        input.setText(String.format("%.2f", tempInputResult));
 
         if (mOriginalTotal > MAX_MONEY) {
             String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
@@ -1201,7 +1196,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     //获取打折后的金额
     public double discountMoneyResult(double result) {
         double tempResult = result;
-        Log.e(TAG, tempResult + "");
         boolean hasCoupon = Coupon.getInstance().getSaleDiscount() != null &&
                 !"0".equals(Coupon.getInstance().getSaleDiscount());
         if (!hasCoupon) {
@@ -1334,8 +1328,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             }
             getResult();
         } else if (x.length() == 0) {
-            output.setText(0 + "");
-            input.setText("=0");
+            output.setText("0");
+            input.setText("0");
             clearFlag = true;
         } else {
             getResult(x);
