@@ -61,7 +61,7 @@
             android:paddingRight="25dp"
             android:paddingTop="5dp"
             android:text="0"
-            android:textColor="#666666" />
+            android:textColor="@color/gray" />
     </RelativeLayout>
 
     <LinearLayout
