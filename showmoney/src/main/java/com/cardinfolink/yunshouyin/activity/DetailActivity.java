@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cardinfolink.cashiersdk.model.OrderData;
@@ -40,6 +41,7 @@ public class DetailActivity extends BaseActivity {
     private TextView mPayResult;
     private ImageView mPayResultImage;
 
+    private TextView mPayMoneyText;
     private TextView mPayMoney;
 
     private ResultInfoItem mCardDiscount;//卡券折扣
@@ -52,6 +54,14 @@ public class DetailActivity extends BaseActivity {
     private ResultInfoItem mPayDatetime;//支付时间
     private ResultInfoItem mPayOrder;//支付订单号
     private ResultInfoItem mPayType;//支付方式
+    private ResultInfoItem mPayComments;
+    private LinearLayout mPayCommentsLayout;
+
+    //显示卡券名字
+    private TextView mCouponName;
+    //核销订单号，这个只在卡券详情的时候显示
+    private ResultInfoItem mVeriOrder;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,10 +70,56 @@ public class DetailActivity extends BaseActivity {
         Intent intent = getIntent();
         Bundle billBundle = intent.getBundleExtra("BillBundle");
         mTradeBill = (TradeBill) billBundle.get("TradeBill");
+
+        //初始化 通用的几个view，就是卡券和支付 详情都会用的公共的view在这里初始化
         initLayout();
-        initData();
+
+        if (TradeBill.COUPON_TYPE.equals(mTradeBill.billType)) {
+            //这里说明是卡券账单
+            initCouponLayout();
+            initCouponData();
+        } else {
+            initBillLayout();
+            initBillData();
+        }
     }
 
+    private void initCouponData() {
+
+        SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHmmss");
+        SimpleDateFormat spf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try {
+            Date tandeDate = spf1.parse(mTradeBill.tandeDate);
+            mPayDatetime.setRightText(spf2.format(tandeDate));
+        } catch (ParseException e) {
+            mPayDatetime.setRightText("");
+        }
+
+
+        //支付方式
+        if (!TextUtils.isEmpty(mTradeBill.tradeFrom)) {
+            if ("android".equals(mTradeBill.tradeFrom) || "ios".equals(mTradeBill.tradeFrom)) {
+                //app收款
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type1));
+            } else if ("wap".equals(mTradeBill.tradeFrom)) {
+                //web 收款
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type2));
+            } else {
+                //其他收款
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type3));
+            }
+        } else {
+            //tradeFrom 是 null 清空
+            mPayType.setRightText(getString(R.string.detail_activity_pay_type4));
+        }
+        //设置订单号
+        mPayOrder.setRightText(mTradeBill.orderNum);
+
+    }
+
+    /**
+     * 公共的 布局view放在这里
+     */
     private void initLayout() {
         mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
         mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
@@ -72,6 +128,58 @@ public class DetailActivity extends BaseActivity {
                 finish();
             }
         });
+
+        mCouponName = (TextView) findViewById(R.id.tv_coupon_name);
+        mPayResult = (TextView) findViewById(R.id.tv_pay_result);
+        mPayResultImage = (ImageView) findViewById(R.id.iv_pay_result);
+
+        mPayMoneyText = (TextView) findViewById(R.id.pay_money_text);
+        mPayMoney = (TextView) findViewById(R.id.pay_money);//到账金额
+
+        mCardDiscount = (ResultInfoItem) findViewById(R.id.card_discount);//卡券折扣
+        mRefdMoney = (ResultInfoItem) findViewById(R.id.refd_money);
+        mArriavlMoney = (ResultInfoItem) findViewById(R.id.pay_arrival_money);
+
+        //核销订单号，这个只在卡券详情的时候显示
+        mVeriOrder = (ResultInfoItem) findViewById(R.id.veri_order);
+        //六个
+        mPayOrder = (ResultInfoItem) findViewById(R.id.pay_order);
+        mPayChcd = (ResultInfoItem) findViewById(R.id.pay_chcd);
+        mPayType = (ResultInfoItem) findViewById(R.id.pay_type);
+        mPayDatetime = (ResultInfoItem) findViewById(R.id.pay_datetime);
+        mPayTerminator = (ResultInfoItem) findViewById(R.id.pay_terminator);
+        mPayComments = (ResultInfoItem) findViewById(R.id.pay_comments);
+
+
+        mPayCommentsLayout = (LinearLayout) findViewById(R.id.ll_pay_comments);
+    }
+
+    private void initCouponLayout() {
+        mActionBar.setRightText("");
+
+        mPayCommentsLayout.setVisibility(View.GONE);
+
+        mPayResult.setText(getString(R.string.detail_activity_veri_success));
+
+        mCouponName.setVisibility(View.VISIBLE);
+        mCouponName.setText(mTradeBill.couponName);
+
+        mPayMoneyText.setText(getString(R.string.detail_activity_pay_money1));
+        mCardDiscount.setLeftText(getString(R.string.detail_activity_coupone_dikou));
+        mRefdMoney.setVisibility(View.GONE);
+
+        //核销订单号，这个只在卡券详情的时候显示
+        mVeriOrder.setVisibility(View.VISIBLE);
+        //六个
+        mPayOrder.setLeftText(getString(R.string.detail_activity_order_number1));
+        mPayChcd.setLeftText(getString(R.string.detail_activity_coupon_chcd));
+        mPayType.setLeftText(getString(R.string.detail_activity_veri_type));
+        mPayDatetime.setLeftText(getString(R.string.detail_activity_veri_datetime));
+        mPayTerminator.setLeftText(getString(R.string.detail_activity_terminator));
+        mPayComments.setVisibility(View.GONE);
+    }
+
+    private void initBillLayout() {
         mActionBar.setRightTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -87,24 +195,10 @@ public class DetailActivity extends BaseActivity {
             }
         });
 
-        mPayResult = (TextView) findViewById(R.id.tv_pay_result);
-        mPayResultImage = (ImageView) findViewById(R.id.iv_pay_result);
-
-        mPayMoney = (TextView) findViewById(R.id.pay_money);//到账金额
-
-        mCardDiscount = (ResultInfoItem) findViewById(R.id.card_discount);//卡券折扣
-        mRefdMoney = (ResultInfoItem) findViewById(R.id.refd_money);
-        mArriavlMoney = (ResultInfoItem) findViewById(R.id.pay_arrival_money);
-
-        mPayChcd = (ResultInfoItem) findViewById(R.id.pay_chcd);
-        mPayTerminator = (ResultInfoItem) findViewById(R.id.pay_terminator);
-        mPayDatetime = (ResultInfoItem) findViewById(R.id.pay_datetime);
-        mPayOrder = (ResultInfoItem) findViewById(R.id.pay_order);
-        mPayType = (ResultInfoItem) findViewById(R.id.pay_type);
 
     }
 
-    private void initData() {
+    private void initBillData() {
         //这里是设置支付渠道
         if (!TextUtils.isEmpty(mTradeBill.chcd)) {
             if ("WXP".equals(mTradeBill.chcd)) {
@@ -266,14 +360,14 @@ public class DetailActivity extends BaseActivity {
                     }
                 }//end if()
                 endLoading(mPayResultImage);
-                initData();
+                initBillData();
             }
 
             @Override
             public void onFailure(QuickPayException ex) {
                 Log.e(TAG, "[getOrderAsync][onFailure]  ex = " + ex);
                 endLoading(mPayResultImage);
-                initData();
+                initBillData();
             }
         });
 

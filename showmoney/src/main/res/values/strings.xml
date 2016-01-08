@@ -133,6 +133,14 @@
     <string name="detail_activity_pay_type3">PC收款</string>
     <string name="detail_activity_pay_type4">其他收款</string>
     <string name="detail_activity_close">关闭</string>
+    <string name="detail_activity_veri_order_number">核销订单号</string>
+    <string name="detail_activity_order_number1">支付订单号</string>
+    <string name="detail_activity_coupon_chcd">卡券渠道</string>
+    <string name="detail_activity_veri_datetime">核销时间</string>
+    <string name="detail_activity_veri_type">核销工具</string>
+    <string name="detail_activity_pay_money1">原金额</string>
+    <string name="detail_activity_coupone_dikou">卡券抵扣</string>
+    <string name="detail_activity_veri_success">核销成功</string>
 
     <string name="expandable_listview_group_separator">/</string>
     <string name="expandable_listview_group_imcome">收入：</string>
