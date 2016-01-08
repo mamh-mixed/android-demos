@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
-
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
@@ -57,10 +56,10 @@ public class PostEngine {
 
         URL url = new URL(_url);
         HttpURLConnection conn = null;
-        trustAllHosts();
 
-        HttpsURLConnection https = (HttpsURLConnection)url.openConnection();
-        if (url.getProtocol().toLowerCase().equals("https")) {
+        if ("https".equals(url.getProtocol().toLowerCase())) {
+            HttpsURLConnection https = (HttpsURLConnection)url.openConnection();
+            trustAllHosts();
             https.setHostnameVerifier(DO_NOT_VERIFY);
             conn = https;
         } else {
