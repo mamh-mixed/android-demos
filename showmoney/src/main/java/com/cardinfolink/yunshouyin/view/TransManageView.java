@@ -550,7 +550,7 @@ public class TransManageView extends LinearLayout {
     //获取收款的账单账单
     private void getBill() {
         mLoadingDialog.startLoading();
-        quickPayService.getHistoryBillsAsync(SessonData.loginUser, mCurrentYearMonth, String.valueOf(billIndex), "100", "all", new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.getHistoryBillsAsync(SessonData.loginUser, mCurrentYearMonth, String.valueOf(billIndex), "100", "success", new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 //这里可以在ui线程里执行的
