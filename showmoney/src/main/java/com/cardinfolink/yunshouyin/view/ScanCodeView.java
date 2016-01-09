@@ -742,7 +742,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         orderData.orderNum = geneOrderNumber();
         orderData.txamt = total;
-        orderData.currency = "156";
+        orderData.currency = CashierSdk.SDK_CURRENCY;
         orderData.chcd = chcd;
 
         mOrderNum = orderData.orderNum;//保存为原始订单
@@ -1132,7 +1132,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         if (x.indexOf("+") == -1) {
             mOriginalTotal = Double.parseDouble(x);
             tempInputResult = discountMoneyResult(mOriginalTotal);
-            input.setText( String.format("%.2f", tempInputResult));
+            input.setText(String.format("%.2f", tempInputResult));
         } else {
             while (x.contains("+")) {
                 t = x.substring(0, x.indexOf("+"));
