@@ -820,8 +820,19 @@ public class TransManageView extends LinearLayout {
                 tradeBill.couponType = couponInfo.getType();
                 tradeBill.couponName = couponInfo.getName();
                 tradeBill.couponChannel = couponInfo.getChannel();
+                tradeBill.terminalid = couponInfo.getTerminalid();
+                tradeBill.couponOrderNum = couponInfo.getOrderNum();
 
+                //Qrequest里面的都是交易相关的信息，外面的是和卡券相关的信息
+                QRequest req = couponInfo.getmRequest();
+                if (req != null) {
+                    tradeBill.orderNum = req.getOrderNum();
+                    tradeBill.amount = TxamtUtil.getNormal(req.getTxamt());//对于人民币的金额都需要除以100
+                    tradeBill.busicd = req.getBusicd();
+                    tradeBill.couponDiscountAmt = TxamtUtil.getNormal(req.getCouponDiscountAmt());
 
+                    tradeBill.chcd = req.getChcd();
+                }
                 //获取这个账单里面的日期,年月日 的 日
                 String currentDay = tradeBill.tandeDate.substring(6, 8);
                 String currentYear = tradeBill.tandeDate.substring(0, 4);
