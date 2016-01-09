@@ -202,5 +202,4 @@
 
     <include layout="@layout/showmoney_dialog" />
 
-    <include layout="@layout/refd_dialog" />
 </RelativeLayout>
