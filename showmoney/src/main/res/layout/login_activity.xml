@@ -135,11 +135,11 @@
             android:layout_height="wrap_content"
             android:maxHeight="50dp"
             android:minHeight="20dp"
-            android:text="@string/copyright"
+            android:text="@string/login_bank_name"
             android:textColor="@color/white"
             android:textSize="17sp" />
     </LinearLayout>
 
-    <include layout="@layout/showmoney_dialog"></include>
+    <include layout="@layout/showmoney_dialog" />
 
 </RelativeLayout>
