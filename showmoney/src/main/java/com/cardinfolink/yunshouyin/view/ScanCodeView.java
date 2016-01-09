@@ -39,7 +39,7 @@ import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
-import com.cardinfolink.yunshouyin.util.Untilly;
+import com.cardinfolink.yunshouyin.util.Utility;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -51,7 +51,6 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Hashtable;
-import java.util.Random;
 
 public class ScanCodeView extends LinearLayout implements View.OnClickListener, View.OnTouchListener {
     private static final String TAG = "ScanCodeView";
@@ -740,7 +739,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         mCurrentTime = mspf.format(new Date());
 
-        orderData.orderNum = geneOrderNumber();
+        orderData.orderNum = Utility.geneOrderNumber();
         orderData.txamt = total;
         orderData.currency = CashierSdk.SDK_CURRENCY;
         orderData.chcd = chcd;
@@ -807,7 +806,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         }
         OrderData orderData = new OrderData();
         orderData.origOrderNum = mOrderNum;
-        orderData.orderNum = geneOrderNumber();//新生成一个订单号
+        orderData.orderNum = Utility.geneOrderNumber();//新生成一个订单号
         CashierSdk.startCanc(orderData, new CashierListener() {
             @Override
             public void onResult(ResultData resultData) {
@@ -1063,7 +1062,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
      * @throws WriterException
      */
     private Bitmap cretaeBitmap(String str, Bitmap icon, int widthx, int heighty) throws WriterException {
-        icon = Untilly.zoomBitmap(icon, IMAGE_HALFWIDTH);
+        icon = Utility.zoomBitmap(icon, IMAGE_HALFWIDTH);
         Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
@@ -1102,25 +1101,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     //生成bitmap图片,生成一个固定长宽都是300的二维码图片
     private Bitmap cretaeBitmap(String str, Bitmap icon) throws WriterException {
         return cretaeBitmap(str, icon, 300, 300);
-    }
-
-    /**
-     * 生成账单号
-     * 时间加上一个随机数
-     *
-     * @return
-     */
-    private String geneOrderNumber() {
-        String mOrderNum;
-
-        Date now = new Date();
-        SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-        mOrderNum = spf.format(now);
-        Random random = new Random();//订单号末尾随机的生成一个数
-        for (int i = 0; i < 5; i++) {
-            mOrderNum = mOrderNum + random.nextInt(10);
-        }
-        return mOrderNum;
     }
 
     public void getResult() {
