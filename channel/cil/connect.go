@@ -23,7 +23,7 @@ var addr = goconf.Config.CILOnline.Host + ":" + strconv.Itoa(goconf.Config.CILOn
 
 var tlsConfig *tls.Config
 
-func init() {
+func initCert() {
 	file, err := ioutil.ReadFile(goconf.Config.CILOnline.ServerCert)
 	if err != nil {
 		fmt.Printf("read CIL Online file error: %s\n", err)

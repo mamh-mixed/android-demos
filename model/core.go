@@ -324,7 +324,7 @@ type Trans struct {
 	PayTime           string        `bson:"payTime,omitempty" json:"payTime,omitempty"`                     // 支付时间
 	Currency          string        `bson:"currency,omitempty" json:"currency"`                             // 交易币种
 	SettCurr          string        `bson:"settCurr,omitempty" json:"settCurr,omitempty"`                   // 清算币种
-	SettCurrAmt       int64         `bson:"settCurrAmt,omitempty" json:"settCurrAmt,omitempty"`             // 清算币种下的交易金额
+	SettCurrAmt       int64         `bson:"settCurrAmt" json:"settCurrAmt"`                                 // 清算币种下的交易金额
 	SettExchangeRate  float64       `bson:"settExchangeRate,omitempty" json:"settExchangeRate,omitempty"`   // 清算汇率
 	DebitCurr         string        `bson:"debitCurr,omitempty" json:"debitCurr,omitempty"`                 // 扣账币种
 	DebitCurrAmt      int64         `bson:"debitCurrAmt,omitempty" json:"debitCurrAmt,omitempty"`           // 扣账金额

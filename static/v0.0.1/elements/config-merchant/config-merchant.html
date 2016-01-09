@@ -412,14 +412,8 @@
         wbigchanMerIds: {
           type: Array,
           value: [{
-            key: '1236593202',
-            value: '讯联 1236593202'
-          }, {
-            key: '1276970101',
-            value: '商圈 1276970101'
-          }, {
-            key: '1294619701',
-            value: '微信海外 1294619701'
+            key: '1301344001',
+            value: '華銀 1301344001'
           }]
         },
         wbigchanMerId: {
@@ -892,7 +886,7 @@
           chanCode: 'WXP',
           isAgentMode: true,
           agentMer: {
-            chanMerId: '1236593202'
+            chanMerId: '1301344001'
           },
           chanMerId: '',
           chanMerName: '',
@@ -907,8 +901,7 @@
           terminalId: ''
         };
         this.wbigchanMerIdMap = {
-          '1236593202': '讯联 1236593202',
-          '1276970101': '商圈 1276970101',
+          '1301344001': '華銀 1301344001',
         };
         this.aagentCodeMap = {
           '12010128a1': '讯联 12010128a1',
@@ -917,8 +910,8 @@
 
         // 默认选择我们的代理
         this.wbigchanMerId = {
-          key: '1236593202',
-          value: '讯联 1236593202'
+          key: '1301344001',
+          value: '華銀 1301344001'
         };
         // 存放大商户信息，现在有2个
         this.bigMerchantMap = {};
@@ -1383,7 +1376,7 @@
         var files = e.srcElement.files;
         if (files.length) {
           var file = files[0];
-          if ('application/x-x509-ca-cert' === file.type) {
+          // if ('application/x-x509-ca-cert' === file.type) {
             var reader = new FileReader();
             reader.onload = function() {
               if (/BEGIN CERTIFICATE/.test(this.result) === false) {
@@ -1393,9 +1386,9 @@
               _this.set('weixin.httpCert', this.result);
             };
             reader.readAsText(file);
-          } else {
-            Util.toast('CHAN_MERCHANT.HTTP_CERT_FORMAT_ERROR_PEM', 3000, true);
-          }
+          // } else {
+          //   Util.toast('CHAN_MERCHANT.HTTP_CERT_FORMAT_ERROR_PEM', 3000, true);
+          // }
         }
       },
       handleWeixinHttpKeyFile: function(e) {
@@ -1403,7 +1396,7 @@
         var files = e.srcElement.files;
         if (files.length) {
           var file = files[0];
-          if ('application/x-x509-ca-cert' === file.type) {
+          // if ('application/x-x509-ca-cert' === file.type) {
             var reader = new FileReader();
             reader.onload = function() {
               if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
@@ -1413,9 +1406,9 @@
               _this.set('weixin.httpKey', this.result);
             };
             reader.readAsText(file);
-          } else {
-            Util.toast('CHAN_MERCHANT.HTTP_KEY_FORMAT_ERROR_PEM', 3000, true);
-          }
+          // } else {
+          //   Util.toast('CHAN_MERCHANT.HTTP_KEY_FORMAT_ERROR_PEM', 3000, true);
+          // }
         }
       },
       // 代理列表响应

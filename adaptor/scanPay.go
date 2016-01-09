@@ -81,11 +81,11 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 		return ReturnWithErrorCode("NO_ROUTERPOLICY") // not support alipay
 	case channel.ChanCodeWeixin:
 		// 交易币种转换成清算币种
-		settAmt, settRate, err := dcc.NewUSD(req.Currency).Do(t.TransAmt)
+		settAmt, settRate, err := dcc.New(req.Currency, req.M.TransCurr).Do(t.TransAmt)
 		if err != nil {
 			return ReturnWithErrorCode("RATE_TRANSFROM_ERROR")
 		}
-		t.SettCurr = "HKD"
+		t.SettCurr = req.M.TransCurr
 		t.SettCurrAmt = settAmt
 		t.SettExchangeRate = settRate
 		req.ActTxamt = fmt.Sprintf("%d", settAmt)
@@ -138,11 +138,11 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 		return ReturnWithErrorCode("NO_ROUTERPOLICY") // not support alipay
 	case channel.ChanCodeWeixin:
 		// 交易币种转换成清算币种
-		settAmt, settRate, err := dcc.NewUSD(req.Currency).Do(t.TransAmt)
+		settAmt, settRate, err := dcc.New(req.Currency, req.M.TransCurr).Do(t.TransAmt)
 		if err != nil {
 			return ReturnWithErrorCode("RATE_TRANSFROM_ERROR")
 		}
-		t.SettCurr = "USD"
+		t.SettCurr = req.M.TransCurr
 		t.SettCurrAmt = settAmt
 		t.SettExchangeRate = settRate
 		req.ActTxamt = fmt.Sprintf("%d", settAmt)
@@ -227,7 +227,7 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 
 		req.AppID = chanMer.WxpAppId
 		req.ActTxamt = fmt.Sprintf("%d", req.IntTxamt)
-		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
+		req.TotalTxamt = fmt.Sprintf("%d", orig.SettCurrAmt)
 		req.SubMchId = subMchId
 		req.WeixinClientCert = []byte(chanMer.HttpCert)
 		req.WeixinClientKey = []byte(chanMer.HttpKey)
