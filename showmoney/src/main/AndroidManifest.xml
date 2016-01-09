@@ -91,14 +91,6 @@
             android:process="${applicationId}"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.CreateQRcodeActivity"
-            android:exported="false"
-            android:label="@string/app_name"
-            android:launchMode="singleInstance"
-            android:process="${applicationId}"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Light.NoTitleBar" />
-        <activity
             android:name=".activity.AccountInfoActivity"
             android:label="@string/app_name" />
         <activity
