@@ -293,6 +293,31 @@ public class QuickPayServiceImpl implements QuickPayService {
         }.execute();
     }
 
+    @Override
+    public void getSummaryDayAsync(final User user, final String date, final String reportType, final QuickPayCallbackListener<ServerPacket> listener) {
+        new AsyncTask<Void, Integer, AsyncTaskResult<ServerPacket>>() {
+            @Override
+            protected AsyncTaskResult<ServerPacket> doInBackground(Void... params) {
+                try {
+                    //reportType 报表类型。1:收款账单；2:卡券账单
+                    ServerPacket serverpacket = quickPayApi.getSummaryDay(user, date, reportType);
+                    return new AsyncTaskResult<ServerPacket>(serverpacket);
+                } catch (QuickPayException ex) {
+                    return new AsyncTaskResult<ServerPacket>(ex);
+                }
+            }
+
+            @Override
+            protected void onPostExecute(AsyncTaskResult<ServerPacket> result) {
+                if (result.getException() != null) {
+                    listener.onFailure(result.getException());
+                } else {
+                    listener.onSuccess(result.getResult());
+                }
+            }
+        }.execute();
+    }
+
     //这个是通过订单号来查找订单的，里面使用的新的的接口findOrder
     @Override
     public void getOrderAsync(final User user, final String orderNum, final QuickPayCallbackListener<ServerPacket> listener) {
