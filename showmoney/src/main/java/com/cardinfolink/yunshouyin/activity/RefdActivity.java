@@ -15,28 +15,28 @@ import com.cardinfolink.cashiersdk.model.OrderData;
 import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.api.QuickPayException;
-import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
-import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
+import com.cardinfolink.yunshouyin.util.Utility;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
 
 public class RefdActivity extends BaseActivity {
+    private static final String TAG = "RefdActivity";
+
+
     private TradeBill mTradeBill;
+
     private SettingActionBarItem mActionBar;
     private TextView mRefdAmount;
     private SettingInputItem mRefdMoney;
     private SettingPasswordItem mPassword;
     private Button mRefdButton;
+
     private double maxRefd = 0;
 
     @Override
@@ -46,6 +46,7 @@ public class RefdActivity extends BaseActivity {
         Intent intent = getIntent();
         Bundle billBundle = intent.getBundleExtra("BillBundle");
         mTradeBill = (TradeBill) billBundle.get("TradeBill");
+
         initLayout();
     }
 
@@ -77,35 +78,19 @@ public class RefdActivity extends BaseActivity {
     }
 
     private void getRefdTotal() {
-        startLoading();
-        final String orderNum = mTradeBill.orderNum;
-        final String amount = mTradeBill.amount;
+        try {
 
-        quickPayService.getRefdAsync(SessonData.loginUser, orderNum, new QuickPayCallbackListener<ServerPacket>() {
-            @Override
-            public void onSuccess(ServerPacket data) {
-                String refdtotal = data.getRefdtotal();
+            BigDecimal a = new BigDecimal(mTradeBill.amount);
+            BigDecimal b = new BigDecimal(mTradeBill.refundAmt);
 
-                BigDecimal a = new BigDecimal(amount);
-                BigDecimal b = new BigDecimal(refdtotal);
-                BigDecimal c = a.subtract(b);
-                //本次可退款的金额
-                maxRefd = c.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+            BigDecimal c = a.subtract(b);
 
-                mRefdAmount.setText(c.toString());
-                endLoading();
-            }
-
-            @Override
-            public void onFailure(QuickPayException ex) {
-                endLoading();
-                // 更新UI,显示提示对话框
-                endLoading();
-                String error = ex.getErrorMsg();
-                Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
-                mAlertDialog.show(error, bitmap);
-            }
-        });
+            //本次可退款的金额
+            maxRefd = c.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        } catch (Exception e) {
+            maxRefd = 0;
+        }
+        mRefdAmount.setText(String.valueOf(maxRefd));
     }
 
     //退款按钮的响应事件处理方法
@@ -117,14 +102,7 @@ public class RefdActivity extends BaseActivity {
         startLoading();
         OrderData orderData = new OrderData();
         orderData.origOrderNum = mTradeBill.orderNum;
-        Date now = new Date();
-        SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-        String orderNmuber = spf.format(now);
-        Random random = new Random();
-        for (int i = 0; i < 5; i++) {
-            orderNmuber = orderNmuber + random.nextInt(10);
-        }
-        orderData.orderNum = orderNmuber;
+        orderData.orderNum = Utility.geneOrderNumber();//生成一个新的订单号
         orderData.currency = CashierSdk.SDK_CURRENCY;
         orderData.txamt = mRefdMoney.getText();
 
