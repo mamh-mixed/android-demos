@@ -31,4 +31,6 @@
     <color name="viewfinder_mask">#60000000</color>
     <color name="message_read">#808080</color>
     <color name="message_unread">#323232</color>
+
+    <color name="red">#ff0000</color>
 </resources>
