@@ -302,4 +302,7 @@
 
     </RelativeLayout>
     <!-- loading 对话框 -->
+
+    <include layout="@layout/hint_bill_dialog" />
+
 </RelativeLayout>
