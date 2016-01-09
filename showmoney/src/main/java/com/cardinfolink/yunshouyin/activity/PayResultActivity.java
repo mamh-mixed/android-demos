@@ -21,6 +21,7 @@ import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.ui.ResultInfoItem;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
+import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.view.HintDialog;
 
 import java.math.BigDecimal;
@@ -206,7 +207,7 @@ public class PayResultActivity extends Activity {
             public void onClick(View v) {
                 //卡券冲正
                 OrderData orderData = new OrderData();
-                orderData.orderNum = geneOrderNumber();//订单号
+                orderData.orderNum = Utility.geneOrderNumber();//订单号
                 orderData.origOrderNum = Coupon.getInstance().getOrderNum();//设置原始订单号
                 CashierSdk.startReversal(orderData, new CashierListener() {
                     @Override
@@ -253,17 +254,4 @@ public class PayResultActivity extends Activity {
         mHintDialog.show();
     }
 
-
-    private String geneOrderNumber() {
-        String mOrderNum;
-
-        Date now = new Date();
-        SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-        mOrderNum = spf.format(now);
-        Random random = new Random();//订单号末尾随机的生成一个数
-        for (int i = 0; i < 5; i++) {
-            mOrderNum = mOrderNum + random.nextInt(10);
-        }
-        return mOrderNum;
-    }
 }
