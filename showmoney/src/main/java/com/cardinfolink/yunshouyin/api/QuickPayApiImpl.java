@@ -751,7 +751,11 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             if (DEBUG) Log.e(TAG, "[pullinfo] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            return serverPacket;
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
+                return serverPacket;
+            } else {
+                throw new QuickPayException(serverPacket.getError());
+            }
         } catch (IOException e) {
             throw new QuickPayException();
         }
@@ -790,7 +794,11 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             if (DEBUG) Log.e(TAG, "[updateMessage] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            return serverPacket;
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
+                return serverPacket;
+            } else {
+                throw new QuickPayException(serverPacket.getError());
+            }
         } catch (IOException e) {
             throw new QuickPayException();
         }
