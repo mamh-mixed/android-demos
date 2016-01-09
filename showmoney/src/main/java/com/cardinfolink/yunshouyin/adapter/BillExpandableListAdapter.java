@@ -101,8 +101,16 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         //设置一下月份
         groupViewHolder.month.setText(groupData.get(groupPosition).getCurrentMonth());
         groupViewHolder.year.setText(groupData.get(groupPosition).getCurrentYear());
-        groupViewHolder.total.setText(groupData.get(groupPosition).getTotal());
-        groupViewHolder.count.setText("" + groupData.get(groupPosition).getTotalRecord());
+
+
+        String totalStr = groupData.get(groupPosition).getTotal();
+        if (TextUtils.isEmpty(totalStr)) {
+            totalStr = "0.00";
+        }
+        groupViewHolder.total.setText(totalStr);
+
+        String countStr = String.valueOf(groupData.get(groupPosition).getTotalRecord());
+        groupViewHolder.count.setText(countStr);
 
         if (isExpanded) {
             groupViewHolder.folder.setBackgroundResource(R.drawable.bill_pack);
