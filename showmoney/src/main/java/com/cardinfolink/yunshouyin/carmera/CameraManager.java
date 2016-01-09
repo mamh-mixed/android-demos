@@ -16,6 +16,7 @@
 
 package com.cardinfolink.yunshouyin.carmera;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -148,9 +149,15 @@ public final class CameraManager {
     }
 
 
-    public void openDriver(SurfaceHolder holder) throws IOException {
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+    public void openDriver(SurfaceHolder holder, boolean OpenBackCamera) throws IOException {
         if (camera == null) {
-            camera = Camera.open();
+
+            if (OpenBackCamera) {
+                camera = Camera.open(FindBackCamera());
+            } else {
+                camera = Camera.open(FindFrontCamera());
+            }
             if (camera == null) {
                 throw new IOException();
             }
@@ -345,5 +352,41 @@ public final class CameraManager {
         throw new IllegalArgumentException("Unsupported picture format: " +
                 previewFormat + '/' + previewFormatString);
     }
+
+    //调用前置摄像头
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+    private int FindFrontCamera() {
+        int cameraCount = 0;
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        cameraCount = Camera.getNumberOfCameras(); // get cameras number
+
+        for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
+            Camera.getCameraInfo(camIdx, cameraInfo); // get camerainfo
+            if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                // 代表摄像头的方位，目前有定义值两个分别为CAMERA_FACING_FRONT前置和CAMERA_FACING_BACK后置
+                return camIdx;
+            }
+        }
+        return -1;
+    }
+
+
+    //调用后面的摄像头
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+    private int FindBackCamera() {
+        int cameraCount = 0;
+        Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+        cameraCount = Camera.getNumberOfCameras(); // get cameras number
+
+        for (int camIdx = 0; camIdx < cameraCount; camIdx++) {
+            Camera.getCameraInfo(camIdx, cameraInfo); // get camerainfo
+            if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                // 代表摄像头的方位，目前有定义值两个分别为CAMERA_FACING_FRONT前置和CAMERA_FACING_BACK后置
+                return camIdx;
+            }
+        }
+        return -1;
+    }
+
 
 }

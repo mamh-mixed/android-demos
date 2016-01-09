@@ -43,6 +43,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
     private static final float BEEP_VOLUME = 0.10f;
     private static final long VIBRATE_DURATION = 200L;
+    private static final String TAG = "CaptureActivity";
     /**
      * When the beep has finished playing, rewind to queue up another one.
      */
@@ -66,6 +67,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private String chcd;
     private String mOrderNum;
     private ResultData mResultData;
+    private SurfaceHolder surfaceHolder;
+    private SurfaceView surfaceView;
+    private Boolean openBackCamera = true;
 
     /**
      * Called when the activity is first created.
@@ -74,9 +78,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.scancode_activity);
-        Intent intent = getIntent();
-        total = intent.getStringExtra("total");
-        chcd = intent.getStringExtra("chcd");
         Date now = new Date();
         SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
         mOrderNum = spf.format(now);
@@ -128,6 +129,24 @@ public class CaptureActivity extends BaseActivity implements Callback {
                     CameraManager.get().openFlashlight();
 
                 }
+            }
+        });
+        //switch back and front camera
+        findViewById(R.id.switch_camer).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (openBackCamera) {
+                    openBackCamera = false;
+                } else {
+                    openBackCamera = true;
+                }
+                Intent intent = new Intent(mContext, CaptureActivity.class);
+                intent.putExtra("switch", openBackCamera);
+                intent.putExtra("chcd", chcd);
+                intent.putExtra("total", total);
+                finish();
+                mContext.startActivity(intent);
+
             }
         });
     }
@@ -203,10 +222,15 @@ public class CaptureActivity extends BaseActivity implements Callback {
     @Override
     protected void onResume() {
         super.onResume();
-        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
-        SurfaceHolder surfaceHolder = surfaceView.getHolder();
+        Intent intent = getIntent();
+        total = intent.getStringExtra("total");
+        chcd = intent.getStringExtra("chcd");
+        openBackCamera = intent.getBooleanExtra("switch", false);
+
+        surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+        surfaceHolder = surfaceView.getHolder();
         if (hasSurface) {
-            initCamera(surfaceHolder);
+            initCamera(surfaceHolder, openBackCamera);
         } else {
             surfaceHolder.addCallback(this);
             surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -239,9 +263,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
         super.onDestroy();
     }
 
-    private void initCamera(SurfaceHolder surfaceHolder) {
+    private void initCamera(SurfaceHolder surfaceHolder, Boolean openBackCamera) {
         try {
-            CameraManager.get().openDriver(surfaceHolder);
+            CameraManager.get().openDriver(surfaceHolder, openBackCamera);
         } catch (IOException ioe) {
             return;
         } catch (RuntimeException e) {
@@ -263,7 +287,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         if (!hasSurface) {
             hasSurface = true;
-            initCamera(holder);
+            initCamera(holder, openBackCamera);
         }
 
     }
