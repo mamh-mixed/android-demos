@@ -30,7 +30,7 @@ public class CouponInfo {
     private String tradeFrom;
 
     /**
-     * 订单号
+     * 卡券核销的订单号
      */
     private String orderNum;
 
@@ -49,6 +49,9 @@ public class CouponInfo {
      * 终端号
      */
     private String terminalid;
+
+    @SerializedName("m_request")
+    private QRequest mRequest;
 
     public String getType() {
         return type;
@@ -115,6 +118,14 @@ public class CouponInfo {
         this.terminalid = terminalid;
     }
 
+    public QRequest getmRequest() {
+        return mRequest;
+    }
+
+    public void setmRequest(QRequest mRequest) {
+        this.mRequest = mRequest;
+    }
+
     @Override
     public String toString() {
         return "CouponInfo{" +
@@ -126,6 +137,7 @@ public class CouponInfo {
                 ", response='" + response + '\'' +
                 ", systemDate='" + systemDate + '\'' +
                 ", terminalid='" + terminalid + '\'' +
+                ", mRequest=" + mRequest +
                 '}';
     }
 }
