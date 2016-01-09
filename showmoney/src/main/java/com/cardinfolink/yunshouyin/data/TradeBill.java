@@ -34,13 +34,15 @@ public class TradeBill implements Serializable {
     public String amount;
     public String consumerAccount;
     public String goodsInfo;
+    public String terminalid;
     public String refundAmt;
     public String transStatus;//这个是新增的一个表示订单状态的字段
 
-    public String couponType;
-    public String couponName;
+    public String couponType;//卡券类型
+    public String couponName;//卡券描述，名称
     public String couponChannel;//卡券渠道
     public String couponDiscountAmt;//卡券优惠金额
+    public String couponOrderNum;//卡券核销的订单号
 
 
     public String errorDetail;//错误信息
@@ -61,12 +63,14 @@ public class TradeBill implements Serializable {
                 ", amount='" + amount + '\'' +
                 ", consumerAccount='" + consumerAccount + '\'' +
                 ", goodsInfo='" + goodsInfo + '\'' +
+                ", terminalid='" + terminalid + '\'' +
                 ", refundAmt='" + refundAmt + '\'' +
                 ", transStatus='" + transStatus + '\'' +
                 ", couponType='" + couponType + '\'' +
                 ", couponName='" + couponName + '\'' +
                 ", couponChannel='" + couponChannel + '\'' +
                 ", couponDiscountAmt='" + couponDiscountAmt + '\'' +
+                ", couponOrderNum='" + couponOrderNum + '\'' +
                 ", errorDetail='" + errorDetail + '\'' +
                 ", total='" + total + '\'' +
                 ", originalTotal='" + originalTotal + '\'' +
