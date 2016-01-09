@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -17,7 +16,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
-import com.cardinfolink.yunshouyin.util.Untilly;
+import com.cardinfolink.yunshouyin.util.Utility;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
@@ -94,7 +93,7 @@ public class MyWebActivity extends BaseActivity {
      * @throws WriterException
      */
     private Bitmap cretaeBitmap(String str, Bitmap icon, int widthx, int heighty) throws WriterException {
-        icon = Untilly.zoomBitmap(icon, IMAGE_HALFWIDTH);
+        icon = Utility.zoomBitmap(icon, IMAGE_HALFWIDTH);
         Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
