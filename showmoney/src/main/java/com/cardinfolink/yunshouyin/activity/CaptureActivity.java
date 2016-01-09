@@ -33,6 +33,7 @@ import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.decoding.CaptureActivityHandler;
 import com.cardinfolink.yunshouyin.decoding.InactivityTimer;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
+import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.view.HintDialog;
 import com.cardinfolink.yunshouyin.view.TradingLoadDialog;
 import com.cardinfolink.yunshouyin.view.ViewfinderView;
@@ -197,7 +198,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                             //这里是卡券核销
                             String scancode = (String) msg.obj;
                             final OrderData orderData = new OrderData();
-                            orderData.orderNum = geneOrderNumber();
+                            orderData.orderNum = Utility.geneOrderNumber();
                             orderData.scanCodeId = scancode;
                             mCouponLoadDialog.waiting();
                             CashierSdk.startVeri(orderData, new CashierListener() {
@@ -425,7 +426,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         }
         OrderData orderData = new OrderData();
         orderData.origOrderNum = mOrderNum;
-        orderData.orderNum = geneOrderNumber();//新生成一个订单号
+        orderData.orderNum = Utility.geneOrderNumber();//新生成一个订单号
         CashierSdk.startCanc(orderData, new CashierListener() {
 
             @Override
@@ -469,7 +470,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                     Log.e(TAG, "[onPause] not pay yet, will cancel");
                     //如果是还未支付 这时候再取消
                     orderData.origOrderNum = mOrderNum;
-                    orderData.orderNum = geneOrderNumber();//新生成一个订单号
+                    orderData.orderNum = Utility.geneOrderNumber();//新生成一个订单号
                     CashierSdk.startCanc(orderData, new CashierListener() {
 
                         @Override
@@ -635,19 +636,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
         mHintDialog.show();
     }
 
-    // 时间加上一个随机数 生成账单号
-    private String geneOrderNumber() {
-        String mOrderNum;
-
-        Date now = new Date();
-        SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-        mOrderNum = spf.format(now);
-        Random random = new Random();//订单号末尾随机的生成一个数
-        for (int i = 0; i < 5; i++) {
-            mOrderNum = mOrderNum + random.nextInt(10);
-        }
-        return mOrderNum;
-    }
 
     @Override
     protected void onResume() {
@@ -664,7 +652,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
             SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
             mCurrentTime = mspf.format(now);
 
-            mOrderNum = geneOrderNumber();
+            mOrderNum = Utility.geneOrderNumber();
         } else if ("ticketview".equals(originalFromFlag)) {
             //扫卡券
             mActionBar.setTitle(getResources().getString(R.string.coupon_title_first));
