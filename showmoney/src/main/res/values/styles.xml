@@ -16,49 +16,8 @@
     <style name="AppTheme" parent="android:Theme.Light.NoTitleBar">
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
         <item name="android:windowBackground">@android:color/transparent</item>
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-    </style>
-
-    <style name="ScanCodeFullscreenTheme" parent="android:Theme.Light.NoTitleBar.Fullscreen">
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-    </style>
-
-
-    <style name="MyToggleButton" parent="@android:style/Widget.CompoundButton">
-        <item name="android:button">@drawable/switch_selector</item>
-    </style>
-
-
-    <style name="CustomActionBarTheme" parent="@android:style/Theme.Holo.Light" type="text/css">
-        <item name="android:actionBarStyle">@style/MyActionBar</item>
-
-
-        <item name="android:windowContentOverlay">@null</item>
-
-
-    </style>
-
-    <style name="MyActionBar" parent="@android:style/Widget.Holo.Light.ActionBar" type="text/css">
-        <item name="android:background">#00BBD3</item>
-        <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
-        <item name="android:homeAsUpIndicator">@drawable/back</item>
-    </style>
-
-    <style name="MyActionBarTitleText" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title" type="text/css">
-        <item name="android:textColor">#ffffff</item>
-
-    </style>
-
-
-    <style name="cunstomtheme" parent="@android:style/Theme.Holo.Light">
-        <item name="android:actionBarStyle">@style/MyActionBar</item>
-        <item name="android:homeAsUpIndicator">@drawable/back</item>
     </style>
 
 
