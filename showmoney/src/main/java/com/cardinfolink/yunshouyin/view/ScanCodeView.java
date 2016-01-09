@@ -42,6 +42,9 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
     private boolean numFlag = true;
     private String[] s = new String[100];
     private Context mContext;
+    private String chcd;
+    public final static String PAYBYALIBABA="ALP";
+    public final static String PAYBYWEIXIN="WXP";
 
     public ScanCodeView(Context context) {
         super(context);
@@ -110,13 +113,10 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                 if (switchFlag) {
                     btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_create_code));
                     switchFlag = false;
-                    btnzhifubao.setVisibility(View.VISIBLE);
-                    btnweixin.setVisibility(View.VISIBLE);
+
                 } else {
                     btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_scaning_code));
                     switchFlag = true;
-                    btnzhifubao.setVisibility(View.INVISIBLE);
-                    btnweixin.setVisibility(View.INVISIBLE);
                 }
 
             }
@@ -308,12 +308,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                                 AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, alertBitmap);
                                 alertDialog.show();
                             } else {
-                                String chcd = "ALP";
-                                if (btnweixin.isChecked()) {
-                                    chcd = "WXP";
-                                } else {
-                                    chcd = "ALP";
-                                }
+                                    chcd = PAYBYWEIXIN;
                                 if (switchFlag) {
                                     Intent intent = new Intent(mContext, CaptureActivity.class);
                                     intent.putExtra("chcd", chcd);
@@ -338,13 +333,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                         }
                     });
                 } else {
-                    String chcd = "ALP";
-                    if (btnweixin.isChecked()) {
-                        chcd = "WXP";
-                    } else {
-                        chcd = "ALP";
-                    }
-
+                        chcd =PAYBYWEIXIN;
                     if (switchFlag) {
                         Intent intent = new Intent(mContext, CaptureActivity.class);
                         intent.putExtra("chcd", chcd);
