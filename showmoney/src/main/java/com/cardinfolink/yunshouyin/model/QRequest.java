@@ -155,6 +155,14 @@ public class QRequest {
         this.currency = currency;
     }
 
+    public String getCouponDiscountAmt() {
+        return couponDiscountAmt;
+    }
+
+    public void setCouponDiscountAmt(String couponDiscountAmt) {
+        this.couponDiscountAmt = couponDiscountAmt;
+    }
+
     @Override
     public String toString() {
         return "QRequest{" +
@@ -171,6 +179,7 @@ public class QRequest {
                 ", chcd='" + chcd + '\'' +
                 ", goodsInfo='" + goodsInfo + '\'' +
                 ", currency='" + currency + '\'' +
+                ", couponDiscountAmt='" + couponDiscountAmt + '\'' +
                 '}';
     }
 }
