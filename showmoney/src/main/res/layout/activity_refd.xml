@@ -26,14 +26,13 @@
             android:id="@+id/refd_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="5,000,00"
             android:textSize="30sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="当前可退款金额（元）" />
+            android:text="@string/refd_activity_refd_message" />
 
 
         <com.cardinfolink.yunshouyin.ui.SettingInputItem
@@ -41,13 +40,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            cardinfolink:title="需退款金额（元）" />
+            cardinfolink:title="@string/refd_activity_refd_message1" />
 
         <com.cardinfolink.yunshouyin.ui.SettingPasswordItem
             android:id="@+id/refd_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            cardinfolink:title="请输入登录密码" />
+            cardinfolink:title="@string/refd_activity_refd_password" />
 
         <Button
             android:id="@+id/btnrefd"
@@ -57,8 +56,8 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="40dp"
             android:background="@drawable/blue_selector"
-            android:textColor="#ffffff"
-            android:text="退款" />
+            android:text="@string/refd_activity_refd"
+            android:textColor="#ffffff" />
     </LinearLayout>
 
     <include layout="@layout/showmoney_dialog" />
