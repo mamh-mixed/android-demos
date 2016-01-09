@@ -1,4 +1,3 @@
-/* global malarkey:false, moment:false */
 import "babel-polyfill";
 
 import { config } from './index.config';
