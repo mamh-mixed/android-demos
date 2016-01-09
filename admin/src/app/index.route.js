@@ -11,6 +11,10 @@ export function routerConfig($stateProvider, $urlRouterProvider) {
 			controller: 'PasswordResetController',
 			controllerAs: 'prc'
 		})
+		.state('appAgreement', {
+			url: '/app/agreement',
+			templateUrl: 'app/views/appuser/agreement/index.html'
+		})
 		.state('notFound', {
 			url: '/404',
 			templateUrl: 'app/views/common/404.html'
