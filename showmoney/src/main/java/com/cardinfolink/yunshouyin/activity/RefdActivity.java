@@ -125,7 +125,7 @@ public class RefdActivity extends BaseActivity {
             orderNmuber = orderNmuber + random.nextInt(10);
         }
         orderData.orderNum = orderNmuber;
-        orderData.currency = "156";
+        orderData.currency = CashierSdk.SDK_CURRENCY;
         orderData.txamt = mRefdMoney.getText();
 
         CashierSdk.startRefd(orderData, new CashierListener() {
