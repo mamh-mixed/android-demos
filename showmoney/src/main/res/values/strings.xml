@@ -3,6 +3,7 @@
 
     <string name="app_name">云收银</string>
     <string name="copyright">cardinfolink 2015</string>
+    <string name="login_bank_name">华南银行</string>
     <string name="login_hint_username">请输入用户名</string>
     <string name="login_hint_password">请输入密码</string>
     <string name="login_auto_login">自动登录</string>
@@ -93,7 +94,7 @@
     <string name="alert_error_new_password_cannot_empty">新密码不能为空!</string>
     <string name="alert_error_new_password_short_six">新密码不能少于6位!</string>
     <string name="alert_error_limit_error">"当日交易已超过限额,请申请提升限额!"</string>
-    <string name="refd_dialog_refd_max">本次可退款额度：NT$</string>
+    <string name="refd_dialog_refd_max">本次可退款额度：¥</string>
     <string name="refd_dialog_refd_success">退款成功!</string>
     <string name="refd_dialog_nextday_not_refd">隔日不能退款!</string>
     <string name="refd_dialog_refd_fail">退款失败!</string>
