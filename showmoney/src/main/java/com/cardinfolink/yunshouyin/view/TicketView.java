@@ -26,6 +26,7 @@ import com.cardinfolink.yunshouyin.activity.CouponResultActivity;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.util.Utility;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -151,7 +152,7 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                 //核销
                 String scancode = mCouponCode.getText().toString();
                 final OrderData orderData = new OrderData();
-                orderData.orderNum = geneOrderNumber();
+                orderData.orderNum = Utility.geneOrderNumber();
                 orderData.scanCodeId = scancode;
 
                 CashierSdk.startVeri(orderData, new CashierListener() {
@@ -186,25 +187,5 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
         }
 
     }
-
-
-    /**
-     * 生成账单号  时间加上一个随机数
-     *
-     * @return
-     */
-    private String geneOrderNumber() {
-        String mOrderNum;
-
-        Date now = new Date();
-        SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
-        mOrderNum = spf.format(now);
-        Random random = new Random();//订单号末尾随机的生成一个数
-        for (int i = 0; i < 5; i++) {
-            mOrderNum = mOrderNum + random.nextInt(10);
-        }
-        return mOrderNum;
-    }
-
 
 }
