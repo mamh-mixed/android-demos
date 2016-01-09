@@ -162,7 +162,6 @@ public class TransManageView extends LinearLayout {
         mTitle = (TextView) findViewById(R.id.tv_title);
         mLoadingDialog = new LoadingDialog(mContext, findViewById(R.id.loading_dialog));
 
-
         //***普通的收款账单***************************************************************************************
         mBillPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.bill_list_view);
         mBillPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
@@ -203,6 +202,7 @@ public class TransManageView extends LinearLayout {
         mTradeBillMap = new HashMap<>();
 
         mBillAdapter = new BillExpandableListAdapter(mContext, mMonthBilList, mTradeBillList);
+        mBillAdapter.setHintDialog(findViewById(R.id.hint_dialog));
 
         ExpandableListView billActualView = mBillPullRefreshListView.getRefreshableView();
         billActualView.setAdapter(mBillAdapter);
