@@ -161,7 +161,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                             final OrderData orderData = new OrderData();
                             orderData.orderNum = mOrderNum;
                             orderData.txamt = total;
-                            orderData.currency = "156";
+                            orderData.currency = CashierSdk.SDK_CURRENCY;
                             orderData.scanCodeId = (String) msg.obj;
                             //有优惠金额的时候
                             if (Coupon.getInstance().getSaleDiscount() != null && !"0".equals(Coupon.getInstance().getSaleDiscount())) {
@@ -321,7 +321,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
     public void cancelCouponVerial() {
         finish();
     }
-
 
 
     // 未付款对话框，上面文本，下面一个按钮的对话框
