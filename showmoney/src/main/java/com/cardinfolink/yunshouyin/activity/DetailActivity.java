@@ -113,8 +113,35 @@ public class DetailActivity extends BaseActivity {
             mPayType.setRightText(getString(R.string.detail_activity_pay_type4));
         }
         //设置订单号
-        mPayOrder.setRightText(mTradeBill.orderNum);
+        mPayOrder.setRightText(mTradeBill.orderNum);//支付的订单号
+        mVeriOrder.setRightText(mTradeBill.couponOrderNum);//核销订单
+        mPayChcd.setRightText(mTradeBill.couponChannel);//卡券渠道
+        mPayTerminator.setRightText(mTradeBill.terminalid);
 
+        String amount = "";//原金额
+        String arriavl = "";//到账金额
+        String discount = "";//卡券金额
+        try {
+            BigDecimal bg0 = new BigDecimal("0");//这个是数字0
+
+            BigDecimal txamtBD = new BigDecimal(mTradeBill.amount);//这个是txamt传来的，就是交易时给的金额
+            arriavl = txamtBD.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+
+            //卡券优惠金额
+            BigDecimal discountBD = new BigDecimal(mTradeBill.couponDiscountAmt);
+            discount = discountBD.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+
+            amount = txamtBD.add(discountBD).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+            if (discountBD.compareTo(bg0) > 0) {
+                //大于零说明有优惠金额
+            }
+        } catch (Exception e) {
+
+        }
+
+        mPayMoney.setText(amount);
+        mCardDiscount.setRightText(discount);
+        mArriavlMoney.setRightText(arriavl);
     }
 
     /**
@@ -309,10 +336,9 @@ public class DetailActivity extends BaseActivity {
             amount = txamtBD.add(discountBD).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
             if (discountBD.compareTo(bg0) > 0) {
                 //大于零说明有优惠金额
-
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
         }
 
         mPayMoney.setText(amount);//金额，最上面显示的那个数字
