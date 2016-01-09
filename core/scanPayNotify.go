@@ -262,7 +262,6 @@ func ProcessWeixinNotify(req *weixin.WeixinNotifyReq) error {
 		sendNotifyToMerchant(t, nr, ret)
 	}
 	mongo.NotifyRecColl.Add(nr)
-
 	return nil
 }
 
