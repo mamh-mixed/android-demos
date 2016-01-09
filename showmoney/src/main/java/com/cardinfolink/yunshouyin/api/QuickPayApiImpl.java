@@ -2,7 +2,9 @@ package com.cardinfolink.yunshouyin.api;
 
 
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.BankInfo;
@@ -25,6 +27,7 @@ import java.util.TreeMap;
 
 public class QuickPayApiImpl implements QuickPayApi {
     private static final String TAG = "QuickPayApiImpl";
+    private static boolean DEBUG = false;
 
     private static final String QUICK_PAY_SUCCESS = "success";
 
@@ -67,6 +70,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         } else {
             postEngine = new PostEngine();
         }
+
+
+        //这里设置一下debug的开关，生成环境不打印日志
+        DEBUG = !SystemConfig.IS_PRODUCE;
     }
 
     private String getTransTime() {
@@ -135,8 +142,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
+        if (DEBUG) Log.e(TAG, "[register] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[register] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return;
@@ -171,8 +180,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         }
         params.put("sign", createSign(params));
 
+        if (DEBUG) Log.e(TAG, "[login] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[login] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getUser();
@@ -206,8 +217,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
+        if (DEBUG) Log.e(TAG, "[updatePassword] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[updatePassword] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return;
@@ -236,8 +249,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
+        if (DEBUG) Log.e(TAG, "[activate] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[activate] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return;
@@ -276,8 +291,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
+        if (DEBUG) Log.e(TAG, "[improveInfo] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[improveInfo] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getUser();
@@ -301,8 +318,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params, SIGN_TYPE_SHA_1));
 
+        if (DEBUG) Log.e(TAG, "[getBankInfo] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[getBankInfo] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getInfo();
@@ -329,8 +348,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
+        if (DEBUG) Log.e(TAG, "[forgetPassword] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[forgetPassword] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             //TODO: issue, what if serverPacket has not state?
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
@@ -373,8 +394,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
+        if (DEBUG) Log.e(TAG, "[getHistoryBills] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[getHistoryBills] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket;
@@ -413,8 +436,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
+        if (DEBUG) Log.e(TAG, "[getHistoryCoupons] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[getHistoryCoupons] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket;
@@ -477,8 +502,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
+        if (DEBUG) Log.e(TAG, "[findOrder] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[findOrder] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket;
@@ -511,8 +538,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
+        if (DEBUG) Log.e(TAG, "[getTotal] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[getTotal] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getTotal();
@@ -546,8 +575,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
 
+        if (DEBUG) Log.e(TAG, "[getSummaryDay] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[getSummaryDay] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket;
@@ -580,8 +611,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("orderNum", orderNum);
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params, SIGN_TYPE_SHA_1));
+        if (DEBUG) Log.e(TAG, "[getRefd] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[getRefd] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket;
@@ -620,8 +653,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("password", password);
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
+        if (DEBUG) Log.e(TAG, "[getUploadToken] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[getUploadToken] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return serverPacket.getUploadToken();
@@ -667,8 +702,10 @@ public class QuickPayApiImpl implements QuickPayApi {
             params.put(map.getKey(), map.getValue());
         }
         params.put("sign", createSign(params));
+        if (DEBUG) Log.e(TAG, "[improveCertInfo] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[improveCertInfo] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
                 return;
@@ -708,9 +745,11 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("size", size);
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
+        if (DEBUG) Log.e(TAG, "[pullinfo] params = " + params);
         try {
             //// TODO: mamh  这里没有判断 serverPacket.getState()的状态？？？？
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[pullinfo] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             return serverPacket;
         } catch (IOException e) {
@@ -746,8 +785,10 @@ public class QuickPayApiImpl implements QuickPayApi {
         params.put("message", messageStr);
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
+        if (DEBUG) Log.e(TAG, "[updateMessage] params = " + params);
         try {
             String response = postEngine.post(url, params);
+            if (DEBUG) Log.e(TAG, "[updateMessage] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             return serverPacket;
         } catch (IOException e) {
