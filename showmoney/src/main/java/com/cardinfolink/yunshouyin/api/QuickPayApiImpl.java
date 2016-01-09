@@ -316,7 +316,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         String password = EncoderUtil.Encrypt(user.getPassword(), SIGN_TYPE_MD5);
         params.put("password", password);
         params.put("transtime", getTransTime());
-        params.put("sign", createSign(params, SIGN_TYPE_SHA_1));
+        params.put("sign", createSign(params));
 
         if (DEBUG) Log.e(TAG, "[getBankInfo] params = " + params);
         try {
