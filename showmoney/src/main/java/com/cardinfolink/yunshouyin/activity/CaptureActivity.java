@@ -52,7 +52,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
             mediaPlayer.seekTo(0);
         }
     };
-    private CaptureActivityHandler handler;
+    private CaptureActivityHandler captureActivityHandler;
     private ViewfinderView viewfinderView;
     private boolean hasSurface;
     private Vector<BarcodeFormat> decodeFormats;
@@ -67,9 +67,13 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private String chcd;
     private String mOrderNum;
     private ResultData mResultData;
+
+
     private SurfaceHolder surfaceHolder;
     private SurfaceView surfaceView;
-    private Boolean openBackCamera = true;
+
+    //前摄像头 还是后摄像头来扫码，true的时候是后摄像头扫码
+    private Boolean isBackCamera = true;
 
     /**
      * Called when the activity is first created.
@@ -85,7 +89,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
         for (int i = 0; i < 5; i++) {
             mOrderNum = mOrderNum + random.nextInt(10);
         }
+
+
         CameraManager.init(getApplication());
+
         initHandler();
         initLayout();
         initListener();
@@ -131,22 +138,22 @@ public class CaptureActivity extends BaseActivity implements Callback {
                 }
             }
         });
+
         //switch back and front camera
         findViewById(R.id.switch_camer).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (openBackCamera) {
-                    openBackCamera = false;
-                } else {
-                    openBackCamera = true;
-                }
-                Intent intent = new Intent(mContext, CaptureActivity.class);
-                intent.putExtra("switch", openBackCamera);
-                intent.putExtra("chcd", chcd);
-                intent.putExtra("total", total);
-                finish();
-                mContext.startActivity(intent);
+                isBackCamera = !isBackCamera;
 
+                CameraManager.get().closeDriver();
+
+                initCamera(surfaceHolder, isBackCamera);
+
+                if (captureActivityHandler == null) {
+                    captureActivityHandler = new CaptureActivityHandler(CaptureActivity.this, decodeFormats, characterSet);
+                } else {
+                    captureActivityHandler.switchPreviewAndDecode();
+                }
             }
         });
     }
@@ -225,12 +232,11 @@ public class CaptureActivity extends BaseActivity implements Callback {
         Intent intent = getIntent();
         total = intent.getStringExtra("total");
         chcd = intent.getStringExtra("chcd");
-        openBackCamera = intent.getBooleanExtra("switch", false);
 
         surfaceView = (SurfaceView) findViewById(R.id.preview_view);
         surfaceHolder = surfaceView.getHolder();
         if (hasSurface) {
-            initCamera(surfaceHolder, openBackCamera);
+            initCamera(surfaceHolder, isBackCamera);
         } else {
             surfaceHolder.addCallback(this);
             surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -250,9 +256,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
     @Override
     protected void onPause() {
         super.onPause();
-        if (handler != null) {
-            handler.quitSynchronously();
-            handler = null;
+        if (captureActivityHandler != null) {
+            captureActivityHandler.quitSynchronously();
+            captureActivityHandler = null;
         }
         CameraManager.get().closeDriver();
     }
@@ -271,9 +277,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
         } catch (RuntimeException e) {
             return;
         }
-        if (handler == null) {
-            handler = new CaptureActivityHandler(this, decodeFormats,
-                    characterSet);
+        if (captureActivityHandler == null) {
+            captureActivityHandler = new CaptureActivityHandler(this, decodeFormats, characterSet);
         }
     }
 
@@ -287,7 +292,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         if (!hasSurface) {
             hasSurface = true;
-            initCamera(holder, openBackCamera);
+            initCamera(holder, isBackCamera);
         }
 
     }
@@ -303,7 +308,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
     }
 
     public Handler getHandler() {
-        return handler;
+        return captureActivityHandler;
     }
 
     public void drawViewfinder() {
