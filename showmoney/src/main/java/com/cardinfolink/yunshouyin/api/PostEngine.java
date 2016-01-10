@@ -58,8 +58,8 @@ public class PostEngine {
         HttpURLConnection conn = null;
 
         if ("https".equals(url.getProtocol().toLowerCase())) {
-            HttpsURLConnection https = (HttpsURLConnection)url.openConnection();
             trustAllHosts();
+            HttpsURLConnection https = (HttpsURLConnection)url.openConnection();
             https.setHostnameVerifier(DO_NOT_VERIFY);
             conn = https;
         } else {
