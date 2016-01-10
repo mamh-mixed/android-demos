@@ -162,6 +162,7 @@ public final class CameraManager {
                 throw new IOException();
             }
             camera.setPreviewDisplay(holder);
+            camera.startPreview();
 
             if (!initialized) {
                 initialized = true;
@@ -169,11 +170,7 @@ public final class CameraManager {
             }
             configManager.setDesiredCameraParameters(camera);
 
-            //     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            //�Ƿ�ʹ��ǰ��
-//      if (prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false)) {
-//        FlashlightManager.enableFlashlight();
-//      }
+
             FlashlightManager.enableFlashlight();
         }
     }
