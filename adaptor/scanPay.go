@@ -8,7 +8,6 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
-	"math"
 	"strings"
 	"time"
 )
@@ -192,7 +191,7 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(req.IntTxamt)/100)
 	case channel.ChanCodeWeixin:
-		settRefundAmt := int64(math.Floor(float64(req.IntTxamt)*orig.SettExchangeRate + 0.5))
+		settRefundAmt := dcc.Compute(req.IntTxamt, orig.SettExchangeRate)
 		// 清算币种判断业务逻辑
 		// 配合core层的逻辑，计算清算币种退款金额
 		switch orig.RefundStatus {

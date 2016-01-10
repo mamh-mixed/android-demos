@@ -58,6 +58,9 @@ func (d Dcc) Do(txamt int64) (amt int64, rate float64, err error) {
 		break
 	}
 	rate = er.Rate
-	amt = int64(math.Floor(float64(txamt)/rate + 0.5))
-	return amt, rate, nil
+	return Compute(txamt, rate), rate, nil
+}
+
+func Compute(txamt int64, rate float64) int64 {
+	return int64(math.Floor(float64(txamt)/rate + 0.5))
 }
