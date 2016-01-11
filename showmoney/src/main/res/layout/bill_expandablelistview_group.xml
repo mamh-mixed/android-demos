@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:background="#EEEEEE"
+    android:background="@color/background_bill_layout"
     android:gravity="center_vertical"
     android:orientation="horizontal">
 
@@ -43,13 +43,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/expandable_listview_group_imcome"
-            android:textColor="@color/viewfinder_laser" />
+            android:textColor="@color/textview_textcolor_bill_total" />
 
         <TextView
             android:id="@+id/tv_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/viewfinder_laser" />
+            android:textColor="@color/textview_textcolor_bill_total" />
     </LinearLayout>
 
     <LinearLayout
