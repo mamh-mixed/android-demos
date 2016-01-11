@@ -3,7 +3,7 @@
     android:id="@+id/hint_dialog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#40000000"
+    android:background="@color/background_dialog"
     android:visibility="gone">
 
     <LinearLayout
@@ -40,7 +40,6 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/increase_personal1"
-                    android:textColor="#000000"
                     android:textSize="17sp" />
 
                 <TextView
@@ -49,7 +48,7 @@
                     android:layout_marginLeft="10dp"
                     android:gravity="center"
                     android:text="@string/increase_material_requested"
-                    android:textColor="#818181"
+                    android:textColor="@color/textview_textcolor_increase1"
                     android:textSize="17sp" />
 
             </LinearLayout>
@@ -64,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/increase_personal1_material"
-                    android:textColor="#C3C3C3"
+                    android:textColor="@color/textview_textcolor_increase"
                     android:textSize="17sp" />
 
             </LinearLayout>
@@ -81,7 +80,6 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/increase_company1"
-                    android:textColor="#000000"
                     android:textSize="17sp" />
 
                 <TextView
@@ -90,7 +88,7 @@
                     android:layout_marginLeft="10dp"
                     android:gravity="center"
                     android:text="@string/increase_material_requested"
-                    android:textColor="#818181"
+                    android:textColor="@color/textview_textcolor_increase1"
                     android:textSize="17sp" />
 
             </LinearLayout>
@@ -105,7 +103,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/increase_company1_meaterial"
-                    android:textColor="#C3C3C3"
+                    android:textColor="@color/textview_textcolor_increase"
                     android:textSize="17sp" />
 
             </LinearLayout>
@@ -127,7 +125,7 @@
                 android:background="@drawable/dialog_button1_selector"
                 android:gravity="center"
                 android:text="@string/txt_cancel"
-                android:textColor="#000000"
+                android:textColor="@color/textview_textcolor_cancel"
                 android:textSize="17sp" />
 
             <TextView
@@ -138,7 +136,7 @@
                 android:background="@drawable/dialog_button_selector"
                 android:gravity="center"
                 android:text="@string/increase_i_know"
-                android:textColor="#ffffff"
+                android:textColor="@color/textview_textcolor_ok"
                 android:textSize="17sp" />
 
         </LinearLayout>

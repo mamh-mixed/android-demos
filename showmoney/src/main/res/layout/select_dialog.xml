@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_alignParentBottom="true"
-    android:background="#00000000"
+    android:background="@color/background_dialog1"
     android:visibility="gone">
 
 
@@ -12,13 +12,13 @@
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_alignParentBottom="true"
-        android:background="#ffffff"
+        android:background="@color/background_layout"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="#00BBD3">
+            android:background="@color/blue1">
 
             <TextView
                 android:id="@+id/select_dialog_cancel"
@@ -28,7 +28,7 @@
                 android:layout_marginLeft="10dp"
                 android:padding="10dp"
                 android:text="@string/txt_cancel"
-                android:textColor="#ffffff"
+                android:textColor="@color/textview_textcolor_ok"
                 android:textSize="15sp" />
 
             <TextView
@@ -39,7 +39,7 @@
                 android:layout_marginRight="10dp"
                 android:padding="10dp"
                 android:text="@string/txt_confirm"
-                android:textColor="#ffffff"
+                android:textColor="@color/textview_textcolor_ok"
                 android:textSize="15sp" />
         </RelativeLayout>
 
@@ -75,7 +75,7 @@
             android:layout_height="0.1dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:background="#88000000" />
+            android:background="@color/horizontal_view_background" />
 
         <LinearLayout
             android:layout_width="match_parent"
