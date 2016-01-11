@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_centerInParent="true"
-    android:background="#40000000"
+    android:background="@color/background_dialog"
     android:visibility="gone">
 
     <!-- 卡券核销时候的 loading 的对话框 -->
@@ -44,7 +44,7 @@
                 android:id="@+id/trading_load_second"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#00bbd3"
+                android:textColor="@color/textview_textcolor_load_second"
                 android:textSize="17sp"
                 android:visibility="gone" />
 
@@ -66,7 +66,7 @@
                 android:background="@drawable/dialog_button_selector"
                 android:gravity="center"
                 android:text="@string/txt_cancel"
-                android:textColor="#ffffff"
+                android:textColor="@color/textview_textcolor_ok"
                 android:textSize="17sp" />
 
 

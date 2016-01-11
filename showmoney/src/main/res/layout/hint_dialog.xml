@@ -3,7 +3,7 @@
     android:id="@+id/hint_dialog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#40000000"
+    android:background="@color/background_dialog"
     android:visibility="gone">
 
     <LinearLayout
@@ -41,7 +41,7 @@
                 android:background="@drawable/dialog_button1_selector"
                 android:gravity="center"
                 android:text="@string/txt_cancel"
-                android:textColor="#000000"
+                android:textColor="@color/textview_textcolor_cancel"
                 android:textSize="17sp" />
 
             <TextView
@@ -52,7 +52,7 @@
                 android:background="@drawable/dialog_button_selector"
                 android:gravity="center"
                 android:text="@string/txt_reset"
-                android:textColor="#ffffff"
+                android:textColor="@color/textview_textcolor_ok"
                 android:textSize="17sp" />
 
         </LinearLayout>
