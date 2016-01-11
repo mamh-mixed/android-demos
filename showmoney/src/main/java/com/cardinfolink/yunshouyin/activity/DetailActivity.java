@@ -63,6 +63,10 @@ public class DetailActivity extends BaseActivity {
     private ResultInfoItem mVeriOrder;
 
 
+    private ResultInfoItem mPayCheckCode;
+    private ResultInfoItem mPaySmallTicket;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,6 +181,8 @@ public class DetailActivity extends BaseActivity {
         mPayTerminator = (ResultInfoItem) findViewById(R.id.pay_terminator);
         mPayComments = (ResultInfoItem) findViewById(R.id.pay_comments);
 
+        mPayCheckCode = (ResultInfoItem) findViewById(R.id.pay_check_code);
+        mPaySmallTicket = (ResultInfoItem) findViewById(R.id.pay_small_ticket_number);
 
         mPayCommentsLayout = (LinearLayout) findViewById(R.id.ll_pay_comments);
     }
@@ -252,7 +258,9 @@ public class DetailActivity extends BaseActivity {
         }
 
         //支付终端
-        mPayTerminator.setRightText(SessonData.loginUser.getUsername());
+        mPayTerminator.setRightText(mTradeBill.terminalid);
+
+        mPayCheckCode.setRightText(mTradeBill.checkCode);
 
         //支付方式
         if (!TextUtils.isEmpty(mTradeBill.tradeFrom)) {
@@ -289,7 +297,7 @@ public class DetailActivity extends BaseActivity {
             double amt = Double.parseDouble(mTradeBill.refundAmt);
             if (amt == 0) {
                 //成功的
-                mPayResult.setTextColor(Color.parseColor("#00bbd3"));
+                mPayResult.setTextColor(getResources().getColor(R.color.color_txt_normal));
                 mPayResult.setText(getString(R.string.detail_activity_trade_status_success));
                 mPayResultImage.setImageResource(R.drawable.pay_result_succeed);
             } else {
@@ -330,12 +338,23 @@ public class DetailActivity extends BaseActivity {
             refd = refdBD.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
 
             //卡券优惠金额
-            BigDecimal discountBD = new BigDecimal(mTradeBill.couponDiscountAmt);
+            BigDecimal discountBD;
+            if (TextUtils.isEmpty(mTradeBill.couponDiscountAmt)) {
+                //卡券优惠是空的时候
+                discountBD = new BigDecimal("0.00");
+            } else {
+                discountBD = new BigDecimal(mTradeBill.couponDiscountAmt);
+
+            }
             discount = discountBD.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
 
             amount = txamtBD.add(discountBD).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
-            if (discountBD.compareTo(bg0) > 0) {
-                //大于零说明有优惠金额
+            if (discountBD.compareTo(bg0) <= 0) {
+                //没有优惠的时候不显示，这个
+                mCardDiscount.setVisibility(View.GONE);
+            }
+            if (refdBD.compareTo(bg0) <= 0) {
+                mRefdMoney.setVisibility(View.GONE);
             }
         } catch (Exception e) {
 
