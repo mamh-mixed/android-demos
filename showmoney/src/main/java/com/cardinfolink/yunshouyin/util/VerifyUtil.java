@@ -34,9 +34,7 @@ public class VerifyUtil {
      * @return
      */
     public static char getBankCardCheckCode(String nonCheckCodeCardId) {
-        if (nonCheckCodeCardId == null
-                || nonCheckCodeCardId.trim().length() == 0
-                || !nonCheckCodeCardId.matches("\\d+")) {
+        if (nonCheckCodeCardId == null || nonCheckCodeCardId.trim().length() == 0 || !nonCheckCodeCardId.matches("\\d+")) {
             // 如果传的不是数据返回N
             return 'N';
         }
@@ -70,8 +68,7 @@ public class VerifyUtil {
             private StringBuffer buffer = new StringBuffer();
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count,
-                                          int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 beforeTextLength = s.length();
                 if (buffer.length() > 0) {
                     buffer.delete(0, buffer.length());
@@ -85,12 +82,10 @@ public class VerifyUtil {
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before,
-                                      int count) {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
                 onTextLength = s.length();
                 buffer.append(s.toString());
-                if (onTextLength == beforeTextLength || onTextLength <= 3
-                        || isChanged) {
+                if (onTextLength == beforeTextLength || onTextLength <= 3 || isChanged) {
                     isChanged = false;
                     return;
                 }
@@ -160,9 +155,7 @@ public class VerifyUtil {
 
             @Override
 
-            public void beforeTextChanged(CharSequence s, int start, int count,
-
-                                          int after) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
 
@@ -170,49 +163,29 @@ public class VerifyUtil {
             @Override
 
             public void afterTextChanged(Editable edt) {
-
                 try {
-
                     String temp = edt.toString();
-
                     String tem = temp.substring(temp.length() - 1, temp.length());
-
                     char[] temC = tem.toCharArray();
-
                     int mid = temC[0];
                     if (mid >= 33 && mid <= 47 || mid >= 58 && mid <= 64) {//特殊符号
-
                         return;
-
                     }
 
-
                     if (mid >= 48 && mid <= 57) {//数字
-
                         return;
-
                     }
 
                     if (mid >= 65 && mid <= 90) {//大写字母
-
                         return;
-
                     }
 
                     if (mid >= 97 && mid <= 122) {//小写字母
-
                         return;
-
                     }
-
                     edt.delete(temp.length() - 1, temp.length());
-
                 } catch (Exception e) {
-
-                    // TODO: handle exception
-
                 }
-
             }
 
         });
@@ -220,14 +193,11 @@ public class VerifyUtil {
 
     }
 
-	
 
-	/*
-	 * 校验手机号
-	 */
-
+    /*
+     * 校验手机号
+     */
     public static boolean isMobileNO(String mobiles) {
-
         Pattern p = Pattern.compile("^((13[0-9])|(15[^4,\\D])|(18[0-9]))\\d{8}$");
         Matcher m = p.matcher(mobiles);
         return m.matches();
