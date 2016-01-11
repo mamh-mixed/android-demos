@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="50dp"
-    android:background="#ffffff">
+    android:background="@color/background_layout">
 
     <TextView
         android:id="@+id/tv_title"
@@ -12,7 +12,7 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:text="标题"
-        android:textColor="#000000"
+        android:textColor="@color/textview_textcolor_setting_detail_item_title"
         android:textSize="20sp" />
 
 
@@ -24,7 +24,8 @@
         android:layout_centerVertical="true"
         android:layout_marginRight="15dp"
         android:clickable="false"
-        android:text="详情" />
+        android:text="详情"
+        android:textColor="@color/textview_textcolor_setting_detail_item_detail" />
 
     <View
         android:layout_width="fill_parent"
@@ -32,6 +33,6 @@
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="#88000000" />
+        android:background="@color/horizontal_view_background" />
 
 </RelativeLayout>

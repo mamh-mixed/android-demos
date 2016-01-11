@@ -12,8 +12,8 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:text="标题"
-        android:textColor="#000000"
-        android:textSize="20sp" />
+        android:textColor="@color/textview_textcolor_setting_click_item_left" />
+    android:textSize="20sp" />
 
     <TextView
         android:id="@+id/tv_right"
@@ -25,7 +25,7 @@
         android:layout_toRightOf="@+id/tv_title"
         android:gravity="right"
         android:text="右边的文本"
-        android:textColor="#000000" />
+        android:textColor="@color/textview_textcolor_setting_click_item_right" />
 
     <ImageView
         android:id="@+id/iv_setting"
@@ -43,6 +43,6 @@
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="#88000000" />
+        android:background="@color/horizontal_view_background" />
 
 </RelativeLayout>

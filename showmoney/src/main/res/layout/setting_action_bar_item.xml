@@ -3,13 +3,12 @@
     android:id="@+id/rl_action_bar"
     android:layout_width="match_parent"
     android:layout_height="50dp"
-    android:background="#ffffff">
+    android:background="@color/background_layout">
 
     <TextView
         android:id="@+id/tv_left"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_alignLeft="@+id/iv_back"
         android:layout_centerVertical="true"
         android:background="@drawable/white1_selector"
         android:drawableLeft="@drawable/setting_return"
@@ -18,7 +17,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:text="返回"
-        android:textColor="#000000"
+        android:textColor="@color/textview_textcolor_action_bar_item_left"
         android:textSize="15sp" />
 
     <TextView
@@ -30,7 +29,7 @@
         android:background="@drawable/white1_selector"
         android:gravity="center_vertical"
         android:text="中间标题"
-        android:textColor="#000000"
+        android:textColor="@color/textview_textcolor_action_bar_item_title"
         android:textSize="20sp" />
 
     <TextView
@@ -44,7 +43,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:text="右边标题"
-        android:textColor="#000000"
+        android:textColor="@color/textview_textcolor_action_bar_item_right"
         android:textSize="15sp" />
 
 </RelativeLayout>
