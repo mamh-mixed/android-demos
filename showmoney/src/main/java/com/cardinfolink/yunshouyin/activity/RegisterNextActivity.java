@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,7 +29,6 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
-import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.SelectDialog;
 
@@ -173,7 +170,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
                 initData.setMchntid(data.getClientid());    // 商户号
                 initData.setInscd(data.getInscd());         // 机构号
                 initData.setSignKey(data.getSignKey());     // 秘钥
-                initData.setTerminalid(TelephonyManagerUtil.getDeviceId(mContext));// 设备号
+                initData.setTerminalid(data.getUsername());// 设备号
                 initData.setIsProduce(SystemConfig.IS_PRODUCE);// 是否生产环境
 
                 CashierSdk.init(initData);

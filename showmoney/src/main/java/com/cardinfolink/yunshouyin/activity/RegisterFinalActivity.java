@@ -3,8 +3,6 @@ package com.cardinfolink.yunshouyin.activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -18,7 +16,6 @@ import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
-import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
 
 public class RegisterFinalActivity extends BaseActivity implements View.OnClickListener {
@@ -88,7 +85,7 @@ public class RegisterFinalActivity extends BaseActivity implements View.OnClickL
                 initData.setMchntid(data.getClientid());
                 initData.setInscd(data.getInscd());
                 initData.setSignKey(data.getSignKey());
-                initData.setTerminalid(TelephonyManagerUtil.getDeviceId(mContext));
+                initData.setTerminalid(data.getUsername());
                 initData.setIsProduce(SystemConfig.IS_PRODUCE);
                 CashierSdk.init(initData);//初始化sdk
 
