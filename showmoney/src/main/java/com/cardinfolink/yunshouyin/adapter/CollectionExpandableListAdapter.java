@@ -2,10 +2,12 @@ package com.cardinfolink.yunshouyin.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -16,7 +18,14 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.DetailActivity;
 import com.cardinfolink.yunshouyin.data.MonthBill;
 import com.cardinfolink.yunshouyin.data.TradeBill;
+import com.cardinfolink.yunshouyin.util.EncoderUtil;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -33,13 +42,29 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
     private List<List<TradeBill>> childrenData;
     private Context mContext;
 
+    private File mExternalCacheDir;
 
     public CollectionExpandableListAdapter(Context context, List<MonthBill> groupData, List<List<TradeBill>> childrenData) {
         this.mContext = context;
         this.groupData = groupData;
         this.childrenData = childrenData;
+
+        //创建缓存目录，系统一运行就得创建缓存目录的，
+        initCacheDir();
     }
 
+    private void initCacheDir() {
+        //创建缓存目录，系统一运行就得创建缓存目录的，
+        mExternalCacheDir = mContext.getExternalCacheDir();
+        //如果外部的不能用，就调用内部的
+        if (mExternalCacheDir == null) {
+            mExternalCacheDir = mContext.getCacheDir();
+        }
+        if (!mExternalCacheDir.exists()) {
+            mExternalCacheDir.mkdirs();
+        }
+
+    }
 
     @Override
     public int getGroupCount() {
@@ -126,10 +151,11 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
 
             childViewHolder.paylogo = (ImageView) convertView.findViewById(R.id.paylogo);
             childViewHolder.billTradeDate = (TextView) convertView.findViewById(R.id.bill_tradedate);
-            childViewHolder.billTradeFrom = (TextView) convertView.findViewById(R.id.bill_tv_tradefrom);
-            childViewHolder.billTradeFromImage = (ImageView) convertView.findViewById(R.id.bill_iv_tradefrom);
             childViewHolder.billTradeStatus = (TextView) convertView.findViewById(R.id.bill_tradestatus);
             childViewHolder.billTradeAmount = (TextView) convertView.findViewById(R.id.bill_tradeamount);
+
+            childViewHolder.billCheckCode = (TextView) convertView.findViewById(R.id.bill_checkcode);
+            childViewHolder.billNickName = (TextView) convertView.findViewById(R.id.bill_nickname);
 
             convertView.setTag(childViewHolder);
         } else {
@@ -139,18 +165,8 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
         //从list中根据位置获取到相应的bill项
         final TradeBill bill = childrenData.get(groupPosition).get(childPosition);
 
-        if (!TextUtils.isEmpty(bill.chcd)) {
-            //有chcd渠道的话,这里设置不同渠道的图片
-            if ("WXP".equals(bill.chcd)) {
-                childViewHolder.paylogo.setImageResource(R.drawable.wpay);
-            } else if ("ALP".equals(bill.chcd)) {
-                childViewHolder.paylogo.setImageResource(R.drawable.apay);
-            } else {
-                childViewHolder.paylogo.setImageDrawable(null);
-            }
-        } else {
-            childViewHolder.paylogo.setImageDrawable(null);
-        }
+        getUrlBitmapAsync(bill.avatarUrl, childViewHolder.paylogo);
+
         SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHmmss");
         SimpleDateFormat spf2 = new SimpleDateFormat("HH:mm:ss");
         SimpleDateFormat spf3 = new SimpleDateFormat("dd");
@@ -164,19 +180,6 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
             e.printStackTrace();
         }
 
-        if ("android".equals(bill.tradeFrom) || "ios".equals(bill.tradeFrom)) {
-            childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_phone);
-            childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type1));
-        } else if ("wap".equals(bill.tradeFrom)) {
-            childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_web);
-            childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type2));
-        } else if ("PC".equals(bill.tradeFrom)) {
-            childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_pc);
-            childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type3));
-        } else {
-            childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_else);
-            childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type4));
-        }
 
         String tradeStatus;
         if ("10".equals(bill.transStatus)) {
@@ -212,6 +215,8 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
         childViewHolder.billTradeStatus.setText(tradeStatus);
         childViewHolder.billTradeAmount.setText("￥" + bill.amount);
 
+        childViewHolder.billNickName.setText(bill.nickName);
+        childViewHolder.billCheckCode.setText(bill.checkCode);
 
         childViewHolder.linearLayoutDay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,11 +255,86 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
         public TextView weekday;
         public ImageView paylogo;
         public TextView billTradeDate;
-        public TextView billTradeFrom;
-        public ImageView billTradeFromImage;
         public TextView billTradeStatus;
         public TextView billTradeAmount;
+
+        public TextView billNickName;
+        public TextView billCheckCode;
+
         public View linearLayoutDay;//左边显示日期，周几的一个线性布局
         public View linearLayoutBillItem;//右边显示详情账单信息的一个线性布局
     }
+
+
+    private void getUrlBitmapAsync(final String url, final ImageView imageView) {
+        new AsyncTask<Void, Integer, Bitmap>() {
+            @Override
+            protected Bitmap doInBackground(Void... params) {
+                return getUrlBitmap(url);
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                if (bitmap == null) {
+                    imageView.setImageResource(R.drawable.wpay);
+                } else {
+                    imageView.setImageBitmap(bitmap);
+                }
+            }
+        }.execute();
+    }
+
+    /**
+     * 获取网络上的图片
+     *
+     * @param url
+     * @return
+     */
+    private Bitmap getUrlBitmap(String url) {
+        URL myFileUrl = null;
+        Bitmap bitmap = null;
+
+        if (TextUtils.isEmpty(url)) {
+            return bitmap;
+        }
+
+        String name = EncoderUtil.Encrypt(url, "MD5");
+        File imageFile = new File(mExternalCacheDir, name);
+
+        if (imageFile.exists()) {
+            //如果头像图片文件存在就直接使用
+            bitmap = BitmapFactory.decodeFile(imageFile.getPath());
+            return bitmap;
+        }
+
+        //走到这里表明头像图片不存在，这里就要下载了
+        try {
+            myFileUrl = new URL(url);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            HttpURLConnection conn = (HttpURLConnection) myFileUrl.openConnection();
+            conn.setDoInput(true);
+            conn.connect();
+            InputStream is = conn.getInputStream();
+
+            FileOutputStream fos = new FileOutputStream(imageFile);
+            byte[] buffer = new byte[1024];
+            int len = 0;
+            while ((len = is.read(buffer)) != -1) {
+                fos.write(buffer, 0, len);
+            }
+
+            bitmap = BitmapFactory.decodeFile(imageFile.getPath());
+
+            is.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
+    }
+
+
 }
