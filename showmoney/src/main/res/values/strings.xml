@@ -422,6 +422,7 @@
     <string name="coupon_doing_info">正在销券中，请稍等</string>
     <string name="coupon_vertical">销券</string>
     <string name="coupon_discount_cash">优惠后金额</string>
+    <string name="coupon_first_suggest_info">出于安全考虑，我们不提供卡券查询功能。您输入券号点击或者扫码后，卡券将直接被使用。如有必要，请核实顾客出示的卡券页面的内容</string>
 
 
     <!--  欢迎界面 要用到的文本 -->
