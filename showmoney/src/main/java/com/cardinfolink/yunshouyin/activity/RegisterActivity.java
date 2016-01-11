@@ -15,15 +15,14 @@ import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
-import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
+import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
+import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class RegisterActivity extends BaseActivity {
+    private static final String TAG = "RegisterActivity";
 
     private SettingActionBarItem mActionBar;//注册页面的标题栏
     private SettingInputItem mEmailEdit;
@@ -32,24 +31,6 @@ public class RegisterActivity extends BaseActivity {
     private SettingInputItem mInviteCode;//邀请码
     private Button mRegisterNext;
 
-    /**
-     * 验证邮箱
-     *
-     * @param email
-     * @return
-     */
-    public static boolean checkEmail(String email) {
-        boolean flag = false;
-        try {
-            String check = "^([a-z0-9A-Z]+[-|_|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$";
-            Pattern regex = Pattern.compile(check);
-            Matcher matcher = regex.matcher(email);
-            flag = matcher.matches();
-        } catch (Exception e) {
-            flag = false;
-        }
-        return flag;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -152,7 +133,7 @@ public class RegisterActivity extends BaseActivity {
             mAlertDialog.show(alertMsg, alertBitmap);
             return false;
         }
-        if (!checkEmail(email)) {
+        if (!VerifyUtil.checkEmail(email)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_email_format_error);
             mAlertDialog.show(alertMsg, alertBitmap);
             return false;
