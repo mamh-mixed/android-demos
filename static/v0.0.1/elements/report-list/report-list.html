@@ -39,9 +39,7 @@
         <yun-complete id="agentCode" name="agentCode" label="代理" url="/master/list" col-name="agent" code-field="agentCode" name-field="agentName" limit="6" selected-item="{{agent}}" disabled="{{agentDisabled}}" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></yun-complete>
         <yun-complete id="subAgentCode" name="subAgentCode" label="公司" url="/master/list" col-name="subAgent" code-field="subAgentCode" name-field="subAgentName" limit="6" selected-item="{{subAgent}}" filter-condition="[[subAgentFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT"></yun-complete>
         <yun-complete id="groupCode" name="groupCode" label="商户" url="/master/list" col-name="group" code-field="groupCode" name-field="groupName" limit="6" selected-item="{{group}}" filter-condition="[[groupFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.GROUP"></yun-complete>
-        <!-- <yun-complete id="merId" name="merId" label="门店" url="/master/list" col-name="merchant" code-field="merId" name-field="merDetail.merName" limit="6" selected-item="{{merchant}}" filter-condition="[[merchantFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NO"></yun-complete> -->
-        <paper-input id="merId" name="merId" label="门店代码" value="{{cond.merId::input}}" data-msg-id="SCANPAY_TRADE_STATS.MERCHANT_NO"></paper-input>
-        <paper-input label="门店名称" name="merName" value="{{cond.merName::input}}" data-msg-id="SCANPAY_TRADE_STATS.MERCHANT_NAME"></paper-input>
+        <yun-complete id="merId" name="merId" label="门店" url="/master/list" col-name="merchant" code-field="merId" name-field="merDetail.merName" limit="6" selected-item="{{merchant}}" filter-condition="[[merchantFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT"></yun-complete>
         <paper-checkbox id="isAggregateByGroup" on-change="handleIsAggregateByGroupCheckboxChangeEvent">
           <i18n-msg msgid="SCANPAY_TRADE_STATS.AGGREGATE_BY_GROUP">按商户汇总</i18n-msg>
         </paper-checkbox>
