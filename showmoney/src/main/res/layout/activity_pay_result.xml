@@ -2,12 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_layout">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ffffff"
         android:orientation="vertical">
 
         <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
@@ -28,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/pay_result_success"
-                android:textColor="#00bbd3"
+                android:textColor="@color/textview_textcolor_pay_success"
                 android:textSize="35sp" />
 
             <ImageView
@@ -55,7 +55,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/pay_result_explain"
-                android:textColor="#666666"
+                android:textColor="@color/textview_textcolor_pay_result_explain"
                 android:textSize="20sp" />
         </LinearLayout>
 
@@ -79,7 +79,6 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:text="@string/pay_channel"
-                    android:textColor="#999999"
                     android:textSize="18sp" />
 
                 <ImageView
@@ -146,7 +145,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
                     android:text="@string/pay_total_state_success"
-                    android:textColor="#00bbd3"
+                    android:textColor="@color/textview_textcolor_pay_success"
                     android:textSize="18sp" />
 
                 <TextView
@@ -155,7 +154,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_marginRight="15dp"
-                    android:textColor="#00bbd3"
+                    android:textColor="@color/textview_textcolor_pay_success"
                     android:textSize="25sp" />
 
             </RelativeLayout>
@@ -168,8 +167,8 @@
                 android:layout_marginRight="30dp"
                 android:layout_marginTop="10dp"
                 android:background="@drawable/blue_selector"
-                android:textColor="#ffffff"
-                android:text="@string/txt_confirm" />
+                android:text="@string/txt_confirm"
+                android:textColor="@color/button_textcolor" />
 
         </LinearLayout>
 
