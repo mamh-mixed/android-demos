@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="50dp"
-    android:background="#ffffff">
+    android:background="@color/background_layout">
 
     <TextView
         android:id="@+id/tv_title"
@@ -11,7 +11,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:text="标题"
-        android:textColor="#000000"
+        android:textColor="@color/textview_textcolor_setting_input_item"
         android:textSize="20sp" />
 
     <com.cardinfolink.yunshouyin.ui.EditTextClear
@@ -25,7 +25,8 @@
         android:background="@null"
         android:hint="请输入登录邮箱"
         android:inputType="text"
-        android:textColor="#000000" />
+        android:textColor="@color/textview_textcolor_setting_input_item" />
+
     <ImageView
         android:id="@+id/iv_help"
         android:layout_width="wrap_content"
@@ -41,6 +42,6 @@
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="#88000000" />
+        android:background="@color/horizontal_view_background" />
 
 </RelativeLayout>
