@@ -511,6 +511,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			orig.RefundAmt = refundAmt
 		} else {
 			// 还是部分退款，更新退款金额即可。
+			orig.RefundStatus = model.TransPartRefunded
 			orig.RefundAmt = refundAmt
 		}
 	}
@@ -605,26 +606,25 @@ func Enquiry(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			ret.Respcd, ret.ErrorDetail = adaptor.SuccessCode, adaptor.SuccessMsg
 		// 原交易状态没变
 		case model.TransSuccess:
-			// 如果是退款
-			if t.TransType == model.RefundTrans {
-				// 部分退款的标识
-				if orig.RefundStatus == model.TransPartRefunded {
-					ret.Respcd, ret.ErrorDetail = adaptor.SuccessCode, adaptor.SuccessMsg
-					break
-				}
-				// 如果是退款，且原交易状态没变，这时需要去查询
-				// 微信可以查退款
-				if t.ChanCode == channel.ChanCodeWeixin {
-					req.OrderNum = t.OrderNum
-					req.OrigOrderNum = t.OrigOrderNum
-					ret = adaptor.ProcessWxpRefundQuery(t, c, req)
-					if ret.Respcd == adaptor.SuccessCode {
-						// 更新原交易状态
-						// TODO
+			// 如果是退款,微信可以查退款
+			if t.TransType == model.RefundTrans && t.ChanCode == channel.ChanCodeWeixin {
+				req.OrderNum = t.OrderNum
+				req.OrigOrderNum = t.OrigOrderNum
+				ret = adaptor.ProcessWxpRefundQuery(t, c, req)
+				if ret.Respcd == adaptor.SuccessCode {
+					// 更新原交易状态
+					orig.RefundAmt += t.TransAmt
+					if orig.RefundAmt == orig.TransAmt {
+						orig.RefundStatus = model.TransRefunded
+						orig.TransStatus = model.TransClosed
+					} else {
+						orig.RefundStatus = model.TransPartRefunded
 					}
+					updateTrans(orig, ret)
 				}
+			} else {
+				ret.Respcd, ret.ErrorDetail = adaptor.FailCode, adaptor.FailMsg
 			}
-
 		default:
 			ret.Respcd, ret.ErrorDetail = adaptor.FailCode, adaptor.FailMsg
 		}

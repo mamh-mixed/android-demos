@@ -12,8 +12,8 @@ func TestRefundQuery(t *testing.T) {
 
 	d := &RefundQueryReq{
 		CommonParams: testCommonParams,
-		OutTradeNo:   "1449905521311", // 商户订单号
-		OutRefundNo:  "1450147846523", // 商户退款单号
+		OutTradeNo:   "1452477096056", // 商户订单号
+		// OutRefundNo:  "1452479745377", // 商户退款单号
 	}
 	d.CommonParams.Req = spReq
 
