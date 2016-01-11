@@ -3,7 +3,7 @@
     xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
+    android:background="@color/background_layout">
 
 
     <LinearLayout
@@ -82,7 +82,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/blue_selector"
                 android:text="@string/increase_personal"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/button_textcolor"
                 android:textSize="16sp" />
 
             <Button
@@ -94,7 +94,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/blue_selector"
                 android:text="@string/increase_company"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/button_textcolor"
                 android:textSize="16sp" />
         </LinearLayout>
 

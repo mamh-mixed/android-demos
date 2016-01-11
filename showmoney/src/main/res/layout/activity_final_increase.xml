@@ -3,7 +3,7 @@
     xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
+    android:background="@color/background_layout">
 
 
     <LinearLayout
@@ -25,6 +25,7 @@
             android:layout_marginTop="60dp"
             android:text="@string/increase_message2"
             android:textSize="25sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,7 +44,7 @@
             android:layout_marginTop="60dp"
             android:background="@drawable/blue_selector"
             android:text="@string/increase_i_know"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/button_textcolor"
             android:textSize="16sp" />
 
         <RelativeLayout
