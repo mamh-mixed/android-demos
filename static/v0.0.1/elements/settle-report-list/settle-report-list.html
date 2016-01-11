@@ -15,10 +15,10 @@
       <div class="search-condition">
         <paper-input name="date" label="清算日期" on-tap="showSettDateDialog" value="{{cond.date::input}}" data-msg-id="SCANPAY_TRADE_SETTLE_REPORT.SETTLE_DATE"></paper-input>
         <paper-dialog with-backdrop id="settDateDialog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissSettDateDialog">
-          <paper-date-picker id="settDatePicker" locale="zh-cn" responsive-width="655px"></paper-date-picker>
+          <paper-date-picker id="settDatePicker" locale="zh-cn" responsive-width="655px" max-date="{{tomorrow}}"></paper-date-picker>
           <div class="buttons">
             <paper-button dialog-dismiss>
-              <i18n-msg msgid="BUTTON.CANCEL">取消</i18n-msg>
+              <i18n-msg msgid="BUTTON.CLOSE">关闭</i18n-msg>
             </paper-button>
             <paper-button dialog-confirm>
               <i18n-msg msgid="BUTTON.CONFIRM">确定</i18n-msg>
@@ -54,6 +54,9 @@
             type: Array,
             value: []
           },
+          tomorrow: {
+            type: Date
+          },
           cond: {
             type: Object,
             value: function() {
@@ -66,7 +69,16 @@
             }
           }
         },
-        ready: function() {},
+        ready: function() {
+          // 明天的时间
+          var tomorrowMoment = moment();
+          tomorrowMoment.second(0);
+          tomorrowMoment.minute(0);
+          tomorrowMoment.hour(0);
+          tomorrowMoment.add(1, 'days');
+          tomorrowMoment.add(-1, 'seconds');
+          this.set('tomorrow', tomorrowMoment.toDate());
+        },
         attached: function() {
           this.fire('rerender-i18n', {
             from: 'settle-report-list'
@@ -97,7 +109,7 @@
         showSettDateDialog: function() {
           this.$.settDateDialog.toggle();
         },
-        _isAdmin: function (type) {
+        _isAdmin: function(type) {
           return false;
           // return type && type === 'admin';
         }
