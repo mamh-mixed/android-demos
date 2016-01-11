@@ -1260,15 +1260,6 @@ func updateScanPayTransToCouponTrans(t *model.Trans) {
 	if t.CouponOrderNum == "" {
 		return
 	}
-	couponTrans := &model.Trans{}
-	// 判断是否存在该订单
-	couponTransTemp, err := mongo.CouTransColl.FindOne(t.MerId, t.CouponOrderNum)
-	if err != nil {
-		log.Warnf("COUPON TRADE NOT EXIST,ScanPayOrderNum:%s", t.OrderNum)
-		return
-	}
-	couponTrans = couponTransTemp
-
 	scanPayCoupon := &model.ScanPayCoupon{
 		OrderNum:     t.OrderNum,
 		RespCode:     t.RespCode,
@@ -1289,9 +1280,9 @@ func updateScanPayTransToCouponTrans(t *model.Trans) {
 		AgentCode:    t.AgentCode,
 		Terminalid:   t.Terminalid,
 	}
-	couponTrans.ScanPayCoupon = scanPayCoupon
-	err = mongo.CouTransColl.UpdateAndUnlock(couponTrans)
+	update := []interface{}{"scanPayCoupon", scanPayCoupon}
+	err := mongo.CouTransColl.UpdateFields(t.MerId, t.CouponOrderNum, update...)
 	if err != nil {
-		log.Errorf("save scanPayTrans to couponTrans fail,scanPayOrderNum:%s", scanPayCoupon.OrderNum)
+		log.Errorf("save scanPayTrans to couponTrans fail,scanPayOrderNum:%s,%s", scanPayCoupon.OrderNum, err)
 	}
 }

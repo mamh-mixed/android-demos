@@ -114,7 +114,7 @@ func (col *transCollection) Update(t *model.Trans) error {
 }
 
 // UpdateFields 根据键值对更新某些字段
-func (col *transCollection) UpdateFields(merId, orderNum string, fv ...string) error {
+func (col *transCollection) UpdateFields(merId, orderNum string, fv ...interface{}) error {
 	if len(fv) == 0 {
 		return nil
 	}
@@ -125,11 +125,10 @@ func (col *transCollection) UpdateFields(merId, orderNum string, fv ...string) e
 
 	set := bson.M{}
 	for i := 0; i < len(fv); i += 2 {
-		set[fv[i]] = fv[i+1]
+		key := fv[i].(string)
+		set[key] = fv[i+1]
 	}
 	update := bson.M{"$set": set}
-	log.Debugf("%+v", update)
-
 	return database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, update)
 }
 
