@@ -794,10 +794,10 @@ func (u *user) FindRefundOrdersOfOrder(req *reqParams) (result model.AppResult) 
 		return model.NO_PAY_MER
 	}
 
-	// 查找交易
+	// 查找成功的逆向交易
 	q := &model.QueryCondition{
-		Busicd:       "REFD",
 		OrigOrderNum: req.OrderNum,
+		TransStatus:  []string{model.TransSuccess},
 	}
 	t, err := mongo.SpTransColl.FindOneByOrigOrderNum(q)
 	if err != nil {

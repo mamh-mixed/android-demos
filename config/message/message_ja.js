@@ -6,8 +6,8 @@
 		"Unknown":"未知"
 	},
 	"ReportName":{
-		"SettleJournal":"照会用明細",
-		"SettleSummary":"統計清算レポート"
+		"SettleJournal":"サマリ（精算）レポート (明細)",
+		"SettleSummary":"サマリ（精算）レポート（集計）"
 	},
 	"Role":{
 		"Company" :"会社",
@@ -40,7 +40,7 @@
 		"StartDate"				:"取引日時（From）：",
 		"EndDate" 				:"取引日時（TO）：",
 		"Remark"				:"備考：手数料の金額は実際とは異なることがございます。",
-		"MerId"					:"加盟店コード",
+		"MerId"					:"店铺コード",
 		"MerName"				:"店舗名称",
 		"Summary"				:"総計",
 		"AgentName"				:"代理名称",
@@ -54,8 +54,8 @@
 		"Fee"					:"手数料"
 	},
 	"TransReport":{
-		"SheetName"      			:"加盟店取引レポート",
-		"MerId"          			:"加盟店コード",
+		"SheetName"      			:"店铺取引レポート",
+		"MerId"          			:"店铺コード",
 		"MerName"        			:"店舗名称",
 		"OrderNum"       			:"取引番号",
 		"TransAmt"       			:"売上金額",
