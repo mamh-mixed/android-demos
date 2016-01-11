@@ -61,6 +61,8 @@ public class TradingLoadDialog {
 
     public void waiting(){
         dialogView.setVisibility(View.VISIBLE);//先让 对话框显示
+        Animation waitingAnimation=AnimationUtils.loadAnimation(mContext,R.anim.loading_animation);
+        mLoadImage.startAnimation(waitingAnimation);
         mCancel.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
