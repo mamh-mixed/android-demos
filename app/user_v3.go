@@ -95,7 +95,12 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 		// 遍历查询结果
 		txns = append(txns, transToTxn(t))
 	}
+
+	if len(txns) == 0 {
+		txns = make([]*model.AppTxn, 0)
+	}
 	result.Txn = txns
+	result.Size = len(txns)
 	result.TotalRecord = total
 
 	// 如果APP传递了月份，则需要返回total，count，fefdtotal，refdcount
@@ -207,12 +212,27 @@ func (u *userV3) getDaySummary(req *reqParams) (result model.AppResult) {
 			case model.PayTrans:
 				origTransAmt := v.TransAmt + v.DiscountAmt
 				result.TotalFee += origTransAmt
-				result.Count += v.TransNum
-			default:
-				origTransAmt := v.TransAmt + v.DiscountAmt
-				result.TotalFee -= origTransAmt
 			}
 		}
+		q := &model.QueryCondition{
+			MerId:       user.MerId,
+			StartTime:   dsDate,
+			EndTime:     deDate,
+			Size:        15,
+			Page:        1,
+			Skip:        0,
+			TransStatus: []string{model.TransSuccess},
+			Respcd:      "00",
+			Busicd:      "VERI",
+		}
+
+		_, total, err := mongo.CouTransColl.Find(q)
+		if err != nil {
+			log.Errorf("find user coupon trans error: %s", err)
+			return model.SYSTEM_ERROR
+		}
+		result.Count = total
+
 	}
 	return result
 }

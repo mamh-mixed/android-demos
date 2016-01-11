@@ -9,7 +9,7 @@ import (
 
 var (
 	Alipay1NotifyUrl = domestic.NotifyPath
-	Alipay2NotifyUrl = scanpay2.Alipay2NotifyUrl
+	Alipay2NotifyUrl = scanpay2.NotifyPath
 	Oversea          = &oversea.DefaultClient
 	Domestic         = &domestic.DefaultClient
 	Alipay2          = &scanpay2.DefaultClient

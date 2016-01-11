@@ -3,8 +3,6 @@ package scanpay2
 import (
 	"crypto/rsa"
 	"errors"
-	"fmt"
-	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"github.com/omigo/validator"
@@ -107,14 +105,6 @@ func (c *CommonBody) GetSign() string {
 // Execute 这个是扫码支付入口，所有请求，准备好参数后，调用此方法发送到支付宝
 func Execute(req BaseReq, resp BaseResp) (err error) {
 
-	m := req.GetSpReq()
-	if m == nil {
-		return fmt.Errorf("%s", "no params spReq found")
-	}
-
-	// 记录请求渠道日志
-	logs.SpLogs <- m.GetChanReqLogs(req)
-
 	if req.GetPrivateKey() == nil {
 		return errors.New("private key is nil")
 	}
@@ -129,9 +119,6 @@ func Execute(req BaseReq, resp BaseResp) (err error) {
 		log.Errorf("alipay request error: %s", err)
 		return err
 	}
-
-	// 记录渠道返回日志
-	logs.SpLogs <- m.GetChanRetLogs(resp)
 
 	return nil
 }

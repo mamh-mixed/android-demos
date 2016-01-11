@@ -1062,6 +1062,7 @@ func (u *user) findOrderHandle(req *reqParams) (result model.AppResult) {
 	// 初始化查询参数
 	findOrderParams(req, q)
 	trans, total, err := mongo.SpTransColl.Find(q)
+
 	if err != nil {
 		return model.SYSTEM_ERROR
 	}
@@ -1268,21 +1269,6 @@ func (u *user) findPushMessage(req *reqParams) (result model.AppResult) {
 	return result
 }
 
-// 查询订单
-func (u *user) ordersHandler(req *reqParams) (result model.AppResult) {
-	if req.OrderNum != "" {
-		req.BusinessType = "getOrder"
-		result = u.getUserTrans(req)
-	} else {
-		if req.Size == "" {
-			req.Size = "15"
-		}
-		result = u.findOrderHandle(req)
-	}
-
-	return result
-}
-
 // 卡券列表
 func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
 	//判断必填项不能为空
@@ -1367,13 +1353,18 @@ func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
 		log.Errorf("find user coupon trans error: %s", err)
 		return model.SYSTEM_ERROR
 	}
-	result.Count = total
-
 	var coupons []*model.Coupon
 	for _, t := range trans {
 		coupons = append(coupons, transToCoupon(t))
 	}
 	result.Coupons = coupons
+	result.Size = len(coupons)
+	result.TotalRecord = total
+
+	if req.Month != "" {
+		result.Count = total
+	}
+
 	return result
 }
 
@@ -1598,9 +1589,33 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 
 func transToCoupon(t *model.Trans) *model.Coupon {
 	coupon := &model.Coupon{
-		Name:    t.Prodname,
-		Channel: t.ChanCode,
+		Name:       t.Prodname,
+		Channel:    t.ChanCode,
+		TradeFrom:  t.TradeFrom,
+		Response:   t.RespCode,
+		SystemDate: timeReplacer.Replace(t.CreateTime),
+		Terminalid: t.Terminalid,
+		OrderNum:   t.OrderNum,
 	}
+	if t.ScanPayCoupon != nil {
+		coupon.ReqData.Busicd = t.ScanPayCoupon.Busicd
+		coupon.ReqData.AgentCode = t.ScanPayCoupon.AgentCode
+		coupon.ReqData.Txndir = "Q"
+		coupon.ReqData.Terminalid = t.ScanPayCoupon.Terminalid
+		coupon.ReqData.OrderNum = t.ScanPayCoupon.OrderNum
+		coupon.ReqData.MerId = t.ScanPayCoupon.MerId
+		coupon.ReqData.TradeFrom = t.ScanPayCoupon.TradeFrom
+		coupon.ReqData.Txamt = fmt.Sprintf("%012d", t.ScanPayCoupon.TransAmt)
+		coupon.ReqData.TotalFee = t.ScanPayCoupon.TransAmt
+		coupon.ReqData.ChanCode = t.ScanPayCoupon.ChanCode
+		coupon.ReqData.Currency = t.ScanPayCoupon.Currency
+		if t.ScanPayCoupon.Currency == "" {
+			coupon.ReqData.Currency = "CNY"
+		}
+		coupon.ReqData.CouponDiscountAmt = t.ScanPayCoupon.DiscountAmt
+	}
+
+	// coupon.ReqData.OrigTransAmt = t.ScanPayCoupon.TransAmt + t.ScanPayCoupon.DiscountAmt
 	couponType := ""
 	if len(t.VoucherType) == 2 {
 		couponType = t.VoucherType[1:2]

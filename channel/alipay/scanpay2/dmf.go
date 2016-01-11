@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
+	"github.com/omigo/log"
 	"time"
 )
 
@@ -68,8 +69,8 @@ func (d *dmf2) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPa
 	p.TotalAmount = req.ActTxamt
 	// p.GoodsDetail = req.AlpMarshalGoods()
 	_, p.TimeExpire = handleExpireTime(req.TimeExpire)
-	p.ExtendParams = req.ExtendParams
-
+	// p.ExtendParams = req.ExtendParams
+	log.Debugf("common params: %+v", p)
 	q := &PrecreateResp{}
 	err := Execute(p, q)
 	if err != nil {

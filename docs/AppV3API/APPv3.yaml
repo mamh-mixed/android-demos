@@ -849,6 +849,14 @@ definitions:
       count:
         type: number
         description: 如果传了month，返回当月卡券核销数
+      totalRecord:
+        type: number
+        format: int64
+        description: 总纪录数
+      size:
+        type: number
+        format: int
+        description: 当前返回的txn长度
       coupons:
         type: array
         items:
@@ -858,13 +866,28 @@ definitions:
     properties:
       type:
         type: string
-        description: 卡券类型
+        description: 卡券类型,1:减 2:兑 3:折
       name:
         type: string
         description: 卡券名称
       channel:
         type: string
         description: 卡券渠道
+      orderNum:
+          type: string
+          description: 卡券订单号
+      tradeFrom:
+        type: string
+        description: 卡券请求来源，例如ios
+      response:
+        type: string
+        description: 卡券响应码，例如00
+      system_date:
+        type: string
+        description: 卡券交易时间，格式yyyyMMddHHmmss，例如20151229190742
+      m_request:
+        type: object
+        $ref: '#/definitions/mRequest'
   OrdersResponse:
     type: object
     required:
@@ -910,6 +933,10 @@ definitions:
         type: number
         format: int64
         description: 总纪录数
+      size:
+        type: number
+        format: int
+        description: 当前返回的txn长度
       txn:
         type: array
         items:
@@ -991,6 +1018,11 @@ definitions:
       currency:
         type: string
         example: CNY
+      couponDiscountAmt:
+        type: number
+        format: int64
+        example: 1
+        description: 卡券优惠金额
   Response:
     type: object
     properties:
