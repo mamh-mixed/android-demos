@@ -195,6 +195,7 @@ type PushMessage struct {
 	PushTime    string `json:"pushtime,omitempty" bson:"pushtime,omitempty"`
 	UpdateTime  string `json:"updateTime,omitempty" bson:"updateTime,omitempty"`
 	DeviceToken string `json:"-" bson:"deviceToken,omitempty"`
+	MsgType     string `json:"msgType,omitempty" bson:"msgType,omitempty"`
 	// 0: unread, undeleted
 	// 1: read, undeleted
 	// 2: unread, deleted

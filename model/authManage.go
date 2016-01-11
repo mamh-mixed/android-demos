@@ -58,3 +58,9 @@ type UserPwd struct {
 	Password string `json:'password'`
 	NewPwd   string `json:'newPwd'`
 }
+
+type ResetUser struct {
+	UserName  string `json:'username'`
+	PassWord  string `json:'password'`
+	CheckCode string `json:'checkCode'`
+}

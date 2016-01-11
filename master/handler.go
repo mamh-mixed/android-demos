@@ -1414,3 +1414,34 @@ func appResetPwdHandle(w http.ResponseWriter, r *http.Request) {
 	log.Tracef("response message: %s", rdata)
 	w.Write(rdata)
 }
+
+//邮件重置密码
+func passwordResetHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+	_, err = Session.Get(r)
+	if err != nil {
+		log.Error("fail to find session")
+		w.Write([]byte("FIND SESSION ERROR"))
+		return
+	}
+
+	ret := User.PasswordReset(data)
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}

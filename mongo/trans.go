@@ -765,3 +765,18 @@ func handleTransStatus(q *model.QueryCondition, match bson.M) {
 		}
 	}
 }
+
+func (col *transCollection) FindTotalAmtByMerId(merId, day string) ([]model.Trans, error) {
+
+	find := bson.M{
+		"createTime": bson.RegEx{day, "."},
+	}
+	find["merId"] = merId
+	find["respCode"] = "00"
+	find["transType"] = 1
+
+	var result []model.Trans
+	err := database.C(col.name).Find(find).All(&result)
+
+	return result, err
+}
