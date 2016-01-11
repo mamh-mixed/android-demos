@@ -74,7 +74,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private Handler mHandler;
 
     private TradingLoadDialog mTradingLoadDialog;//交易的load的对话框
+    private TradingLoadDialog mCouponLoadDialog;//卡券时候用的对话框
     private HintDialog mHintDialog;//显示一些提示信息 下面两个按钮的 对话框
+    private HintDialog mHintErrorDialog;//这个也只有卡券时候会用的对话框
 
     private String total;//实际要支付的金额，如果有优惠这个就是优惠后的金额
     private String originaltotal;//原始金额
@@ -92,7 +94,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private String originalFromFlag;
 
     private String chcd;//渠道
-    private TradingLoadDialog mCouponLoadDialog;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -117,6 +118,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         mTradingLoadDialog = new TradingLoadDialog(mContext, mHandler, findViewById(R.id.trading_load_dialog), mOrderNum);
         mHintDialog = new HintDialog(mContext, findViewById(R.id.hint_dialog));
         mCouponLoadDialog = new TradingLoadDialog(mContext, mHandler, findViewById(R.id.coupon_load_dialog), mOrderNum);
+        mHintErrorDialog = new HintDialog(mContext, findViewById(R.id.hint_error_dialog));
     }
 
     private void initListener() {
@@ -205,7 +207,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                 @Override
                                 public void onResult(ResultData resultData) {
                                     mResultData = resultData;
-
                                     Coupon.getInstance().setPayType(resultData.payType);
                                     Coupon.getInstance().setAvailCount(resultData.availCount);
                                     Coupon.getInstance().setCardId(resultData.cardId);
@@ -235,16 +236,16 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                             @Override
                                             public void run() {
                                                 mCouponLoadDialog.hide();
-                                                mHintDialog.setText(getResources().getString(R.string.coupon_ver_fail), getResources().getString(R.string.coupon_ver_try_again), getResources().getString(R.string.coupon_ver_close));
-                                                mHintDialog.show();
-                                                mHintDialog.setCancelOnClickListener(new OnClickListener() {
+                                                mHintErrorDialog.setText(getResources().getString(R.string.coupon_ver_fail), getResources().getString(R.string.coupon_ver_try_again), getResources().getString(R.string.coupon_ver_close));
+                                                mHintErrorDialog.show();
+                                                mHintErrorDialog.setCancelOnClickListener(new OnClickListener() {
                                                     @Override
                                                     public void onClick(View v) {
                                                         Coupon.getInstance().clear();
                                                         finish();
                                                     }
                                                 });
-                                                mHintDialog.setOkOnClickListener(new OnClickListener() {
+                                                mHintErrorDialog.setOkOnClickListener(new OnClickListener() {
                                                     @Override
                                                     public void onClick(View v) {
                                                         Intent intent = new Intent(mContext, CaptureActivity.class);
@@ -252,7 +253,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                                         bundle.putString("original", "ticketview");
                                                         intent.putExtras(bundle);
                                                         mContext.startActivity(intent);
-                                                        mHintDialog.hide();
+                                                        mHintErrorDialog.hide();
                                                     }
                                                 });
                                             }
