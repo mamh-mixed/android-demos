@@ -21,13 +21,11 @@ import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.ui.ResultInfoItem;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
+import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.view.HintDialog;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
 
 
 /**
@@ -115,10 +113,12 @@ public class PayResultActivity extends Activity {
                 }
             });
         } else if ("fail".equals(tradeBill.response)) {
+            //**这里是支付失败*********************************************************************
             mPayResult.setText(R.string.pay_result_fail);
             mPayResult.setTextColor(Color.RED);
             mPayResultPhoto.setImageResource(R.drawable.pay_result_fail);
-            mResultExplain.setText(tradeBill.errorDetail);
+            //这里把 错误转换 为错误详情文本
+            mResultExplain.setText(ErrorUtil.getErrorString(tradeBill.errorDetail));
             mReceiveMoneyStatus.setTextColor(Color.RED);
             mReceiveMoney.setTextColor(Color.RED);
             mReceiveMoneyStatus.setText(R.string.pay_total_state_fail);
@@ -134,8 +134,7 @@ public class PayResultActivity extends Activity {
                             showPayFailPref();
                         }
                     });
-                }
-                else{
+                } else {
                     //未指定扫码支付
                     mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
                         @Override
