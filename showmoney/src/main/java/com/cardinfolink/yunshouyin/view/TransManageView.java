@@ -753,6 +753,10 @@ public class TransManageView extends LinearLayout {
                 tradeBill.refundAmt = TxamtUtil.getNormal(txn.getRefundAmt());//对于人民币的金额都需要除以100
                 tradeBill.couponDiscountAmt = TxamtUtil.getNormal(txn.getCouponDiscountAmt());//卡券优惠金额，人民币需要除以100
 
+                //收款码账单需要的三个数据，
+                tradeBill.nickName = txn.getNickName();//微信账号的昵称
+                tradeBill.avatarUrl = txn.getAvatarUrl();//微信头像地址
+                tradeBill.checkCode = txn.getCheckCode();//检验码
 
                 QRequest req = txn.getmRequest();
                 if (req != null) {
@@ -769,6 +773,10 @@ public class TransManageView extends LinearLayout {
                     tradeBill.goodsInfo = req.getGoodsInfo();
                 }
 
+                if (TextUtils.isEmpty(tradeBill.tandeDate)) {
+                    Log.e(TAG, "[Txn] bill date is empty");
+                    continue;
+                }
                 //获取这个账单里面的日期,年月日 的 日
                 String currentDay = tradeBill.tandeDate.substring(6, 8);
                 String currentYear = tradeBill.tandeDate.substring(0, 4);
@@ -777,6 +785,7 @@ public class TransManageView extends LinearLayout {
 
                 //渠道为空的 不列入统计，这样totalRecord和实际的list的size可能不一样
                 if (TextUtils.isEmpty(tradeBill.chcd)) {
+                    Log.e(TAG, "[Txn] bill channel is empty");
                     continue;
                 }
 
@@ -834,6 +843,10 @@ public class TransManageView extends LinearLayout {
                     tradeBill.chcd = req.getChcd();
                 }
                 //获取这个账单里面的日期,年月日 的 日
+                if (TextUtils.isEmpty(tradeBill.tandeDate)) {
+                    Log.e(TAG, "[coupon] coupon date is empty");
+                    continue;
+                }
                 String currentDay = tradeBill.tandeDate.substring(6, 8);
                 String currentYear = tradeBill.tandeDate.substring(0, 4);
                 String currentMonth = tradeBill.tandeDate.substring(4, 6);
