@@ -350,6 +350,7 @@
     <string name="forget_password">忘记密码</string>
     <string name="forget_password_messsage">其他账号登录请联系你的服务商为你重置密码</string>
     <string name="forget_account_message">忘记登录账户请联系你的服务商</string>
+    <string name="forget_account_message1">重置密码将发送到此邮箱：</string>
     <string name="forget_cancel">取消</string>
     <string name="forget_i_known">我知道了</string>
 
