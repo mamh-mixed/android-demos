@@ -25,7 +25,9 @@
     <color name="share_view">#ffffffff</color>
     <color name="status_view">#50000000</color>
     <color name="status_text">#ffffffff</color>
-    <color name="transparent">#00000000</color>
+
+    <color name="viewfinderview_background">#00000000</color>
+
     <color name="viewfinder_frame">#ff000000</color>
     <color name="viewfinder_laser">#ffff0000</color>
     <color name="viewfinder_mask">#60000000</color>
@@ -35,9 +37,94 @@
     <color name="red">#ff0000</color>
 
     <color name="white">#ffffff</color>
-    <color name="black">#000000</color>
-    <color name="gray">#666666</color>
+    <color name="white1">#EEEEEE</color>
 
-    <color name="textview_textcolor">#ffffff</color>
+    <color name="black">#000000</color>
+    <color name="black1">#333333</color>
+
+    <color name="gray1">#666666</color>
+    <color name="gray2">#888888</color>
+    <color name="gray3">#999999</color>
+    <color name="gray4">#cccccc</color>
+    <color name="gray5">#C3C3C3</color>
+
+    <color name="blue">#0033ff</color>
+    <color name="blue1">#00bbd3</color>
+    <color name="blue2">#17C0D2</color>
+
+    <color name="green">#339933</color>
+
+    <!--======================================================================== -->
+    <!-- layout 对话框 布局使用的颜色 -->
+    <color name="background_dialog">#40000000</color>
+    <color name="background_dialog1">#00000000</color>
+    <!-- layout 对话框 左边按钮 文本颜色-->
+    <color name="textview_textcolor_cancel">@color/black</color>
+    <!-- layout 对话框 右边按钮 文本颜色-->
+    <color name="textview_textcolor_ok">@color/white</color>
+    <color name="textview_textcolor_load_second">@color/blue1</color>
+    <!--======================================================================== -->
+
+
+    <!-- root layout 布局使用的颜色 -->
+    <color name="background_layout">#ffffff</color>
+    <color name="background_login_layout">@color/blue2</color>
+    <color name="background_bill_layout">@color/white1</color>
+    <color name="background_scan_qrcode_layout">@color/green</color>
+
+    <!--======================================================================== -->
+    <!-- textview组件里面显示的文本 使用的颜色值 -->
+    <color name="textview_textcolor">@color/white</color>
+    <color name="textview_textcolor_white">@color/white</color>
+    <color name="textview_textcolor_black">@color/black</color>
+
+    <color name="textview_textcolor_gray3">@color/gray3</color>
+    <color name="textview_textcolor_gray1">@color/gray1</color>
+
+
+    <!--======================================================================== -->
+    <color name="textview_textcolor_coupon">@color/gray4</color>
+    <!-- 在about Activity 里面使用 的 协议文本颜色 -->
+    <color name="textview_textcolor_copyright">@color/blue</color>
+    <color name="textview_textcolor_copyright1">@color/gray3</color>
+    <!-- 支付成功 显示 支付状态的文本的颜色 -->
+    <color name="textview_textcolor_pay_success">@color/blue1</color>
+    <color name="textview_textcolor_pay_result_explain">@color/gray1</color>
+    <color name="textview_textcolor_coupon_result_explain">@color/gray1</color>
+    <!-- 登录界面用的几个颜色 -->
+    <color name="textview_textcolor_login">@color/white</color>
+
+    <color name="textview_textcolor_increase">@color/gray5</color>
+    <color name="textview_textcolor_increase1">@color/gray2</color>
+    <!-- 账单列表使用到的几个颜色 -->
+    <color name="textview_textcolor_bill_datetime">@color/gray2</color>
+    <color name="textview_textcolor_bill_status">@color/gray2</color>
+    <color name="textview_textcolor_bill_total">@color/red</color>
+    <color name="textview_background_bill_checkcode">@color/blue1</color>
+
+    <color name="textview_textcolor_result_info_item_left">@color/black</color>
+    <color name="textview_textcolor_result_info_item_right">@color/black</color>
+
+    <color name="textview_textcolor_action_bar_item_left">@color/black</color>
+    <color name="textview_textcolor_action_bar_item_title">@color/black</color>
+    <color name="textview_textcolor_action_bar_item_right">@color/black</color>
+
+    <color name="textview_textcolor_setting_click_item_left">@color/black</color>
+    <color name="textview_textcolor_setting_click_item_right">@color/black</color>
+
+    <color name="textview_textcolor_setting_detail_item_title">@color/black</color>
+    <color name="textview_textcolor_setting_detail_item_detail">@color/black</color>
+
+    <color name="textview_textcolor_setting_input_item">@color/black</color>
+    <color name="textview_textcolor_setting_password_item">@color/black</color>
+    <!--======================================================================== -->
+
+    <!-- 按钮文本的颜色 按钮都是蓝色背景， 白色文本 -->
+    <color name="button_textcolor">@color/white</color>
+    <!--======================================================================== -->
+
+    <!-- 一个横线的颜色，水平分割线的颜色 -->
+    <color name="horizontal_view_background">#88000000</color>
+    <color name="vertical_view_background">@color/white1</color>
 
 </resources>
