@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/background_login_layout">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#17C0D2"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -55,7 +55,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/login_account"
-                android:textColor="#ffffff"
+                android:textColor="@color/textview_textcolor_login"
                 android:textSize="20sp" />
 
             <com.cardinfolink.yunshouyin.ui.EditTextClear
@@ -71,7 +71,7 @@
                 android:ems="10"
                 android:hint="@string/login_hint_username"
                 android:inputType="text"
-                android:textColor="#ffffff" />
+                android:textColor="@color/textview_textcolor_login" />
 
             <ImageView
                 android:id="@+id/iv_increase"
@@ -80,7 +80,8 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="15dp"
-                android:src="@drawable/login_increase" />
+                android:src="@drawable/login_increase"
+                android:visibility="invisible" />
 
         </RelativeLayout>
 
@@ -102,7 +103,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:text="@string/login_password"
-                android:textColor="#ffffff"
+                android:textColor="@color/textview_textcolor_login"
                 android:textSize="20sp" />
 
             <com.cardinfolink.yunshouyin.ui.EditTextClear
@@ -118,7 +119,7 @@
                 android:ems="10"
                 android:hint="@string/login_hint_password"
                 android:inputType="textPassword"
-                android:textColor="#ffffff" />
+                android:textColor="@color/textview_textcolor_login" />
 
             <ImageView
                 android:id="@+id/iv_help"
@@ -146,7 +147,7 @@
                 android:layout_height="wrap_content"
                 android:button="@drawable/checkbox_selector"
                 android:text="@string/login_auto_login"
-                android:textColor="#ffffff"
+                android:textColor="@color/textview_textcolor_login"
                 android:textSize="20sp" />
 
             <ImageView
@@ -165,7 +166,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
                 android:text="@string/login_register"
-                android:textColor="#ffffff"
+                android:textColor="@color/textview_textcolor_login"
                 android:textSize="20sp" />
 
         </RelativeLayout>
@@ -184,7 +185,7 @@
                 android:layout_height="50dp"
                 android:background="@drawable/blue_selector"
                 android:text="@string/login"
-                android:textColor="#ffffff"
+                android:textColor="@color/button_textcolor"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -205,8 +206,8 @@
                 android:layout_marginBottom="30dp"
                 android:maxHeight="50dp"
                 android:minHeight="20dp"
-                android:textColor="#ffffff"
                 android:text="@string/copyright"
+                android:textColor="@color/textview_textcolor_login"
                 android:textSize="17sp" />
         </RelativeLayout>
 
