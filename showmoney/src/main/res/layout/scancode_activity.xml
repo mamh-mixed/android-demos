@@ -43,13 +43,14 @@
 
     <ImageView
         android:id="@+id/switch_camer"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-
+        android:layout_alignParentRight="true"
+        android:background="@drawable/back_color"
+        android:layout_marginRight="20dp"
         android:scaleType="centerInside"
-        android:src="@drawable/camera" />
+        android:src="@drawable/camera_switch" />
 
     <ImageView
         android:id="@+id/flashlight"
@@ -60,7 +61,8 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/flashlight_color"
         android:scaleType="centerInside"
-        android:src="@drawable/flashlight" />
+        android:src="@drawable/flashlight"
+        android:visibility="gone"/>
 
 
     <TextView
