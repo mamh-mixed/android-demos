@@ -50,7 +50,7 @@
         android:background="@drawable/back_color"
         android:layout_marginRight="20dp"
         android:scaleType="centerInside"
-        android:src="@drawable/camera_switch" />
+        android:src="@drawable/reversal" />
 
     <ImageView
         android:id="@+id/flashlight"
