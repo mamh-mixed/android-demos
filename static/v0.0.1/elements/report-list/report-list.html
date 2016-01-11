@@ -33,15 +33,13 @@
     <form is="x-form" id="formSearch" method="GET" action="/master/trade/stat" on-iron-form-submit="submitForm" on-iron-form-response="handelQueryResponse">
       <div class="condition search-condition">
         <input type="hidden" name="startTime" value="{{cond.startTime}}" />
-        <yun-date-time-picker label="* 开始日期" name="" locale="ja" date-time="{{startTime}}" moment="{{time.startTime}}" max-date="{{time.endTime}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_FROM" locale-msg-id="DATE_PICKER.LOCALE"></yun-date-time-picker>
+        <yun-date-time-picker label="* 开始日期" locale="ja" date-time="{{startTime}}" moment="{{time.startTime}}" max-date="{{time.endTime}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_FROM" locale-msg-id="DATE_PICKER.LOCALE"></yun-date-time-picker>
         <input type="hidden" name="endTime" value="{{cond.endTime}}" />
-        <yun-date-time-picker label="* 结束日期" name="" locale="ja" date-time="{{endTime}}" moment="{{time.endTime}}" min-date="{{time.startTime}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_TO" locale-msg-id="DATE_PICKER.LOCALE"></yun-date-time-picker>
+        <yun-date-time-picker label="* 结束日期" locale="ja" date-time="{{endTime}}" moment="{{time.endTime}}" min-date="{{time.startTime}}" max-date="{{tomorrow}}" data-msg-id="SCANPAY_TRADE_STATS.DATE_TO" locale-msg-id="DATE_PICKER.LOCALE"></yun-date-time-picker>
         <yun-complete id="agentCode" name="agentCode" label="代理" url="/master/list" col-name="agent" code-field="agentCode" name-field="agentName" limit="6" selected-item="{{agent}}" disabled="{{agentDisabled}}" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></yun-complete>
         <yun-complete id="subAgentCode" name="subAgentCode" label="公司" url="/master/list" col-name="subAgent" code-field="subAgentCode" name-field="subAgentName" limit="6" selected-item="{{subAgent}}" filter-condition="[[subAgentFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT"></yun-complete>
         <yun-complete id="groupCode" name="groupCode" label="商户" url="/master/list" col-name="group" code-field="groupCode" name-field="groupName" limit="6" selected-item="{{group}}" filter-condition="[[groupFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.GROUP"></yun-complete>
-        <!-- <yun-complete id="merId" name="merId" label="门店" url="/master/list" col-name="merchant" code-field="merId" name-field="merDetail.merName" limit="6" selected-item="{{merchant}}" filter-condition="[[merchantFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NO"></yun-complete> -->
-        <paper-input id="merId" name="merId" label="门店代码" value="{{cond.merId::input}}" data-msg-id="SCANPAY_TRADE_STATS.MERCHANT_NO"></paper-input>
-        <paper-input label="门店名称" name="merName" value="{{cond.merName::input}}" data-msg-id="SCANPAY_TRADE_STATS.MERCHANT_NAME"></paper-input>
+        <yun-complete id="merId" name="merId" label="门店" url="/master/list" col-name="merchant" code-field="merId" name-field="merDetail.merName" limit="6" selected-item="{{merchant}}" filter-condition="[[merchantFilterCondition]]" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT"></yun-complete>
         <paper-checkbox id="isAggregateByGroup" on-change="handleIsAggregateByGroupCheckboxChangeEvent">
           <i18n-msg msgid="SCANPAY_TRADE_STATS.AGGREGATE_BY_GROUP">按商户汇总</i18n-msg>
         </paper-checkbox>
@@ -158,7 +156,7 @@
                 <span>{{item.agentName}}</span>
               </div>
               <div class="td center">
-                <a target="iframeForDownload" href="{{_computeDownLoadUrl(item)}}" title="点我下载明细">
+                <a target="iframeForDownload" href="{{_computeDownLoadUrl(item)}}" alt="点我下载明细">
                   <i18n-msg msgid="SCANPAY_TRADE_STATS.DOWNLOAD_DETAIL">下载明细</i18n-msg>
                 </a>
               </div>
@@ -194,7 +192,7 @@
             </div>
             <div class="td"></div>
             <div class="td center">
-              <a href$="{{summaryReportUri}}" title="点我下载当前所有商户交易汇总" target="iframeForDownload">
+              <a href$="{{summaryReportUri}}" alt="点我下载当前所有商户交易汇总" target="iframeForDownload">
                 <i18n-msg msgid="SCANPAY_TRADE_STATS.DOWNLOAD_SUMMARY">下载汇总</i18n-msg>
               </a>
             </div>
@@ -248,6 +246,9 @@
               }
             }
           },
+          tomorrow: {
+            type: Date
+          },
           time: {
             type: Object,
             value: function() {
@@ -276,6 +277,15 @@
           this.set('subAgentFilterCondition', {});
           this.set('groupFilterCondition', {});
           this.set('merchantFilterCondition', {});
+
+          // 明天的时间
+          var tomorrowMoment = moment();
+          tomorrowMoment.second(0);
+          tomorrowMoment.minute(0);
+          tomorrowMoment.hour(0);
+          tomorrowMoment.add(1, 'days');
+          tomorrowMoment.add(-1, 'seconds');
+          this.set('tomorrow', tomorrowMoment.toDate());
         },
         attached: function() {
           this.fire('rerender-i18n', {
@@ -427,7 +437,7 @@
           }
           obj.merId = item.merId;
           obj.filename = filename;
-          return '/master/trade/report?' + Util.query(obj)+'&from=summary';
+          return '/master/trade/report?' + Util.query(obj) + '&from=summary';
         },
         addOneFilter: function(index) {
           return index + 1;
