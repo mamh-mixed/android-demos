@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_layout"
     android:orientation="vertical">
 
     <LinearLayout
@@ -33,7 +34,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/setting_cloud_use"
-            android:textColor="#0033ff" />
+            android:textColor="@color/textview_textcolor_copyright" />
 
         <TextView
             android:layout_width="match_parent"
@@ -42,7 +43,7 @@
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:text="@string/setting_cloud_version"
-            android:textColor="#999999" />
+            android:textColor="@color/textview_textcolor_copyright1" />
 
 
         <ImageView
