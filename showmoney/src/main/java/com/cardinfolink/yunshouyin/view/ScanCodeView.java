@@ -953,7 +953,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         try {
             //创建二维码图片
             if (!TextUtils.isEmpty(mResultData.qrcode)) {
-                bitmap = cretaeBitmap(mResultData.qrcode, icon, min, min);
+                bitmap = Utility.cretaeBitmap(mResultData.qrcode, icon, min, min);
                 mQRImage.setImageBitmap(bitmap);
 
                 startPolling();
@@ -1050,58 +1050,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         };
     }
 
-
-    /**
-     * //生成bitmap 二维码图片,生成一个固定长宽都是width和height的二维码图片
-     *
-     * @param str
-     * @param icon
-     * @param widthx
-     * @param heighty
-     * @return
-     * @throws WriterException
-     */
-    private Bitmap cretaeBitmap(String str, Bitmap icon, int widthx, int heighty) throws WriterException {
-        icon = Utility.zoomBitmap(icon, IMAGE_HALFWIDTH);
-        Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
-        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
-        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
-        hints.put(EncodeHintType.MARGIN, 1);
-        //调用com.google.zxing里面的生成二维码的方法
-        BitMatrix matrix = new MultiFormatWriter().encode(str, BarcodeFormat.QR_CODE, widthx, heighty, hints);
-
-        int width = matrix.getWidth();
-        int height = matrix.getHeight();
-
-        int halfW = width / 2;
-        int halfH = height / 2;
-        int[] pixels = new int[width * height];
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (x > halfW - IMAGE_HALFWIDTH && x < halfW + IMAGE_HALFWIDTH
-                        && y > halfH - IMAGE_HALFWIDTH
-                        && y < halfH + IMAGE_HALFWIDTH) {
-                    pixels[y * width + x] = icon.getPixel(x - halfW + IMAGE_HALFWIDTH, y - halfH + IMAGE_HALFWIDTH);
-                } else {
-                    if (matrix.get(x, y)) {
-                        pixels[y * width + x] = FOREGROUND_COLOR;
-                    } else {
-                        pixels[y * width + x] = BACKGROUND_COLOR;
-                    }
-                }
-
-            }
-        }
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-
-        return bitmap;
-    }
-
-    //生成bitmap图片,生成一个固定长宽都是300的二维码图片
-    private Bitmap cretaeBitmap(String str, Bitmap icon) throws WriterException {
-        return cretaeBitmap(str, icon, 300, 300);
-    }
 
     public void getResult() {
         mOriginalTotal = 0;
