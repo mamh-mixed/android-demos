@@ -205,6 +205,10 @@
     <string name="alert_error_limit_error">"当日交易已超过限额,请申请提升限额!"</string>
     <string name="alert_error__shop_name_cannot_empty">店铺名称不能为空</string>
     <string name="alert_error__shop_address_cannot_empty">店铺地址不能为空</string>
+    <string name="alert_error_data_format_error">数据格式错误</string>
+    <string name="alert_error_qrcode_invalid">非法的二维码</string>
+    <string name="alert_error_no_channel">未知支付渠道</string>
+    <string name="alert_error_other">其他错误</string>
 
     <string name="refd_activity_refd_message">当前可退款金额（元）</string>
     <string name="refd_activity_refd_message1">需退款金额（元）"</string>

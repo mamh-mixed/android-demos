@@ -40,6 +40,17 @@ public class ErrorUtil {
         if ("user_has_one_times".equals(error)) {
             return ShowMoneyApp.getResString(R.string.alert_error_user_has_one_times);
         }
+
+        if ("DATA_FORMAT_ERROR".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_data_format_error);
+        }
+        if ("QRCODE_INVALID".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_qrcode_invalid);
+        }
+
+        if ("NO_CHANNEL".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_no_channel);
+        }
         return error;
 
     }
