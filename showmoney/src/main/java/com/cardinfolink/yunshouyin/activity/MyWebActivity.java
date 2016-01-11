@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
+import com.cardinfolink.yunshouyin.util.EncoderUtil;
 import com.cardinfolink.yunshouyin.util.Utility;
 import com.google.zxing.WriterException;
 
@@ -91,7 +92,12 @@ public class MyWebActivity extends BaseActivity {
         }
 
         //generate file name
-        File file = new File(cacheDir, "myweb.jpg");
+        String payUrl = SessonData.loginUser.getPayUrl();
+        String filename = "myweb.jpg";
+        if (!TextUtils.isEmpty(payUrl)) {
+            filename = EncoderUtil.Encrypt(payUrl, "MD5");
+        }
+        File file = new File(cacheDir, filename + "_myweb.jpg");
 
         //bitmap to png
         try {
