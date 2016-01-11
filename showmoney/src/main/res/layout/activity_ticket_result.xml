@@ -3,7 +3,7 @@
     xmlns:coupon="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="@color/background_layout"
     android:orientation="vertical">
 
     <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
@@ -15,7 +15,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="25dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
@@ -23,9 +23,9 @@
             android:id="@+id/tv_coupon_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
             android:text="@string/pay_result_success"
-            android:textSize="30sp" />
+            android:textColor="@color/textview_textcolor_pay_success"
+            android:textSize="35sp" />
 
         <TextView
             android:id="@+id/tv_coupon_fail_reason"
@@ -33,38 +33,50 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:text="@string/pay_result_explain"
-            android:textColor="#666666"
+            android:textColor="@color/textview_textcolor_coupon_result_explain"
             android:textSize="20sp" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/tv_coupon_info"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="35dp"
-        android:text="@string/pay_result_explain"
-        android:textColor="#000000"
-        android:textSize="20sp" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_coupon_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="@string/pay_result_explain"
+            android:textSize="20sp" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/ll_coupon_money_situation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="35dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp"
         android:orientation="vertical">
 
         <com.cardinfolink.yunshouyin.ui.ResultInfoItem
             android:id="@+id/sii_coupon_original_sum"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             coupon:left_text="@string/coupon_original_sum" />
 
         <com.cardinfolink.yunshouyin.ui.ResultInfoItem
             android:id="@+id/sii_coupon_coupon_discount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             coupon:left_text="@string/coupon_discount" />
 
 
@@ -72,6 +84,7 @@
             android:id="@+id/sii_coupon_account_receive_money"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             coupon:left_text="@string/coupon_account_receive_money" />
 
     </LinearLayout>
@@ -79,8 +92,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="35dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:layout_marginTop="10dp"
         android:orientation="vertical">
 
@@ -89,6 +102,7 @@
             android:id="@+id/sii_coupon_order_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             coupon:left_text="@string/coupon_order_number" />
 
 
@@ -96,12 +110,14 @@
             android:id="@+id/sii_coupon_pay_number"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             coupon:left_text="@string/coupon_pay_number" />
 
         <com.cardinfolink.yunshouyin.ui.ResultInfoItem
             android:id="@+id/sii_coupon_access"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             coupon:left_text="@string/coupon_access" />
 
 
@@ -109,14 +125,15 @@
             android:id="@+id/sii_tv_coupon_use_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             coupon:left_text="@string/coupon_use_time" />
 
         <com.cardinfolink.yunshouyin.ui.ResultInfoItem
             android:id="@+id/sii_terminal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
             coupon:left_text="@string/coupon_operate_terminal" />
-
 
     </LinearLayout>
 
@@ -128,8 +145,8 @@
         android:layout_marginRight="30dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/blue_selector"
-        android:textColor="#ffffff"
-        android:text="@string/coupon_scan_code_again" />
+        android:text="@string/coupon_scan_code_again"
+        android:textColor="@color/button_textcolor" />
 
 
 </LinearLayout>
