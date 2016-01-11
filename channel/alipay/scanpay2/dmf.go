@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
 	"time"
 )
 
@@ -34,14 +33,13 @@ func (d *dmf2) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespo
 	p.AuthCode = req.ScanCodeId
 	p.Subject = req.Subject
 	p.TotalAmount = req.ActTxamt
-	// p.GoodsDetail = req.AlpMarshalGoods()
+	p.GoodsDetail = parseGoods(req)
 	_, p.TimeExpire = handleExpireTime(req.TimeExpire)
-
+	p.ExtendParams = Params{req.ExtendParams}
 	p.Body = ""
 	p.StoreID = ""
 	p.OperatorID = ""
 	p.TerminalID = ""
-	p.ExtendParams = req.ExtendParams
 
 	q := &PayResp{}
 	err := Execute(p, q)
@@ -67,10 +65,9 @@ func (d *dmf2) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPa
 	p.OutTradeNo = req.OrderNum
 	p.Subject = req.Subject
 	p.TotalAmount = req.ActTxamt
-	// p.GoodsDetail = req.AlpMarshalGoods()
+	p.GoodsDetail = parseGoods(req)
 	_, p.TimeExpire = handleExpireTime(req.TimeExpire)
-	// p.ExtendParams = req.ExtendParams
-	log.Debugf("common params: %+v", p)
+	p.ExtendParams = Params{req.ExtendParams}
 	q := &PrecreateResp{}
 	err := Execute(p, q)
 	if err != nil {
@@ -204,4 +201,25 @@ func handleExpireTime(expirtTime string) (string, string) {
 	}
 
 	return stStr, expirtTime
+}
+
+// parseGoods 输出2.0要求的商品格式
+func parseGoods(req *model.ScanPayRequest) []GoodsDetail {
+	details, err := req.MarshalGoods()
+	if err != nil {
+		return nil
+	}
+	if len(details) > 0 {
+		var gs []GoodsDetail
+		for _, g := range details {
+			gs = append(gs, GoodsDetail{
+				GoodsId:   fmt.Sprintf("%d", g.GoodsId),
+				GoodsName: g.GoodsName,
+				Price:     g.Price,
+				Quantity:  g.Quantity,
+			})
+		}
+		return gs
+	}
+	return nil
 }

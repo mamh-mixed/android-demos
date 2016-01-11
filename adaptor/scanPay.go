@@ -505,14 +505,13 @@ func genOverseaExtendInfo(mer model.Merchant) (string, error) {
 }
 
 func genExtendParams(mer model.Merchant, c *model.ChanMer) string {
-
 	switch c.Version {
 	case channel.ALP2_0:
 		var agentCode = alp2_0ID
 		if c.AgentCode != "" {
 			agentCode = c.AgentCode
 		}
-		return `{"sys_service_provider_id":"` + agentCode + `"}`
+		return agentCode
 	default:
 		// ALP1_0
 		var agentCode = alp1_0ID

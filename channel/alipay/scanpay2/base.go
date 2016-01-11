@@ -39,6 +39,20 @@ type CommonParams struct {
 	PrivateKey *rsa.PrivateKey `json:"-" bson:"-"` // 商户 RSA 私钥
 }
 
+type GoodsDetail struct {
+	GoodsId       string `json:"goods_id"`
+	GoodsName     string `json:"goods_name"`
+	Price         string `json:"price"`
+	Quantity      string `json:"quantity"`
+	AlipayGoodsId string `json:"alipay_goods_id,omitempty"`
+	GoodsCategory string `json:"goods_category",omitempty`
+	Body          string `json:"body,omitempty"`
+}
+
+type Params struct {
+	SysServiceProviderId string `json:"sys_service_provider_id,omitempty"`
+}
+
 func (c *CommonParams) GetSpReq() *model.ScanPayRequest {
 	return c.Req
 }

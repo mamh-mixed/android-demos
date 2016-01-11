@@ -1,13 +1,11 @@
 package model
 
 import (
-	"encoding/json"
 	"fmt"
-	"strings"
-
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
+	"strings"
 )
 
 // busiType
@@ -415,62 +413,15 @@ func (s *ScanPayRequest) newTransLogs(direct string, mt int, data interface{}) *
 	}
 }
 
-func (s *ScanPayRequest) WxpMarshalGoods() string {
-
-	goods, err := marshalGoods(s.GoodsInfo)
-	if err != nil {
-		// 格式不对，送配置的商品名称，防止商户送的内容过长
-		return s.Subject
-	}
-
-	var goodsName []string
-	if len(goods) > 0 {
-		for _, v := range goods {
-			goodsName = append(goodsName, v.GoodsName)
-		}
-
-		body := strings.Join(goodsName, ",")
-		bodySizes := []rune(body)
-		if len(bodySizes) > 20 {
-			body = string(bodySizes[:20]) + "..."
-		}
-		return body
-	}
-
-	// 假如商品详细为空，送配置的商品名称
-	return s.Subject
-}
-
-func (s *ScanPayRequest) AlpMarshalGoods() string {
-
-	goods, err := marshalGoods(s.GoodsInfo)
-	if err != nil {
-		return ""
-	}
-
-	if len(goods) > 0 {
-		gbs, err := json.Marshal(goods)
-		if err != nil {
-			log.Errorf("goodsInfo marshal error:%s", err)
-			return ""
-		}
-		return string(gbs)
-	}
-
-	return ""
-}
-
 // marshalGoods 将商品详情解析
 // 格式: 商品名称,价格,数量;商品名称,价格,数量;...
-func marshalGoods(goodsInfo string) ([]goodsDetail, error) {
-
-	var gs []goodsDetail
-
-	if strings.TrimSpace(goodsInfo) == "" {
-		return gs, nil
+func (s *ScanPayRequest) MarshalGoods() ([]goodsDetail, error) {
+	if strings.TrimSpace(s.GoodsInfo) == "" {
+		return nil, nil
 	}
 
-	goods := strings.Split(goodsInfo, ";")
+	var gs []goodsDetail
+	goods := strings.Split(s.GoodsInfo, ";")
 	for i, v := range goods {
 		if i == len(goods)-1 && v == "" {
 			continue
