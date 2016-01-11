@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="@color/background_layout"
     android:orientation="vertical">
 
 
@@ -25,7 +25,7 @@
             android:layout_gravity="center_vertical"
             android:layout_margin="10dp"
             android:text="123456@qq.com"
-            android:textColor="#999999"
+            android:textColor="@color/textview_textcolor_gray3"
             android:textSize="15sp" />
     </LinearLayout>
 
@@ -37,7 +37,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="40dp"
         android:text="@string/coupon_ticket_verification"
-        android:textColor="#666666"
+        android:textColor="@color/textview_textcolor_gray1"
         android:textSize="25sp" />
 
 
@@ -78,7 +78,7 @@
         android:layout_height="0.5dp"
         android:layout_marginLeft="30dp"
         android:layout_marginRight="30dp"
-        android:background="#333333" />
+        android:background="@color/horizontal_view_background" />
 
     <Button
         android:id="@+id/bt_confirm"
@@ -89,7 +89,7 @@
         android:layout_marginTop="60dp"
         android:background="@drawable/blue_selector"
         android:text="@string/coupon_confirm"
-        android:textColor="#ffffff" />
+        android:textColor="@color/button_textcolor" />
 
     <ImageView
         android:layout_width="70dp"
