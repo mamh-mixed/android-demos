@@ -26,7 +26,6 @@ import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.EditTextClear;
-import com.cardinfolink.yunshouyin.util.TelephonyManagerUtil;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
 import com.cardinfolink.yunshouyin.view.HintDialog;
@@ -180,7 +179,7 @@ public class LoginActivity extends BaseActivity {
                     initData.setMchntid(data.getClientid());
                     initData.setInscd(data.getInscd());
                     initData.setSignKey(data.getSignKey());
-                    initData.setTerminalid(TelephonyManagerUtil.getDeviceId(mContext));
+                    initData.setTerminalid(data.getUsername());
                     initData.setIsProduce(SystemConfig.IS_PRODUCE);
                     CashierSdk.init(initData);//初始化sdk
                     //更新UI
