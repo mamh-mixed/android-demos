@@ -45,7 +45,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录该笔交易
 	t := &model.Trans{
 		MerId:       req.Mchntid,
-		SysOrderNum: util.SerialNumber(),
+		SysOrderNum: req.ReqId,
 		OrderNum:    req.OrderNum,
 		TransType:   model.PayTrans,
 		Busicd:      req.Busicd,
@@ -78,6 +78,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
+	t.AppID = c.WxpAppId
 
 	var chanMerId string
 	if c.IsAgentMode && c.AgentMer != nil {
@@ -198,7 +199,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if isNewReq {
 		t = &model.Trans{
 			MerId:         req.Mchntid,
-			SysOrderNum:   util.SerialNumber(),
+			SysOrderNum:   req.ReqId,
 			OrderNum:      req.OrderNum,
 			TransType:     model.EnterpriseTrans,
 			Busicd:        req.Busicd,
@@ -252,6 +253,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
+	t.AppID = c.WxpAppId
 
 	// 记录交易
 	if isNewReq {
@@ -283,7 +285,7 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		CouponOrderNum: req.CouponOrderNum, // 优惠券核销后的订单号
 		DiscountAmt:    req.IntDiscountAmt, // 卡券优惠金额
 		PayType:        req.PayType,        // 卡券指定的支付方式
-		SysOrderNum:    util.SerialNumber(),
+		SysOrderNum:    req.ReqId,
 		OrderNum:       req.OrderNum,
 		TransType:      model.PayTrans,
 		Busicd:         req.Busicd,
@@ -339,9 +341,11 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
+	t.AppID = c.WxpAppId // 支付宝时会有作用
 
+	// 计算手续费
 	t.Fee = int64(math.Floor(float64(t.TransAmt)*rp.MerFee + 0.5))
-	t.NetFee = t.Fee // 净手续费，会在退款时更新
+	t.NetFee = t.Fee
 
 	// 记录交易
 	// t.TransStatus = model.TransNotPay
@@ -375,7 +379,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录该笔交易
 	t := &model.Trans{
 		MerId:          req.Mchntid,
-		SysOrderNum:    util.SerialNumber(),
+		SysOrderNum:    req.ReqId,
 		OrderNum:       req.OrderNum,
 		TransType:      model.PayTrans,
 		Busicd:         req.Busicd,
@@ -409,6 +413,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
+	t.AppID = c.WxpAppId // 支付宝时会有作用
 
 	t.Fee = int64(math.Floor(float64(t.TransAmt)*rp.MerFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
@@ -445,7 +450,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录这笔退款
 	refund := &model.Trans{
 		MerId:        req.Mchntid,
-		SysOrderNum:  util.SerialNumber(),
+		SysOrderNum:  req.ReqId,
 		OrderNum:     req.OrderNum,
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.RefundTrans,
@@ -702,7 +707,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录这笔撤销
 	cancel := &model.Trans{
 		MerId:        req.Mchntid,
-		SysOrderNum:  util.SerialNumber(),
+		SysOrderNum:  req.ReqId,
 		OrderNum:     req.OrderNum,
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.CancelTrans,
@@ -816,7 +821,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录这笔关单
 	closed := &model.Trans{
 		MerId:        req.Mchntid,
-		SysOrderNum:  util.SerialNumber(),
+		SysOrderNum:  req.ReqId,
 		OrderNum:     req.OrderNum,
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.CloseTrans,
@@ -959,10 +964,12 @@ func CloseOrder() {
 		}
 
 		// 记录请求日志的request
-		req := model.NewScanPayRequest()
-		req.OrigOrderNum = t.OrderNum
-		req.Mchntid = t.MerId
-		req.Busicd = model.Inqy
+		req := &model.ScanPayRequest{
+			OrigOrderNum: t.OrderNum,
+			Mchntid:      t.MerId,
+			Busicd:       model.Inqy,
+			ReqId:        t.SysOrderNum, // 以系统订单号为日志号
+		}
 
 		var closedResult *model.ScanPayResponse
 		ret := adaptor.ProcessEnquiry(t, c, req)
@@ -1023,6 +1030,8 @@ func refresh(req *model.ScanPayRequest, c *model.ChanMer) {
 		ret := adaptor.ProcessEnquiry(t, c, &model.ScanPayRequest{
 			ReqId:        req.ReqId, // 关联ReqId，在交易报文里可以看到
 			OrigOrderNum: req.OrderNum,
+			Busicd:       model.Inqy,
+			Mchntid:      req.Mchntid,
 		})
 		// 处理
 		switch ret.Respcd {
@@ -1074,10 +1083,12 @@ func RefreshOrder() {
 		}
 
 		// 记录请求日志的request
-		req := model.NewScanPayRequest()
-		req.OrigOrderNum = t.OrderNum
-		req.Mchntid = t.MerId
-		req.Busicd = model.Inqy
+		req := &model.ScanPayRequest{
+			OrigOrderNum: t.OrderNum,
+			Mchntid:      t.MerId,
+			Busicd:       model.Inqy,
+			ReqId:        t.SysOrderNum, // 以系统订单号为日志号
+		}
 
 		ret := adaptor.ProcessEnquiry(t, c, req)
 
@@ -1197,6 +1208,7 @@ func copyProperties(current *model.Trans, orig *model.Trans) {
 	current.ConsumerAccount = orig.ConsumerAccount
 	current.SettRole = orig.SettRole
 	current.ChanOrderNum = orig.ChanOrderNum
+	current.AppID = orig.AppID
 }
 
 func signWithMD5(s interface{}, key string) string {

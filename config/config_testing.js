@@ -55,7 +55,8 @@
         "OpenAPIURL": "https://openapi.alipay.com/gateway.do", // 支付宝 Open API 地址
         "URL": "https://mapi.alipay.com/gateway.do?_input_charset=utf-8", // 支付宝扫码支付接口地址
         "NotifyUrl": "http://test.quick.ipay.so", // 支付宝异步消息通知地址，路径是固定的，只需要域名和端口
-        "AgentId": "12010128a1" // 标识讯联交易
+        "ALP1_0AgentID": "12010128a1", // 标识讯联交易
+        "ALP2_0AgentID": "2088611685817706" // 标识讯联交易
     },
     "MobileApp":{
         "WXPMerId":"1247075201",

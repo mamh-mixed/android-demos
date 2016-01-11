@@ -2,11 +2,15 @@ package scanpay2
 
 import (
 	"fmt"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"time"
 )
 
 var DefaultClient dmf2
+
+var NotifyPath = "/scanpay/upNotify/alipay2"
+var Alipay2NotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + NotifyPath
 
 type dmf2 struct{}
 
@@ -15,7 +19,6 @@ func getCommonParams(m *model.ScanPayRequest) *CommonParams {
 		AppID:      m.AppID,
 		PrivateKey: LoadPrivateKey(m.PemKey), // TODO 做个缓存处理
 		Req:        m,
-		NotifyUrl:  "",
 		// TODO 预留authToken
 	}
 }
@@ -24,6 +27,7 @@ func (d *dmf2) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespo
 
 	p := &PayReq{}
 	p.CommonParams = *getCommonParams(req)
+	p.CommonParams.NotifyUrl = Alipay2NotifyUrl
 	p.OutTradeNo = req.OrderNum
 	p.Scene = "bar_code"
 	p.AuthCode = req.ScanCodeId
@@ -36,7 +40,7 @@ func (d *dmf2) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespo
 	p.StoreID = ""
 	p.OperatorID = ""
 	p.TerminalID = ""
-	p.ExtendParams = ""
+	p.ExtendParams = req.ExtendParams
 
 	q := &PayResp{}
 	err := Execute(p, q)
@@ -58,11 +62,13 @@ func (d *dmf2) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPa
 
 	p := &PrecreateReq{}
 	p.CommonParams = *getCommonParams(req)
+	p.CommonParams.NotifyUrl = Alipay2NotifyUrl
 	p.OutTradeNo = req.OrderNum
 	p.Subject = req.Subject
 	p.TotalAmount = req.ActTxamt
 	// p.GoodsDetail = req.AlpMarshalGoods()
 	_, p.TimeExpire = handleExpireTime(req.TimeExpire)
+	p.ExtendParams = req.ExtendParams
 
 	q := &PrecreateResp{}
 	err := Execute(p, q)
@@ -137,6 +143,7 @@ func (d *dmf2) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse
 		// ret.PayTime = q.GmtPayment
 		ret.ConsumerAccount = q.BuyerLogonID
 		ret.ConsumerId = q.OpenID
+		ret.PayTime = q.SendPayDate
 	case "WAIT_BUYER_PAY":
 		ret.Respcd, ret.ErrorDetail = inprocessCode, inprocessMsg
 	case "TRADE_FINISHED", "TRADE_CLOSED":

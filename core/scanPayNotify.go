@@ -20,6 +20,127 @@ import (
 	"github.com/omigo/log"
 )
 
+// ProcessAlipay2Notify 支付宝2.0异步通知处理，接受预下单和下单异步通知
+func ProcessAlipay2Notify(params url.Values) error {
+
+	var dErr = fmt.Errorf("%s", "params error")
+	orderNum, appID := params.Get("out_trade_no"), params.Get("app_id")
+	if orderNum == "" || appID == "" {
+		return dErr
+	}
+	t, err := mongo.SpTransColl.FindByAppID(orderNum, appID)
+	if err != nil {
+		log.Errorf("fail to find trans by AppID=%s, error: %s", appID, err)
+		return dErr
+	}
+
+	// 通知动作类型
+	notifyAction := params.Get("notify_action_type")
+	// 交易订单号
+	count, err := mongo.NotifyRecColl.Count(t.MerId, t.OrderNum)
+	if err != nil {
+		return err
+	}
+
+	// 有此记录，表示已经处理过
+	if count > 0 {
+		return nil
+	}
+
+	// 锁住交易
+	t, err = findAndLockTrans(t.MerId, t.OrderNum)
+	if err != nil {
+		return err
+	}
+
+	// 异步通知数据进入日志
+	logs.SpLogs <- &model.SpTransLogs{
+		ReqId:        t.SysOrderNum, // 以系统订单号前后关联
+		Direction:    "in",
+		MerId:        t.MerId,
+		OrderNum:     t.OrderNum,
+		OrigOrderNum: t.OrigOrderNum,
+		TransType:    t.Busicd,
+		MsgType:      3,
+		Msg:          params}
+
+	// 解锁
+	defer func() {
+		if t.LockFlag == 1 {
+			mongo.SpTransColl.Unlock(t.MerId, t.OrderNum)
+		}
+	}()
+
+	ret := &model.ScanPayResponse{}
+	tradeStatus := params.Get("trade_status")
+	tradeNo := params.Get("trade_no")
+	account := params.Get("buyer_logon_id")
+	openID := params.Get("open_id")
+	payTime := params.Get("gmt_payment")
+
+	// 交易状态更新
+	switch tradeStatus {
+	case "TRADE_SUCCESS":
+		ret.ChanRespCode = tradeStatus
+		ret.ChannelOrderNum = tradeNo
+		ret.ConsumerAccount = account
+		ret.ConsumerId = openID
+		ret.Respcd = adaptor.SuccessCode
+		ret.ErrorDetail = adaptor.SuccessMsg
+		ret.ErrorCode = "SUCCESS"
+		// ret.MerDiscount = fmt.Sprintf("%0.2f", merDiscount)
+		ret.PayTime = payTime
+	case "WAIT_BUYER_PAY":
+		log.Errorf("alp notify return tradeStatus: WAIT_BUYER_PAY, appID=%s, orderNum=%s", appID, orderNum)
+		return fmt.Errorf("%s", "transStatus no change")
+	default:
+		ret = adaptor.ReturnWithErrorCode("FAIL")
+		ret.ChanRespCode = tradeStatus
+	}
+
+	if t.TransStatus != model.TransClosed {
+		if err = updateTrans(t, ret); err != nil {
+			// 如果更新失败，则认为没有处理过
+			return err
+		}
+	} else {
+		// 订单已关闭，但是又收到异步通知是成功
+		// 表明订单已被退款
+		if ret.Respcd == adaptor.SuccessCode {
+			t.RefundStatus = model.TransRefunded
+			t.Fee, t.NetFee = 0, 0
+			t.RespCode = adaptor.SuccessCode
+			t.ErrorDetail = adaptor.SuccessMsg
+			t.ConsumerAccount = ret.ConsumerAccount
+			t.ConsumerId = ret.ConsumerId
+			t.ChanOrderNum = ret.ChannelOrderNum
+			t.PayTime = payTime
+			if err = mongo.SpTransColl.UpdateAndUnlock(t); err != nil {
+				return err
+			}
+		}
+	}
+
+	// 为空时为预下单
+	if notifyAction != "" {
+		return nil
+	}
+
+	reqBytes, _ := json.Marshal(params)
+	// 记录
+	nr := &model.NotifyRecord{
+		MerId:       t.MerId,
+		OrderNum:    t.OrderNum,
+		FromChanMsg: string(reqBytes),
+	}
+	// 订单状态正常且有填写通知地址
+	if t.NotifyUrl != "" && t.TransStatus == model.TransSuccess {
+		sendNotifyToMerchant(t, nr, ret)
+	}
+	mongo.NotifyRecColl.Add(nr)
+	return nil
+}
+
 // ProcessAlipayNotify 支付宝异步通知处理，接受预下单和下单异步通知
 func ProcessAlipayNotify(params url.Values) error {
 
