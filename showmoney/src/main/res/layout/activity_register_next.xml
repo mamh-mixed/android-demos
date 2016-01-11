@@ -3,7 +3,7 @@
     xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff">
+    android:background="@color/background_layout">
 
 
     <LinearLayout
@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:text="@string/register_message2"
-            android:textColor="#999999"
+            android:textColor="@color/textview_textcolor_gray3"
             android:textSize="15sp" />
 
         <com.cardinfolink.yunshouyin.ui.SettingClikcItem
@@ -77,7 +77,7 @@
             android:layout_marginTop="10dp"
             android:background="@drawable/blue_selector"
             android:text="@string/register_next_finished"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/button_textcolor"
             android:textSize="16sp" />
 
         <LinearLayout
@@ -94,14 +94,14 @@
                 android:layout_marginTop="5dp"
                 android:gravity="center"
                 android:text="@string/register_check"
-                android:textColor="#999999" />
+                android:textColor="@color/textview_textcolor_copyright1" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/register_cloud_version"
-                android:textColor="#0033ff" />
+                android:textColor="@color/textview_textcolor_copyright" />
 
         </LinearLayout>
 
