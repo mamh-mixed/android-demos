@@ -80,6 +80,8 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
     Bitmap wrongBitmap;
 
+    private File mExternalCacheDir;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_limit_increase);
@@ -131,8 +133,22 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
         wrongBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
 
+        //初始化一个存放图片的目录
+        initCacheDir();
     }
 
+    private void initCacheDir() {
+        //创建缓存目录，系统一运行就得创建缓存目录的，
+        mExternalCacheDir = mContext.getExternalCacheDir();
+        //如果外部的不能用，就调用内部的
+        if (mExternalCacheDir == null) {
+            mExternalCacheDir = mContext.getCacheDir();
+        }
+        if (!mExternalCacheDir.exists()) {
+            mExternalCacheDir.mkdirs();
+        }
+
+    }
 
     @Override
     public void onClick(View v) {
@@ -177,8 +193,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
     private void setTakePhotoOnClickListener(final int requestCode) {
         final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File imageFile = new File(dir, "yunshouyin_" + requestCode + "_.jpg");
+        File imageFile = new File(mExternalCacheDir, "yunshouyin_" + requestCode + "_.jpg");
         if (imageFile.exists()) {
             imageFile.delete();
         }
@@ -545,8 +560,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
     private MerchantPhoto getMerchantPhoto(int requestCode, Intent data) {
         if (data == null) {//等于null说明是拍照得来的
-            File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            File imageFile = new File(dir, "yunshouyin_" + requestCode + "_.jpg");
+            File imageFile = new File(mExternalCacheDir, "yunshouyin_" + requestCode + "_.jpg");
             Uri uri = Uri.fromFile(imageFile);
             return new MerchantPhoto(uri, imageFile.getAbsolutePath());
         } else {
