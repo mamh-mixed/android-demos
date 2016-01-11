@@ -125,8 +125,13 @@ func (col *transCollection) UpdateFields(merId, orderNum string, fv ...interface
 
 	set := bson.M{}
 	for i := 0; i < len(fv); i += 2 {
-		key := fv[i].(string)
-		set[key] = fv[i+1]
+		key, ok := fv[i].(string)
+		if ok {
+			set[key] = fv[i+1]
+		} else {
+			return fmt.Errorf("type of field must be string")
+		}
+
 	}
 	update := bson.M{"$set": set}
 	return database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, update)
