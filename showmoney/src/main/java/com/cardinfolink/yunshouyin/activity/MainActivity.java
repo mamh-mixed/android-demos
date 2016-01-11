@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
+import com.cardinfolink.yunshouyin.view.HintDialog;
 import com.cardinfolink.yunshouyin.view.MySettingView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TicketView;
@@ -35,7 +36,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
-
+    public boolean mFirsInTicketView=true;
     private ScanCodeView mScanCodeView;
     private TransManageView mTransManageView;
     private TicketView mTicketView;
@@ -52,7 +53,7 @@ public class MainActivity extends BaseActivity {
     private ViewPager mTabPager;//声明对象
     private ImageView mTab1, mTab2, mTab3, mTab4;
     private int currIndex = 0;// 当前页卡编号
-
+    private HintDialog mHintDialog;
     // 每个页面的view数据,存放4个界面
     private ArrayList<View> mViews;
 
@@ -62,6 +63,7 @@ public class MainActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
+        mHintDialog = new HintDialog(MainActivity.this, findViewById(R.id.hint_dialog));
         initHandler();
         initLayout();
         initUmeng();
@@ -252,6 +254,19 @@ public class MainActivity extends BaseActivity {
                     } else if (currIndex == 3) {
                         mTab4.setImageResource(R.drawable.my_not_selected);
                     }
+                    if(mFirsInTicketView) {
+                        mHintDialog.setText(getString(R.string.coupon_first_suggest_info), getString(R.string.coupon_confirm_ok), getString(R.string.coupon_abandom));
+                        mHintDialog.setOkVisibility(View.GONE);
+                        mHintDialog.show();
+                        mHintDialog.setCancelOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                mHintDialog.hide();
+                            }
+                        });
+                    }
+                    mFirsInTicketView=false;
+
                     break;
                 case 2:
                     mTab3.setImageResource(R.drawable.bill_selected);
