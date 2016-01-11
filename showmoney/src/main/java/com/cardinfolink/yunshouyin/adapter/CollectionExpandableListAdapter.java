@@ -125,7 +125,13 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
         //设置一下月份
         groupViewHolder.month.setText(groupData.get(groupPosition).getCurrentMonth());
         groupViewHolder.year.setText(groupData.get(groupPosition).getCurrentYear());
-        groupViewHolder.count.setText("" + groupData.get(groupPosition).getTotalRecord());
+        int count = 0;
+        try {
+            count = childrenData.get(groupPosition).size();
+        } catch (Exception e) {
+            count = 0;
+        }
+        groupViewHolder.count.setText(String.valueOf(count));
 
         if (isExpanded) {
             groupViewHolder.folder.setBackgroundResource(R.drawable.bill_pack);
