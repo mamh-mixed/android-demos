@@ -3,7 +3,7 @@
     android:id="@+id/ll_qrcode"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#339933"
+    android:background="@color/background_scan_qrcode_layout"
     android:orientation="vertical"
     android:visibility="visible">
 
@@ -19,7 +19,7 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:text=""
-            android:textColor="#ffffff" />
+            android:textColor="@color/textview_textcolor" />
     </RelativeLayout>
 
     <RelativeLayout
@@ -50,7 +50,7 @@
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:text="微信"
-                android:textColor="#ffffff" />
+                android:textColor="@color/textview_textcolor" />
         </LinearLayout>
 
         <ImageView
@@ -81,7 +81,7 @@
                 android:layout_height="30dp"
                 android:layout_marginTop="10dp"
                 android:text="支付宝"
-                android:textColor="#ffffff" />
+                android:textColor="@color/textview_textcolor" />
         </LinearLayout>
 
     </RelativeLayout>
@@ -97,7 +97,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center"
-            android:textColor="#ffffff" />
+            android:textColor="@color/textview_textcolor"  />
     </RelativeLayout>
 
     <RelativeLayout
@@ -133,7 +133,7 @@
                 android:layout_marginLeft="5dp"
                 android:layout_toRightOf="@+id/iv_update"
                 android:text="@string/scancode_view_no_pay"
-                android:textColor="#ffffff" />
+                android:textColor="@color/textview_textcolor" />
 
         </RelativeLayout>
 
