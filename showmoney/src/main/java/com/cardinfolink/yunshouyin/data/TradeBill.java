@@ -49,6 +49,20 @@ public class TradeBill implements Serializable {
     public String total;//交易金额
     public String originalTotal;//消费金额
 
+    /**
+     * 微信昵称名字
+     */
+    public String nickName;
+
+    /**
+     * 微信头像地址
+     */
+    public String avatarUrl;
+
+    /**
+     * 检验码
+     */
+    public String checkCode;
 
     @Override
     public String toString() {
@@ -74,6 +88,9 @@ public class TradeBill implements Serializable {
                 ", errorDetail='" + errorDetail + '\'' +
                 ", total='" + total + '\'' +
                 ", originalTotal='" + originalTotal + '\'' +
+                ", nickName='" + nickName + '\'' +
+                ", avatarUrl='" + avatarUrl + '\'' +
+                ", checkCode='" + checkCode + '\'' +
                 '}';
     }
 }
