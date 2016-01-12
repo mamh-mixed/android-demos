@@ -311,21 +311,37 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		return adaptor.LogicErrorHandler(t, "NO_CHANNEL")
 	}
 
-	// 实际支付方式与卡券指定支付方式不符，则拒掉交易
-	if req.PayType != "" {
-		if shouldChcd == channel.ChanCodeWeixin && req.PayType != "4" {
-			return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
-		} else if shouldChcd == channel.ChanCodeAlipay && req.PayType != "5" {
-			return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
-		}
-	}
 	// 如果卡券订单号不为空，则查询出卡券订单
 	if req.CouponOrderNum != "" {
+		payType := ""
 		// 判断是否存在该订单
-		_, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
+		couponTrans, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
 		if err != nil {
 			return adaptor.ReturnWithErrorCode("COUPON_TRADE_NOT_EXIST")
 		}
+		// 卡券核销失败或者卡券已被撤销,则不能再支付
+		if couponTrans.RespCode != "00" || couponTrans.TransStatus != model.TransSuccess {
+			return adaptor.ReturnWithErrorCode("COUPON_VERI_ERROR_OR_CANCEL")
+		}
+		// 如果该卡券订单已经支付成功,则不能再支付
+		if couponTrans.ScanPayCoupon != nil && couponTrans.ScanPayCoupon.RespCode == "00" {
+			return adaptor.ReturnWithErrorCode("COUPON_ALREADY_PAY")
+		}
+		if len(couponTrans.VoucherType) > 1 {
+			payType = couponTrans.VoucherType[0:1]
+		}
+
+		// 实际支付方式与卡券指定支付方式不符，则拒掉交易
+		if payType != "" {
+			if payType == "2" {
+				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+			} else if payType == "4" && shouldChcd != channel.ChanCodeWeixin {
+				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+			} else if payType == "5" && shouldChcd != channel.ChanCodeAlipay {
+				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+			}
+		}
+
 	}
 
 	// 下单时忽略渠道，以免误送渠道导致交易失败
@@ -408,11 +424,35 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	addRelatedProperties(t, req.M)
 	// 如果卡券订单号不为空，则查询出卡券订单
 	if req.CouponOrderNum != "" {
+		payType := ""
 		// 判断是否存在该订单
-		_, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
+		couponTrans, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
 		if err != nil {
 			return adaptor.ReturnWithErrorCode("COUPON_TRADE_NOT_EXIST")
 		}
+		// 卡券核销失败或者卡券已被撤销,则不能再支付
+		if couponTrans.RespCode != "00" || couponTrans.TransStatus != model.TransSuccess {
+			return adaptor.ReturnWithErrorCode("COUPON_VERI_ERROR_OR_CANCEL")
+		}
+		// 如果该卡券订单已经支付成功,则不能再支付
+		if couponTrans.ScanPayCoupon != nil && couponTrans.ScanPayCoupon.RespCode == "00" {
+			return adaptor.ReturnWithErrorCode("COUPON_ALREADY_PAY")
+		}
+		if len(couponTrans.VoucherType) > 1 {
+			payType = couponTrans.VoucherType[0:1]
+		}
+
+		// 实际支付方式与卡券指定支付方式不符，则拒掉交易
+		if payType != "" {
+			if payType == "2" {
+				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+			} else if payType == "4" && req.Chcd != channel.ChanCodeWeixin {
+				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+			} else if payType == "5" && req.Chcd != channel.ChanCodeAlipay {
+				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+			}
+		}
+
 	}
 
 	// 通过路由策略找到渠道和渠道商户
