@@ -24,6 +24,7 @@ android {
                                     PACKAGE             : "com.cardinfolink.yunshouyin"]
             applicationId "com.cardinfolink.yunshouyin"
             buildConfigField 'String', 'ENVIRONMENT', '"pro"'
+            buildConfigField 'String', 'GIT', getGit()
         }
         //this is 测试环境
         _test {
@@ -33,6 +34,7 @@ android {
                                     PACKAGE             : "com.cardinfolink.yunshouyin.test"]
             applicationId "com.cardinfolink.yunshouyin.test"
             buildConfigField 'String', 'ENVIRONMENT', '"test"'
+            buildConfigField 'String', 'GIT', getGit()
         }
         //this is 开发环境
         dev {
@@ -42,6 +44,7 @@ android {
                                     PACKAGE             : "com.cardinfolink.yunshouyin.test"]
             applicationId "com.cardinfolink.yunshouyin.test"
             buildConfigField 'String', 'ENVIRONMENT', '"dev"'
+            buildConfigField 'String', 'GIT', getGit()
         }
     }
 
@@ -109,4 +112,12 @@ dependencies {
 
 def releaseTime() {
     return new Date().format("yyyy-MM-dd")
+}
+
+//用这个方法来 获取 git 最后一个commit id，并且前面加上一个具体的编译的时间
+//这个方便来定位安装的是哪个版本的apk。
+def getGit() {
+    def time = new Date().format("yyyy-MM-dd HH:mm:ss")
+    Process p = "git rev-parse HEAD".execute()
+    return "\"[" + time + "] " + p.text.trim() + "\""
 }
