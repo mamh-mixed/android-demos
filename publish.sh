@@ -105,8 +105,8 @@ function gulpPackage() {
     bower install # 安装前端依赖
     gulp # 压缩文件
     cd ..
-    # cp static/index.html distrib/static/index.html # 跳转页面
-    # sed -i '' 's/url=v0.0.1"/url='$version'"/g' distrib/static/index.html # 替换版本号
+    cp static/index.html distrib/static/index.html # 跳转页面
+    sed -i '' 's/url=v0.0.1"/url='$version'"/g' distrib/static/index.html # 替换版本号
     cp -r static/dist/ distrib/static/ # 新版本静态文件路径
 }
 

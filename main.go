@@ -6,13 +6,12 @@ import (
 
 	_ "github.com/CardInfoLink/quickpay/flags"
 
+	"fmt"
 	"github.com/CardInfoLink/quickpay/app"
 	"github.com/CardInfoLink/quickpay/bindingpay"
 	"github.com/CardInfoLink/quickpay/check"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/crontab"
-	// "github.com/CardInfoLink/quickpay/data"
-	"fmt"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/scanpay"
