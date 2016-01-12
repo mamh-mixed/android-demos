@@ -84,6 +84,7 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/app/locale", appLocaleHandle)
 	mux.HandleFunc("/master/app/resetPwd", appResetPwdHandle)
 	mux.HandleFunc("/master/list", kvListHandle)
+	mux.HandleFunc("/master/password/reset", passwordResetHandle)
 	return mux
 }
 
