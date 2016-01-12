@@ -11,16 +11,29 @@
         android:layout_marginTop="20dp"
         android:src="@drawable/logo" />
 
-    <ToggleButton
-        android:id="@+id/swh"
-        style="@style/MyToggleButton"
+
+    <RadioGroup
+        android:id="@+id/rg_scancode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:background="#00000000"
-        android:checked="true"
-        android:textOff=""
-        android:textOn="" />
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rb_camera"
+            style="@style/RadioButtonStyle"
+            android:text="摄像头扫码" />
+
+        <RadioButton
+            android:id="@+id/rb_scangun"
+            style="@style/RadioButtonStyle"
+            android:text="扫码枪扫码" />
+
+        <RadioButton
+            android:id="@+id/rb_user_scan"
+            style="@style/RadioButtonStyle"
+            android:text="用户扫码" />
+    </RadioGroup>
 
     <RelativeLayout
         android:layout_width="fill_parent"

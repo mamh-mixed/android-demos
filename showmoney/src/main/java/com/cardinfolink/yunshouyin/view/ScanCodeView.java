@@ -3,8 +3,10 @@ package com.cardinfolink.yunshouyin.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -12,11 +14,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.CaptureActivity;
+import com.cardinfolink.yunshouyin.activity.ScanCodeGunActivity;
 import com.cardinfolink.yunshouyin.activity.CreateQRcodeActivity;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
@@ -30,26 +34,37 @@ import java.util.Date;
 
 public class ScanCodeView extends LinearLayout implements OnClickListener {
     private Button btn0, btn1, btn2, btn3, btn4, btn5, btn6,
-            btn7, btn8, btn9, btnadd, btnpoint, btnsm, btnclear, btndelete,
-            swh;
+            btn7, btn8, btn9, btnadd, btnpoint, btnsm, btnclear, btndelete;
     private RadioButton btnzhifubao, btnweixin;
     private EditText input;
     private TextView output;
     private boolean clearFlag = true;
     private boolean pointFlag = true;
     private boolean addFlag = true;
-    private boolean switchFlag = true;
     private boolean numFlag = true;
     private String[] s = new String[100];
     private Context mContext;
     private String chcd;
-    public final static String PAYBYALIBABA="ALP";
-    public final static String PAYBYWEIXIN="WXP";
+    public final static String PAYBYALIBABA = "ALP";
+    public final static String PAYBYWEIXIN = "WXP";
+    private RadioGroup mScanCode;
+    private RadioButton mCamera;
+    private RadioButton mScanGun;
+    private RadioButton mUserScan;
+    private final View contentView;
+    private int radioBittonId = 0;
+    private String switchFlag="00";
+    private final SharedPreferences sp;
+    private final SharedPreferences.Editor editor;
+
 
     public ScanCodeView(Context context) {
         super(context);
         mContext = context;
-        View contentView = LayoutInflater.from(context).inflate(R.layout.scancode_view, null);
+        sp = context.getSharedPreferences("savedata", Activity.MODE_PRIVATE);
+
+        editor = sp.edit();
+        contentView = LayoutInflater.from(context).inflate(R.layout.scancode_view, null);
         LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
         addView(contentView);
@@ -66,7 +81,6 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
     }
 
     private void initLayout() {
-        swh = (Button) findViewById(R.id.swh);
         btnzhifubao = (RadioButton) findViewById(R.id.btnzhifubao);
         btnweixin = (RadioButton) findViewById(R.id.btnweixin);
         btn0 = (Button) findViewById(R.id.btn0);
@@ -106,21 +120,48 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
         btnweixin.setOnClickListener(this);
         btnsm.setOnClickListener(this);
 
-        swh.setOnClickListener(new OnClickListener() {
 
+        mScanCode = (RadioGroup) contentView.findViewById(R.id.rg_scancode);
+        mCamera = (RadioButton) findViewById(R.id.rb_camera);
+        mScanGun = (RadioButton) findViewById(R.id.rb_scangun);
+        mUserScan = (RadioButton) findViewById(R.id.rb_user_scan);
+        switchFlag=sp.getString("scancodeaccess", "00");
+        if("00".equals(switchFlag)) {
+            btnsm.setText("输入支付码");
+            mScanGun.setChecked(true);
+        }else if("01".equals(switchFlag)){
+                btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_scaning_code));
+                mCamera.setChecked(true);
+        }
+        mScanCode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                if (switchFlag) {
-                    btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_create_code));
-                    switchFlag = false;
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                radioBittonId = group.getCheckedRadioButtonId();
+                switch (radioBittonId) {
+                    case R.id.rb_scangun:
+                        btnsm.setText("输入支付码");
+                        switchFlag = "00";
+                        editor.putString("scancodeaccess", "00").commit();
 
-                } else {
-                    btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_scaning_code));
-                    switchFlag = true;
+
+                        break;
+                    case R.id.rb_camera:
+                        btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_scaning_code));
+                        switchFlag = "01";
+                        editor.putString("scancodeaccess", "01").commit();
+
+
+                        break;
+                    case R.id.rb_user_scan:
+                        btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_create_code));
+                        switchFlag = "02";
+                        editor.putString("scancodeaccess", "00").commit();
+
+                        break;
                 }
-
             }
         });
+
 
     }
 
@@ -308,16 +349,23 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                                 AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, alertBitmap);
                                 alertDialog.show();
                             } else {
-                                    chcd = PAYBYWEIXIN;
-                                if (switchFlag) {
+                                chcd = PAYBYWEIXIN;
+                                if ("01".equals(switchFlag)) {
                                     Intent intent = new Intent(mContext, CaptureActivity.class);
                                     intent.putExtra("chcd", chcd);
                                     intent.putExtra("total", sumString);
+
                                     mContext.startActivity(intent);
-                                } else {
+                                } else if ("02".equals(switchFlag)) {
                                     Intent intent = new Intent(mContext, CreateQRcodeActivity.class);
                                     intent.putExtra("chcd", chcd);
-                                    intent.putExtra("total",sumString);
+                                    intent.putExtra("total", sumString);
+                                    mContext.startActivity(intent);
+                                } else if ("00".equals(switchFlag)) {
+                                    //扫码枪
+                                    Intent intent = new Intent(mContext, ScanCodeGunActivity.class);
+                                    intent.putExtra("chcd", chcd);
+                                    intent.putExtra("total", sumString);
                                     mContext.startActivity(intent);
                                 }
                             }
@@ -333,14 +381,20 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                         }
                     });
                 } else {
-                        chcd =PAYBYWEIXIN;
-                    if (switchFlag) {
+                    chcd = PAYBYWEIXIN;
+                    if ("01".equals(switchFlag)) {
                         Intent intent = new Intent(mContext, CaptureActivity.class);
                         intent.putExtra("chcd", chcd);
                         intent.putExtra("total", sumString);
                         mContext.startActivity(intent);
-                    } else {
+                    } else if ("02".equals(switchFlag)) {
                         Intent intent = new Intent(mContext, CreateQRcodeActivity.class);
+                        intent.putExtra("chcd", chcd);
+                        intent.putExtra("total", sumString);
+                        mContext.startActivity(intent);
+                    } else if ("00".equals(switchFlag)) {
+                        //扫码枪
+                        Intent intent = new Intent(mContext, ScanCodeGunActivity.class);
                         intent.putExtra("chcd", chcd);
                         intent.putExtra("total", sumString);
                         mContext.startActivity(intent);
