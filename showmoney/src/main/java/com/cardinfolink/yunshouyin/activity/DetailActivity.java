@@ -294,14 +294,18 @@ public class DetailActivity extends BaseActivity {
                 }
             });
         } else if ("30".equals(mTradeBill.transStatus)) {
-            double amt = Double.parseDouble(mTradeBill.refundAmt);
-            if (amt == 0) {
-                //成功的
-                mPayResult.setTextColor(getResources().getColor(R.color.color_txt_normal));
-                mPayResult.setText(getString(R.string.detail_activity_trade_status_success));
-                mPayResultImage.setImageResource(R.drawable.pay_result_succeed);
-            } else {
-                //部分退款的
+            try {
+                BigDecimal refdBD = new BigDecimal(mTradeBill.refundAmt);//退款金额
+                if (refdBD.compareTo(new BigDecimal("0")) == 0) {
+                    //成功的
+                    mPayResult.setTextColor(getResources().getColor(R.color.textview_textcolor_pay_success));
+                    mPayResult.setText(getString(R.string.detail_activity_trade_status_success));
+                    mPayResultImage.setImageResource(R.drawable.pay_result_succeed);
+                } else {
+                    //部分退款的
+                    mPayResult.setText(getString(R.string.detail_activity_trade_status_partrefd));
+                }
+            } catch (Exception e) {
                 mPayResult.setText(getString(R.string.detail_activity_trade_status_partrefd));
             }
         } else if ("40".equals(mTradeBill.transStatus)) {
