@@ -34,5 +34,6 @@ func SavePushMessage(req *model.PushMessageReq) error {
 	rsp.Message = req.Message
 	rsp.PushTime = time.Now().Format("20060102150405")
 	rsp.MsgId = util.SerialNumber()
+	rsp.MsgType = req.MsgType
 	return mongo.PushMessageColl.Insert(rsp)
 }

@@ -114,7 +114,7 @@ func (col *transCollection) Update(t *model.Trans) error {
 }
 
 // UpdateFields 根据键值对更新某些字段
-func (col *transCollection) UpdateFields(merId, orderNum string, fv ...string) error {
+func (col *transCollection) UpdateFields(merId, orderNum string, fv ...interface{}) error {
 	if len(fv) == 0 {
 		return nil
 	}
@@ -125,11 +125,15 @@ func (col *transCollection) UpdateFields(merId, orderNum string, fv ...string) e
 
 	set := bson.M{}
 	for i := 0; i < len(fv); i += 2 {
-		set[fv[i]] = fv[i+1]
+		key, ok := fv[i].(string)
+		if ok {
+			set[key] = fv[i+1]
+		} else {
+			return fmt.Errorf("type of field must be string")
+		}
+
 	}
 	update := bson.M{"$set": set}
-	log.Debugf("%+v", update)
-
 	return database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, update)
 }
 
@@ -774,4 +778,33 @@ func handleTransStatus(q *model.QueryCondition, match bson.M) {
 			match["refundStatus"] = bson.M{"$in": q.RefundStatus}
 		}
 	}
+}
+
+func (col *transCollection) FindTotalAmtByMerId(merId, day string) (int64, error) {
+
+	var amt = &struct {
+		TransAmt    int64 `bson:"transAmt"`
+		RefundedAmt int64 `bson:"refundedAmt"`
+	}{}
+	find := bson.M{
+		"createTime": bson.RegEx{day, "."},
+		"merId":      merId,
+		"respCode":   "00",
+		"transType":  1,
+	}
+
+	err := database.C(col.name).Pipe([]bson.M{
+		{"$match": find},
+		{"$group": bson.M{
+			"_id":         "$merId",
+			"transAmt":    bson.M{"$sum": "$transAmt"},
+			"refundedAmt": bson.M{"$sum": "$refundedAmt"},
+		}},
+		{"$project": bson.M{
+			"transAmt":    1,
+			"refundedAmt": 1,
+		}},
+	}).One(amt)
+	fmt.Printf("the trans amt is: %d, refundAmt is %d", amt.TransAmt, amt.RefundedAmt)
+	return amt.TransAmt - amt.RefundedAmt, err
 }

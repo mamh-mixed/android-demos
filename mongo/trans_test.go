@@ -3,14 +3,15 @@ package mongo
 import (
 	"bytes"
 	"fmt"
+	"strings"
+	"testing"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
 	"gopkg.in/mgo.v2/bson"
-	"strings"
-	"testing"
-	"time"
 )
 
 func TestFindToSett(t *testing.T) {

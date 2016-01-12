@@ -1112,7 +1112,7 @@ func (u *user) updateMessageHandle(req *reqParams) (result model.AppResult) {
 	return model.SUCCESS1
 }
 
-// 重置密码,未完善 TODO 诗景
+// 重置密码
 func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
 	// 字段长度验证
 	if result, ok := requestDataValidate(req); !ok {
@@ -1128,19 +1128,22 @@ func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
 	// 根据用户名查找用户
 	_, err := mongo.AppUserCol.FindOne(req.UserName)
 	if err != nil {
-		return model.USERNAME_PASSWORD_ERROR
+		return model.USERNAME_NO_EXIST
 	}
 
-	// hostAddress := goconf.Config.App.NotifyURL
+	code := fmt.Sprintf("%d", rand.Int31())
+	resetPasswordUrl := fmt.Sprintf("%s/master/resetPassword?code=%s", hostAddress, code)
+	click := b64Encoding.EncodeToString(randBytes(32))
 
 	email := &email.Email{
 		To:    req.UserName,
 		Title: resetPassword.Title,
-		Body:  fmt.Sprintf(resetPassword.Body, "test", "test"),
+		Body:  fmt.Sprintf(resetPassword.Body, resetPasswordUrl, click),
 	}
 
 	e := &model.Email{
 		UserName:  req.UserName,
+		Code:      code,
 		Success:   false,
 		Timestamp: time.Now().Format("2006-01-02 15:04:05"),
 	}
@@ -1253,7 +1256,7 @@ func (u *user) findPushMessage(req *reqParams) (result model.AppResult) {
 		UserName: req.UserName,
 		LastTime: req.LastTime,
 		MaxTime:  req.MaxTime,
-		Message:  "MSG_TYPE_C", // 只返回MSG_TYPE_C类型消息
+		MsgType:  "MSG_TYPE_C", // 只返回MSG_TYPE_C类型消息
 		Size:     size,
 	})
 	if err != nil {
@@ -1264,6 +1267,7 @@ func (u *user) findPushMessage(req *reqParams) (result model.AppResult) {
 		messages = make([]model.PushMessage, 0)
 	}
 
+	result = model.SUCCESS1
 	result.Count = len(messages)
 	result.Message = messages
 	return result
