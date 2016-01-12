@@ -351,7 +351,7 @@
             Util.toast('SCANPAY_TRADE_LIST.TOAST.NOT_FOUND', 3000, true);
             return;
           }
-          this.currency = pagination.data.currency || 'CNY';
+          this.currency = pagination.data.currency || 'JPY';
           this.records = pagination.data.data.slice(0);
           this.set('cond.total', pagination.total);
           this.set('cond.page', pagination.page);
@@ -423,12 +423,12 @@
         _computeAmount: function(amount) {
           var currency = this.currency;
           if (!currency || currency === '') {
-            currency = 'CNY';
+            currency = 'JPY';
           }
 
           var decInfo = CURRENCY_DECIMAL_MAP[currency];
           if (!decInfo) {
-            decInfo = CURRENCY_DECIMAL_MAP['CNY'];
+            decInfo = CURRENCY_DECIMAL_MAP['JPY'];
           }
           amount = (amount / Math.pow(10, decInfo.decimal)).toFixed(decInfo.decimal);
           return Util.beautifyAmount(amount);
