@@ -178,11 +178,13 @@ func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err
 // FindOneByOrigOrderNum 通过订单号、商户号查找一条交易记录
 func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (ts []*model.Trans, err error) {
 	match := bson.M{
-		"busicd":       q.Busicd,
 		"origOrderNum": q.OrigOrderNum,
-		"transStatus":  "30",
+		"transStatus":  model.TransSuccess,
 	}
 
+	if q.Busicd != "" {
+		match["busicd"] = q.Busicd
+	}
 	if q.AgentCode != "" {
 		match["agentCode"] = q.AgentCode
 	}
@@ -346,27 +348,6 @@ func (col *transCollection) FindByOrderNum(sysOrderNum string) (t *model.Trans, 
 
 	return
 }
-
-// UpdateFields 更新指定字段
-// func (col *transCollection) UpdateFields(t *model.Trans) error {
-
-// 	if t.Id == "" {
-// 		return fmt.Errorf("%s", "id is null!")
-// 	}
-// 	// update fields
-// 	fields := bson.M{
-// 		"updateTime": time.Now().Format("2006-01-02 15:04:05"),
-// 	}
-// 	if t.MerDiscount != "" {
-// 		fields["merDiscount"] = t.MerDiscount
-// 	}
-// 	if t.ChanDiscount != "" {
-// 		fields["chanDiscount"] = t.ChanDiscount
-// 	}
-// 	// more fields
-
-// 	return database.C(col.name).Update(bson.M{"_id": t.Id}, bson.M{"$set": fields})
-// }
 
 // Find 根据商户Id,清分时间查找交易明细
 // 按照商户订单号降排序
