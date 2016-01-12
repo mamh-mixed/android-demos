@@ -154,6 +154,10 @@
         <activity
             android:name=".activity.AgreementActivity"
             android:label="@string/app_name" />
+        <activity
+            android:name=".activity.ConfigActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTask" />
 
         <!-- UMENG appkey start -->
         <meta-data
