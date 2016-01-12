@@ -511,8 +511,10 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 			orig.RefundAmt = refundAmt
 		} else {
 			// 还是部分退款，更新退款金额即可。
-			orig.RefundStatus = model.TransPartRefunded
-			orig.RefundAmt = refundAmt
+			// 赞不支持部分退款
+			return adaptor.LogicErrorHandler(refund, "NO_ROUTERPOLICY")
+			// orig.RefundStatus = model.TransPartRefunded
+			// orig.RefundAmt = refundAmt
 		}
 	}
 
