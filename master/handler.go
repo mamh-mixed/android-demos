@@ -1428,12 +1428,6 @@ func passwordResetHandle(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(501)
 		return
 	}
-	_, err = Session.Get(r)
-	if err != nil {
-		log.Error("fail to find session")
-		w.Write([]byte("FIND SESSION ERROR"))
-		return
-	}
 
 	ret := User.PasswordReset(data)
 

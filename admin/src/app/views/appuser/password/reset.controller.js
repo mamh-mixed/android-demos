@@ -3,21 +3,21 @@ export class PasswordResetController {
     'ngInject';
     let prc = this;
     prc.params = $stateParams;
-    prc.service = passwordResetService;
+    prc.passwordResetService = passwordResetService;
     prc.activate();
     prc.request = {
-      username: '',
-      password: '',
-      passwordRepeat: ''
+      username: 'fnghwsj@qq.com',
+      password: 'Yun#1016',
+      passwordRepeat: 'Yun#1016'
     };
   }
 
   activate() {
-    this.service.validateCheckCode(this.params.code);
+    this.passwordResetService.validateCheckCode(this.params.code);
   }
 
   sendRequest() {
     this.request.checkCode = this.params.code;
-    this.service.sendRequest(this.request);
+    this.passwordResetService.sendRequest(this.request);
   }
 }

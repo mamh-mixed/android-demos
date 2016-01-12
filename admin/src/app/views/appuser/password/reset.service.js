@@ -5,6 +5,7 @@ export class PasswordResetService {
 		this.toastr = toastr;
 		this.log = $log;
 		this.state = $state;
+		this.$http = $http;
 		this.apiHost = '/master/user/app/password/reset';
 	}
 
@@ -26,11 +27,46 @@ export class PasswordResetService {
 	 */
 	sendRequest(params = {}) {
 		if (!this.validate(params)) {
-			return;
+			return {status: 7, message: "DATA_VALIDATE_FAIL"};
 		}
 
-    this.toastr.success('保存成功');
-    // TODO 成功后跳转
+		return this.$http.post(this.apiHost, angular.toJson(params))
+			.then((response) => {
+				let body = response.data;
+				if (body.status === 0) {
+					this.toastr.success('保存成功');
+					return body;
+				}
+
+				switch (body.message) {
+					case 'MISS_REQUIRED_PARAMETER':
+						this.toastr.error('缺失必要参数：' + response.data);
+						break;
+					case 'PASSWORD_MUST_BE_COMPLEX':
+						this.toastr.error('密码必须包含大小写字母和数字，并且长度不小于8位字符');
+						break;
+					case 'USERNAME_NOT_MATCH':
+						this.toastr.error('输入的用户名未注册');
+						break;
+					case 'INVALID_CHECK_CODE':
+						this.toastr.error('没有权限访问');
+						break;
+					case 'OPERATION_OUT_OF_DATE':
+						this.toastr.error('操作超时，请重新申请密码修改');
+						break;
+					case 'ALREADY_OPERATED':
+						this.toastr.info('您已经变更过密码了，请勿重新操作');
+						break;
+					default:
+						this.toastr.error('系统错误');
+				}
+
+				return body;
+			})
+			.catch((error) => {
+				this.log.error('XHR Failed for sendRequest: ' + error.data);
+				return error;
+			});
 	}
 
 	/**
