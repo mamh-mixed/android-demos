@@ -277,11 +277,6 @@ public class LoginActivity extends BaseActivity {
         public void afterTextChanged(Editable s) {
             switch (view.getId()) {
                 case R.id.login_username:
-                    if (TextUtils.isEmpty(mUsernameEdit.getText())) {
-                        mIncrease.setVisibility(View.VISIBLE);
-                    } else {
-                        mIncrease.setVisibility(View.INVISIBLE);
-                    }
                     break;
                 case R.id.login_password:
                     if (TextUtils.isEmpty(mPasswordEdit.getText())) {
