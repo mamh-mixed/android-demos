@@ -310,38 +310,9 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	default:
 		return adaptor.LogicErrorHandler(t, "NO_CHANNEL")
 	}
-
-	// 如果卡券订单号不为空，则查询出卡券订单
-	if req.CouponOrderNum != "" {
-		payType := ""
-		// 判断是否存在该订单
-		couponTrans, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
-		if err != nil {
-			return adaptor.ReturnWithErrorCode("COUPON_TRADE_NOT_EXIST")
-		}
-		// 卡券核销失败或者卡券已被撤销,则不能再支付
-		if couponTrans.RespCode != "00" || couponTrans.TransStatus != model.TransSuccess {
-			return adaptor.ReturnWithErrorCode("COUPON_VERI_ERROR_OR_CANCEL")
-		}
-		// 如果该卡券订单已经支付成功,则不能再支付
-		if couponTrans.ScanPayCoupon != nil && couponTrans.ScanPayCoupon.RespCode == "00" {
-			return adaptor.ReturnWithErrorCode("COUPON_ALREADY_PAY")
-		}
-		if len(couponTrans.VoucherType) > 1 {
-			payType = couponTrans.VoucherType[0:1]
-		}
-
-		// 实际支付方式与卡券指定支付方式不符，则拒掉交易
-		if payType != "" {
-			if payType == "2" {
-				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
-			} else if payType == "4" && shouldChcd != channel.ChanCodeWeixin {
-				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
-			} else if payType == "5" && shouldChcd != channel.ChanCodeAlipay {
-				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
-			}
-		}
-
+	errCode := couponLogicProcess(req, shouldChcd)
+	if errCode != "" {
+		return adaptor.LogicErrorHandler(t, errCode)
 	}
 
 	// 下单时忽略渠道，以免误送渠道导致交易失败
@@ -422,37 +393,10 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
-	// 如果卡券订单号不为空，则查询出卡券订单
-	if req.CouponOrderNum != "" {
-		payType := ""
-		// 判断是否存在该订单
-		couponTrans, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
-		if err != nil {
-			return adaptor.ReturnWithErrorCode("COUPON_TRADE_NOT_EXIST")
-		}
-		// 卡券核销失败或者卡券已被撤销,则不能再支付
-		if couponTrans.RespCode != "00" || couponTrans.TransStatus != model.TransSuccess {
-			return adaptor.ReturnWithErrorCode("COUPON_VERI_ERROR_OR_CANCEL")
-		}
-		// 如果该卡券订单已经支付成功,则不能再支付
-		if couponTrans.ScanPayCoupon != nil && couponTrans.ScanPayCoupon.RespCode == "00" {
-			return adaptor.ReturnWithErrorCode("COUPON_ALREADY_PAY")
-		}
-		if len(couponTrans.VoucherType) > 1 {
-			payType = couponTrans.VoucherType[0:1]
-		}
 
-		// 实际支付方式与卡券指定支付方式不符，则拒掉交易
-		if payType != "" {
-			if payType == "2" {
-				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
-			} else if payType == "4" && req.Chcd != channel.ChanCodeWeixin {
-				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
-			} else if payType == "5" && req.Chcd != channel.ChanCodeAlipay {
-				return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
-			}
-		}
-
+	errCode := couponLogicProcess(req, req.Chcd)
+	if errCode != "" {
+		return adaptor.LogicErrorHandler(t, errCode)
 	}
 
 	// 通过路由策略找到渠道和渠道商户
@@ -1337,4 +1281,40 @@ func updateScanPayTransToCouponTrans(t *model.Trans) {
 	if err != nil {
 		log.Errorf("save scanPayTrans to couponTrans fail,scanPayOrderNum:%s,%s", scanPayCoupon.OrderNum, err)
 	}
+}
+
+func couponLogicProcess(req *model.ScanPayRequest, chanCode string) string {
+	// 如果卡券订单号不为空，则查询出卡券订单
+	if req.CouponOrderNum != "" {
+		payType := ""
+		// 判断是否存在该订单
+		couponTrans, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
+		if err != nil {
+			return "COUPON_TRADE_NOT_EXIST"
+		}
+		// 卡券核销失败或者卡券已被撤销,则不能再支付
+		if couponTrans.RespCode != "00" || couponTrans.TransStatus != model.TransSuccess {
+			return "COUPON_VERI_ERROR_OR_CANCEL"
+		}
+		// 如果该卡券订单已经支付成功,则不能再支付
+		if couponTrans.ScanPayCoupon != nil && couponTrans.ScanPayCoupon.RespCode == "00" {
+			return "COUPON_ALREADY_PAY"
+		}
+		if len(couponTrans.VoucherType) > 1 {
+			payType = couponTrans.VoucherType[0:1]
+		}
+
+		// 实际支付方式与卡券指定支付方式不符，则拒掉交易
+		if payType != "" {
+			if payType == "2" {
+				return "CODE_PAYTYPE_NOT_MATCH"
+			} else if payType == "4" && chanCode != channel.ChanCodeWeixin {
+				return "CODE_PAYTYPE_NOT_MATCH"
+			} else if payType == "5" && chanCode != channel.ChanCodeAlipay {
+				return "CODE_PAYTYPE_NOT_MATCH"
+			}
+		}
+
+	}
+	return ""
 }
