@@ -6,9 +6,9 @@ export class PasswordResetController {
     prc.passwordResetService = passwordResetService;
     prc.activate();
     prc.request = {
-      username: 'fnghwsj@qq.com',
-      password: 'Yun#1016',
-      passwordRepeat: 'Yun#1016'
+      username: '',
+      password: '',
+      passwordRepeat: ''
     };
   }
 
