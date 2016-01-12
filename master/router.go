@@ -84,7 +84,6 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/app/locale", appLocaleHandle)
 	mux.HandleFunc("/master/app/resetPwd", appResetPwdHandle)
 	mux.HandleFunc("/master/list", kvListHandle)
-	mux.HandleFunc("/master/password/reset", passwordResetHandle)
 	return mux
 }
 
@@ -118,6 +117,13 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		sessionDeleteHandle(w, r)
 		return
 	}
+
+	// 密码重置
+	if r.URL.Path == "/master/user/app/password/reset" {
+		passwordResetHandle(w, r)
+		return
+	}
+
 	// 验证 session 是否过期
 	session, err := sessionProcess(w, r)
 	if err != nil {
