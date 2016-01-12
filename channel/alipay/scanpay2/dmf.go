@@ -2,11 +2,15 @@ package scanpay2
 
 import (
 	"fmt"
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"time"
 )
 
 var DefaultClient dmf2
+
+var NotifyPath = "/scanpay/upNotify/alipay2"
+var Alipay2NotifyUrl = goconf.Config.AlipayScanPay.NotifyUrl + NotifyPath
 
 type dmf2 struct{}
 
@@ -23,19 +27,19 @@ func (d *dmf2) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespo
 
 	p := &PayReq{}
 	p.CommonParams = *getCommonParams(req)
+	p.CommonParams.NotifyUrl = Alipay2NotifyUrl
 	p.OutTradeNo = req.OrderNum
 	p.Scene = "bar_code"
 	p.AuthCode = req.ScanCodeId
 	p.Subject = req.Subject
 	p.TotalAmount = req.ActTxamt
-	// p.GoodsDetail = req.AlpMarshalGoods()
+	p.GoodsDetail = parseGoods(req)
 	_, p.TimeExpire = handleExpireTime(req.TimeExpire)
-
+	p.ExtendParams = Params{req.ExtendParams}
 	p.Body = ""
 	p.StoreID = ""
 	p.OperatorID = ""
 	p.TerminalID = ""
-	p.ExtendParams = ""
 
 	q := &PayResp{}
 	err := Execute(p, q)
@@ -57,12 +61,13 @@ func (d *dmf2) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPa
 
 	p := &PrecreateReq{}
 	p.CommonParams = *getCommonParams(req)
+	p.CommonParams.NotifyUrl = Alipay2NotifyUrl
 	p.OutTradeNo = req.OrderNum
 	p.Subject = req.Subject
 	p.TotalAmount = req.ActTxamt
-	// p.GoodsDetail = req.AlpMarshalGoods()
+	p.GoodsDetail = parseGoods(req)
 	_, p.TimeExpire = handleExpireTime(req.TimeExpire)
-
+	p.ExtendParams = Params{req.ExtendParams}
 	q := &PrecreateResp{}
 	err := Execute(p, q)
 	if err != nil {
@@ -136,6 +141,7 @@ func (d *dmf2) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse
 		// ret.PayTime = q.GmtPayment
 		ret.ConsumerAccount = q.BuyerLogonID
 		ret.ConsumerId = q.OpenID
+		ret.PayTime = q.SendPayDate
 	case "WAIT_BUYER_PAY":
 		ret.Respcd, ret.ErrorDetail = inprocessCode, inprocessMsg
 	case "TRADE_FINISHED", "TRADE_CLOSED":
@@ -195,4 +201,25 @@ func handleExpireTime(expirtTime string) (string, string) {
 	}
 
 	return stStr, expirtTime
+}
+
+// parseGoods 输出2.0要求的商品格式
+func parseGoods(req *model.ScanPayRequest) []GoodsDetail {
+	details, err := req.MarshalGoods()
+	if err != nil {
+		return nil
+	}
+	if len(details) > 0 {
+		var gs []GoodsDetail
+		for _, g := range details {
+			gs = append(gs, GoodsDetail{
+				GoodsId:   fmt.Sprintf("%d", g.GoodsId),
+				GoodsName: g.GoodsName,
+				Price:     g.Price,
+				Quantity:  g.Quantity,
+			})
+		}
+		return gs
+	}
+	return nil
 }

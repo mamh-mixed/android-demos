@@ -2,12 +2,12 @@ package domestic
 
 import (
 	"bufio"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
-	// "github.com/omigo/mahonia"
 	"strings"
 	"time"
 )
@@ -46,7 +46,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 		OutTradeNo:     req.OrderNum,                      // 送的是原订单号，不转换
 		PassbackParams: req.SysOrderNum + "," + req.ReqId, // 格式：系统订单号,日志Id
 		Subject:        req.Subject,
-		GoodsDetail:    req.AlpMarshalGoods(),
+		GoodsDetail:    parseGoods(req),
 		ProductCode:    "BARCODE_PAY_OFFLINE",
 		TotalFee:       req.ActTxamt,
 		ExtendParams:   req.ExtendParams, //...
@@ -75,7 +75,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 		NotifyUrl:      alipayNotifyUrl,
 		OutTradeNo:     req.OrderNum, // 送的是原订单号，不转换,
 		Subject:        req.Subject,
-		GoodsDetail:    req.AlpMarshalGoods(),
+		GoodsDetail:    parseGoods(req),
 		PassbackParams: req.SysOrderNum + "," + req.ReqId, // 格式：系统订单号,日志Id
 		ProductCode:    "QR_CODE_OFFLINE",
 		TotalFee:       req.ActTxamt,
@@ -339,4 +339,23 @@ func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlend
 	}
 	log.Debugf("debug data: %+v", recsMap["2015122221001004770044413116"])
 	cbd[chanMerId] = recsMap
+}
+
+// parseGoods 按照dmf1.0格式输出商品详情
+func parseGoods(req *model.ScanPayRequest) string {
+	goods, err := req.MarshalGoods()
+	if err != nil {
+		return ""
+	}
+
+	if len(goods) > 0 {
+		gbs, err := json.Marshal(goods)
+		if err != nil {
+			log.Errorf("goodsInfo marshal error:%s", err)
+			return ""
+		}
+		return string(gbs)
+	}
+
+	return ""
 }

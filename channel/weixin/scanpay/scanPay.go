@@ -44,11 +44,11 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 	d := &PayReq{
 		CommonParams: *getCommonParams(m),
 
-		Body:           m.WxpMarshalGoods(), // 商品描述
-		OutTradeNo:     m.OrderNum,          // 商户订单号
-		AuthCode:       m.ScanCodeId,        // 授权码
-		TotalFee:       m.ActTxamt,          // 总金额
-		SpbillCreateIP: util.LocalIP,        // 终端IP
+		Body:           parseGoods(m), // 商品描述
+		OutTradeNo:     m.OrderNum,    // 商户订单号
+		AuthCode:       m.ScanCodeId,  // 授权码
+		TotalFee:       m.ActTxamt,    // 总金额
+		SpbillCreateIP: util.LocalIP,  // 终端IP
 
 		TimeStart:  startTime.Format("20060102150405"), // 交易起始时间
 		TimeExpire: endTime.Format("20060102150405"),   // 交易结束时间
@@ -158,7 +158,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		CommonParams: *getCommonParams(m),
 
 		DeviceInfo:     m.DeviceInfo,                  // 设备号
-		Body:           m.WxpMarshalGoods(),           // 商品描述
+		Body:           parseGoods(m),                 // 商品描述
 		Attach:         m.SysOrderNum + "," + m.ReqId, // 格式：系统订单号,日志Id
 		OutTradeNo:     m.OrderNum,                    // 商户订单号
 		TotalFee:       m.ActTxamt,                    // 总金额
@@ -423,4 +423,31 @@ func handleExpireTime(expirtTime string) (string, string) {
 	}
 
 	return stStr, expirtTime
+}
+
+// parseGoods 按照微信格式输出商品详细
+func parseGoods(req *model.ScanPayRequest) string {
+
+	goods, err := req.MarshalGoods()
+	if err != nil {
+		// 格式不对，送配置的商品名称，防止商户送的内容过长
+		return req.Subject
+	}
+
+	var goodsName []string
+	if len(goods) > 0 {
+		for _, v := range goods {
+			goodsName = append(goodsName, v.GoodsName)
+		}
+
+		body := strings.Join(goodsName, ",")
+		bodySizes := []rune(body)
+		if len(bodySizes) > 20 {
+			body = string(bodySizes[:20]) + "..."
+		}
+		return body
+	}
+
+	// 假如商品详细为空，送配置的商品名称
+	return req.Subject
 }

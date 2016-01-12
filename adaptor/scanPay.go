@@ -9,7 +9,10 @@ import (
 	"github.com/omigo/log"
 )
 
-var agentId = goconf.Config.AlipayScanPay.AgentId
+var (
+	alp1_0ID = goconf.Config.AlipayScanPay.ALP1_0AgentID
+	alp2_0ID = goconf.Config.AlipayScanPay.ALP2_0AgentID
+)
 
 // ProcessEnterprisePay 企业支付
 func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
@@ -19,9 +22,6 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
 	req.AppID = c.WxpAppId
-
-	// 交易参数
-	t.SysOrderNum = req.SysOrderNum
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
@@ -505,17 +505,27 @@ func genOverseaExtendInfo(mer model.Merchant) (string, error) {
 }
 
 func genExtendParams(mer model.Merchant, c *model.ChanMer) string {
-	var agentCode = agentId
-	if c.AgentCode != "" {
-		agentCode = c.AgentCode
-	}
-	var shopInfo = &struct {
-		AGENT_ID   string `json:",omitempty"`
-		STORE_ID   string `json:",omitempty"`
-		STORE_TYPE string `json:",omitempty"`
-		SHOP_ID    string `json:",omitempty"`
-	}{agentCode, mer.Detail.ShopID, mer.Detail.ShopType, mer.Detail.BrandNum}
+	switch c.Version {
+	case channel.ALP2_0:
+		var agentCode = alp2_0ID
+		if c.AgentCode != "" {
+			agentCode = c.AgentCode
+		}
+		return agentCode
+	default:
+		// ALP1_0
+		var agentCode = alp1_0ID
+		if c.AgentCode != "" {
+			agentCode = c.AgentCode
+		}
+		var shopInfo = &struct {
+			AGENT_ID   string `json:",omitempty"`
+			STORE_ID   string `json:",omitempty"`
+			STORE_TYPE string `json:",omitempty"`
+			SHOP_ID    string `json:",omitempty"`
+		}{agentCode, mer.Detail.ShopID, mer.Detail.ShopType, mer.Detail.BrandNum}
 
-	bytes, _ := json.Marshal(shopInfo)
-	return string(bytes)
+		bytes, _ := json.Marshal(shopInfo)
+		return string(bytes)
+	}
 }

@@ -3,13 +3,14 @@ package scanpay2
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"github.com/CardInfoLink/quickpay/goconf"
+	"github.com/CardInfoLink/quickpay/logs"
+	"github.com/omigo/log"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"sort"
-
-	"github.com/CardInfoLink/quickpay/goconf"
-	"github.com/omigo/log"
 )
 
 var openAPIURL = goconf.Config.AlipayScanPay.OpenAPIURL + "?charset=" + CharsetUTF8
@@ -19,6 +20,15 @@ func sendRequest(req BaseReq, resp BaseResp) error {
 	if err != nil {
 		return err
 	}
+
+	m := req.GetSpReq()
+	if m == nil {
+		return fmt.Errorf("%s", "no params spReq found")
+	}
+
+	// 记录请求渠道日志
+	logs.SpLogs <- m.GetChanReqLogs(v)
+
 	log.Infof(">>> to alipay message: %s", v.Encode())
 
 	body, err := send(v, openAPIURL)
@@ -31,6 +41,9 @@ func sendRequest(req BaseReq, resp BaseResp) error {
 	if err != nil {
 		return err
 	}
+
+	// 记录渠道返回日志
+	logs.SpLogs <- m.GetChanRetLogs(resp)
 
 	return nil
 }

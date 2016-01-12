@@ -3,8 +3,6 @@ package scanpay2
 import (
 	"crypto/rsa"
 	"errors"
-	"fmt"
-	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
 	"github.com/omigo/validator"
@@ -35,9 +33,24 @@ type CommonParams struct {
 	Sign      string                `json:"-"`                    // 商户请求参数的签名串，详见安全规范中的签名生成算法
 	Timestamp string                `json:"-"`                    // 发送请求的时间，格式“yyyy-MM-dd HH:mm:ss”
 	Version   string                `json:"-"`                    // 调用的接口版本，固定为:1.0
+	NotifyUrl string                `json:"-"`                    // 异步通知地址
 	Req       *model.ScanPayRequest `json:"-" bson:"-"`
 
 	PrivateKey *rsa.PrivateKey `json:"-" bson:"-"` // 商户 RSA 私钥
+}
+
+type GoodsDetail struct {
+	GoodsId       string `json:"goods_id"`
+	GoodsName     string `json:"goods_name"`
+	Price         string `json:"price"`
+	Quantity      string `json:"quantity"`
+	AlipayGoodsId string `json:"alipay_goods_id,omitempty"`
+	GoodsCategory string `json:"goods_category",omitempty`
+	Body          string `json:"body,omitempty"`
+}
+
+type Params struct {
+	SysServiceProviderId string `json:"sys_service_provider_id,omitempty"`
 }
 
 func (c *CommonParams) GetSpReq() *model.ScanPayRequest {
@@ -70,6 +83,11 @@ func (c *CommonParams) Values() (v url.Values) {
 	} else {
 		v.Set("version", c.Version)
 	}
+
+	if c.NotifyUrl != "" {
+		v.Set("notify_url", c.NotifyUrl)
+	}
+
 	return v
 }
 
@@ -101,14 +119,6 @@ func (c *CommonBody) GetSign() string {
 // Execute 这个是扫码支付入口，所有请求，准备好参数后，调用此方法发送到支付宝
 func Execute(req BaseReq, resp BaseResp) (err error) {
 
-	m := req.GetSpReq()
-	if m == nil {
-		return fmt.Errorf("%s", "no params spReq found")
-	}
-
-	// 记录请求渠道日志
-	logs.SpLogs <- m.GetChanReqLogs(req)
-
 	if req.GetPrivateKey() == nil {
 		return errors.New("private key is nil")
 	}
@@ -123,9 +133,6 @@ func Execute(req BaseReq, resp BaseResp) (err error) {
 		log.Errorf("alipay request error: %s", err)
 		return err
 	}
-
-	// 记录渠道返回日志
-	logs.SpLogs <- m.GetChanRetLogs(resp)
 
 	return nil
 }
