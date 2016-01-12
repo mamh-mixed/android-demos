@@ -175,7 +175,7 @@ func TestFindTransRefundAmt(t *testing.T) {
 }
 
 func TestAgentProfit(t *testing.T) {
-	data, err := SpTransColl.ExportAgentProfit("2015-10-31 23:59:59")
+	data, err := SpTransColl.ExportAgentProfit("2015-11-31 23:59:59", "2015-11-01 00:00:00")
 	if err != nil {
 		t.Log(err)
 		t.FailNow()
@@ -197,13 +197,34 @@ func TestAgentProfit(t *testing.T) {
 	cell = row.AddCell()
 	cell.Value = "商户编号"
 	cell = row.AddCell()
+	cell.Value = "渠道商户编号"
+	cell = row.AddCell()
+	cell.Value = "受理商"
+	cell = row.AddCell()
 	cell.Value = "交易笔数"
 	cell = row.AddCell()
 	cell.Value = "交易金额"
 	cell = row.AddCell()
 	cell.Value = "交易渠道"
 
+	var wxpMers = make(map[string]*model.ChanMer)
+
 	for _, d := range data {
+
+		var agentMerId string
+		if cm, ok := wxpMers[d.ID.ChanMerId]; ok {
+			if cm.IsAgentMode && cm.AgentMer != nil {
+				agentMerId = cm.AgentMer.ChanMerId
+			} else {
+				agentMerId = cm.ChanMerId
+			}
+		} else {
+			cm, err := ChanMerColl.Find(d.ID.ChanCode, d.ID.ChanMerId)
+			if err == nil {
+				wxpMers[d.ID.ChanMerId] = cm
+			}
+		}
+
 		row = sheet.AddRow()
 		cell = row.AddCell()
 		cell.Value = d.ID.Date
@@ -211,6 +232,10 @@ func TestAgentProfit(t *testing.T) {
 		cell.Value = d.AgentCode
 		cell = row.AddCell()
 		cell.Value = d.ID.MerId
+		cell = row.AddCell()
+		cell.Value = d.ID.ChanMerId
+		cell = row.AddCell()
+		cell.Value = agentMerId
 		cell = row.AddCell()
 		cell.Value = fmt.Sprintf("%d", d.TransNum)
 		cell = row.AddCell()
@@ -225,7 +250,7 @@ func TestAgentProfit(t *testing.T) {
 	excel.Write(bf)
 
 	// 上传到七牛
-	err = qiniu.Put("20151031_trans", int64(bf.Len()), bf)
+	err = qiniu.Put("201511_trans.xlsx", int64(bf.Len()), bf)
 	if err != nil {
 		t.Error(err)
 	}
