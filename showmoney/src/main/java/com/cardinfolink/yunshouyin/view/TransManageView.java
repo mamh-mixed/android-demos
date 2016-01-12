@@ -395,17 +395,17 @@ public class TransManageView extends LinearLayout {
         mPayWxCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
 
         //设置一个空的view，当listview为空的时候
-        mEmptyViewBill = View.inflate(mContext, R.layout.list_view_empty, null);
+        mEmptyViewBill = View.inflate(mContext, R.layout.expandable_list_view_empty, null);
         mEmptyTextviewBill = (TextView) mEmptyViewBill.findViewById(R.id.tv_message);
         mEmptyTextviewBill.setText(mRaidoBill.getText());
         mBillPullRefreshListView.setEmptyView(mEmptyViewBill);
 
-        mEmptyViewTicket = View.inflate(mContext, R.layout.list_view_empty, null);
+        mEmptyViewTicket = View.inflate(mContext, R.layout.expandable_list_view_empty, null);
         mEmptyTextviewTicket = (TextView) mEmptyViewTicket.findViewById(R.id.tv_message);
         mEmptyTextviewTicket.setText(mRadioTicket.getText());
         mTicketPullRefreshListView.setEmptyView(mEmptyViewTicket);
 
-        mEmptyViewCollection = View.inflate(mContext, R.layout.list_view_empty, null);
+        mEmptyViewCollection = View.inflate(mContext, R.layout.expandable_list_view_empty, null);
         mEmptyTextviewCollection = (TextView) mEmptyViewCollection.findViewById(R.id.tv_message);
         mEmptyTextviewCollection.setText(mRadioCollection.getText());
         mCollectionPullRefreshListView.setEmptyView(mEmptyViewCollection);

@@ -439,6 +439,8 @@
     <string name="bill_search_result_message2">搜索账单失败</string>
     <string name="bill_search_result_message3">没有搜索到此类型账单，请尝试更换搜索条件</string>
     <string name="bill_empty_bill_list_view">暂时没有账单</string>
+    <string name="bill_bill_list_view_is_empty">为空</string>
+    <string name="bill_pull_to_refresh">请尝试下拉刷新 或者上拉加载</string>
 
     <!--我的 网页版二维码 界面用到的字符串-->
     <string name="my_web_activity_merchant_name">店铺名称：</string>
