@@ -59,6 +59,11 @@ const (
 	SR_COMPANY = "COMPANY"
 	SR_AGENT   = "AGENT"
 	SR_GROUP   = "GROUP"
+
+	// EnhanceType 额度提升
+	Enhanced  = 0 //提升
+	NoEnhance = 1 //没提升
+	Checking  = 2 //审核中
 )
 
 // cache name
@@ -155,6 +160,8 @@ type Merchant struct {
 	Detail       MerDetail       `bson:"merDetail,omitempty" json:"detail,omitempty"`          // 商户详细信息
 	CreateTime   string          `bson:"createTime,omitempty" json:"createTime,omitempty"`     // 创建时间
 	UpdateTime   string          `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 更新时间
+	EnhanceType  int             `bson:"enhanceType" json:"enhanceType"`                       // 提升额度标记 0-提升 1-没提升 2-审核中
+	LimitAmt     int             `bson:"limitAmt" json:"limitAmt"`                             // 限额
 	JsPayVersion string          `bson:"jsPayVersion,omitempty" json:"jsPayVersion,omitempty"`
 	Options      *OverseasParams `bson:"options,omitempty"`
 }

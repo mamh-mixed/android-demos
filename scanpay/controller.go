@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/core"
@@ -42,6 +44,11 @@ func ScanPayHandle(reqBytes []byte, isGBK bool) []byte {
 	// 记录请求时日志
 	if req.Mchntid != monitorMerId { // 专门做监控的商户，不记录日志
 		logs.SpLogs <- req.GetMerReqLogs()
+	}
+
+	result := checkLimitAmt(req) // 限额较验
+	if result != nil {
+		return result
 	}
 
 	// 具体业务
@@ -265,4 +272,53 @@ func getBillsCtrl(q *model.ScanPayRequest) *model.ScanPayResponse {
 	result.Count = fmt.Sprintf("%d", p.Count)
 	result.NextOrderNum = p.NextOrderNum
 	return result
+}
+
+//限额较验
+func checkLimitAmt(req *model.ScanPayRequest) []byte {
+	switch req.Busicd {
+	case model.Purc, model.Paut, model.Jszf, model.Qyzf:
+		if req.Mchntid != "" {
+			merInfo, err := mongo.MerchantColl.Find(req.Mchntid)
+			if err != nil {
+				log.Errorf("find the merinfo err ,merId:%s, error:%s", req.Mchntid, err)
+				return nil
+			}
+
+			if merInfo.EnhanceType == model.Enhanced { //已提升
+				return nil
+			} else {
+				amt, err := strconv.Atoi(req.Txamt)
+				if err != nil {
+					log.Errorf("convert the amt error, error is %s, amt is %s", err, req.Txamt)
+					return nil
+				}
+
+				trans, err := mongo.SpTransColl.FindTotalAmtByMerId(req.Mchntid, time.Now().Format("2006-01-02"))
+				var totalAmt int64
+				for _, v := range trans {
+					totalAmt += v.TransAmt - v.RefundAmt
+				}
+				if err != nil {
+					log.Infof("compute the total amt error merId:%s", req.Mchntid)
+					return nil
+				}
+				log.Infof("the total amt is %d", int(totalAmt)+amt)
+				log.Infof("the limit amt is %d", merInfo.LimitAmt)
+				if (int(totalAmt) + amt) > merInfo.LimitAmt { //当天
+					if merInfo.EnhanceType == model.NoEnhance {
+						log.Infof("the current day total amt %d is more than the limit amt %d, status is NoEnhance", int(totalAmt)+amt, merInfo.LimitAmt)
+						return errorResp(req, "NO_ENHANCE_LIMIT_AMT")
+					} else if merInfo.EnhanceType == model.Checking {
+						log.Infof("the current day total amt %d is more than the limit amt %d, status is Checking", int(totalAmt)+amt, merInfo.LimitAmt)
+						return errorResp(req, "CHECKING_LIMIT_AMT")
+					} else {
+						return nil
+					}
+				}
+			}
+		}
+	}
+
+	return nil
 }

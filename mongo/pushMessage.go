@@ -41,6 +41,9 @@ func (col *pushMessage) Find(t *model.PushMessage) (result []model.PushMessage, 
 	if t.MaxTime != "" {
 		con["pushtime"] = bson.M{"$lt": t.MaxTime}
 	}
+	if t.MsgType != "" {
+		con["msgType"] = t.MsgType
+	}
 
 	con["username"] = t.UserName
 	con["status"] = 0
