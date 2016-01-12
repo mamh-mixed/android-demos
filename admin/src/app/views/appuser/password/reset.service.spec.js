@@ -5,6 +5,7 @@ describe('service resetPassword', () => {
 		spyOn(toastr, 'info').and.callThrough();
 		spyOn(toastr, 'error').and.callThrough();
 		spyOn(toastr, 'warning').and.callThrough();
+		spyOn(toastr, 'success').and.callThrough();
 		spyOn($state, 'go').and.callThrough();
 		spyOn($log, 'error').and.callThrough();
 		spyOn($log, 'warn').and.callThrough();
@@ -50,14 +51,55 @@ describe('service resetPassword', () => {
 			expect(passwordResetService.sendRequest).not.toEqual(null);
 		}));
 
-		// TODO 重写
-		it('should return data', inject((passwordResetService, toastr) => {
-			// let data = passwordResetService.sendRequest({});
-			// expect(data).not.toEqual(null);
-			// expect(data).toEqual(jasmine.any(Number));
-			// expect(data === 1).toBeTruthy();
-			//
-			// expect(toastr.info).toHaveBeenCalled();
+		it('should success when send request', inject((passwordResetService, toastr, $httpBackend) => {
+			let response = {
+				status: 0,
+				message: 'SUCCESS'
+			}
+			$httpBackend.when('POST', passwordResetService.apiHost).respond(200, response);
+
+			let params = {
+				username: 'fnghwsj@qq.com',
+				password: 'Yun#1016',
+				passwordRepeat: 'Yun#1016',
+				checkCode: 'f3fbe685172f46a768e9aab29cba6134'
+			};
+			let data;
+
+			// 测试成功案例
+			passwordResetService.sendRequest(params).then(body => {
+				data = body;
+			});
+			$httpBackend.flush();
+			expect(data).toEqual(jasmine.any(Object));
+			expect(data.status).toEqual(0);
+			expect(data.message).toEqual('SUCCESS');
+			expect(toastr.success).toHaveBeenCalled();
+		}));
+
+		it('should error when send request', inject((passwordResetService, toastr, $httpBackend) => {
+			let response = {
+				status: 1,
+				message: 'PASSWORD_MUST_BE_COMPLEX'
+			}
+			$httpBackend.when('POST', passwordResetService.apiHost).respond(200, response);
+
+			let params = {
+				username: 'fnghwsj@qq.com',
+				password: 'Yun#1016',
+				passwordRepeat: 'Yun#1016',
+				checkCode: 'f3fbe685172f46a768e9aab29cba6134'
+			};
+			let data;
+
+			passwordResetService.sendRequest(params).then(body => {
+				data = body;
+			});
+			$httpBackend.flush();
+			expect(data).toEqual(jasmine.any(Object));
+			expect(data.status).toEqual(1);
+			expect(data.message).toEqual('PASSWORD_MUST_BE_COMPLEX');
+			expect(toastr.error).toHaveBeenCalled();
 		}));
 	});
 
