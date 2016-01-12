@@ -12,8 +12,8 @@
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:text="标题"
-        android:textColor="@color/textview_textcolor_setting_click_item_left" />
-    android:textSize="20sp" />
+        android:textColor="@color/textview_textcolor_setting_click_item_left"
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/tv_right"
