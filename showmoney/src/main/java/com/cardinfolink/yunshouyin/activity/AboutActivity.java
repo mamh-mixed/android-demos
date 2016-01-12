@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import com.umeng.update.UpdateResponse;
 import com.umeng.update.UpdateStatus;
 
 public class AboutActivity extends Activity implements View.OnClickListener {
+    private static final String TAG = "AboutActivity";
 
     private SettingActionBarItem mActionBar;//关于云收银的 action bar
 
@@ -28,6 +30,9 @@ public class AboutActivity extends Activity implements View.OnClickListener {
     private SettingClikcItem mWelcome;//显示欢迎页面
     private SettingClikcItem mUpdate;//检测更新
     private TextView mAgreement;
+
+    //存储时间的数组
+    long[] mHits = new long[6];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,7 @@ public class AboutActivity extends Activity implements View.OnClickListener {
         mWelcome.setOnClickListener(this);
         mUpdate.setOnClickListener(this);
         mAgreement.setOnClickListener(this);
+        mVersion.setOnClickListener(this);
 
         setVersionName();//获取versionName的值并设置到mVersion里面
     }
@@ -94,8 +100,23 @@ public class AboutActivity extends Activity implements View.OnClickListener {
                 intent = new Intent(AboutActivity.this, AgreementActivity.class);
                 startActivity(intent);
                 break;
+            case R.id.version:
+                versionClick();
+                break;
         }
     }
+
+
+    private void versionClick() {
+        //实现数组的移位操作，点击一次，左移一位，末尾补上当前开机时间（cpu的时间）
+        System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
+        mHits[mHits.length - 1] = SystemClock.uptimeMillis();
+        if (mHits[0] >= (SystemClock.uptimeMillis() - 500)) {
+            Intent intent = new Intent(AboutActivity.this, ConfigActivity.class);
+            startActivity(intent);
+        }
+    }
+
 
     private void checkUpdate() {
         UmengUpdateAgent.setUpdateAutoPopup(false);
