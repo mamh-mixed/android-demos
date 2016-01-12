@@ -46,11 +46,6 @@ func ScanPayHandle(reqBytes []byte, isGBK bool) []byte {
 		logs.SpLogs <- req.GetMerReqLogs()
 	}
 
-	result := checkLimitAmt(req) // 限额较验
-	if result != nil {
-		return result
-	}
-
 	// 具体业务
 	ret := dispatch(req)
 
@@ -195,6 +190,12 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	var reqAgentCode = req.AgentCode
 	req.AgentCode = mer.AgentCode // 以我们系统的代理代码为准
 
+	//较验限额
+	ret = checkLimitAmt(req, mer)
+	if ret != nil {
+		return ret
+	}
+
 	// 6. 开始业务处理
 	ret = processFunc(req)
 
@@ -280,46 +281,32 @@ func getBillsCtrl(q *model.ScanPayRequest) *model.ScanPayResponse {
 }
 
 //限额较验
-func checkLimitAmt(req *model.ScanPayRequest) []byte {
+func checkLimitAmt(req *model.ScanPayRequest, merInfo *model.Merchant) *model.ScanPayResponse {
 	switch req.Busicd {
 	case model.Purc, model.Paut, model.Jszf, model.Qyzf:
-		if req.Mchntid != "" {
-			merInfo, err := mongo.MerchantColl.Find(req.Mchntid)
+		if merInfo.EnhanceType == model.Enhanced { //已提升
+			return nil
+		} else {
+			amt, err := strconv.Atoi(req.Txamt)
 			if err != nil {
-				log.Errorf("find the merinfo err ,merId:%s, error:%s", req.Mchntid, err)
+				log.Errorf("convert the amt error, error is %s, amt is %s", err, req.Txamt)
 				return nil
 			}
 
-			if merInfo.EnhanceType == model.Enhanced { //已提升
+			totalAmt, err := mongo.SpTransColl.FindTotalAmtByMerId(req.Mchntid, time.Now().Format("2006-01-02"))
+			if err != nil {
+				log.Infof("compute the total amt error merId:%s", req.Mchntid)
 				return nil
-			} else {
-				amt, err := strconv.Atoi(req.Txamt)
-				if err != nil {
-					log.Errorf("convert the amt error, error is %s, amt is %s", err, req.Txamt)
+			}
+			if (int(totalAmt) + amt) > merInfo.LimitAmt { //当天
+				if merInfo.EnhanceType == model.NoEnhance {
+					log.Infof("the current day total amt %d is more than the limit amt %d, status is NoEnhance", int(totalAmt)+amt, merInfo.LimitAmt)
+					return model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_ENHANCE_LIMIT_AMT"))
+				} else if merInfo.EnhanceType == model.Checking {
+					log.Infof("the current day total amt %d is more than the limit amt %d, status is Checking", int(totalAmt)+amt, merInfo.LimitAmt)
+					return model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("CHECKING_LIMIT_AMT"))
+				} else {
 					return nil
-				}
-
-				trans, err := mongo.SpTransColl.FindTotalAmtByMerId(req.Mchntid, time.Now().Format("2006-01-02"))
-				var totalAmt int64
-				for _, v := range trans {
-					totalAmt += v.TransAmt - v.RefundAmt
-				}
-				if err != nil {
-					log.Infof("compute the total amt error merId:%s", req.Mchntid)
-					return nil
-				}
-				log.Infof("the total amt is %d", int(totalAmt)+amt)
-				log.Infof("the limit amt is %d", merInfo.LimitAmt)
-				if (int(totalAmt) + amt) > merInfo.LimitAmt { //当天
-					if merInfo.EnhanceType == model.NoEnhance {
-						log.Infof("the current day total amt %d is more than the limit amt %d, status is NoEnhance", int(totalAmt)+amt, merInfo.LimitAmt)
-						return errorResp(req, "NO_ENHANCE_LIMIT_AMT")
-					} else if merInfo.EnhanceType == model.Checking {
-						log.Infof("the current day total amt %d is more than the limit amt %d, status is Checking", int(totalAmt)+amt, merInfo.LimitAmt)
-						return errorResp(req, "CHECKING_LIMIT_AMT")
-					} else {
-						return nil
-					}
 				}
 			}
 		}
