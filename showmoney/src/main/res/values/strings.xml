@@ -448,4 +448,9 @@
     <string name="my_web_activity_message">手机微信扫一扫输入金额付款</string>
     <string name="my_web_activity_message1">你可以将此图打印后贴在店铺内让顾客自主扫码付款</string>
     <string name="my_web_activity_save_success">保存成功</string>
+
+    <string name="config_activity_title">App配置</string>
+    <string name="config_activity_git">git commit 信息</string>
+    <string name="config_activity_server">server地址</string>
+    <string name="config_activity_debug">debug开关</string>
 </resources>
