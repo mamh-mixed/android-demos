@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
@@ -26,6 +27,7 @@ public class AboutActivity extends Activity implements View.OnClickListener {
     private SettingClikcItem mWebsite;//产品网站
     private SettingClikcItem mWelcome;//显示欢迎页面
     private SettingClikcItem mUpdate;//检测更新
+    private TextView mAgreement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +47,12 @@ public class AboutActivity extends Activity implements View.OnClickListener {
         mWebsite = (SettingClikcItem) findViewById(R.id.website);
         mWelcome = (SettingClikcItem) findViewById(R.id.welcome);
         mUpdate = (SettingClikcItem) findViewById(R.id.update);
+        mAgreement = (TextView) findViewById(R.id.tv_agreement);
 
         mWebsite.setOnClickListener(this);
         mWelcome.setOnClickListener(this);
         mUpdate.setOnClickListener(this);
+        mAgreement.setOnClickListener(this);
 
         setVersionName();//获取versionName的值并设置到mVersion里面
     }
@@ -85,6 +89,10 @@ public class AboutActivity extends Activity implements View.OnClickListener {
             case R.id.update:
                 //检查更新
                 checkUpdate();
+                break;
+            case R.id.tv_agreement:
+                intent = new Intent(AboutActivity.this, AgreementActivity.class);
+                startActivity(intent);
                 break;
         }
     }
