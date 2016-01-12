@@ -49,6 +49,8 @@ gulp.task('minifyHTML', ['copy'], function() {
       '!v0.0.1/**/app-router/app-router.html',
       '!v0.0.1/**/app-router/app-router.csp.html',
       '!v0.0.1/bower_components/web-component-tester/data/index.html',
+      '!v0.0.1/bower_components/paper-date-picker/**',
+      '!v0.0.1/bower_components/paper-time-picker/**',
       '!v0.0.1/**/demo/**',
       '!v0.0.1/**/test/**',
       '!v0.0.1/**/tests/**',

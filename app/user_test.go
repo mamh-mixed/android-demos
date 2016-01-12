@@ -67,3 +67,11 @@ func TestUserV3CouponsHandler(t *testing.T) {
 
 	t.Logf("result is %+v", result)
 }
+
+func TestForgetPasswordSendEmail(t *testing.T) {
+	result := User.forgetPassword(&reqParams{
+		UserName: "fnghwsj@qq.com",
+	})
+
+	t.Logf("result is %+v", result)
+}
