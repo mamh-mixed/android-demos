@@ -3,7 +3,7 @@
     xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="@color/background_layout"
     android:orientation="vertical">
 
     <RelativeLayout
@@ -72,7 +72,7 @@
     <View
         android:layout_width="fill_parent"
         android:layout_height="0.1dp"
-        android:background="#88000000" />
+        android:background="@color/horizontal_view_background" />
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -130,7 +130,7 @@
             android:layout_marginRight="30dp"
             android:background="@drawable/blue_selector"
             android:text="@string/setting_safe_exit"
-            android:textColor="#ffffff" />
+            android:textColor="@color/button_textcolor" />
     </RelativeLayout>
 
 </LinearLayout>
