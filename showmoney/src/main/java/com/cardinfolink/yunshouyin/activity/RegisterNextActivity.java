@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cardinfolink.cashiersdk.model.InitData;
@@ -54,7 +55,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
     private SettingInputItem mName;//姓名
     private SettingInputItem mBankNumber;//银行卡号
     private SettingInputItem mPhone;//手机号
-
+    private TextView mAgreement;
     private Button mRegisterFinished;//注册按钮，
 
     private SelectDialog selectDialog;
@@ -95,7 +96,6 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         mSetBank = (SettingClikcItem) findViewById(R.id.bank);
 
         mName = (SettingInputItem) findViewById(R.id.name);//姓名
-
         mBankNumber = (SettingInputItem) findViewById(R.id.bank_number);//银行卡号
         mBankNumber.setInputType(InputType.TYPE_CLASS_NUMBER);//限制银行卡号输入法只能是数字
         mBankNumber.setTextFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_BANK_NUMBER_LENGTH)});//限制输入长度
@@ -105,9 +105,12 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         mPhone.setInputType(InputType.TYPE_CLASS_PHONE);
         mPhone.setTextFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_PHONE_NUMBER_LENTH)});//限制输入长度
 
+        mAgreement = (TextView) findViewById(R.id.tv_agreement);
+
         mSetProvinceCity.setOnClickListener(this);
         mSetBank.setOnClickListener(this);
         mRegisterFinished.setOnClickListener(this);
+        mAgreement.setOnClickListener(this);
 
         selectDialog = new SelectDialog(this, findViewById(R.id.select_dialog));
     }
@@ -127,6 +130,10 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
             case R.id.bank:
                 Log.e(TAG, " onclick bank");
                 showBankSubBank();
+                break;
+            case R.id.tv_agreement:
+                Intent intent = new Intent(RegisterNextActivity.this, AgreementActivity.class);
+                startActivity(intent);
                 break;
         }
     }
