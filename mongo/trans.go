@@ -780,31 +780,31 @@ func handleTransStatus(q *model.QueryCondition, match bson.M) {
 	}
 }
 
+// FindTotalAmtByMerId 查出某个商户一天交易额
 func (col *transCollection) FindTotalAmtByMerId(merId, day string) (int64, error) {
 
 	var amt = &struct {
 		TransAmt    int64 `bson:"transAmt"`
-		RefundedAmt int64 `bson:"refundedAmt"`
+		RefundedAmt int64 `bson:"refundAmt"`
 	}{}
 	find := bson.M{
-		"createTime": bson.RegEx{day, "."},
-		"merId":      merId,
-		"respCode":   "00",
-		"transType":  1,
+		"createTime":  bson.RegEx{day, "."},
+		"merId":       merId,
+		"transStatus": model.TransSuccess,
+		"transType":   model.PayTrans,
 	}
 
 	err := database.C(col.name).Pipe([]bson.M{
 		{"$match": find},
 		{"$group": bson.M{
-			"_id":         "$merId",
-			"transAmt":    bson.M{"$sum": "$transAmt"},
-			"refundedAmt": bson.M{"$sum": "$refundedAmt"},
+			"_id":       "$merId",
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
 		}},
 		{"$project": bson.M{
-			"transAmt":    1,
-			"refundedAmt": 1,
+			"transAmt":  1,
+			"refundAmt": 1,
 		}},
 	}).One(amt)
-	fmt.Printf("the trans amt is: %d, refundAmt is %d", amt.TransAmt, amt.RefundedAmt)
 	return amt.TransAmt - amt.RefundedAmt, err
 }

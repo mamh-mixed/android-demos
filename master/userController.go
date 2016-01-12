@@ -647,6 +647,7 @@ func (u *userController) ResetPwd(data []byte, curUser *model.User) (ret *model.
 	return ret
 }
 
+// PasswordReset 密码重置整理
 func (u *userController) PasswordReset(data []byte) (ret *model.ResultBody) {
 	log.Debugf("data:%s", string(data))
 	resetUser := &model.ResetUser{}
@@ -660,13 +661,21 @@ func (u *userController) PasswordReset(data []byte) (ret *model.ResultBody) {
 		return model.NewResultBody(1, "MISS_REQUIRED_PARAMETER")
 	}
 
+	// 查找发送邮件的纪录
 	emailInfo, err := mongo.EmailCol.FindOne(resetUser.UserName)
 	if err != nil {
 		log.Errorf("find user error, user:%s, error:%s", resetUser.UserName, err)
 		return model.NewResultBody(2, "SYSTEM_ERROR")
 	}
+
+	// 是否已经激活过
+	if emailInfo.IsOperated {
+		return model.NewResultBody(6, "ALREADY_OPERATED")
+	}
+
+	// 是否操作过时
 	timestamp, _ := time.ParseInLocation("2006-01-02 15:04:05", emailInfo.Timestamp, time.Local)
-	if time.Now().Sub(timestamp) > 2*time.Hour {
+	if time.Now().Sub(timestamp) > 12*time.Hour {
 		return model.NewResultBody(5, "OPERATION_OUT_OF_DATE")
 	}
 
@@ -689,6 +698,17 @@ func (u *userController) PasswordReset(data []byte) (ret *model.ResultBody) {
 		log.Errorf("reset password err,userName=%s,%s", resetUser.UserName, err)
 		return model.NewResultBody(2, "SYSTEM_ERROR")
 	}
+
+	// 更新到EMAIL集合
+	e := &model.Email{
+		UserName:   resetUser.UserName,
+		Code:       resetUser.CheckCode,
+		Success:    true,
+		IsOperated: true,
+		Timestamp:  time.Now().Format("2006-01-02 15:04:05"),
+	}
+	mongo.EmailCol.Upsert(e)
+
 	ret = &model.ResultBody{
 		Status:  0,
 		Message: "SUCCESS",
