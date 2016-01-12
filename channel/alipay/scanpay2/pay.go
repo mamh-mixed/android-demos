@@ -12,21 +12,21 @@ import (
 type PayReq struct {
 	CommonParams
 
-	OutTradeNo           string `json:"out_trade_no" validate:"nonzero"` // 商户订单号
-	Scene                string `json:"scene" validate:"nonzero"`        // 支付场景
-	AuthCode             string `json:"auth_code" validate:"nonzero"`    // 支付授权码
-	SellerID             string `json:"seller_id,omitempty"`             // 卖家支付宝用户 ID
-	TotalAmount          string `json:"total_amount" validate:"nonzero"` // 订单总金额
-	DiscountableAmount   string `json:"discountable_amount,omitempty"`   // 可打折金额
-	UndiscountableAmount string `json:"undiscountable_amount,omitempty"` // 不可打折金额
-	Subject              string `json:"subject" validate:"nonzero"`      // 订单标题
-	Body                 string `json:"body,omitempty"`                  // 订单描述
-	GoodsDetail          string `json:"goods_detail,omitempty"`          // 商品明细列表信息,json格式
-	OperatorID           string `json:"operator_id,omitempty"`           // 商户操作员编号
-	StoreID              string `json:"store_id,omitempty"`              // 商户门店编号
-	TerminalID           string `json:"terminal_id,omitempty"`           // 机具终端编号
-	ExtendParams         string `json:"extend_params,omitempty"`         // 业务扩展参数
-	TimeExpire           string `json:"time_expire,omitempty"`           // 该笔订单允许的最晚付款时间，逾期将关闭交易。格式为: yyyy-MM-dd HH:mm:ss
+	OutTradeNo           string      `json:"out_trade_no" validate:"nonzero"` // 商户订单号
+	Scene                string      `json:"scene" validate:"nonzero"`        // 支付场景
+	AuthCode             string      `json:"auth_code" validate:"nonzero"`    // 支付授权码
+	SellerID             string      `json:"seller_id,omitempty"`             // 卖家支付宝用户 ID
+	TotalAmount          string      `json:"total_amount" validate:"nonzero"` // 订单总金额
+	DiscountableAmount   string      `json:"discountable_amount,omitempty"`   // 可打折金额
+	UndiscountableAmount string      `json:"undiscountable_amount,omitempty"` // 不可打折金额
+	Subject              string      `json:"subject" validate:"nonzero"`      // 订单标题
+	Body                 string      `json:"body,omitempty"`                  // 订单描述
+	GoodsDetail          interface{} `json:"goods_detail,omitempty"`          // 商品明细列表信息,json格式
+	OperatorID           string      `json:"operator_id,omitempty"`           // 商户操作员编号
+	StoreID              string      `json:"store_id,omitempty"`              // 商户门店编号
+	TerminalID           string      `json:"terminal_id,omitempty"`           // 机具终端编号
+	ExtendParams         interface{} `json:"extend_params,omitempty"`         // 业务扩展参数
+	TimeExpire           string      `json:"time_expire,omitempty"`           // 该笔订单允许的最晚付款时间，逾期将关闭交易。格式为: yyyy-MM-dd HH:mm:ss
 }
 
 // Values 组装公共参数

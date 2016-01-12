@@ -15,7 +15,7 @@ func TestSpSettle(t *testing.T) {
 }
 
 func TestGenReport(t *testing.T) {
-	SpSettReport("2015-12-08")
+	SpSettReport("2015-12-09")
 }
 
 func TestSpReconciliatReport(t *testing.T) {
@@ -23,7 +23,7 @@ func TestSpReconciliatReport(t *testing.T) {
 }
 
 func TestSpSettReport(t *testing.T) {
-	SpSettReport("2016-01-05")
+	SpSettReport("2016-01-10")
 }
 
 func TestAddTrans(t *testing.T) {
