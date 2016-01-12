@@ -3,7 +3,6 @@ package com.cardinfolink.yunshouyin.util;
 import android.app.Application;
 import android.app.Notification;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -12,8 +11,6 @@ import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.BuildConfig;
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.activity.LoginActivity;
-import com.cardinfolink.yunshouyin.activity.MainActivity;
 import com.cardinfolink.yunshouyin.api.QuickPayConfigStorage;
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.core.BankDataService;
@@ -28,8 +25,18 @@ import com.umeng.message.UmengNotificationClickHandler;
 import com.umeng.message.entity.UMessage;
 
 public class ShowMoneyApp extends Application {
-    private static final String ENVIRONMENT = BuildConfig.ENVIRONMENT;
     private static final String TAG = "ShowMoneyApp";
+
+    /**
+     * 环境配置，是生产环境，测试环境，开发环境
+     */
+    public static final String ENVIRONMENT = BuildConfig.ENVIRONMENT;
+
+    /**
+     * git log相关的信息在这里保存
+     * 这个是不可以改变的，所以没必要放在SystemConfig里面了
+     */
+    public static final String GIT = BuildConfig.GIT;
 
     private static ShowMoneyApp instance;
 
@@ -74,29 +81,30 @@ public class ShowMoneyApp extends Application {
     private void initEnvironment() {
         quickPayConfigStorage = new QuickPayConfigStorage();
         //dev, test, pro 是一样的
-        quickPayConfigStorage.setAppKey("eu1dr0c8znpa43blzy1wirzmk8jqdaon");
+        quickPayConfigStorage.setAppKey(SystemConfig.APP_KEY);
 
         //default is pro
         SystemConfig.IS_PRODUCE = true;
-        SystemConfig.Server = "https://api.shou.money/app";
+        SystemConfig.SERVER = SystemConfig.PRO_SERVER;
+        SystemConfig.DEBUG = BuildConfig.DEBUG;
         switch (ENVIRONMENT) {
             case "pro":
                 SystemConfig.IS_PRODUCE = true;
-                SystemConfig.Server = "https://api.shou.money/app";
+                SystemConfig.SERVER = SystemConfig.PRO_SERVER;
                 break;
             case "test":
                 SystemConfig.IS_PRODUCE = false;
-                SystemConfig.Server = "http://test.quick.ipay.so/app";
+                SystemConfig.SERVER = SystemConfig.TEST_SERVER;
                 break;
             case "dev":
                 SystemConfig.IS_PRODUCE = false;
-                SystemConfig.Server = "http://dev.quick.ipay.so/app";
+                SystemConfig.SERVER = SystemConfig.DEV_SERVER;
                 break;
             default:
                 break;
         }
 
-        quickPayConfigStorage.setUrl(SystemConfig.Server);
+        quickPayConfigStorage.setUrl(SystemConfig.SERVER);
 
         quickPayConfigStorage.setBankbaseKey(SystemConfig.BANKBASE_KEY);
         quickPayConfigStorage.setBankbaseUrl(SystemConfig.BANKBASE_URL);
