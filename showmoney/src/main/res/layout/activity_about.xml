@@ -42,16 +42,15 @@
         android:src="@drawable/setting_details"
         cardinfolink:title="@string/setting_check_update" />
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="150dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/tv_agreement"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:gravity="center"
             android:text="@string/setting_cloud_use"
             android:textColor="@color/textview_textcolor_copyright" />
@@ -59,12 +58,13 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/tv_agreement"
             android:layout_marginTop="5dp"
             android:gravity="center"
             android:text="@string/setting_cloud_version"
             android:textColor="@color/textview_textcolor_copyright1" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </LinearLayout>
