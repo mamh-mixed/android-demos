@@ -355,12 +355,25 @@ func (col *transCollection) FindTransRefundAmt(merId, origOrderNum string) (int6
 	return s.Amt, err
 }
 
-// FindBySysOrderNum 根据渠道订单号在master中查找
+// FindBySysOrderNum 根据系统订单号在master中查找
 func (col *transCollection) FindBySysOrderNum(sysOrderNum string) (t *model.Trans, err error) {
 	// 订单是uuid 全局唯一
 	t = new(model.Trans)
 	q := bson.M{
 		"sysOrderNum": sysOrderNum,
+	}
+	err = masterDB.C(col.name).Find(q).One(t)
+
+	return
+}
+
+// FindByAppID 根据订单号、appID在master中查找
+func (col *transCollection) FindByAppID(orderNum, appID string) (t *model.Trans, err error) {
+	// 订单是uuid 全局唯一
+	t = new(model.Trans)
+	q := bson.M{
+		"appID":    appID,
+		"orderNum": orderNum,
 	}
 	err = masterDB.C(col.name).Find(q).One(t)
 

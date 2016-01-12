@@ -125,6 +125,42 @@ func alipayNotifyHandle(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "success", http.StatusOK)
 }
 
+// alipay2NotifyHandle 接受支付宝异步通知
+func alipay2NotifyHandle(w http.ResponseWriter, r *http.Request) {
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
+		return
+	}
+	log.Infof("alipay2 notify: %s", data)
+
+	// log.Debugf("before decoder: %s", string(data))
+	// gbk-utf8
+	unescape, err := url.QueryUnescape(string(data))
+	if err != nil {
+		log.Errorf("alp notify: %s, unescape error: %s ", string(data), err)
+	}
+
+	// d := mahonia.NewDecoder("gbk")
+	// utf8 := d.ConvertString(unescape)
+
+	vs, err := url.ParseQuery(unescape)
+	if err != nil {
+		log.Infof("handle alipay notify error: %s", err)
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
+		return
+	}
+
+	// 处理异步通知
+	if err = alipay2NotifyCtrl(vs); err != nil {
+		log.Errorf("handle alipay notify error: %s, req: %+v", err, vs)
+		http.Error(w, "fail", http.StatusOK)
+		return
+	}
+
+	http.Error(w, "success", http.StatusOK)
+}
+
 // testReceiveNotifyHandle 测试接受异步通知
 func testReceiveNotifyHandle(w http.ResponseWriter, r *http.Request) {
 

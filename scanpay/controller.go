@@ -244,6 +244,11 @@ func alipayNotifyCtrl(v url.Values) error {
 	return core.ProcessAlipayNotify(v)
 }
 
+// alipay2NotifyCtrl 支付宝异步通知处理(预下单)
+func alipay2NotifyCtrl(v url.Values) error {
+	return core.ProcessAlipay2Notify(v)
+}
+
 // getBillsCtrl 获取商户对账单
 func getBillsCtrl(q *model.ScanPayRequest) *model.ScanPayResponse {
 

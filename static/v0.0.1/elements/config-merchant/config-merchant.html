@@ -247,6 +247,13 @@
           <paper-input id="wxpAppId" label="支付宝 AppId" value="{{alipay.wxpAppId::input}}" ></paper-input>
            <x-select id="aversion" items="[[aversions]]" selected-item="{{aversion}}" class="validate-container" label="支付宝接口" required error-message="必填项"></x-select>
         </div>
+        <div class="row">
+          <section>
+            <label id="rsaKeyL">请选择.pem文件的RSA密钥</label>
+            <paper-input id="rsaKey" type="file" on-change="handleAlipayRsaCertFile"></paper-input>
+            <paper-textarea class="monospace" id="rsaKeyTArea" label="RSA 密钥(当面付2.0)" value="{{alipay.privateKey::input}}"></paper-textarea>
+          </section>
+        </div>
         <div class="row button">
           <paper-button class="colorful" raised on-tap="handleSaveALPTapped">保存支付宝信息</paper-button>
         </div>
@@ -397,8 +404,11 @@
           type: Array,
           value: [{
             key: '12010128a1',
-            value: '讯联 12010128a1'
-          }, {
+            value: '讯联（当面付1.0接口）12010128a1'
+          },{
+            key: '2088611685817706',
+            value: '讯联（当面付2.0接口）2088611685817706'
+          },{
             key: '11719712a1',
             value: '天奕通 11719712a1'
           }]
@@ -900,8 +910,9 @@
           '1276970101': '商圈 1276970101',
         };
         this.aagentCodeMap = {
-          '12010128a1': '讯联 12010128a1',
-          '11719712a1': '天奕通 11719712a1'
+          '12010128a1': '讯联（当面付1.0接口） 12010128a1',
+          '11719712a1': '天奕通 11719712a1',
+          '2088611685817706':'讯联（当面付2.0接口）2088611685817706',
         };
         this.aversionMap = {
           'ALP2_0': '当面付2.0',
@@ -923,8 +934,8 @@
         this.$.findChanMerAjax.generateRequest();
         // 默认支付宝代理号为12010128a1
         this.aagentCode = {
-          key: '12010128a1',
-          value: '讯联 12010128a1',
+          key: '2088611685817706',
+          value: '讯联（当面付2.0接口）2088611685817706',
         };
         // 默认支付宝接口为2.0
         this.aversion = {
@@ -1412,6 +1423,26 @@
                 return;
               }
               _this.set('weixin.httpKey', this.result);
+            };
+            reader.readAsText(file);
+          } else {
+            Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
+          }
+        }
+      },
+      handleAlipayRsaCertFile: function(e) {
+         var _this = this;
+        var files = e.srcElement.files;
+        if (files.length) {
+          var file = files[0];
+          if ('application/x-x509-ca-cert' === file.type) {
+            var reader = new FileReader();
+            reader.onload = function() {
+              if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
+                Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN PRIVATE KEY----- 开头', 3000);
+                return;
+              }
+              _this.set('alipay.privateKey', this.result);
             };
             reader.readAsText(file);
           } else {
