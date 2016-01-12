@@ -4,14 +4,12 @@ import (
 	"net/http"
 	"runtime"
 
-	_ "github.com/CardInfoLink/quickpay/flags"
-
 	"github.com/CardInfoLink/quickpay/app"
 	"github.com/CardInfoLink/quickpay/bindingpay"
 	"github.com/CardInfoLink/quickpay/check"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/crontab"
-	// "github.com/CardInfoLink/quickpay/data"
+	_ "github.com/CardInfoLink/quickpay/flags"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/scanpay"
@@ -34,10 +32,8 @@ func main() {
 	startBindingpay() // 绑定支付
 	startSettle()     // 清分任务
 	startMaster()     // 管理平台
-	startApp()        // 云收银APP用户、交易查询等
-
-	crontab.Start() // 定时任务
-	// http.HandleFunc("/import", data.Import)
+	startApp()        // App接口
+	startContab()     // 定时任务
 
 	log.Infof("Quickpay HTTP is listening, addr=%s", goconf.Config.App.HTTPAddr)
 	log.Error(http.ListenAndServe(goconf.Config.App.HTTPAddr, nil))
@@ -67,8 +63,6 @@ func startBindingpay() {
 
 func startSettle() {
 	settle.DoSettWork()
-
-	// http.HandleFunc("/quickSettle/", settle.QuickSettle)
 }
 
 func startMaster() {
@@ -80,4 +74,10 @@ func startMaster() {
 
 func startApp() {
 	http.Handle("/app/", app.Route())
+	http.Handle("/app/v3/", app.RouteV3())
+	app.StartPush()
+}
+
+func startContab() {
+	crontab.Start()
 }

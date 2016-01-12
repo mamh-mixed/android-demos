@@ -7,11 +7,12 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
-	"strings"
-	"time"
 )
 
-var agentId = goconf.Config.AlipayScanPay.AgentId
+var (
+	alp1_0ID = goconf.Config.AlipayScanPay.ALP1_0AgentID
+	alp2_0ID = goconf.Config.AlipayScanPay.ALP2_0AgentID
+)
 
 // ProcessEnterprisePay 企业支付
 func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
@@ -20,9 +21,7 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	req.SysOrderNum = t.SysOrderNum
 	req.SignKey = c.SignKey
 	req.ChanMerId = c.ChanMerId
-
-	// 交易参数
-	t.SysOrderNum = req.SysOrderNum
+	req.AppID = c.WxpAppId
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
@@ -31,9 +30,8 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	// 	req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
-		req.AppID = c.WxpAppId
-		req.WeixinClientCert = []byte(c.HttpCert)
-		req.WeixinClientKey = []byte(c.HttpKey)
+		req.PemCert = []byte(c.HttpCert)
+		req.PemKey = []byte(c.HttpKey)
 		// req.SubMchId = c.SubMchId // remark:暂不支持受理商模式
 	}
 
@@ -51,7 +49,7 @@ func ProcessEnterprisePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -62,22 +60,24 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	req.Subject = req.M.Detail.CommodityName
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
-		if channel.Oversea == c.AreaType {
-			req.ExtendParams, err = genOverseaExtendInfo(req.M)
-			if err != nil {
-				return ReturnWithErrorCode("SYSTEM_ERROR")
-			}
-		} else {
-			req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
-			req.ExtendParams = genExtendParams(req.M, chanMer)
-		}
+		// if channel.Oversea == c.AreaType {
+		// 	req.ExtendParams, err = genOverseaExtendInfo(req.M)
+		// 	if err != nil {
+		// 		return ReturnWithErrorCode("SYSTEM_ERROR")
+		// 	}
+		// } else {
+		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
+		req.ExtendParams = genExtendParams(req.M, chanMer)
+		req.PemKey = []byte(chanMer.PrivateKey)
+		// }
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
-		req.AppID = chanMer.WxpAppId
+		req.SubAppID = subAppId
 		req.SubMchId = subMchId
 		req.GoodsTag = req.M.Detail.GoodsTag
 	default:
@@ -85,7 +85,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	}
 
 	// 获得渠道实例，请求
-	sp := channel.GetScanPayChan(req.Chcd, c.AreaType)
+	sp := channel.GetScanPayChan(req.Chcd, c.Version)
 	if sp == nil {
 		return ReturnWithErrorCode("NO_CHANNEL")
 	}
@@ -96,9 +96,9 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 	}
 
 	// 海外接口没有异步通知，需要设置payTime，默认为createTime
-	if channel.Oversea == c.AreaType {
-		t.PayTime = t.CreateTime
-	}
+	// if channel.Oversea == c.AreaType {
+	// 	t.PayTime = t.CreateTime
+	// }
 
 	return ret
 }
@@ -112,7 +112,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	}
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -123,9 +123,10 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 		req.ExtendParams = genExtendParams(req.M, chanMer)
+		req.PemKey = []byte(chanMer.PrivateKey)
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
-		req.AppID = chanMer.WxpAppId
+		req.SubAppID = subAppId
 		req.SubMchId = subMchId
 		req.GoodsTag = req.M.Detail.GoodsTag
 	default:
@@ -137,9 +138,10 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 	req.Subject = req.M.Detail.CommodityName
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 
 	// 获得渠道实例，请求
-	sp := channel.GetScanPayChan(req.Chcd, c.AreaType)
+	sp := channel.GetScanPayChan(req.Chcd, c.Version)
 	if sp == nil {
 		return ReturnWithErrorCode("NO_CHANNEL")
 	}
@@ -156,7 +158,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -165,43 +167,46 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 	// 渠道参数
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 
 	// 不同渠道参数转换
 	switch orig.ChanCode {
 	case channel.ChanCodeAlipay:
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(req.IntTxamt)/100)
+		req.OrigChanOrderNum = orig.ChanOrderNum
+		req.PemKey = []byte(chanMer.PrivateKey)
 	case channel.ChanCodeWeixin:
-		req.AppID = chanMer.WxpAppId
 		req.ActTxamt = fmt.Sprintf("%d", req.IntTxamt)
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
+		req.SubAppID = subAppId
 		req.SubMchId = subMchId
-		req.WeixinClientCert = []byte(chanMer.HttpCert)
-		req.WeixinClientKey = []byte(chanMer.HttpKey)
+		req.PemCert = []byte(chanMer.HttpCert)
+		req.PemKey = []byte(chanMer.HttpKey)
 	default:
 		req.ActTxamt = req.Txamt
 	}
 
 	// 请求退款
-	sp := channel.GetScanPayChan(orig.ChanCode, c.AreaType)
+	sp := channel.GetScanPayChan(orig.ChanCode, c.Version)
 	if sp == nil {
 		return ReturnWithErrorCode("NO_CHANNEL")
 	}
 
 	// 如果是海外支付宝，做一个退款接口到撤销接口的转换，以抵消手续费
-	if c.AreaType == channel.Oversea && orig.ChanCode == channel.ChanCodeAlipay {
-		// 全额退款
-		if orig.TransAmt == req.IntTxamt {
-			// 当天
-			if strings.HasPrefix(orig.PayTime, time.Now().Format("2006-01-02")) {
-				ret, err = sp.ProcessCancel(req)
-				if err != nil {
-					log.Errorf("process cancel error:%s", err)
-					return ReturnWithErrorCode("SYSTEM_ERROR")
-				}
-				return ret
-			}
-		}
-	}
+	// if c.AreaType == channel.Oversea && orig.ChanCode == channel.ChanCodeAlipay {
+	// 	// 全额退款
+	// 	if orig.TransAmt == req.IntTxamt {
+	// 		// 当天
+	// 		if strings.HasPrefix(orig.PayTime, time.Now().Format("2006-01-02")) {
+	// 			ret, err = sp.ProcessCancel(req)
+	// 			if err != nil {
+	// 				log.Errorf("process cancel error:%s", err)
+	// 				return ReturnWithErrorCode("SYSTEM_ERROR")
+	// 			}
+	// 			return ret
+	// 		}
+	// 	}
+	// }
 
 	ret, err = sp.ProcessRefund(req)
 	if err != nil {
@@ -216,7 +221,7 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -225,21 +230,23 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 	// 上送参数
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 
 	// 不同渠道参数转换
 	switch t.ChanCode {
 	case channel.ChanCodeAlipay:
 		// do nothing...
+		req.PemKey = []byte(chanMer.PrivateKey)
 	case channel.ChanCodeWeixin:
-		req.AppID = chanMer.WxpAppId
+		req.SubAppID = subAppId
 		req.SubMchId = subMchId
-		req.WeixinClientCert = []byte(chanMer.HttpCert)
-		req.WeixinClientKey = []byte(chanMer.HttpKey)
+		req.PemCert = []byte(chanMer.HttpCert)
+		req.PemKey = []byte(chanMer.HttpKey)
 	default:
 	}
 
 	// 向渠道查询
-	sp := channel.GetScanPayChan(t.ChanCode, c.AreaType)
+	sp := channel.GetScanPayChan(t.ChanCode, c.Version)
 	if sp == nil {
 		return ReturnWithErrorCode("NO_CHANNEL")
 	}
@@ -266,7 +273,7 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -275,21 +282,23 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 	// 渠道参数
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
+	req.AppID = chanMer.WxpAppId
 
 	// 请求撤销
-	sp := channel.GetScanPayChan(orig.ChanCode, c.AreaType)
+	sp := channel.GetScanPayChan(orig.ChanCode, c.Version)
 
 	switch orig.ChanCode {
 	case channel.ChanCodeWeixin:
 		// 微信用退款接口
-		req.AppID = chanMer.WxpAppId
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
 		req.ActTxamt = req.TotalTxamt
+		req.SubAppID = subAppId
 		req.SubMchId = subMchId
-		req.WeixinClientCert = []byte(chanMer.HttpCert)
-		req.WeixinClientKey = []byte(chanMer.HttpKey)
+		req.PemCert = []byte(chanMer.HttpCert)
+		req.PemKey = []byte(chanMer.HttpKey)
 		ret, err = sp.ProcessRefund(req)
 	case channel.ChanCodeAlipay:
+		req.PemKey = []byte(chanMer.PrivateKey)
 		ret, err = sp.ProcessCancel(req)
 	default:
 		err = fmt.Errorf("unknown scan pay channel `%s`", orig.ChanCode)
@@ -393,13 +402,13 @@ func ProcessClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest
 func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var err error
-	errResp := prepareWxpReqData(t, c, req)
+	errResp := prepareWxpReqData(req, c)
 	if errResp != nil {
 		return errResp
 	}
 
 	// 指定微信
-	sp := channel.GetScanPayChan(channel.ChanCodeWeixin, c.AreaType)
+	sp := channel.GetScanPayChan(channel.ChanCodeWeixin, c.Version)
 	ret, err = sp.ProcessRefundQuery(req)
 	if err != nil {
 		log.Errorf("process weixin refundQuery error:%s", err)
@@ -413,13 +422,13 @@ func ProcessWxpRefundQuery(t *model.Trans, c *model.ChanMer, req *model.ScanPayR
 func ProcessWxpCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var err error
-	errResp := prepareWxpReqData(orig, c, req)
+	errResp := prepareWxpReqData(req, c)
 	if errResp != nil {
 		return errResp
 	}
 
 	// 指定微信
-	sp := channel.GetScanPayChan(channel.ChanCodeWeixin, c.AreaType)
+	sp := channel.GetScanPayChan(channel.ChanCodeWeixin, c.Version)
 	ret, err = sp.ProcessCancel(req)
 	if err != nil {
 		log.Errorf("process weixin cancel error:%s", err)
@@ -433,13 +442,13 @@ func ProcessWxpCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReq
 func ProcessWxpClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	var err error
-	errResp := prepareWxpReqData(orig, c, req)
+	errResp := prepareWxpReqData(req, c)
 	if errResp != nil {
 		return errResp
 	}
 
 	// 指定微信
-	sp := channel.GetScanPayChan(channel.ChanCodeWeixin, c.AreaType)
+	sp := channel.GetScanPayChan(channel.ChanCodeWeixin, c.Version)
 	ret, err = sp.ProcessClose(req)
 	if err != nil {
 		log.Errorf("process weixin Close error:%s", err)
@@ -449,10 +458,10 @@ func ProcessWxpClose(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequ
 	return ret
 }
 
-func prepareWxpReqData(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+func prepareWxpReqData(req *model.ScanPayRequest, c *model.ChanMer) (ret *model.ScanPayResponse) {
 
 	// 选择送往渠道的商户
-	chanMer, subMchId, err := chooseChanMer(c)
+	chanMer, subMchId, subAppId, err := chooseChanMer(c)
 	if err != nil {
 		log.Errorf("chanMer(%s): %s", c.ChanMerId, err)
 		return ReturnWithErrorCode("SYSTEM_ERROR")
@@ -462,15 +471,16 @@ func prepareWxpReqData(orig *model.Trans, c *model.ChanMer, req *model.ScanPayRe
 	req.SignKey = chanMer.SignKey
 	req.ChanMerId = chanMer.ChanMerId
 	req.AppID = chanMer.WxpAppId
+	req.SubAppID = subAppId
 	req.SubMchId = subMchId
-	req.WeixinClientCert = []byte(chanMer.HttpCert)
-	req.WeixinClientKey = []byte(chanMer.HttpKey)
+	req.PemCert = []byte(chanMer.HttpCert)
+	req.PemKey = []byte(chanMer.HttpKey)
 
 	return nil
 }
 
 // chooseChanMer 选择往渠道送的商户
-func chooseChanMer(c *model.ChanMer) (chanMer *model.ChanMer, subMchId string, err error) {
+func chooseChanMer(c *model.ChanMer) (chanMer *model.ChanMer, subMchId, subAppId string, err error) {
 	// 受理商模式
 	if c.IsAgentMode {
 		if c.AgentMer == nil {
@@ -478,6 +488,7 @@ func chooseChanMer(c *model.ChanMer) (chanMer *model.ChanMer, subMchId string, e
 			return
 		}
 		subMchId = c.ChanMerId
+		subAppId = c.WxpAppId
 		chanMer = c.AgentMer
 		return
 	}
@@ -494,38 +505,27 @@ func genOverseaExtendInfo(mer model.Merchant) (string, error) {
 }
 
 func genExtendParams(mer model.Merchant, c *model.ChanMer) string {
-	var agentCode = agentId
-	if c.AgentCode != "" {
-		agentCode = c.AgentCode
+	switch c.Version {
+	case channel.ALP2_0:
+		var agentCode = alp2_0ID
+		if c.AgentCode != "" {
+			agentCode = c.AgentCode
+		}
+		return agentCode
+	default:
+		// ALP1_0
+		var agentCode = alp1_0ID
+		if c.AgentCode != "" {
+			agentCode = c.AgentCode
+		}
+		var shopInfo = &struct {
+			AGENT_ID   string `json:",omitempty"`
+			STORE_ID   string `json:",omitempty"`
+			STORE_TYPE string `json:",omitempty"`
+			SHOP_ID    string `json:",omitempty"`
+		}{agentCode, mer.Detail.ShopID, mer.Detail.ShopType, mer.Detail.BrandNum}
+
+		bytes, _ := json.Marshal(shopInfo)
+		return string(bytes)
 	}
-	var shopInfo = &struct {
-		AGENT_ID   string `json:",omitempty"`
-		STORE_ID   string `json:",omitempty"`
-		STORE_TYPE string `json:",omitempty"`
-		SHOP_ID    string `json:",omitempty"`
-	}{agentCode, mer.Detail.ShopID, mer.Detail.ShopType, mer.Detail.BrandNum}
-
-	bytes, _ := json.Marshal(shopInfo)
-	return string(bytes)
 }
-
-// ProcessPurchaseCoupons 卡券核销
-// func ProcessPurchaseCoupons(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
-//
-// 	// 上送参数
-// 	req.SysOrderNum = t.SysOrderNum
-// 	// req.Subject = mer.Detail.CommodityName
-// 	req.ChanMerId = c.ChanMerId
-// 	req.Terminalsn = req.Terminalid
-// 	req.Terminalid = c.TerminalId
-//
-// 	// 获得渠道实例，请求
-// 	client := unionlive.DefaultClient
-// 	ret, err := client.ProcessPurchaseCoupons(req)
-// 	if err != nil {
-// 		log.Errorf("process PurchaseCoupons error:%s", err)
-// 		return ReturnWithErrorCode("SYSTEM_ERROR")
-// 	}
-//
-// 	return ret
-// }

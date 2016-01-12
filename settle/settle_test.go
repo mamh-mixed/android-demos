@@ -8,8 +8,14 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+func TestSpSettle(t *testing.T) {
+	s := &scanpayDomestic{}
+
+	s.Reconciliation("2015-12-23")
+}
+
 func TestGenReport(t *testing.T) {
-	SpSettReport("2015-12-08")
+	SpSettReport("2015-12-09")
 }
 
 func TestSpReconciliatReport(t *testing.T) {
@@ -17,7 +23,7 @@ func TestSpReconciliatReport(t *testing.T) {
 }
 
 func TestSpSettReport(t *testing.T) {
-	SpSettReport("2015-12-10")
+	SpSettReport("2016-01-10")
 }
 
 func TestAddTrans(t *testing.T) {

@@ -41,7 +41,7 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 		appUser, err := mongo.AppUserCol.FindOne(userName)
 		if err != nil {
 			log.Errorf("find user(%s) error: %s", userName, err)
-			return model.NewResultBody(2, "无此用户名")
+			return model.NewResultBody(2, "USERNAME_PASSWORD_ERROR")
 		} else {
 			pb := md5.Sum([]byte(password))
 			encryptPass = fmt.Sprintf("%x", pb[:])
@@ -198,7 +198,7 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 			}
 		}
 		log.Errorf("wrong password, expect %s but get %s", user.Password, encryptPass)
-		return model.NewResultBody(3, "密码错误")
+		return model.NewResultBody(3, "USERNAME_PASSWORD_ERROR")
 	}
 
 	//密码正确，清空登陆记录
@@ -466,7 +466,7 @@ func (u *userController) RemoveUser(userName string) (ret *model.ResultBody) {
 	}
 	err := mongo.UserColl.Remove(userName)
 	if err != nil {
-		log.Debugf("删除用户失败，%s", err)
+		log.Debugf("remove user(%s) fail: %s", userName, err)
 		return model.NewResultBody(2, "删除用户失败")
 	}
 	ret = &model.ResultBody{
@@ -643,6 +643,55 @@ func (u *userController) ResetPwd(data []byte, curUser *model.User) (ret *model.
 	ret = &model.ResultBody{
 		Status:  0,
 		Message: "重置密码成功",
+	}
+	return ret
+}
+
+func (u *userController) PasswordReset(data []byte) (ret *model.ResultBody) {
+	log.Debugf("data:%s", string(data))
+	resetUser := &model.ResetUser{}
+	err := json.Unmarshal(data, resetUser)
+	if err != nil {
+		log.Errorf("json unmsrshal err,%s", err)
+		return model.NewResultBody(6, "JSON_ERROR")
+	}
+
+	if resetUser.UserName == "" || resetUser.PassWord == "" || resetUser.CheckCode == "" {
+		return model.NewResultBody(1, "MISS_REQUIRED_PARAMETER")
+	}
+
+	emailInfo, err := mongo.EmailCol.FindOne(resetUser.UserName)
+	if err != nil {
+		log.Errorf("find user error, user:%s, error:%s", resetUser.UserName, err)
+		return model.NewResultBody(2, "SYSTEM_ERROR")
+	}
+	timestamp, _ := time.ParseInLocation("2006-01-02 15:04:05", emailInfo.Timestamp, time.Local)
+	if time.Now().Sub(timestamp) > 2*time.Hour {
+		return model.NewResultBody(5, "OPERATION_OUT_OF_DATE")
+	}
+
+	if resetUser.CheckCode != emailInfo.Code {
+		return model.NewResultBody(4, "INVALID_CHECK_CODE")
+	}
+
+	appUser, err := mongo.AppUserCol.FindOne(resetUser.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.NewResultBody(3, "USERNAME_NOT_MATCH")
+		}
+		log.Errorf("select user by userName err,userName=%s,%s", resetUser.UserName, err)
+		return model.NewResultBody(2, "SYSTEM_ERROR")
+	}
+
+	appUser.Password = resetUser.PassWord
+	err = mongo.AppUserCol.Update(appUser)
+	if err != nil {
+		log.Errorf("reset password err,userName=%s,%s", resetUser.UserName, err)
+		return model.NewResultBody(2, "SYSTEM_ERROR")
+	}
+	ret = &model.ResultBody{
+		Status:  0,
+		Message: "SUCCESS",
 	}
 	return ret
 }

@@ -83,6 +83,8 @@ function goBuild() {
     cp -r config distrib/
     mkdir -p distrib/app/material
     cp -r app/material/ distrib/app/material
+    mkdir -p distrib/push/pem
+    cp -r push/pem/ distrib/push/pem
     if [ "$env" == "develop" ]; then
         rm distrib/config/*testing*
         rm distrib/config/*product*

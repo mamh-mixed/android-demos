@@ -15,6 +15,7 @@
 <link rel="import" href="../bower_components/paper-scroll-header-panel/paper-scroll-header-panel.html">
 <link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../elements/choose-language/choose-language.html">
 <link rel="import" href="../elements/x-ajax/x-ajax.html">
 <link rel="import" href="../elements/x-pagination/x-pagination.html">
@@ -258,12 +259,24 @@
             【
             <span>{{nickName}}</span> 】
           </div>
-          <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="handleLogoutTapped"></paper-icon-button>
+          <paper-icon-button id="logoutBtn" icon="exit-to-app" on-tap="handleLogoutTapped" alt="logout"></paper-icon-button>
+          <paper-tooltip for="logoutBtn">
+            <i18n-msg msgid="SYSTEM.LOGOUT">退出</i18n-msg>
+          </paper-tooltip>
           <!-- Toolbar icons -->
           <choose-language id="languageChoose"></choose-language>
+          <paper-tooltip for="languageChoose">
+            <i18n-msg msgid="SYSTEM.CHOOSE_LANGUAGE">选择语言</i18n-msg>
+          </paper-tooltip>
           <div hidden$="{{isNarrow}}">
-            <paper-icon-button icon="fullscreen" on-tap="enterFullscreenMode" hidden$="{{isFullscreen}}"></paper-icon-button>
-            <paper-icon-button icon="fullscreen-exit" on-tap="exitFullscreenMode" hidden$="{{!isFullscreen}}"></paper-icon-button>
+            <paper-icon-button id="enterFullscreenMode" icon="fullscreen" on-tap="enterFullscreenMode" hidden$="{{isFullscreen}}" alt="hideMenu"></paper-icon-button>
+            <paper-tooltip for="enterFullscreenMode">
+              <i18n-msg msgid="SYSTEM.HIDE_SIDEBAR">隐藏菜单</i18n-msg>
+            </paper-tooltip>
+            <paper-icon-button id="exitFullscreenMode" icon="fullscreen-exit" on-tap="exitFullscreenMode" hidden$="{{!isFullscreen}}" alt="showMenu"></paper-icon-button>
+            <paper-tooltip for="exitFullscreenMode">
+              <i18n-msg msgid="SYSTEM.SHOW_SIDEBAR">显示菜单</i18n-msg>
+            </paper-tooltip>
           </div>
 
 
@@ -454,6 +467,12 @@
               "url": "#/trade/list",
               "route": "trade.list"
             }, {
+              "nameCN": "扫码交易监控",
+              "nameEN": "",
+              "icon": "image:crop-free",
+              "url": "#/trade/monitor",
+              "route": "trade.monitor"
+            },{
               "nameCN": "快捷支付",
               "nameEN": "",
               "icon": "hardware:phonelink",
@@ -530,6 +549,12 @@
               "icon": "hardware:scanner",
               "url": "#/test/filereader",
               "route": "test.filereader"
+            }, {
+              "nameCN": "卡券",
+              "nameEN": "",
+              "icon": "card-giftcard",
+              "url": "#/test/coupon",
+              "route": "test.coupon"
             }]
           }];
           this.genAdminMenus = [{
@@ -558,6 +583,12 @@
               "url": "#/trade/list",
               "route": "trade.list"
             }, {
+              "nameCN": "扫码交易监控",
+              "nameEN": "",
+              "icon": "image:crop-free",
+              "url": "#/trade/monitor",
+              "route": "trade.monitor"
+            },{
               "nameCN": "快捷支付",
               "nameEN": "",
               "icon": "hardware:phonelink",
@@ -630,7 +661,7 @@
             "url": "#/system/password/editor",
             'route': 'system.password.editor'
           }, {
-            "name": "APPUSERMANAGEMENT.APPUSERMANAGEMENT", 
+            "name": "APPUSERMANAGEMENT.APPUSERMANAGEMENT",
             "nameCN": "APP用户",
             "icon": "perm-identity",
             "url": "#/system/apps",

@@ -19,16 +19,18 @@ import (
 var (
 	// 下单支付
 	scanPayBarcodePay = &model.ScanPayRequest{
-		GoodsInfo: "鞋子,1000.00,2;衣服,1500,3",
-		OrderNum:  util.Millisecond(),
-		// OrderNum:   "哈哈中文订单号",
-		ScanCodeId: "287528698389366895",
-		AgentCode:  "19992900",
-		Txamt:      "000000000001",
-		Chcd:       "AOS",
-		Busicd:     "PURC",
-		Currency:   "JPY",
-		Mchntid:    "200000000010002",
+		GoodsInfo:      "food,10.00,2;water,1.00,3",
+		OrderNum:       util.Millisecond(),
+		ScanCodeId:     "283850099094963575",
+		AgentCode:      "10134001",
+		Txamt:          "000000000001",
+		DiscountAmt:    "000000000001",
+		PayType:        "5",
+		Busicd:         "PURC",
+		Currency:       "CNY",
+		Mchntid:        "100000000010001",
+		CouponOrderNum: "kaquandingdanhao",
+		// Chcd:        "AOS",
 		// Sign:       "ce76927257b57f133f68463c83bbd408e0f25211",
 	}
 	// 预下单支付
@@ -164,6 +166,33 @@ var (
 		// VeriTime:   "-1",
 		OrigOrderNum: "14500571571427131847",
 	}
+
+	// 电子券核销
+	purchaseCouponsSingle = &model.ScanPayRequest{
+		Txndir:    "Q",
+		Busicd:    "VERI",
+		AgentCode: "10134001",
+		// Chcd:       "ULIVE",
+		Mchntid:    "999118880000017",
+		Terminalid: "30150006",
+		OrderNum:   fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		ScanCodeId: "1810037103015010",
+		// VeriTime:   "-1",
+		// Txamt:   "000000010100",
+		// Cardbin: "665523",
+		PayType: "4",
+	}
+	// 电子券验证冲正
+	recoverCoupons = &model.ScanPayRequest{
+		Txndir:    "Q",
+		Busicd:    "CAVE",
+		AgentCode: "10134001",
+		// Chcd:       "ULIVE",
+		Mchntid:      "999118880000017",
+		Terminalid:   "30150006",
+		OrderNum:     fmt.Sprintf("%d%d", time.Now().Unix(), rand.Int31()),
+		OrigOrderNum: "14513068011474941318",
+	}
 )
 
 func doOneScanPay(scanPay *model.ScanPayRequest) error {
@@ -207,7 +236,8 @@ func TestConcurrentScanPay(t *testing.T) {
 func TestScanPay(t *testing.T) {
 	// scanPayEnterprise.OrderNum = "1444639800979"
 	// scanPayClose.OrigOrderNum = "14417647179551"
-	err := doOneScanPay(settQuery)
+	t.Logf("Order Number is %s", scanPayBarcodePay.OrderNum)
+	err := doOneScanPay(scanPayBarcodePay)
 	if err != nil {
 		t.Error(err)
 	}
@@ -215,14 +245,21 @@ func TestScanPay(t *testing.T) {
 
 func TestSignMsg(t *testing.T) {
 
-	str := `{"sign":"ed1838760bbde16ca708a49a4b5f5d3279374519","txndir":"Q","scanCodeId":"281223029725731233","mchntid":"991663048160001","orderNum":"2015092217294332704","busicd":"PURC","inscd":"99911888","txamt":"000000000001","terminalid":"00000379"}`
+	//4d045cf4039a420a86824c7132a24d6ff4c559f3
+	str := `{"txndir":"Q","busicd":"PURC","inscd":"99911888","chcd":"WXP","mchntid":"991221054110001","txamt":"000000001400","goodsInfo":"6927229221501,福宁鸡蛋肉松面包,3,2.50;6901028001465,双喜（软国际）,1,6.50;","orderNum":"1056000011024917","scanCodeId":"130472120612304529","currency":"CNY","terminalid":"10560001","sign":"99706d3f26df36a33ecd51d928a7181d208f7608"}`
 
 	req := new(model.ScanPayRequest)
 	err := json.Unmarshal([]byte(str), req)
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log(req.SignMsg())
+
+	err = doOneScanPay(req)
+	time.Sleep(5 * time.Second)
+	if err != nil {
+		t.Error(err)
+	}
+	// t.Log(security.SHA1WithKey(req.SignMsg(), "8627a2ba43da3ada31b820b788680b99"))
 }
 
 // 测试卡券核销
@@ -246,6 +283,19 @@ func TestQueryPurchaseCouponsResult(t *testing.T) {
 }
 func TestUndoPurchaseActCoupons(t *testing.T) {
 	err := doOneScanPay(undoPurchaseActCoupons)
+	if err != nil {
+		t.Error(err)
+	}
+}
+
+func TestPurchaseCouponsSingle(t *testing.T) {
+	err := doOneScanPay(purchaseCouponsSingle)
+	if err != nil {
+		t.Error(err)
+	}
+}
+func TestRecoverCoupons(t *testing.T) {
+	err := doOneScanPay(recoverCoupons)
 	if err != nil {
 		t.Error(err)
 	}

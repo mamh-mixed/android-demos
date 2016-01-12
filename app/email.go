@@ -41,13 +41,25 @@ var (
 		</body>
 	</html>
 	`
+
+	resetTemplate = `
+	<html>
+		<body>
+			<h3>
+				点击以下链接重置密码</br>
+				<a href="%s">%s</a>
+			</h3>
+		</body>
+	</html>
+	`
 )
 
 // 邮件模板消息体
 var (
-	activation = emailTemplate{Title: "云收银帐号激活", Body: actTemplate}
-	promote    = emailTemplate{Title: "申请提升限额", Body: promoteTemplate}
-	open       = emailTemplate{Title: "【感谢您注册云收银】", Body: openTemplate}
+	activation    = emailTemplate{Title: "云收银帐号激活", Body: actTemplate}
+	promote       = emailTemplate{Title: "申请提升限额", Body: promoteTemplate}
+	open          = emailTemplate{Title: "【感谢您注册云收银】", Body: openTemplate}
+	resetPassword = emailTemplate{Title: "重置密码", Body: resetTemplate}
 )
 
 type emailTemplate struct {

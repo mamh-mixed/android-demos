@@ -20,6 +20,8 @@ import (
 	"github.com/omigo/log"
 )
 
+var MsgQueue = make(chan *model.Trans, 1e6)
+
 var (
 	closeInterval   = time.Duration(goconf.Config.App.OrderCloseTime)
 	refreshInterval = time.Duration(goconf.Config.App.OrderRefreshTime)
@@ -43,7 +45,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录该笔交易
 	t := &model.Trans{
 		MerId:       req.Mchntid,
-		SysOrderNum: util.SerialNumber(),
+		SysOrderNum: req.ReqId,
 		OrderNum:    req.OrderNum,
 		TransType:   model.PayTrans,
 		Busicd:      req.Busicd,
@@ -76,6 +78,7 @@ func PublicPay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
+	t.AppID = c.WxpAppId
 
 	var chanMerId string
 	if c.IsAgentMode && c.AgentMer != nil {
@@ -196,7 +199,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if isNewReq {
 		t = &model.Trans{
 			MerId:         req.Mchntid,
-			SysOrderNum:   util.SerialNumber(),
+			SysOrderNum:   req.ReqId,
 			OrderNum:      req.OrderNum,
 			TransType:     model.EnterpriseTrans,
 			Busicd:        req.Busicd,
@@ -250,6 +253,7 @@ func EnterprisePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
+	t.AppID = c.WxpAppId
 
 	// 记录交易
 	if isNewReq {
@@ -277,18 +281,21 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 记录该笔交易
 	t := &model.Trans{
-		MerId:       req.Mchntid,
-		SysOrderNum: util.SerialNumber(),
-		OrderNum:    req.OrderNum,
-		TransType:   model.PayTrans,
-		Busicd:      req.Busicd,
-		AgentCode:   req.AgentCode,
-		Terminalid:  req.Terminalid,
-		TransAmt:    req.IntTxamt,
-		GoodsInfo:   req.GoodsInfo,
-		TradeFrom:   req.TradeFrom,
-		Currency:    req.Currency,
-		LockFlag:    1,
+		MerId:          req.Mchntid,
+		CouponOrderNum: req.CouponOrderNum, // 优惠券核销后的订单号
+		DiscountAmt:    req.IntDiscountAmt, // 卡券优惠金额
+		PayType:        req.PayType,        // 卡券指定的支付方式
+		SysOrderNum:    req.ReqId,
+		OrderNum:       req.OrderNum,
+		TransType:      model.PayTrans,
+		Busicd:         req.Busicd,
+		AgentCode:      req.AgentCode,
+		Terminalid:     req.Terminalid,
+		TransAmt:       req.IntTxamt,
+		GoodsInfo:      req.GoodsInfo,
+		TradeFrom:      req.TradeFrom,
+		Currency:       req.Currency,
+		LockFlag:       1,
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
@@ -302,6 +309,23 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		shouldChcd = channel.ChanCodeAlipay
 	default:
 		return adaptor.LogicErrorHandler(t, "NO_CHANNEL")
+	}
+
+	// 实际支付方式与卡券指定支付方式不符，则拒掉交易
+	if req.PayType != "" {
+		if shouldChcd == channel.ChanCodeWeixin && req.PayType != "4" {
+			return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+		} else if shouldChcd == channel.ChanCodeAlipay && req.PayType != "5" {
+			return adaptor.ReturnWithErrorCode("CODE_PAYTYPE_NOT_MATCH")
+		}
+	}
+	// 如果卡券订单号不为空，则查询出卡券订单
+	if req.CouponOrderNum != "" {
+		// 判断是否存在该订单
+		_, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
+		if err != nil {
+			return adaptor.ReturnWithErrorCode("COUPON_TRADE_NOT_EXIST")
+		}
 	}
 
 	// 下单时忽略渠道，以免误送渠道导致交易失败
@@ -325,9 +349,11 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
+	t.AppID = c.WxpAppId // 支付宝时会有作用
 
+	// 计算手续费
 	t.Fee = int64(math.Floor(float64(t.TransAmt)*rp.MerFee + 0.5))
-	t.NetFee = t.Fee // 净手续费，会在退款时更新
+	t.NetFee = t.Fee
 
 	// 记录交易
 	// t.TransStatus = model.TransNotPay
@@ -337,13 +363,15 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	}
 
 	ret = adaptor.ProcessBarcodePay(t, c, req)
+	if ret.Respcd == adaptor.InprocessCode {
+		go refresh(req, c)
+	}
 
 	// 渠道
 	ret.Chcd = req.Chcd
 
 	// 更新交易信息
 	updateTrans(t, ret)
-
 	return ret
 }
 
@@ -357,24 +385,35 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 记录该笔交易
 	t := &model.Trans{
-		MerId:       req.Mchntid,
-		SysOrderNum: util.SerialNumber(),
-		OrderNum:    req.OrderNum,
-		TransType:   model.PayTrans,
-		Busicd:      req.Busicd,
-		AgentCode:   req.AgentCode,
-		ChanCode:    req.Chcd,
-		Terminalid:  req.Terminalid,
-		TransAmt:    req.IntTxamt,
-		GoodsInfo:   req.GoodsInfo,
-		NotifyUrl:   req.NotifyUrl,
-		TradeFrom:   req.TradeFrom,
-		Attach:      req.Attach,
-		Currency:    req.Currency,
-		LockFlag:    1,
+		MerId:          req.Mchntid,
+		SysOrderNum:    req.ReqId,
+		OrderNum:       req.OrderNum,
+		TransType:      model.PayTrans,
+		Busicd:         req.Busicd,
+		AgentCode:      req.AgentCode,
+		ChanCode:       req.Chcd,
+		Terminalid:     req.Terminalid,
+		TransAmt:       req.IntTxamt,
+		GoodsInfo:      req.GoodsInfo,
+		NotifyUrl:      req.NotifyUrl,
+		TradeFrom:      req.TradeFrom,
+		Attach:         req.Attach,
+		Currency:       req.Currency,
+		LockFlag:       1,
+		CouponOrderNum: req.CouponOrderNum, // 优惠券核销后的订单号
+		DiscountAmt:    req.IntDiscountAmt, // 卡券优惠金额
+		PayType:        req.PayType,        // 卡券指定的支付方式
 	}
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
+	// 如果卡券订单号不为空，则查询出卡券订单
+	if req.CouponOrderNum != "" {
+		// 判断是否存在该订单
+		_, err := mongo.CouTransColl.FindOne(req.Mchntid, req.CouponOrderNum)
+		if err != nil {
+			return adaptor.ReturnWithErrorCode("COUPON_TRADE_NOT_EXIST")
+		}
+	}
 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
@@ -389,6 +428,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	if err != nil {
 		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
 	}
+	t.AppID = c.WxpAppId // 支付宝时会有作用
 
 	t.Fee = int64(math.Floor(float64(t.TransAmt)*rp.MerFee + 0.5))
 	t.NetFee = t.Fee // 净手续费，会在退款时更新
@@ -411,7 +451,6 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 
 	// 更新交易信息
 	updateTrans(t, ret)
-
 	return ret
 }
 
@@ -425,7 +464,7 @@ func Refund(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录这笔退款
 	refund := &model.Trans{
 		MerId:        req.Mchntid,
-		SysOrderNum:  util.SerialNumber(),
+		SysOrderNum:  req.ReqId,
 		OrderNum:     req.OrderNum,
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.RefundTrans,
@@ -682,7 +721,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录这笔撤销
 	cancel := &model.Trans{
 		MerId:        req.Mchntid,
-		SysOrderNum:  util.SerialNumber(),
+		SysOrderNum:  req.ReqId,
 		OrderNum:     req.OrderNum,
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.CancelTrans,
@@ -796,7 +835,7 @@ func Close(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 记录这笔关单
 	closed := &model.Trans{
 		MerId:        req.Mchntid,
-		SysOrderNum:  util.SerialNumber(),
+		SysOrderNum:  req.ReqId,
 		OrderNum:     req.OrderNum,
 		OrigOrderNum: req.OrigOrderNum,
 		TransType:    model.CloseTrans,
@@ -939,10 +978,12 @@ func CloseOrder() {
 		}
 
 		// 记录请求日志的request
-		req := model.NewScanPayRequest()
-		req.OrigOrderNum = t.OrderNum
-		req.Mchntid = t.MerId
-		req.Busicd = model.Inqy
+		req := &model.ScanPayRequest{
+			OrigOrderNum: t.OrderNum,
+			Mchntid:      t.MerId,
+			Busicd:       model.Inqy,
+			ReqId:        t.SysOrderNum, // 以系统订单号为日志号
+		}
 
 		var closedResult *model.ScanPayResponse
 		ret := adaptor.ProcessEnquiry(t, c, req)
@@ -984,6 +1025,48 @@ func CloseOrder() {
 	}
 }
 
+// 针对09的交易，系统跟踪查询
+// 会阻塞，需要单独运行在goruntine里
+func refresh(req *model.ScanPayRequest, c *model.ChanMer) {
+	var interval = []time.Duration{3, 10, 60, 180}
+	for _, d := range interval {
+		// 等一等
+		time.Sleep(time.Second * d)
+		log.Infof("trace inporcess trans, merId=%s, orderNum=%s", req.Mchntid, req.OrderNum)
+		// 重新锁住并刷新交易
+		t, err := findAndLockTrans(req.Mchntid, req.OrderNum)
+		if err != nil {
+			// 其他请求在获取该交易
+			log.Warnf("refresh warn: %s", err)
+			continue
+		}
+		// 查询
+		ret := adaptor.ProcessEnquiry(t, c, &model.ScanPayRequest{
+			ReqId:        req.ReqId, // 关联ReqId，在交易报文里可以看到
+			OrigOrderNum: req.OrderNum,
+			Busicd:       model.Inqy,
+			Mchntid:      req.Mchntid,
+		})
+		// 处理
+		switch ret.Respcd {
+		case adaptor.InprocessCode:
+			// 记得解锁
+			mongo.SpTransColl.Unlock(req.Mchntid, req.OrderNum)
+			continue
+		case adaptor.SuccessCode:
+			// 进入消息推送队列
+			if t.TradeFrom == model.IOS || t.TradeFrom == model.Android {
+				MsgQueue <- t
+			}
+			fallthrough
+		default:
+			// 更新交易状态
+			updateTrans(t, ret)
+		}
+		break
+	}
+}
+
 // RefreshOrder 刷新支付交易，针对下单需要输入密码的
 func RefreshOrder() {
 	log.Info("process refreshOrder ...")
@@ -1014,10 +1097,12 @@ func RefreshOrder() {
 		}
 
 		// 记录请求日志的request
-		req := model.NewScanPayRequest()
-		req.OrigOrderNum = t.OrderNum
-		req.Mchntid = t.MerId
-		req.Busicd = model.Inqy
+		req := &model.ScanPayRequest{
+			OrigOrderNum: t.OrderNum,
+			Mchntid:      t.MerId,
+			Busicd:       model.Inqy,
+			ReqId:        t.SysOrderNum, // 以系统订单号为日志号
+		}
 
 		ret := adaptor.ProcessEnquiry(t, c, req)
 
@@ -1031,7 +1116,7 @@ func RefreshOrder() {
 func findAndLockOrigTrans(merId, orderNum string) (orig *model.Trans, err error) {
 
 	// 判断是否有此订单
-	orig, err = mongo.SpTransColl.FindOne(merId, orderNum)
+	orig, err = mongo.SpTransColl.FindOneInMaster(merId, orderNum)
 	if err != nil {
 		return nil, errors.New("TRADE_NOT_EXIST")
 	}
@@ -1119,6 +1204,8 @@ func updateTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	default:
 		t.TransStatus = model.TransFail
 	}
+	//将支付信息更新到卡券交易中
+	updateScanPayTransToCouponTrans(t)
 	return mongo.SpTransColl.UpdateAndUnlock(t)
 }
 
@@ -1137,6 +1224,7 @@ func copyProperties(current *model.Trans, orig *model.Trans) {
 	current.ConsumerAccount = orig.ConsumerAccount
 	current.SettRole = orig.SettRole
 	current.ChanOrderNum = orig.ChanOrderNum
+	current.AppID = orig.AppID
 }
 
 func signWithMD5(s interface{}, key string) string {
@@ -1177,4 +1265,36 @@ func addRelatedProperties(current *model.Trans, m model.Merchant) {
 	current.ShortName = m.Detail.ShortName
 	current.SubAgentCode = m.SubAgentCode
 	current.SubAgentName = m.SubAgentName
+}
+
+func updateScanPayTransToCouponTrans(t *model.Trans) {
+	// 如果卡券订单号为空，则返回
+	if t.CouponOrderNum == "" {
+		return
+	}
+	scanPayCoupon := &model.ScanPayCoupon{
+		OrderNum:     t.OrderNum,
+		RespCode:     t.RespCode,
+		TransAmt:     t.TransAmt,
+		TransStatus:  t.TransStatus,
+		TransType:    t.TransType,
+		ChanCode:     t.ChanCode,
+		CreateTime:   t.CreateTime,
+		UpdateTime:   t.UpdateTime,
+		TradeFrom:    t.TradeFrom,
+		PayTime:      t.PayTime,
+		Currency:     t.Currency,
+		ExchangeRate: t.ExchangeRate,
+		DiscountAmt:  t.DiscountAmt,
+		PayType:      t.PayType,
+		MerId:        t.MerId,
+		Busicd:       t.Busicd,
+		AgentCode:    t.AgentCode,
+		Terminalid:   t.Terminalid,
+	}
+	update := []interface{}{"scanPayCoupon", scanPayCoupon}
+	err := mongo.CouTransColl.UpdateFields(t.MerId, t.CouponOrderNum, update...)
+	if err != nil {
+		log.Errorf("save scanPayTrans to couponTrans fail,scanPayOrderNum:%s,%s", scanPayCoupon.OrderNum, err)
+	}
 }

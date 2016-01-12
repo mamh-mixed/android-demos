@@ -1,23 +1,15 @@
 {
   "name": "webchat-pay",
-  "version": "0.0.0",
-  "description": "Simple Page app boilerplate using webpack",
+  "version": "1.0.0",
+  "description": "微信扫固定码支付",
   "main": "scripts/index.js",
-  "scripts": {
-    "deploy-product": "webpack -p && gulp deploy-product",
-    "deploy-test": "gulp deploy-product",
-    "test": "eslint . && webpack -d && webpack -p",
-    "dev": "webpack-dev-server --devtool eval --progress --colors --hot --content-base assets",
-    "serve": "gulp && anywhere",
-    "start": "webpack-dev-server --devtool eval --progress --hot --colors --content-base assets"
-  },
   "keywords": [
     "boilerplate",
     "webpack",
     "babel",
     "less"
   ],
-  "author": "Nihey Takizawa <nihey.takizawa@gmail.com>",
+  "author": "Shihching Wang <arturo.wang@cardinfolink.com>",
   "license": "MIT",
   "dependencies": {
     "babel": "^6.1.18",
@@ -31,6 +23,7 @@
     "gulp": "^3.9.0",
     "gulp-clean": "^0.3.1",
     "gulp-htmlmin": "^1.2.0",
+    "gulp-if": "^2.0.0",
     "gulp-jshint": "^2.0.0",
     "gulp-replace": "^0.5.4",
     "gulp-rsync": "0.0.5",

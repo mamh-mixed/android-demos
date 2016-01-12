@@ -191,16 +191,17 @@
               case 'USER_LOCK':
                 Util.toast('LOGIN.TOAST.ACCOUNT_LOCKED', 3500, true);
                 break;
-              default:
+              case 'USERNAME_PASSWORD_ERROR':
                 Util.toast('LOGIN.TOAST.LOGIN_ERROR', 3000, true);
+                break;
+              default:
+                Util.toast('SCANPAY_TRADE_LIST.TOAST.SYSTEM_ERROR', 3000, true);
             }
 
             return;
           }
-          this.user = {
-            userName: '',
-            password: ''
-          };
+          this.set('user.userName', '');
+          this.set('user.password', '');
 
           var detail = {
             loginUser: response.data,

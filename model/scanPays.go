@@ -1,13 +1,11 @@
 package model
 
 import (
-	"encoding/json"
 	"fmt"
-	"strings"
-
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/quickpay/weixin"
 	"github.com/omigo/log"
+	"strings"
 )
 
 // busiType
@@ -29,6 +27,11 @@ const (
 	COUPON_WO_SUCCESS = "SUCCESS"
 	COUPON_WO_ERROR   = "ERROR"
 	COUPON_WO_PROCESS = "PROCESS"
+	// 交易来源
+	Wap     = "wap"
+	IOS     = "ios"
+	Android = "android"
+	Pc      = "pc"
 )
 
 // QueryCondition 扫码交易查询字段
@@ -36,6 +39,7 @@ type QueryCondition struct {
 	MerName            string   `json:"mchntName,omitempty"` // 可用于商户名称、商户简称模糊查询
 	MerId              string   `json:"mchntid,omitempty"`   // 可用于商户号模糊查询
 	MerIds             []string `json:"-"`
+	ChanMerId          []string
 	UserType           string
 	Col                string   `json:"-"`
 	BindingId          string   `json:"bindingId"`
@@ -43,7 +47,7 @@ type QueryCondition struct {
 	SubAgentCode       string   `json:"subAgentCode,omitempty"`
 	GroupCode          string   `json:"groupCode,omitempty"`
 	TransStatus        []string `json:"transStatus,omitempty"`
-	RefundStatus       int      `json:"refundStatus,omitempty"`
+	RefundStatus       []int    `json:"refundStatus,omitempty"`
 	TransType          int      `json:"transType,omitempty"`
 	StartTime          string   `json:"startTime,omitempty"`
 	EndTime            string   `json:"endTime,omitempty"`
@@ -59,7 +63,7 @@ type QueryCondition struct {
 	IsForReport        bool     `json:"-"`
 	Respcd             string   `json:"respcd" url:"respcd"`
 	RespcdNotIn        string   `json:"respcdNotIn"`
-	TradeFrom          string   `json:"tradeFrom,omitempty"`
+	TradeFrom          []string `json:"tradeFrom,omitempty"`
 	Skip               int      `json:"skip,omitempty"`
 	ChanCode           string   `json:"chanCode,omitempty"`
 	Direction          string
@@ -73,6 +77,8 @@ type QueryCondition struct {
 	CouponsNo          string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`           // 卡券号
 	WriteoffStatus     string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"` // 核销状态
 	Terminalid         string `bson:"terminalid,omitempty" json:"terminalid,omitempty"`         // 终端代码
+	BlendType          string
+	IsRelatedCoupon    bool //支付是否关联卡券
 }
 
 // QueryResult 查询结果值
@@ -141,9 +147,10 @@ type MerGroup struct {
 
 // TransTypeGroup 按单个商户交易类型分组
 type TransTypeGroup struct {
-	TransType int   `bson:"transType"`
-	TransAmt  int64 `bson:"transAmt"`
-	TransNum  int   `bson:"transNum"`
+	TransType   int   `bson:"transType"`
+	TransAmt    int64 `bson:"transAmt"`
+	TransNum    int   `bson:"transNum"`
+	DiscountAmt int64 `bson:"discountAmt"`
 }
 
 // SettRoleGroup 按清算角色分组
@@ -189,36 +196,43 @@ type ScanPayRequest struct {
 	SettDate     string `json:"settDate,omitempty" url:"settDate,omitempty" bson:"settDate,omitempty"`
 	NextOrderNum string `json:"nextOrderNum,omitempty" url:"nextOrderNum,omitempty" bson:"nextOrderNum,omitempty"`
 
-	CreateTime string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
+	DiscountAmt    string `json:"discountAmt,omitempty" url:"discountAmt,omitempty" bson:"discountAmt,omitempty"` //优惠金额 C 卡券优惠金额，在支付账单中作显示
+	IntDiscountAmt int64  `json:"-" url:"-" bson:"-"`                                                             //以分为单位优惠金额 辅助字段
+
 	// 卡券相关字段
-	VeriTime         string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`       // 核销次数 C
-	Terminalsn       string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"` // 终端号
-	Cardbin          string `json:"cardbin,omitempty" url:"cardbin,omitempty" bson:"cardbin,omitempty"`          // 银行卡cardbin或者用户标识等 C
-	PayType          string `json:"payType,omitempty" url:"payType,omitempty" bson:"payType,omitempty"`          // 支付方式 M
-	OrigChanOrderNum string `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原渠道订单号
-	OrigSubmitTime   string `json:"-" url:"-" bson:"-"`                                                          // 辅助字段原交易提交时间
-	OrigVeriTime     int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 原交易验证时间
-	IntPayType       int    `json:"-" url:"-" bson:"-"`                                                          // 辅助字段 核销次数
+	VeriTime         string `json:"veriTime,omitempty" url:"veriTime,omitempty" bson:"veriTime,omitempty"`                   // 核销次数 C
+	Terminalsn       string `json:"terminalsn,omitempty" url:"terminalsn,omitempty" bson:"terminalsn,omitempty"`             // 终端号
+	Cardbin          string `json:"cardbin,omitempty" url:"cardbin,omitempty" bson:"cardbin,omitempty"`                      // 银行卡cardbin或者用户标识等 C
+	PayType          string `json:"payType,omitempty" url:"payType,omitempty" bson:"payType,omitempty"`                      // 支付方式 c
+	CouponOrderNum   string `json:"couponOrderNum,omitempty" url:"couponOrderNum,omitempty" bson:"couponOrderNum,omitempty"` // 辅助字段 卡券的系统订单号
+	OrigChanOrderNum string `json:"-" url:"-" bson:"-"`                                                                      // 辅助字段 原渠道订单号
+	OrigSubmitTime   string `json:"-" url:"-" bson:"-"`                                                                      // 辅助字段原交易提交时间
+	OrigVeriTime     int    `json:"-" url:"-" bson:"-"`                                                                      // 辅助字段 原交易验证时间
+	IntPayType       int    `json:"-" url:"-" bson:"-"`                                                                      // 辅助字段 核销次数
 	IntVeriTime      int    `json:"-" url:"-" bson:"-"`
+	OrigCardbin      string `json:"-" url:"-" bson:"-"` //辅助字段
+	OrigScanCodeId   string `json:"-" url:"-" bson:"-"` //辅助字段
+	CreateTime       string `json:"-" url:"-" bson:"-"` // 卡券交易创建时间
 
 	// 微信需要的字段
 	AppID      string `json:"-" url:"-" bson:"-"` // 公众号ID
+	SubAppID   string `json:"-" url:"-" bson:"-"` // 公众号子ID
 	DeviceInfo string `json:"-" url:"-" bson:"-"` // 设备号
 	SubMchId   string `json:"-" url:"-" bson:"-"` // 子商户
 	TotalTxamt string `json:"-" url:"-" bson:"-"` // 订单总金额
 	GoodsTag   string `json:"-" url:"-" bson:"-"` // 商品标识
 
 	// 辅助字段
-	Subject          string `json:"-" url:"-" bson:"-"` // 商品名称
-	SysOrderNum      string `json:"-" url:"-" bson:"-"` // 渠道交易号
-	ActTxamt         string `json:"-" url:"-" bson:"-"` // 实际交易金额 不同渠道单位不同
-	IntTxamt         int64  `json:"-" url:"-" bson:"-"` // 以分为单位的交易金额
-	ChanMerId        string `json:"-" url:"-" bson:"-"` // 渠道商户Id
-	SignKey          string `json:"-" url:"-" bson:"-"` // 可能表示md5key等
-	ExtendParams     string `json:"-" url:"-" bson:"-"` // 业务扩展参数
-	WeixinClientCert []byte `json:"-" url:"-" bson:"-"` // 商户双向认证证书，如果是大商户模式，用大商户的证书
-	WeixinClientKey  []byte `json:"-" url:"-" bson:"-"` // 商户双向认证密钥，如果是大商户模式，用大商户的密钥
-	ReqId            string `json:"-" url:"-" bson:"-"`
+	Subject      string `json:"-" url:"-" bson:"-"` // 商品名称
+	SysOrderNum  string `json:"-" url:"-" bson:"-"` // 渠道交易号
+	ActTxamt     string `json:"-" url:"-" bson:"-"` // 实际交易金额 不同渠道单位不同
+	IntTxamt     int64  `json:"-" url:"-" bson:"-"` // 以分为单位的交易金额
+	ChanMerId    string `json:"-" url:"-" bson:"-"` // 渠道商户Id
+	SignKey      string `json:"-" url:"-" bson:"-"` // 可能表示md5key等
+	ExtendParams string `json:"-" url:"-" bson:"-"` // 业务扩展参数
+	PemCert      []byte `json:"-" url:"-" bson:"-"` // 商户双向认证证书，如果是大商户模式，用大商户的证书
+	PemKey       []byte `json:"-" url:"-" bson:"-"` // 商户双向认证密钥，如果是大商户模式，用大商户的密钥
+	ReqId        string `json:"-" url:"-" bson:"-"`
 
 	// 访问方式
 	IsGBK bool     `json:"-" url:"-" bson:"-"`
@@ -399,62 +413,15 @@ func (s *ScanPayRequest) newTransLogs(direct string, mt int, data interface{}) *
 	}
 }
 
-func (s *ScanPayRequest) WxpMarshalGoods() string {
-
-	goods, err := marshalGoods(s.GoodsInfo)
-	if err != nil {
-		// 格式不对，送配置的商品名称，防止商户送的内容过长
-		return s.Subject
-	}
-
-	var goodsName []string
-	if len(goods) > 0 {
-		for _, v := range goods {
-			goodsName = append(goodsName, v.GoodsName)
-		}
-
-		body := strings.Join(goodsName, ",")
-		bodySizes := []rune(body)
-		if len(bodySizes) > 20 {
-			body = string(bodySizes[:20]) + "..."
-		}
-		return body
-	}
-
-	// 假如商品详细为空，送配置的商品名称
-	return s.Subject
-}
-
-func (s *ScanPayRequest) AlpMarshalGoods() string {
-
-	goods, err := marshalGoods(s.GoodsInfo)
-	if err != nil {
-		return ""
-	}
-
-	if len(goods) > 0 {
-		gbs, err := json.Marshal(goods)
-		if err != nil {
-			log.Errorf("goodsInfo marshal error:%s", err)
-			return ""
-		}
-		return string(gbs)
-	}
-
-	return ""
-}
-
 // marshalGoods 将商品详情解析
 // 格式: 商品名称,价格,数量;商品名称,价格,数量;...
-func marshalGoods(goodsInfo string) ([]goodsDetail, error) {
-
-	var gs []goodsDetail
-
-	if strings.TrimSpace(goodsInfo) == "" {
-		return gs, nil
+func (s *ScanPayRequest) MarshalGoods() ([]goodsDetail, error) {
+	if strings.TrimSpace(s.GoodsInfo) == "" {
+		return nil, nil
 	}
 
-	goods := strings.Split(goodsInfo, ";")
+	var gs []goodsDetail
+	goods := strings.Split(s.GoodsInfo, ";")
 	for i, v := range goods {
 		if i == len(goods)-1 && v == "" {
 			continue
@@ -537,8 +504,9 @@ type ScanPayCSV struct {
 	IsUseISO    bool   `bson:"isUseISO"`
 	ErrorCode   string `bson:"errorCode"`
 
-	Alp []*SpChanCSV `bson:"alp,omitempty"`
-	Wxp []*SpChanCSV `bson:"wxp,omitempty"`
+	Alp  []*SpChanCSV `bson:"alp,omitempty"`
+	Alp2 []*SpChanCSV `bson:"alp2,omitempty"`
+	Wxp  []*SpChanCSV `bson:"wxp,omitempty"`
 	//...
 }
 
@@ -567,15 +535,17 @@ type LocalBlendMap map[string]map[string][]TransSett
 
 // 勾兑结构体
 type BlendElement struct {
-	Chcd      string //渠道编号
-	ChcdName  string //渠道名称
-	MerID     string //商户号
-	ChanMerID string //渠道商户号
-	MerName   string //商户名称
-	LocalID   string //系统订单号
-	OrderID   string //渠道订单号
-	OrderTime string //交易时间
-	OrderType string //交易类型
-	OrderAct  string //交易金额
-	IsBlend   bool   //对账标识
+	Chcd          string
+	ChcdName      string
+	MerID         string //商户号
+	ChanMerID     string //渠道商户号
+	MerName       string //商户名称
+	LocalID       string //系统订单号
+	OrderID       string //渠道订单号
+	OrderTime     string //交易时间
+	OrderType     string //交易类型
+	OrderAct      string //交易金额
+	RefundOrderID string //退款订单号
+	Account       string //消费帐号
+	IsBlend       bool   //对账标识
 }
