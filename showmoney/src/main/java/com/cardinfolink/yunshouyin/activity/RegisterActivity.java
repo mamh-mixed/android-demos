@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
@@ -30,17 +31,17 @@ public class RegisterActivity extends BaseActivity {
     private SettingPasswordItem mQrPasswordEdit;
     private SettingInputItem mInviteCode;//邀请码
     private Button mRegisterNext;
-
+    private TextView mAgreement;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         mContext = this;
-        initView();
+        initLayout();
     }
 
-    private void initView() {
+    private void initLayout() {
         mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);//注册页面标题栏
         mEmailEdit = (SettingInputItem) findViewById(R.id.register_email);
 
@@ -49,6 +50,8 @@ public class RegisterActivity extends BaseActivity {
         mQrPasswordEdit = (SettingPasswordItem) findViewById(R.id.register_qr_password);
 
         mInviteCode = (SettingInputItem) findViewById(R.id.register_invite_code);//邀请码
+
+        mAgreement = (TextView) findViewById(R.id.tv_agreement);
 
         //注册页面标题栏添加返回事件监听
         mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
@@ -63,6 +66,14 @@ public class RegisterActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 btnRegisterNextOnClick(v);
+            }
+        });
+
+        mAgreement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RegisterActivity.this, AgreementActivity.class);
+                startActivity(intent);
             }
         });
     }
