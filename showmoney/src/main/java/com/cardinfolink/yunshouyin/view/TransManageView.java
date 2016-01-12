@@ -240,6 +240,8 @@ public class TransManageView extends LinearLayout {
         mTicketBillMap = new HashMap<>();
 
         mTicketAdapter = new TicketExpandableListAdapter(mContext, mMonthTicketBilltList, mTicketBillList);
+        mTicketAdapter.setHintDialog(findViewById(R.id.hint_dialog));
+
         ExpandableListView ticketActualView = mTicketPullRefreshListView.getRefreshableView();
         ticketActualView.setAdapter(mTicketAdapter);
         ticketActualView.setGroupIndicator(null);

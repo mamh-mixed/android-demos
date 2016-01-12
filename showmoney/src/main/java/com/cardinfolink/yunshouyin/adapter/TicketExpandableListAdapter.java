@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -14,8 +13,15 @@ import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.DetailActivity;
+import com.cardinfolink.yunshouyin.api.QuickPayException;
+import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
+import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.MonthBill;
+import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
+import com.cardinfolink.yunshouyin.model.ServerPacket;
+import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
+import com.cardinfolink.yunshouyin.view.HintBillDialog;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -32,6 +38,9 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
     private List<List<TradeBill>> childrenData;
     private Context mContext;
 
+    private QuickPayService quickPayService;
+
+    private HintBillDialog mHintDialog;
 
     public TicketExpandableListAdapter(Context context, List<MonthBill> groupData, List<List<TradeBill>> childrenData) {
         this.mContext = context;
@@ -39,6 +48,9 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
         this.childrenData = childrenData;
     }
 
+    public void setHintDialog(View view) {
+        this.mHintDialog = new HintBillDialog(mContext, view);
+    }
 
     @Override
     public int getGroupCount() {
@@ -199,6 +211,45 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
         childViewHolder.linearLayoutDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
+                SimpleDateFormat spf = new SimpleDateFormat("yyyyMMddHHmmss");
+                SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMdd");
+                SimpleDateFormat spf2 = new SimpleDateFormat("yyyy/MM/dd");
+                String date;
+                String currentdate;
+                try {
+                    Date tandeDate = spf.parse(bill.tandeDate);
+                    date = spf1.format(tandeDate);
+                    currentdate = spf2.format(tandeDate);
+                } catch (ParseException e) {
+                    date = spf1.format(new Date());
+                    currentdate = spf2.format(new Date());
+                }
+                final String finalCurrentdate = currentdate;
+                quickPayService.getSummaryDayAsync(SessonData.loginUser, date, "2", new QuickPayCallbackListener<ServerPacket>() {
+                    @Override
+                    public void onSuccess(ServerPacket data) {
+                        //笔数
+                        String countStr = String.valueOf(data.getCount());
+                        mHintDialog.setBillCount(countStr);
+
+                        //收入
+                        String totalStr = data.getTotal();
+                        if (TextUtils.isEmpty(totalStr)) {
+                            totalStr = "0.00";
+                        }
+                        mHintDialog.setBillTotal(totalStr);
+
+                        mHintDialog.setBillDate(finalCurrentdate);
+                        mHintDialog.show();
+                    }
+
+                    @Override
+                    public void onFailure(QuickPayException ex) {
+                        mHintDialog.setTitle(ex.getErrorMsg());
+                        mHintDialog.show();
+                    }
+                });
             }
         });
 
