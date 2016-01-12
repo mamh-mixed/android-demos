@@ -198,17 +198,14 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="10dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="20dp"
                 android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
                 android:layout_marginBottom="30dp"
-                android:maxHeight="50dp"
-                android:minHeight="20dp"
-                android:text="@string/copyright"
-                android:textColor="@color/textview_textcolor_login"
-                android:textSize="17sp" />
+                android:src="@drawable/login_cardinfolink1" />
         </RelativeLayout>
 
 
