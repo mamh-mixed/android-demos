@@ -129,12 +129,12 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 		time2 := localTime[8:]
 		time1Int, err := strconv.ParseInt(string(time1), 10, 32)
 		if err != nil {
-			log.Errorf("convert string to int error value:%s, error:", time1, err)
+			log.Errorf("convert string to int error value:%s, error: %s", time1, err)
 			return model.SYSTEM_ERROR
 		}
 		time2Int, err := strconv.ParseInt(string(time2), 10, 32)
 		if err != nil {
-			log.Errorf("convert string to int error value:%s, error:", time2, err)
+			log.Errorf("convert string to int error value:%s, error: %s", time2, err)
 			return model.SYSTEM_ERROR
 		}
 		if string(date1) != string(date2) {
@@ -1131,22 +1131,25 @@ func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
 		return model.USERNAME_NO_EXIST
 	}
 
-	code := fmt.Sprintf("%d", rand.Int31())
-	resetPasswordUrl := fmt.Sprintf("%s/master/resetPassword?code=%s", hostAddress, code)
-	click := b64Encoding.EncodeToString(randBytes(32))
+	code := util.SerialNumber()
+	resetPasswordUrl := fmt.Sprintf("%s/index/#/app/password/forget/%s", hostAddress, code)
+
+	// TODO 判断是否是邮箱
 
 	email := &email.Email{
 		To:    req.UserName,
 		Title: resetPassword.Title,
-		Body:  fmt.Sprintf(resetPassword.Body, resetPasswordUrl, click),
+		Body:  fmt.Sprintf(resetPassword.Body, resetPasswordUrl, resetPasswordUrl),
 	}
 
 	e := &model.Email{
-		UserName:  req.UserName,
-		Code:      code,
-		Success:   false,
-		Timestamp: time.Now().Format("2006-01-02 15:04:05"),
+		UserName:   req.UserName,
+		Code:       code,
+		Success:    false,
+		IsOperated: false,
+		Timestamp:  time.Now().Format("2006-01-02 15:04:05"),
 	}
+	log.Debugf("EmailData is %+v", e)
 
 	// 保存email信息
 	err = mongo.EmailCol.Upsert(e)
@@ -1157,7 +1160,7 @@ func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
 
 	// 异步发送邮件
 	go func() {
-		err := email.Send()
+		err = email.Send()
 		if err != nil {
 			log.Errorf("send email fail: %s", err)
 			return

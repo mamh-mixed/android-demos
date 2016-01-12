@@ -169,10 +169,11 @@ type AppUser struct {
 
 // Email 发送email记录
 type Email struct {
-	UserName  string `json:"username,omitempty" bson:"username,omitempty"`
-	Code      string `json:"code,omitempty" bson:"code,omitempty"`
-	Success   bool   `json:"success,omitempty" bson:"success,omitempty"`
-	Timestamp string `json:"timestamp,omitempty" bson:"timestamp,omitempty"`
+	UserName   string `json:"username,omitempty" bson:"username,omitempty"`
+	Code       string `json:"code,omitempty" bson:"code,omitempty"`
+	Success    bool   `json:"success,omitempty" bson:"success,omitempty"`
+	IsOperated bool   `json:"isOperated,omitempty" bson:"isOperated,omitempty"` // 是否操作过了，比如忘记邮箱操作成功后标记为true
+	Timestamp  string `json:"timestamp,omitempty" bson:"timestamp,omitempty"`
 }
 
 // 推送请求
