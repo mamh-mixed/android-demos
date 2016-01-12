@@ -107,7 +107,7 @@ function gulpPackage() {
     cd ..
     cp static/index.html distrib/static/index.html # 跳转页面
     sed -i '' 's/url=v0.0.1"/url='$version'"/g' distrib/static/index.html # 替换版本号
-    cp -r static/dist/ distrib/static/ # 新版本静态文件路径
+    cp -r static/dist/ distrib/static/$version/ # 新版本静态文件路径
 }
 
 function deploy() {
