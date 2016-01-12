@@ -1,7 +1,7 @@
 前端项目
 -------
 
-##安装开发环境##
+### 安装开发环境##
 
 1. 先安装node.js
 
@@ -11,7 +11,7 @@
 
 4. 执行`gulp serve`命令，即可启动项目。
 
-##目录说明##
+### 目录说明##
 
 
 ```
@@ -38,7 +38,7 @@
 其他一些文件夹
 `bower_components`: 前端第三方依赖包所在目录；`node_modules`: 项目自动化构建依赖包所在目录；`dist`: 经过压缩合并等处理后待发布到生产的项目
 
-##开发##
+### 开发##
 
 运行`gulp serve`可以进入开发模式。开发模式下，在源代码上的修改都能在浏览器中自动刷新。
 
@@ -52,3 +52,8 @@ It's time to use Gulp tasks:
 - `$ gulp protractor` to launch your e2e tests with Protractor
 - `$ gulp protractor:dist` to launch your e2e tests with Protractor on the dist files
 ```
+
+### 使用到的库##
+
+* [angular-toastr](https://github.com/Foxandxss/angular-toastr)
+* [ui-router](https://github.com/angular-ui/ui-router)
