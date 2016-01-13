@@ -207,7 +207,7 @@
         </div>
         <div class="row">
           <paper-input label="JS支付版本" value="{{merchant.jsPayVersion::input}}"></paper-input>
-          <paper-input label="限额" value="{{merchant.limitAmt::input}}"></paper-input>
+          <paper-input label="限额(分)" value="{{merchant.limitAmt::input}}"></paper-input>
         </div>
         <div class="row">
           <x-select label="门店状态" id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" class="validate-container" error-message="必填项" required></x-select>
@@ -668,9 +668,6 @@
           return;
         }
         this.update = true;
-        // this.set('merchant', {});
-        // this.set('alipay', {});
-        // this.set('weixin', {});
 
         // 根据merId查找商户信息
         var params = {
@@ -1002,14 +999,6 @@
           key: 'VERI',
           value: '卡券核销',
           isChecked: false
-            // }, {
-            //   key: 'CRVE',
-            //   value: '刷卡核销',
-            //   isChecked: false
-            // }, {
-            //   key: 'QUVE',
-            //   value: '验券查询',
-            //   isChecked: false
         }, {
           key: 'CAVE',
           value: '卡券撤销',
@@ -1252,8 +1241,6 @@
           Util.toast('支付宝渠道的费率必须是数字', 3000);
           return;
         }
-        // this.set('alipay.acqFee', acqFee);
-        // this.set('alipay.merFee', merFee);
         this.set('alipay.chanCode', 'ALP');
         this.$.saveChannelMerchantAjax.body = JSON.stringify(this.alipay);
         this.$.saveChannelMerchantAjax.generateRequest();
@@ -1340,8 +1327,6 @@
           Util.toast('支付宝渠道的费率必须是数字', 3000);
           return;
         }
-        // this.set('weixin.acqFee', acqFee);
-        // this.set('weixin.merFee', merFee);
         this.set('weixin.chanCode', 'WXP');
         // 如果勾选了代理商模式，就直接填充上大商户的信息
         if (this.weixin.isAgentMode) {
@@ -1437,7 +1422,6 @@
         var files = e.srcElement.files;
         if (files.length) {
           var file = files[0];
-          //   if ('application/x-x509-ca-cert' === file.type) {
           var reader = new FileReader();
           reader.onload = function() {
             if (/BEGIN CERTIFICATE/.test(this.result) === false) {
@@ -1447,9 +1431,6 @@
             _this.set('weixin.httpCert', this.result);
           };
           reader.readAsText(file);
-          //   } else {
-          //     Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
-          //   }
         }
       },
       handleWeixinHttpKeyFile: function(e) {
@@ -1457,7 +1438,6 @@
         var files = e.srcElement.files;
         if (files.length) {
           var file = files[0];
-          //   if ('application/x-x509-ca-cert' === file.type) {
           var reader = new FileReader();
           reader.onload = function() {
             if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
@@ -1467,9 +1447,7 @@
             _this.set('weixin.httpKey', this.result);
           };
           reader.readAsText(file);
-          //   } else {
-          //     Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
-          //   }
+
         }
       },
       handleAlipayRsaCertFile: function(e) {
@@ -1477,7 +1455,6 @@
         var files = e.srcElement.files;
         if (files.length) {
           var file = files[0];
-          //   if ('application/x-x509-ca-cert' === file.type) {
           var reader = new FileReader();
           reader.onload = function() {
             if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
@@ -1487,9 +1464,7 @@
             _this.set('alipay.privateKey', this.result);
           };
           reader.readAsText(file);
-          //   } else {
-          //     Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
-          //   }
+        
         }
       },
       // 代理列表响应

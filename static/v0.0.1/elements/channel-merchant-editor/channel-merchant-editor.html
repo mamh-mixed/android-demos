@@ -66,8 +66,6 @@
       <h2 id="header"></h2>
       <paper-dialog-scrollable>
         <x-select id="chanCode" items="[[channels]]" selected-item="{{channel}}" label="渠道代码" class="validate-container" required style="width:100%;" disabled="[[chanCodeDisabled]]"></x-select>
-        <!-- <paper-input label="机构代码" value="{{chanMer.agentCode::input}}"></paper-input>
-          <paper-input label="终端代码" value="{{chanMer.terminalId::input}}"></paper-input> -->
         <div id="alp">
           <paper-input id="achanMerId" label="Partner ID" value="{{alp.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input id="achanMerName" label="商户名称" value="{{alp.chanMerName::input}}" error-message="必填项"></paper-input>
@@ -507,7 +505,6 @@
           var files = e.srcElement.files;
           if (files.length) {
             var file = files[0];
-            // if ('application/x-x509-ca-cert' === file.type) {
             var reader = new FileReader();
             reader.onload = function() {
               if (/BEGIN CERTIFICATE/.test(this.result) === false) {
@@ -517,9 +514,6 @@
               _this.set('weixin.httpCert', this.result);
             };
             reader.readAsText(file);
-            // } else {
-            //   Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
-            // }
           }
         },
         handleWeixinHttpKeyFile: function(e) {
@@ -527,7 +521,6 @@
           var files = e.srcElement.files;
           if (files.length) {
             var file = files[0];
-            // if ('application/x-x509-ca-cert' === file.type) {
             var reader = new FileReader();
             reader.onload = function() {
               if (/BEGIN RSA PRIVATE KEY/.test(this.result) === false) {
@@ -537,9 +530,6 @@
               _this.set('weixin.httpKey', this.result);
             };
             reader.readAsText(file);
-            // } else {
-            //   Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
-            // }
           }
         },
         // 是否代理商模式的改变事件
@@ -551,7 +541,6 @@
           var files = e.srcElement.files;
           if (files.length) {
             var file = files[0];
-            // if ('application/x-x509-ca-cert' === file.type) {
             var reader = new FileReader();
             reader.onload = function() {
               if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
@@ -561,9 +550,6 @@
               _this.set('alp.privateKey', this.result);
             };
             reader.readAsText(file);
-            // } else {
-            //   Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
-            // }
           }
         }
       });
