@@ -153,6 +153,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 记录平台操作日志
 	HandleMasterLog(w, r, user)
 
+	// 关联权限
 	fillUserTypeParam(r, user)
 	// log.Debugf("query: %#v", r.URL.Query())
 
@@ -161,7 +162,7 @@ func (mux *MyServeMux) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func fillUserTypeParam(r *http.Request, user *model.User) {
-	log.Debugf("user: %#v", user)
+	// log.Debugf("user: %#v", user)
 
 	query := r.URL.Query()
 	query.Set("userType", user.UserType)
