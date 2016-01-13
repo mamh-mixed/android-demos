@@ -13,24 +13,26 @@
         android:layout_marginTop="10dp"
         android:text="标题"
         android:textColor="@color/textview_textcolor_setting_click_item_left"
-        android:textSize="20sp" />
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/tv_right"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_marginRight="2dp"
         android:layout_marginTop="10dp"
         android:layout_toLeftOf="@+id/iv_setting"
         android:layout_toRightOf="@+id/tv_title"
         android:gravity="right"
         android:text="右边的文本"
-        android:textColor="@color/textview_textcolor_setting_click_item_right" />
+        android:textColor="@color/textview_textcolor_setting_click_item_right"
+        android:textSize="12sp" />
 
     <ImageView
         android:id="@+id/iv_setting"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+        android:layout_width="5dp"
+        android:layout_height="10dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="15dp"
