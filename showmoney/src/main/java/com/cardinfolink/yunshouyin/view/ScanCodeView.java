@@ -40,17 +40,11 @@ import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.Utility;
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Hashtable;
 
 public class ScanCodeView extends LinearLayout implements View.OnClickListener, View.OnTouchListener {
     private static final String TAG = "ScanCodeView";
@@ -95,8 +89,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private ImageView mScanQR;//右下进入照相机扫码的界面
     private ImageView mQRImage;
 
-    private ImageView mUpdate;
-    private TextView mUpdateMessage;
 
     private ImageView mLeftImage;//切换按钮 支付宝还是微信的切换按钮
     private ImageView mRightImage;//切换按钮 支付宝还是微信的切换按钮
@@ -118,10 +110,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     };
     private String mCHCD = CHCD_TYPE[0];//默认是微信支付
 
-    //创建二维码需要的类成员变量
-    private static final int IMAGE_HALFWIDTH = 40;
-    private static final int FOREGROUND_COLOR = 0xff000000;
-    private static final int BACKGROUND_COLOR = 0xffffffff;
+
     private ResultData mResultData;
     private Handler mMainActivityHandler;//来自MainActivity的handler，注意区分mHandler
     private Handler mHandler;
@@ -131,8 +120,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
     private int mLastDownY = 0;
 
-    private boolean isPolling = false;
-    private int pollingCount = 0;
 
     private HintDialog mHintDialog;
 
@@ -185,8 +172,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         mScanCodePay = (ImageView) findViewById(R.id.scancodepay);//右下角进入二维码界面的按钮
 
         mQRImage = (ImageView) findViewById(R.id.iv_center);
-        mUpdateMessage = (TextView) findViewById(R.id.tv_updatemessage);
-        mUpdate = (ImageView) findViewById(R.id.iv_update);
         mLeftImage = (ImageView) findViewById(R.id.iv_left);
         mRightImage = (ImageView) findViewById(R.id.iv_right);
 
@@ -506,23 +491,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         });
     }
 
-    private void showCancelOrderDialog() {
-        //订单还未支付，确定要取消订单吗？
-        mHintDialog.setTitle(mContext.getString(R.string.scancode_view_are_sure_cancel_order));
-
-        mHintDialog.setCancelText(mContext.getString(R.string.scancode_view_not_cancel_order));
-        //现在就取消
-        mHintDialog.setOkText(mContext.getString(R.string.scancode_view_cancel_order));
-
-        mHintDialog.setOkOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                cancelOrder();//调用关闭订单
-                mHintDialog.hide();
-            }
-        });
-        mHintDialog.show();
-    }
 
     @Override
     public void onClick(View v) {
@@ -535,45 +503,27 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             case R.id.iv_left:
                 //切换了支付方式
                 if (!mCHCD.equals(CHCD_TYPE[0])) {
-                    if (isPolling) {
-                        showCancelOrderDialog();//这里顾客 只有 按了 ok按钮才会去取消订单的操作
-                    } else {
-                        mCHCD = CHCD_TYPE[0];
-                        Log.e(TAG, "[onClick] 没有在轮询了才允许切换支付方式【微信】");
-                        startQRPay(mTotal, mOriginalTotal);
-                    }
-                } else {
-                    Log.e(TAG, "[onClick] 切换了支付方式,已经是【微信】支付了，不要再按我了");
+                    cancelBill(mOrderNum);
+                    mCHCD = CHCD_TYPE[0];
+                    startQRPay(mTotal, mOriginalTotal);
                 }
                 break;
             case R.id.iv_right:
                 //切换了支付方式
                 if (!mCHCD.equals(CHCD_TYPE[1])) {
-                    if (isPolling) {
-                        showCancelOrderDialog();//这里顾客 只有 按了 ok按钮才会去取消订单的操作
-                    } else {
-                        mCHCD = CHCD_TYPE[1];
-                        Log.e(TAG, "[onClick] 没有在轮询了才允许切换支付方式【支付宝】");
-                        startQRPay(mTotal, mOriginalTotal);
-                    }
-                } else {
-                    Log.e(TAG, "[onClick] 切换了支付方式,已经是【支付宝】支付了，不要再按我了");
+                    cancelBill(mOrderNum);
+                    mCHCD = CHCD_TYPE[1];
+                    startQRPay(mTotal, mOriginalTotal);
                 }
                 break;
             case R.id.scan_qr:
-                if (isPolling) {
-                    showCancelOrderDialog();//这里顾客 只有 按了 ok按钮才会去取消订单的操作
-                } else {
-                    showKeyBoard();
-                    startCapturePay(mTotal, mOriginalTotal);
-                }
+                cancelBill(mOrderNum);
+                showKeyBoard();
+                startCapturePay(mTotal, mOriginalTotal);
                 break;
             case R.id.iv_keyboard:
-                if (isPolling) {
-                    showCancelOrderDialog();//这里顾客 只有 按了 ok按钮才会去取消订单的操作
-                } else {
-                    showKeyBoard();//显示键盘界面
-                }
+                cancelBill(mOrderNum);
+                showKeyBoard();//显示键盘界面
                 break;
             case R.id.tv_zero:
                 if (numFlag) {
@@ -767,11 +717,46 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         });
     }
 
+    //取消账单，不去判断取消是否成功
+    private void cancelBill(final String mOrderNum) {
+        if (TextUtils.isEmpty(mOrderNum)) {
+            return;
+        }
+
+        final OrderData orderData = new OrderData();
+        orderData.origOrderNum = mOrderNum;
+        //这里先查询一下，如果还未支付再取消也不迟呀
+        CashierSdk.startQy(orderData, new CashierListener() {
+            @Override
+            public void onResult(ResultData resultData) {
+                if (resultData.respcd.equals("09")) {
+                    //如果是还未支付 这时候再取消
+                    orderData.origOrderNum = mOrderNum;
+                    orderData.orderNum = Utility.geneOrderNumber();//新生成一个订单号
+                    CashierSdk.startCanc(orderData, new CashierListener() {
+                        @Override
+                        public void onResult(ResultData resultData) {
+                        }
+
+                        @Override
+                        public void onError(int errorCode) {
+                        }
+                    });
+                }//end if()
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
+
+    }
 
     /**
      * 查询订单
      */
-    public void searchBill() {
+    public void searchBill(String orderNum) {
         OrderData orderData = new OrderData();
         orderData.origOrderNum = mOrderNum;
         CashierSdk.startQy(orderData, new CashierListener() {
@@ -795,44 +780,11 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         });
     }
 
-    /**
-     * 取消订单
-     */
-    public void cancelOrder() {
-        stopPolling();
-
-        if (mOrderNum == null) {
-            return;
-        }
-        OrderData orderData = new OrderData();
-        orderData.origOrderNum = mOrderNum;
-        orderData.orderNum = Utility.geneOrderNumber();//新生成一个订单号
-        CashierSdk.startCanc(orderData, new CashierListener() {
-            @Override
-            public void onResult(ResultData resultData) {
-                if (resultData.respcd.equals("00")) {
-                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS);
-                } else if (resultData.respcd.equals("09")) {
-                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_DOING);
-                } else {
-                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL);
-                }
-            }
-
-            @Override
-            public void onError(int errorCode) {
-
-            }
-        });
-
-    }
 
     /**
      * 跳转到交易成功的界面
      */
     public void enterPaySuccessActivity() {
-        stopPolling();
-
         Intent intent = new Intent(mContext, PayResultActivity.class);
         Bundle bun = new Bundle();
 
@@ -861,8 +813,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
      * 跳转到交易失败的界面
      */
     public void enterPayFailActivity() {
-        stopPolling();
-
         Intent intent = new Intent(mContext, PayResultActivity.class);
 
         Bundle bun = new Bundle();
@@ -889,44 +839,45 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
 
-    public void stopPolling() {
-        pollingCount = 0;
-        isPolling = false;
+    public void startPolling() {
+        //开启一个线程轮询服务器5次
+        PollingThread pollingThread = new PollingThread(mOrderNum);
+        pollingThread.start();
     }
 
-    public void startPolling() {
-        if (isPolling) {
-            return;
+    private class PollingThread extends Thread {
+        private int pollingCount = 0;
+        private String orderNumInThread;
+
+        public PollingThread(String orderNum) {
+            this.orderNumInThread = orderNum;
         }
-        startLoading(mUpdate);//开始个轮询？？？
 
-        pollingCount = 0;
-        //开启一个线程轮询服务器5次
-
-        isPolling = true;
-        new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                while (isPolling) {
-                    try {
-                        pollingCount++;
-                        if (pollingCount >= 10) {
-                            stopPolling();
-                            cancelOrder();
-                        }
-                        if (isPolling) {
-                            Log.e(TAG, "[Thread] is polling = mHandler.sendEmptyMessage(Msg.MSG_FROM_SEARCHING_POLLING) = " + pollingCount);
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SEARCHING_POLLING);
-                        }
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    Log.e(TAG, "==" + Thread.currentThread().getId() + " ==" + pollingCount + "==" + mOrderNum + "==" + orderNumInThread);
+                    pollingCount++;
+                    if (pollingCount >= 10) {
+                        //取消订单
+                        cancelBill(orderNumInThread);
+                        break;
                     }
+                    //子线程内部的 订单号 和外面的 订单号
+                    if (orderNumInThread.equals(mOrderNum)) {
+                        searchBill(orderNumInThread);
+                    }else {
+                        cancelBill(orderNumInThread);
+                        break;
+                    }
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                Log.e(TAG, "[Thread] end while() = " + pollingCount);
             }
-        }).start();
+        }
+
     }
 
     /**
@@ -949,7 +900,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         int dx = (int) (rightArrow.getX() - leftArrow.getX());
         int min = Math.min(dx, dy);//求出最小的
         min = Math.abs(min);
-        min = Math.abs(min - 2 * leftArrow.getWidth() - 10);
+        min = Math.abs(min - 2 * leftArrow.getWidth() );
         try {
             //创建二维码图片
             if (!TextUtils.isEmpty(mResultData.qrcode)) {
@@ -978,7 +929,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                             } else {
                                 //这里返回其他，说明出错了
                                 endLoading();
-                                mUpdateMessage.setText(mResultData.errorDetail);
                             }
                         }
                         break;
@@ -989,21 +939,13 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
-                        endLoading(mUpdate);
                         showKeyBoard();//显示键盘界面
                         enterPaySuccessActivity();
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_FAIL: {
-                        endLoading(mUpdate);
                         showKeyBoard();//显示键盘界面
                         enterPayFailActivity();
-                        break;
-                    }
-                    case Msg.MSG_FROM_SEARCHING_POLLING: {
-                        String title = String.format(mContext.getString(R.string.txt_wait_user_input_password), pollingCount);
-                        mUpdateMessage.setText(title);
-                        searchBill();
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS: {
@@ -1017,13 +959,11 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                                 mHintDialog.hide();
                             }
                         });
-                        mUpdateMessage.setText(title);
                         mQRImage.setImageDrawable(null);
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_CLOSEBILL_DOING: {
                         //关单返回09，表明进行中吧
-                        mUpdateMessage.setText(mContext.getString(R.string.scancode_view_cancel_order_ing));
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL: {
@@ -1037,7 +977,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                                 mHintDialog.hide();
                             }
                         });
-                        mUpdateMessage.setText(mContext.getString(R.string.scancode_view_cancel_fail));
                         mQRImage.setImageDrawable(null);
                         break;
                     }

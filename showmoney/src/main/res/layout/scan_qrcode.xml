@@ -86,19 +86,6 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp">
-
-        <TextView
-            android:id="@+id/tv_updatemessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:textColor="@color/textview_textcolor"  />
-    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/bottom_around_arrow"
@@ -112,30 +99,6 @@
             android:layout_height="30dp"
             android:layout_marginLeft="30dp"
             android:src="@drawable/scan_keyboard" />
-
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/qrcode_textview_bg">
-
-            <ImageView
-                android:id="@+id/iv_update"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/scan_refresh" />
-
-            <TextView
-                android:id="@+id/tv_update"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@+id/iv_update"
-                android:text="@string/scancode_view_no_pay"
-                android:textColor="@color/textview_textcolor" />
-
-        </RelativeLayout>
 
 
         <ImageView
