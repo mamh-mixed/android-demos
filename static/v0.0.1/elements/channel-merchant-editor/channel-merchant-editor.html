@@ -71,8 +71,15 @@
         <div id="alp">
           <paper-input id="achanMerId" label="Partner ID" value="{{alp.chanMerId::input}}" required error-message="必填项"></paper-input>
           <paper-input id="achanMerName" label="商户名称" value="{{alp.chanMerName::input}}" error-message="必填项"></paper-input>
-          <paper-input id="asignKey" label="MD5 KEY" value="{{alp.signCert::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="asignKey" label="MD5 KEY" value="{{alp.signCert::input}}" error-message="必填项"></paper-input>
           <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项"></x-select>
+          <paper-input id="alpAppId" label="支付宝App Id" value="{{alp.wxpAppId::input}}" required error-message="必填项"></paper-input>
+          <x-select id="aversion" items="[[aversions]]" selected-item="{{aversion}}" class="validate-container" label="支付宝接口" required error-message="必填项"></x-select>
+          <div class="row">
+            <paper-input id="alpPrivateKey" label="RAS密钥" type="file" on-change="handleAlipayRsaCertFile" style="margin-left:0px;"></paper-input>
+            <label id="privateKeyL" style="margin-top:20px;">请选择.pem文件的RSA密钥</label>
+          </div>
+          <paper-textarea id="rsaKeyTArea" label="RAS密钥" value="{{alp.privateKey::input}}" required error-message="必填项"></paper-textarea>
         </div>
         <div id="wxp">
           <paper-input id="wchanMerId" label="微信商户号" value="{{weixin.chanMerId::input}}" required error-message="必填项"></paper-input>
@@ -149,11 +156,29 @@
             type: Array,
             value: [{
               key: '12010128a1',
-              value: '讯联 12010128a1'
+              value: '讯联（当面付1.0接口）12010128a1'
+            }, {
+              key: '2088611685817706',
+              value: '讯联（当面付2.0接口）2088611685817706'
             }, {
               key: '11719712a1',
               value: '天奕通 11719712a1'
             }]
+          },
+          // 支付宝接口版本
+          aversions: {
+            type: Array,
+            value: [{
+              key: 'ALP2_0',
+              value: '当面付2.0'
+            }, {
+              key: 'ALP1_0',
+              value: '当面付1.0'
+            }]
+          },
+          aversion: {
+            type: Object,
+            observer: '_aversionChanged'
           },
           aagentCode: {
             type: Object,
@@ -220,6 +245,24 @@
             this.set('alp.agentCode', value.key);
           }
         },
+        // 支付宝接口选择
+        _aversionChanged: function(value) {
+          if (value) {
+            this.set('alp.version', value.key);
+            if (this.alp.version == 'ALP2_0') {
+              this.$.asignKey.removeAttribute('required');
+              this.$.alpAppId.setAttribute('required', true);
+              this.$.rsaKeyTArea.setAttribute('required', true);
+              this.$.asignKey.validate();
+            } else {
+              this.$.alpAppId.removeAttribute('required');
+              this.$.rsaKeyTArea.removeAttribute('required');
+              this.$.asignKey.setAttribute('required', true);
+              this.$.alpAppId.validate();
+              this.$.rsaKeyTArea.validate();
+            }
+          }
+        },
         open: function() {
           this.$.dialogAdd.open();
           if (this.pageType === 'create') {
@@ -251,8 +294,13 @@
             this.$.findChanMerAjax.generateRequest();
             // 默认支付宝代理号为12010128a1
             this.aagentCode = {
-              key: '12010128a1',
-              value: '讯联 12010128a1',
+              key: '2088611685817706',
+              value: '讯联（当面付2.0接口）2088611685817706',
+            };
+            // 默认支付宝接口为2.0
+            this.aversion = {
+              key: 'ALP2_0',
+              value: '当面付2.0',
             };
           } else {
             this.$.header.textContent = '编辑渠道商户';
@@ -272,15 +320,26 @@
             this.ulive = this.chanMer;
             this.$.achanMerId.disabled = true;
             this.$.wchanMerId.disabled = true;
-            this.$.uliveChanMerId.disabled=true;
+            this.$.uliveChanMerId.disabled = true;
             var aagentCodeMap = {
-              '12010128a1': '讯联 12010128a1',
-              '11719712a1': '天奕通 11719712a1'
+              '12010128a1': '讯联（当面付1.0接口） 12010128a1',
+              '11719712a1': '天奕通 11719712a1',
+              '2088611685817706': '讯联（当面付2.0接口）2088611685817706',
+            };
+            this.aversionMap = {
+              'ALP2_0': '当面付2.0',
+              'ALP1_0': '当面付1.0'
             };
             if (this.alp.agentCode) {
               this.aagentCode = {
                 key: this.alp.agentCode,
                 value: aagentCodeMap[this.alp.agentCode],
+              };
+            }
+            if (this.alp.version) {
+              this.aversion = {
+                key: this.alp.version,
+                value: this.aversionMap[this.alp.version],
               };
             }
             var wbigchanMerIdMap = {
@@ -298,6 +357,7 @@
               };
             }
             this.oldAlpSignCert = this.alp.signCert;
+            this.oldAlpPrivateKey = this.alp.privateKey;
             this.oldWxpSignCert = this.weixin.signCert;
             this.oldWxpHttpCert = this.weixin.httpCert;
             this.oldWxpHttpKey = this.weixin.httpKey;
@@ -318,9 +378,16 @@
         },
         // 支付宝必填项是否为空
         isALPConfigEmpty: function() {
-          if (this.$.achanMerId.validate() && this.$.asignKey.validate() && this.aagentCode) {
-            return false;
+          if (this.alp.version == 'ALP2_0') {
+            if (this.$.achanMerId.validate() && this.aagentCode && this.aversion && this.$.alpAppId.validate() && this.$.rsaKeyTArea.validate()) {
+              return false;
+            }
+          } else {
+            if (this.$.achanMerId.validate() && this.$.asignKey.validate() && this.aagentCode && this.aversion) {
+              return false;
+            }
           }
+
           return true;
         },
         // 微信必填项是否为空
@@ -352,9 +419,18 @@
                 Util.toast('MD5 KEY长度不能小于8位', 3000);
                 return;
               }
+              if (this.alp.privateKey && this.alp.privateKey != '' && this.alp.privateKey.length < 8) {
+                Util.toast('RSA密钥长度不能小于8位', 3000);
+                return;
+              }
               if (this.alp.signCert !== this.oldAlpSignCert && this.alp.signCert.indexOf('*') !== -1) {
                 Util.toast('MD5 KEY不能包含 *,已恢复为原MD5 KEY', 3000);
                 this.set('alp.signCert', this.oldAlpSignCert)
+                return;
+              }
+              if (this.alp.privateKey !== this.oldAlpPrivateKey && this.alp.privateKey.indexOf('*') !== -1) {
+                Util.toast('RSA密钥不能包含 *,已恢复为原RSA密钥', 3000);
+                this.set('alp.privateKey', this.oldAlpPrivateKey)
                 return;
               }
               this.set('alp.chanCode', 'ALP');
@@ -470,6 +546,26 @@
         handleIsAgentChangeEvent: function() {
           this.set('weixin.isAgentMode', this.$.wisAgentMode.checked);
         },
+        handleAlipayRsaCertFile: function(e) {
+          var _this = this;
+          var files = e.srcElement.files;
+          if (files.length) {
+            var file = files[0];
+            if ('application/x-x509-ca-cert' === file.type) {
+              var reader = new FileReader();
+              reader.onload = function() {
+                if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
+                  Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN PRIVATE KEY----- 开头', 3000);
+                  return;
+                }
+                _this.set('alp.privateKey', this.result);
+              };
+              reader.readAsText(file);
+            } else {
+              Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
+            }
+          }
+        }
       });
     })();
   </script>
