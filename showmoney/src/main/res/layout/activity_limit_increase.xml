@@ -42,7 +42,7 @@
             cardinfolink:hint="@string/limit_increase_shop_address_hint"
             cardinfolink:title="@string/limit_increase_shop_address" />
 
-        <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+        <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
             android:id="@+id/id_card_positive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,7 +50,7 @@
             cardinfolink:right_text="@string/limit_increase_update_licence"
             cardinfolink:title="@string/limit_increase_card_positive" />
 
-        <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+        <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
             android:id="@+id/id_card_negaitive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
             cardinfolink:right_text="@string/limit_increase_update_licence"
             cardinfolink:title="@string/limit_increase_card_negaitive" />
 
-        <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+        <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
             android:id="@+id/business"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             cardinfolink:right_text="@string/limit_increase_update_licence"
             cardinfolink:title="@string/limit_increase_business_licence" />
 
-        <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+        <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
             android:id="@+id/tax"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -74,7 +74,7 @@
             cardinfolink:right_text="@string/limit_increase_update_licence"
             cardinfolink:title="@string/limit_increase_tax" />
 
-        <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+        <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
             android:id="@+id/organization"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
