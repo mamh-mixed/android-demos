@@ -13,7 +13,7 @@
         android:layout_marginTop="10dp"
         android:text="标题"
         android:textColor="@color/textview_textcolor_setting_detail_item_title"
-        android:textSize="20sp" />
+        android:textSize="14sp" />
 
 
     <TextView
@@ -25,7 +25,8 @@
         android:layout_marginRight="15dp"
         android:clickable="false"
         android:text="详情"
-        android:textColor="@color/textview_textcolor_setting_detail_item_detail" />
+        android:textColor="@color/textview_textcolor_setting_detail_item_detail"
+        android:textSize="12sp" />
 
     <View
         android:layout_width="fill_parent"
