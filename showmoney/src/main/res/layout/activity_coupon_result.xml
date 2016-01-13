@@ -6,67 +6,106 @@
     android:background="@color/background_layout"
     android:orientation="vertical">
 
-    <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
-        android:id="@+id/action_bar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        cardinfolink:title="@string/coupon_title_first" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:weightSum="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.1">
+
+            <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+                android:id="@+id/action_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                cardinfolink:title="@string/coupon_title_first" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_below="@id/action_bar"
+            android:layout_weight="0.57"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.4"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/coupon_content"
+                    android:textColor="@color/textview_textcolor_coupon"
+                    android:textSize="40sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.3"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_coupon_message"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:textColor="@color/textview_textcolor_discount_info"
+                    android:textSize="25sp" />
+            </LinearLayout>
+        </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/action_bar"
-        android:layout_marginTop="30dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.33"
         android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/coupon_content"
-            android:textColor="@color/textview_textcolor_coupon"
-            android:textSize="40sp" />
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="60dp"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_coupon_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginTop="30dp"
-            android:textSize="20sp" />
+            <Button
+                android:id="@+id/bt_scancode"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/blue_selector"
+                android:text="@string/coupon_payby_scancode"
+                android:textColor="@color/button_textcolor" />
+
+            <Button
+                android:id="@+id/bt_money"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/blue_selector"
+                android:text="@string/coupon_payby_cash"
+                android:textColor="@color/button_textcolor" />
+        </LinearLayout>
+
 
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="60dp"
-        android:orientation="vertical">
-
-        <Button
-            android:id="@+id/bt_scancode"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:background="@drawable/blue_selector"
-            android:text="@string/coupon_payby_scancode"
-            android:textColor="@color/button_textcolor" />
-
-        <Button
-            android:id="@+id/bt_money"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="30dp"
-            android:background="@drawable/blue_selector"
-            android:text="@string/coupon_payby_cash"
-            android:textColor="@color/button_textcolor" />
     </LinearLayout>
 
 </RelativeLayout>

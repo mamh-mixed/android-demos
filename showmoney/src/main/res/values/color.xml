@@ -41,6 +41,7 @@
 
     <color name="black">#000000</color>
     <color name="black1">#333333</color>
+    <color name="black2">#656565</color>
 
     <color name="gray1">#666666</color>
     <color name="gray2">#888888</color>
@@ -83,7 +84,8 @@
 
 
     <!--======================================================================== -->
-    <color name="textview_textcolor_coupon">@color/gray4</color>
+    <color name="textview_textcolor_coupon">@color/black2</color>
+    <color name="textview_textcolor_discount_info">@color/black1</color>
     <!-- 在about Activity 里面使用 的 协议文本颜色 -->
     <color name="textview_textcolor_copyright">@color/blue</color>
     <color name="textview_textcolor_copyright1">@color/gray3</color>
