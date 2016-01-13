@@ -6,5 +6,5 @@ import (
 
 func TestGenerateTransFlow(t *testing.T) {
 	var trans = transFlow{}
-	trans.GenerateTransFlow("2016-01-06", "97491888")
+	trans.GenerateTransFlow("2016-01-11", "97491888")
 }
