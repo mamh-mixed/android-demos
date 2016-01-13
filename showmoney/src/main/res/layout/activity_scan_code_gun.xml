@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"
-        android:text="扫描二位码值"
+        android:text="@string/txt_scan_bar_and_qr_code_"
         android:textColor="@color/white"
         android:textSize="30sp" />
 
@@ -27,19 +27,20 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tv_scancode"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/scancode_by_gun_editor_color"
         android:textSize="25dp"
+        android:singleLine="true"
         android:textColor="@color/white"
-        android:hint="inputbox" />
+        android:hint="@string/txt_bar_code" />
     <Button
         android:id="@+id/bt_pay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/et_input_box"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:background="@drawable/scancode_by_gun_button_selector"
-        android:text="开启支付"
+        android:text="@string/txt_start_pay"
         android:textColor="@drawable/scancode_by_gun_btn_text_color"
         android:textSize="30sp"/>
 

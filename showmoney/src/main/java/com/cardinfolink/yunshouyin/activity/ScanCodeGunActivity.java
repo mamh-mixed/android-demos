@@ -63,8 +63,9 @@ public class ScanCodeGunActivity extends Activity {
             @Override
             public void onClick(View v) {
                 scancode = mInputScan.getText().toString();
+                scancode=scancode.replace("\n","");
                 if (TextUtils.isEmpty(scancode)) {
-                    Toast.makeText(ScanCodeGunActivity.this, "二位码不能为空", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ScanCodeGunActivity.this, "QR不能为空", Toast.LENGTH_SHORT).show();
                 } else {
                     Message msg=Message.obtain();
                     msg.what=Msg.MSG_FROM_SCANCODE_SUCCESS;
