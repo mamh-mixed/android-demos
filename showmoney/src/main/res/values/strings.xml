@@ -156,4 +156,15 @@
     <string name="txt_history_txns">历史交易</string>
     <string name="txt_query_result">查询结果</string>
 
+
+    <string name="txt_bar_code">条形码</string>
+    <string name="txt_scan_bar_and_qr_code_">扫QR code</string>
+    <string name="txt_start_pay">开启支付</string>
+    <string name="txt_enter_paycode">输入支付码</string>
+    <string name="txt_enter_camera">摄像头扫码</string>
+    <string name="txt_enter_scancode">扫码枪扫码</string>
+    <string name="txt_enter_usercode">用户扫码</string>
+
+
+
 </resources>
