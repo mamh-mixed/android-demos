@@ -4,18 +4,19 @@
     android:layout_height="match_parent"
     android:background="@color/background_login_layout">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="50dp"
-            android:orientation="horizontal">
+            android:layout_height="0dp"
+            android:layout_weight="3"
+            android:gravity="bottom">
 
             <ImageView
                 android:id="@+id/logo"
@@ -37,123 +38,129 @@
                 android:visibility="gone" />
         </RelativeLayout>
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
+            android:layout_height="0dp"
             android:layout_marginTop="10dp"
-            android:background="@drawable/login_bg1"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
+            android:layout_weight="3"
+            android:gravity="center"
+            android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:text="@string/login_account"
-                android:textColor="@color/textview_textcolor_login"
-                android:textSize="20sp" />
-
-            <com.cardinfolink.yunshouyin.ui.EditTextClear
-                android:id="@+id/login_username"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginTop="10dp"
-                android:layout_toRightOf="@+id/tv_title"
-                android:background="@null"
-                android:ems="10"
-                android:hint="@string/login_hint_username"
-                android:inputType="text"
-                android:textColor="@color/textview_textcolor_login" />
+                android:layout_height="50dp"
+                android:background="@drawable/login_bg1"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
 
-            <ImageView
-                android:id="@+id/iv_increase"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
-                android:src="@drawable/login_increase"
-                android:visibility="invisible" />
+                <TextView
+                    android:id="@+id/tv_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/login_account"
+                    android:textColor="@color/textview_textcolor_login"
+                    android:textSize="20sp" />
 
-        </RelativeLayout>
+                <com.cardinfolink.yunshouyin.ui.EditTextClear
+                    android:id="@+id/login_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@+id/tv_title"
+                    android:background="@null"
+                    android:ems="10"
+                    android:hint="@string/login_hint_username"
+                    android:inputType="text"
+                    android:textColor="@color/textview_textcolor_login" />
+
+                <ImageView
+                    android:id="@+id/iv_increase"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/login_increase"
+                    android:visibility="invisible" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="0.3dp"
+                android:background="@drawable/login_bg2"
+                android:focusable="true"
+                android:focusableInTouchMode="true">
+
+                <TextView
+                    android:id="@+id/tv_title1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/login_password"
+                    android:textColor="@color/textview_textcolor_login"
+                    android:textSize="20sp" />
+
+                <com.cardinfolink.yunshouyin.ui.EditTextClear
+                    android:id="@+id/login_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="40dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_toRightOf="@+id/tv_title1"
+                    android:background="@null"
+                    android:ems="10"
+                    android:hint="@string/login_hint_password"
+                    android:inputType="textPassword"
+                    android:textColor="@color/textview_textcolor_login" />
+
+                <ImageView
+                    android:id="@+id/iv_help"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/login_help" />
+
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="0.3dp"
-            android:background="@drawable/login_bg2"
-            android:focusable="true"
-            android:focusableInTouchMode="true">
-
-            <TextView
-                android:id="@+id/tv_title1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
-                android:text="@string/login_password"
-                android:textColor="@color/textview_textcolor_login"
-                android:textSize="20sp" />
-
-            <com.cardinfolink.yunshouyin.ui.EditTextClear
-                android:id="@+id/login_password"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="40dp"
-                android:layout_marginTop="10dp"
-                android:layout_toRightOf="@+id/tv_title1"
-                android:background="@null"
-                android:ems="10"
-                android:hint="@string/login_hint_password"
-                android:inputType="textPassword"
-                android:textColor="@color/textview_textcolor_login" />
-
-            <ImageView
-                android:id="@+id/iv_help"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="15dp"
-                android:src="@drawable/login_help" />
-
-
-        </RelativeLayout>
-
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp">
+            android:layout_height="0dp"
+            android:layout_marginTop="15dp"
+            android:layout_weight="1">
 
             <CheckBox
                 android:id="@+id/login_auto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:button="@drawable/checkbox_selector"
                 android:text="@string/login_auto_login"
+                android:paddingLeft="5dp"
                 android:textColor="@color/textview_textcolor_login"
                 android:textSize="20sp" />
 
             <ImageView
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:layout_alignRight="@+id/tv_register"
+                android:layout_alignRight="@id/tv_register"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="45dp"
                 android:src="@drawable/login_register" />
@@ -173,10 +180,10 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="4"
             android:gravity="center">
 
             <Button
@@ -193,16 +200,14 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp">
+            android:layout_height="0dp"
+            android:layout_marginTop="30dp"
+            android:layout_weight="1">
 
 
             <ImageView
                 android:layout_width="100dp"
                 android:layout_height="20dp"
-                android:layout_alignParentBottom="true"
                 android:layout_centerInParent="true"
                 android:layout_marginBottom="30dp"
                 android:src="@drawable/login_cardinfolink1" />
