@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -301,10 +302,10 @@ func checkLimitAmt(req *model.ScanPayRequest, merInfo *model.Merchant) *model.Sc
 			if (int(totalAmt) + amt) > merInfo.LimitAmt { //当天
 				if merInfo.EnhanceType == model.NoEnhance {
 					log.Infof("the current day total amt %d is more than the limit amt %d, status is NoEnhance", int(totalAmt)+amt, merInfo.LimitAmt)
-					return model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("NO_ENHANCE_LIMIT_AMT"))
+					return adaptor.ReturnWithErrorCode("NO_ENHANCE_LIMIT_AMT")
 				} else if merInfo.EnhanceType == model.Checking {
 					log.Infof("the current day total amt %d is more than the limit amt %d, status is Checking", int(totalAmt)+amt, merInfo.LimitAmt)
-					return model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("CHECKING_LIMIT_AMT"))
+					return adaptor.ReturnWithErrorCode("CHECKING_LIMIT_AMT")
 				} else {
 					return nil
 				}
