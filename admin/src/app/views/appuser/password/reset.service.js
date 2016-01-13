@@ -1,3 +1,5 @@
+// var SHA256 = require("crypto-js/sha256");
+// import { SHA256 } from 'crypto-js';
 export class PasswordResetService {
 	constructor($http, toastr, $log, $state) {
 		'ngInject';
@@ -30,7 +32,14 @@ export class PasswordResetService {
 			return {status: 7, message: "DATA_VALIDATE_FAIL"};
 		}
 
-		return this.$http.post(this.apiHost, angular.toJson(params))
+		// 密码加密
+		let data = {
+			username: params.username,
+			checkCode: params.checkCode,
+			password: CryptoJS.SHA1(params.password).toString()
+		};
+
+		return this.$http.post(this.apiHost, angular.toJson(data))
 			.then((response) => {
 				let body = response.data;
 				if (body.status === 0) {
