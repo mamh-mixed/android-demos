@@ -82,29 +82,34 @@
             cardinfolink:right_text="@string/limit_increase_update_licence"
             cardinfolink:title="@string/limit_increase_organization" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="30dp"
-            android:text="@string/limit_increase_directions"
-            android:textSize="13sp" />
-
-
-        <Button
-            android:id="@+id/btnfinish"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/blue_selector"
-            android:text="@string/limit_increase_finish"
-            android:textColor="@color/button_textcolor"
-            android:textSize="16sp" />
+            android:layout_height="match_parent">
 
+
+            <Button
+                android:id="@+id/btnfinish"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/blue_selector"
+                android:text="@string/limit_increase_finish"
+                android:textColor="@color/button_textcolor"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/tv_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btnfinish"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:text="@string/limit_increase_directions"
+                android:textSize="13sp" />
+        </RelativeLayout>
 
     </LinearLayout>
 
