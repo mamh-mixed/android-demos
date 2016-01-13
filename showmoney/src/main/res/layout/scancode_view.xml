@@ -20,19 +20,19 @@
         android:orientation="horizontal">
 
         <RadioButton
-            android:id="@+id/rb_camera"
-            style="@style/RadioButtonStyle"
-            android:text="摄像头扫码" />
+        android:id="@+id/rb_camera"
+        style="@style/RadioButtonStyle"
+        android:text="@string/txt_enter_camera" />
 
         <RadioButton
             android:id="@+id/rb_scangun"
             style="@style/RadioButtonStyle"
-            android:text="扫码枪扫码" />
+            android:text="@string/txt_enter_scancode" />
 
         <RadioButton
             android:id="@+id/rb_user_scan"
             style="@style/RadioButtonStyle"
-            android:text="用户扫码" />
+            android:text="@string/txt_enter_usercode" />
 
 
     </RadioGroup>
