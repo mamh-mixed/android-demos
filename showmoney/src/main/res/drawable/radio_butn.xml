@@ -8,10 +8,10 @@
             <solid android:color="@color/white" />
             <!--填充色-->
             <padding
-                android:left="2dp"
-                android:top="2dp"
-                android:right="2dp"
-                android:bottom="2dp"/>
+                android:left="6dp"
+                android:top="6dp"
+                android:right="6dp"
+                android:bottom="6dp"/>
             <corners
                 android:radius="9dp"
                 android:topLeftRadius="4dp"
@@ -27,10 +27,10 @@
             <solid android:color="@color/transparent" />
             <!--填充色-->
             <padding
-                android:left="2dp"
-                android:top="2dp"
-                android:right="2dp"
-                android:bottom="2dp"/>
+                android:left="6dp"
+                android:top="6dp"
+                android:right="6dp"
+                android:bottom="6dp"/>
             <corners
                 android:radius="9dp"
                 android:topLeftRadius="2dp"
