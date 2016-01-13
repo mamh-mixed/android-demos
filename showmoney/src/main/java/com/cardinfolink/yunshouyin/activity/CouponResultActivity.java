@@ -14,6 +14,8 @@ import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
+import java.math.BigDecimal;
+
 /**
  * Created by charles on 2015/12/29.
  */
@@ -58,7 +60,6 @@ public class CouponResultActivity extends Activity {
                     mPayByCash.setVisibility(View.INVISIBLE);
                 }
 
-                mCouponContent.setText(Coupon.getInstance().getCardId());
                 mPayByScanCode.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -66,6 +67,18 @@ public class CouponResultActivity extends Activity {
                         finish();
                     }
                 });
+                String mSaleMinAccount = new BigDecimal(Coupon.getInstance().getSaleMinAmount()).divide(new BigDecimal(100)).toString();
+                String mDiscount = new BigDecimal(Coupon.getInstance().getSaleDiscount()).divide(new BigDecimal(100)).toString();
+                if (Coupon.getInstance().getVoucherType().endsWith("3")) {
+                    //满折券
+                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_man) + mSaleMinAccount+getString(R.string.coupon_yuan)+ getString(R.string.coupon_da) + mDiscount + getString(R.string.coupon_zhe));
+                } else if (Coupon.getInstance().getVoucherType().endsWith("1")) {
+                    //满减券
+                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_man) +mSaleMinAccount+getString(R.string.coupon_yuan)+ mSaleMinAccount + getString(R.string.coupon_jian) + mDiscount+mSaleMinAccount+getString(R.string.coupon_yuan));
+                }else{
+                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_jian) + mDiscount);
+                }
+
             }
         } else {
             mCouponContent.setText(getString(R.string.coupon_verial_fail_info));
