@@ -207,6 +207,7 @@
         </div>
         <div class="row">
           <paper-input label="JS支付版本" value="{{merchant.jsPayVersion::input}}"></paper-input>
+          <paper-input label="限额(分)" value="{{merchant.limitAmt::input}}"></paper-input>
         </div>
         <div class="row">
           <x-select label="门店状态" id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" class="validate-container" error-message="必填项" required></x-select>
@@ -240,18 +241,18 @@
           <paper-input id="asettRole" label="清算角色" value="{{alipayRoute.settRole::input}}" required error-message="必填项"></paper-input>
         </div>
         <div class="row">
-          <paper-input id="asignCert" label="MD5 KEY" value="{{alipay.signCert::input}}" required error-message="必填项"></paper-input>
+          <paper-input id="asignCert" label="MD5 KEY" value="{{alipay.signCert::input}}" error-message="必填项"></paper-input>
           <x-select id="aagentCode" items="[[aagentCodes]]" selected-item="{{aagentCode}}" class="validate-container" label="代理" required error-message="必填项"></x-select>
         </div>
         <div class="row">
-          <paper-input id="wxpAppId" label="支付宝 AppId" value="{{alipay.wxpAppId::input}}" ></paper-input>
-           <x-select id="aversion" items="[[aversions]]" selected-item="{{aversion}}" class="validate-container" label="支付宝接口" required error-message="必填项"></x-select>
+          <paper-input id="alpAppId" label="支付宝 AppId" value="{{alipay.wxpAppId::input}}" required error-message="必填项"></paper-input>
+          <x-select id="aversion" items="[[aversions]]" selected-item="{{aversion}}" class="validate-container" label="支付宝接口" required error-message="必填项"></x-select>
         </div>
         <div class="row">
           <section>
             <label id="rsaKeyL">请选择.pem文件的RSA密钥</label>
             <paper-input id="rsaKey" type="file" on-change="handleAlipayRsaCertFile"></paper-input>
-            <paper-textarea class="monospace" id="rsaKeyTArea" label="RSA 密钥(当面付2.0)" value="{{alipay.privateKey::input}}"></paper-textarea>
+            <paper-textarea class="monospace" id="rsaKeyTArea" label="RSA 密钥(当面付2.0)" value="{{alipay.privateKey::input}}" required error-message="必填项"></paper-textarea>
           </section>
         </div>
         <div class="row button">
@@ -405,15 +406,15 @@
           value: [{
             key: '12010128a1',
             value: '讯联（当面付1.0接口）12010128a1'
-          },{
+          }, {
             key: '2088611685817706',
             value: '讯联（当面付2.0接口）2088611685817706'
-          },{
+          }, {
             key: '11719712a1',
             value: '天奕通 11719712a1'
           }]
         },
-         // 支付宝接口版本
+        // 支付宝接口版本
         aversions: {
           type: Array,
           value: [{
@@ -601,6 +602,18 @@
       _aversionChanged: function(value) {
         if (value) {
           this.set('alipay.version', value.key);
+          if (this.alipay.version == 'ALP2_0') {
+            this.$.asignCert.removeAttribute('required');
+            this.$.alpAppId.setAttribute('required', true);
+            this.$.rsaKeyTArea.setAttribute('required', true);
+            this.$.asignCert.validate();
+          } else {
+            this.$.alpAppId.removeAttribute('required');
+            this.$.rsaKeyTArea.removeAttribute('required');
+            this.$.asignCert.setAttribute('required', true);
+            this.$.alpAppId.validate();
+            this.$.rsaKeyTArea.validate();
+          }
         }
       },
       // 支付宝清算标识改变
@@ -655,9 +668,6 @@
           return;
         }
         this.update = true;
-        // this.set('merchant', {});
-        // this.set('alipay', {});
-        // this.set('weixin', {});
 
         // 根据merId查找商户信息
         var params = {
@@ -761,6 +771,7 @@
         var response = e.detail.response;
         if (response.status !== 0 || !response.data) {
           Util.toast('查询支付宝渠道商户信息失败', 3000);
+          this.set('alipay.privateKey', '');
           return;
         }
 
@@ -768,6 +779,7 @@
         if (this.alipay) {
           this.alpUpdate = true;
           this.oldAlpSignCert = this.alipay.signCert;
+          this.oldAlpPrivateKey = this.alipay.privateKey;
         }
         if (this.alipay.agentCode) {
           this.aagentCode = {
@@ -912,7 +924,7 @@
         this.aagentCodeMap = {
           '12010128a1': '讯联（当面付1.0接口） 12010128a1',
           '11719712a1': '天奕通 11719712a1',
-          '2088611685817706':'讯联（当面付2.0接口）2088611685817706',
+          '2088611685817706': '讯联（当面付2.0接口）2088611685817706',
         };
         this.aversionMap = {
           'ALP2_0': '当面付2.0',
@@ -987,14 +999,6 @@
           key: 'VERI',
           value: '卡券核销',
           isChecked: false
-        // }, {
-        //   key: 'CRVE',
-        //   value: '刷卡核销',
-        //   isChecked: false
-        // }, {
-        //   key: 'QUVE',
-        //   value: '验券查询',
-        //   isChecked: false
         }, {
           key: 'CAVE',
           value: '卡券撤销',
@@ -1037,7 +1041,7 @@
             value: this.aagentCodeMap[this.alipay.agentCode],
           };
         }
-         if (this.alipay.aversion) {
+        if (this.alipay.version) {
           this.aversion = {
             key: this.alipay.version,
             value: this.aversionMap[this.alipay.version],
@@ -1050,6 +1054,7 @@
         if (this.alipay) {
           this.alpUpdate = true;
           this.oldAlpSignCert = this.alipay.signCert;
+          this.oldAlpPrivateKey = this.alipay.privateKey;
         }
       },
       // 微信id变化后，会查询出该微信渠道信息。
@@ -1109,6 +1114,12 @@
           Util.toast('签名密钥长度不能小于8位', 3000);
           return;
         }
+        var limitAmt = parseInt(this.merchant.limitAmt);
+        if (isNaN(limitAmt)) {
+          Util.toast('限额必须为数字', 3000);
+          return;
+        }
+        this.set('merchant.limitAmt', limitAmt);
         if (this.update) {
           if (this.merchant.signKey !== this.oldSignKey && this.merchant.signKey.indexOf('*') !== -1) {
             Util.toast('门店签名密钥不能包含 *,已恢复为原签名密钥', 3000);
@@ -1122,6 +1133,7 @@
             Util.toast('门店签名密钥不能包含 *', 3000);
             return;
           }
+          this.set('merchant.enhanceType', 1);
           this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
           this.$.saveMerchantAjax.generateRequest();
         }
@@ -1177,8 +1189,14 @@
       },
       // 判断支付宝必填项是否为空, 返回false表示都填写了
       isALPConfigEmpty: function() {
-        if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.asettFlag && this.$.asettRole.validate() && this.$.asignCert.validate() && this.aagentCode && this.aversion) {
-          return false;
+        if (this.alipay.version == 'ALP2_0') {
+          if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.asettFlag && this.$.asettRole.validate() && this.aagentCode && this.aversion && this.$.alpAppId.validate() && this.$.rsaKeyTArea.validate()) {
+            return false;
+          }
+        } else {
+          if (this.$.achanMerId.validate() && this.$.aacqFee.validate() && this.$.amerFee.validate() && this.asettFlag && this.$.asettRole.validate() && this.$.asignCert.validate() && this.aagentCode && this.aversion) {
+            return false;
+          }
         }
         return true;
       },
@@ -1192,15 +1210,28 @@
           Util.toast('MD5 KEY长度不能小于8位', 3000);
           return;
         }
+        if (this.alipay.privateKey && this.alipay.privateKey != '' && this.alipay.privateKey.length < 8) {
+          Util.toast('RSA密钥长度不能小于8位', 3000);
+          return;
+        }
         if (this.alpUpdate) {
           if (this.alipay.signCert !== this.oldAlpSignCert && this.alipay.signCert.indexOf('*') !== -1) {
             Util.toast('MD5 KEY不能包含 *,已恢复为原MD5 KEY', 3000);
             this.set('alipay.signCert', this.oldAlpSignCert)
             return;
           }
+          if (this.alipay.privateKey !== this.oldAlpPrivateKey && this.alipay.privateKey.indexOf('*') !== -1) {
+            Util.toast('RSA密钥不能包含 *,已恢复为原RSA密钥', 3000);
+            this.set('alipay.privateKey', this.oldAlpPrivateKey)
+            return;
+          }
         } else {
           if (this.alipay.signCert.indexOf('*') !== -1) {
             Util.toast('MD5 KEY不能包含 *', 3000);
+            return;
+          }
+          if (this.alipay.privateKey.indexOf('*') !== -1) {
+            Util.toast('RSA密钥不能包含 *', 3000);
             return;
           }
         }
@@ -1210,8 +1241,6 @@
           Util.toast('支付宝渠道的费率必须是数字', 3000);
           return;
         }
-        // this.set('alipay.acqFee', acqFee);
-        // this.set('alipay.merFee', merFee);
         this.set('alipay.chanCode', 'ALP');
         this.$.saveChannelMerchantAjax.body = JSON.stringify(this.alipay);
         this.$.saveChannelMerchantAjax.generateRequest();
@@ -1298,8 +1327,6 @@
           Util.toast('支付宝渠道的费率必须是数字', 3000);
           return;
         }
-        // this.set('weixin.acqFee', acqFee);
-        // this.set('weixin.merFee', merFee);
         this.set('weixin.chanCode', 'WXP');
         // 如果勾选了代理商模式，就直接填充上大商户的信息
         if (this.weixin.isAgentMode) {
@@ -1395,19 +1422,15 @@
         var files = e.srcElement.files;
         if (files.length) {
           var file = files[0];
-          if ('application/x-x509-ca-cert' === file.type) {
-            var reader = new FileReader();
-            reader.onload = function() {
-              if (/BEGIN CERTIFICATE/.test(this.result) === false) {
-                Util.toast('文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头', 3000);
-                return;
-              }
-              _this.set('weixin.httpCert', this.result);
-            };
-            reader.readAsText(file);
-          } else {
-            Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
-          }
+          var reader = new FileReader();
+          reader.onload = function() {
+            if (/BEGIN CERTIFICATE/.test(this.result) === false) {
+              Util.toast('文件内容错误，请上传证书文件，该类文件以 ---BEGIN CERTIFICATE--- 开头', 3000);
+              return;
+            }
+            _this.set('weixin.httpCert', this.result);
+          };
+          reader.readAsText(file);
         }
       },
       handleWeixinHttpKeyFile: function(e) {
@@ -1415,39 +1438,33 @@
         var files = e.srcElement.files;
         if (files.length) {
           var file = files[0];
-          if ('application/x-x509-ca-cert' === file.type) {
-            var reader = new FileReader();
-            reader.onload = function() {
-              if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
-                Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN PRIVATE KEY----- 开头', 3000);
-                return;
-              }
-              _this.set('weixin.httpKey', this.result);
-            };
-            reader.readAsText(file);
-          } else {
-            Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
-          }
+          var reader = new FileReader();
+          reader.onload = function() {
+            if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
+              Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN PRIVATE KEY----- 开头', 3000);
+              return;
+            }
+            _this.set('weixin.httpKey', this.result);
+          };
+          reader.readAsText(file);
+
         }
       },
       handleAlipayRsaCertFile: function(e) {
-         var _this = this;
+        var _this = this;
         var files = e.srcElement.files;
         if (files.length) {
           var file = files[0];
-          if ('application/x-x509-ca-cert' === file.type) {
-            var reader = new FileReader();
-            reader.onload = function() {
-              if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
-                Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN PRIVATE KEY----- 开头', 3000);
-                return;
-              }
-              _this.set('alipay.privateKey', this.result);
-            };
-            reader.readAsText(file);
-          } else {
-            Util.toast('文件格式错误，只能上传 PEM 格式的文件', 3000);
-          }
+          var reader = new FileReader();
+          reader.onload = function() {
+            if (/BEGIN (RSA )?PRIVATE KEY/.test(this.result) === false) {
+              Util.toast('文件内容错误，请上传密钥文件，该类文件以 -----BEGIN PRIVATE KEY----- 开头', 3000);
+              return;
+            }
+            _this.set('alipay.privateKey', this.result);
+          };
+          reader.readAsText(file);
+        
         }
       },
       // 代理列表响应
