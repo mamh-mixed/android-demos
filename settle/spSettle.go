@@ -1,6 +1,10 @@
 package settle
 
 import (
+	"math"
+	"strconv"
+	"time"
+
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/channel/alipay"
 	"github.com/CardInfoLink/quickpay/channel/weixin/scanpay"
@@ -8,9 +12,6 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/omigo/log"
-	"math"
-	"strconv"
-	"time"
 )
 
 func init() {
@@ -146,7 +147,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 							transSett.BlendType = MATCH
 							transSett.SettTime = time.Now().Format("2006-01-02 15:04:05")
 							// log.Infof("blend success, merId=%s, orderNum=%s, chanOrderNum=%s", transSett.Trans.MerId, transSett.Trans.OrderNum, transSett.Trans.ChanOrderNum)
-							// mongo.SpTransSettColl.Update(&transSett)
+							mongo.SpTransSettColl.Update(&transSett)
 						}
 						chanSuccess += len(blendArray)
 						delete(localOrderMap, chanOrderNum) //删除本地记录，剩下的进C001
@@ -163,7 +164,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 						for _, transSett := range transSetts {
 							transSett.BlendType = AMT_ERROR
 							transSett.SettTime = time.Now().Format("2006-01-02 15:04:05")
-							// mongo.SpTransSettColl.Update(&transSett)
+							mongo.SpTransSettColl.Update(&transSett)
 						}
 						amtErrorMap[chanOrderNum] = chanOrderNum // 只是打个标记
 					}
@@ -180,76 +181,79 @@ func (s scanpayDomestic) Reconciliation(date string) {
 		}
 	}
 	log.Infof("blend success localSuccess=%d,chanSuccess=%d", localSuccess, chanSuccess)
-	var localTrans int
-	for _, v := range localMMap {
-		for _, v1 := range v {
-			localTrans += len(v1)
-			// for _, ts := range v1 {
-			// 	localTrans++
-			// 	// log.Infof("after blend localMMap: merId=%s,orderNum=%s,chanOrderNum=%s,chanMerId=%s", ts.Trans.MerId, ts.Trans.OrderNum, ts.Trans.ChanOrderNum, ts.Trans.ChanMerId)
-			// }
-		}
-	}
-	log.Infof("after blend localMMap, remain=%d", localTrans)
-	var chanTrans int
-	for _, v := range chanMMap {
-		for _, v1 := range v {
-			chanTrans += len(v1)
-			// for _, b := range v1 {
-			// 	log.Infof("after blend chanMMap: orderNum=%s,chanOrderNum=%s,chanMerId=%s", b.LocalID, b.OrderID, b.ChanMerID)
-			// }
-		}
-	}
-
-	log.Infof("after blend chanMMap, remain=%d", chanTrans)
-	// log.Infof("after blend localMMap length=%d", len(localMMap))
-	// log.Infof("after blend chanMMap length=%d", len(chanMMap))
-	// log.Infof("after blend errAmtMap length=%d", len(amtErrorMap))
+	/*
+			var localTrans int
+			for _, v := range localMMap {
+				for _, v1 := range v {
+					localTrans += len(v1)
+					// for _, ts := range v1 {
+					// 	localTrans++
+					// 	// log.Infof("after blend localMMap: merId=%s,orderNum=%s,chanOrderNum=%s,chanMerId=%s", ts.Trans.MerId, ts.Trans.OrderNum, ts.Trans.ChanOrderNum, ts.Trans.ChanMerId)
+					// }
+				}
+			}
+			log.Infof("after blend localMMap, remain=%d", localTrans)
+			var chanTrans int
+			for _, v := range chanMMap {
+				for _, v1 := range v {
+					chanTrans += len(v1)
+					// for _, b := range v1 {
+					// 	log.Infof("after blend chanMMap: orderNum=%s,chanOrderNum=%s,chanMerId=%s", b.LocalID, b.OrderID, b.ChanMerID)
+					// }
+				}
+			}
+		log.Infof("after blend chanMMap, remain=%d", chanTrans)
+	*/
+	log.Infof("after blend localMMap length=%d", len(localMMap))
+	log.Infof("after blend chanMMap length=%d", len(chanMMap))
+	log.Infof("after blend errAmtMap length=%d", len(amtErrorMap))
 
 	// 处理没有勾兑上的数据
 	// 渠道少清
-	// if len(localMMap) != 0 {
-	// 	// 上传并记录
-	// 	rs := getRsRecord(ChanLessReport, date)
-	// 	if err = upload(rs.ReportName, genC001ReportExcel(localMMap, date)); err == nil {
-	// 		if err = mongo.RoleSettCol.Upsert(rs); err != nil {
-	// 			log.Errorf("roleSett upsert error: %s", err)
-	// 		}
-	// 	}
-	// }
+	if len(localMMap) != 0 {
+		// 上传并记录
+		rs := getRsRecord(ChanLessReport, date)
+		if err = upload(rs.ReportName, genC001ReportExcel(localMMap, date)); err == nil {
+			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
+				log.Errorf("roleSett upsert error: %s", err)
+			}
+		}
+	}
 
-	// // 渠道多清
-	// if len(chanMMap) != 0 {
-	// 	for _, v := range localMMap {
-	// 		for ik, iv := range v {
-	// 			// 没勾兑上的里面包含金额错误的
-	// 			if _, ok := amtErrorMap[ik]; ok {
-	// 				// 跳过
-	// 				continue
-	// 			}
-	// 			for _, transSett := range iv {
-	// 				transSett.BlendType = CHAN_MORE
-	// 				// mongo.SpTransSettColl.Update(&transSett)
-	// 			}
-	// 		}
-	// 	}
-	// 	rs := getRsRecord(ChanMoreReport, date)
-	// 	if err = upload(rs.ReportName, genC002ReportExcel(chanMMap, date)); err != nil {
-	// 		if err = mongo.RoleSettCol.Upsert(rs); err != nil {
-	// 			log.Errorf("roleSett upsert error: %s", err)
-	// 		}
-	// 	}
-	// }
+	// 渠道多清
+	if len(chanMMap) != 0 {
+		for _, v := range localMMap {
+			for ik, iv := range v {
+				// 没勾兑上的里面包含金额错误的
+				if _, ok := amtErrorMap[ik]; ok {
+					// 跳过
+					continue
+				}
+				for _, transSett := range iv {
+					transSett.BlendType = CHAN_MORE
+					// mongo.SpTransSettColl.Update(&transSett)
+				}
+			}
+		}
+		rs := getRsRecord(ChanMoreReport, date)
+		if err = upload(rs.ReportName, genC002ReportExcel(chanMMap, date)); err != nil {
+			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
+				log.Errorf("roleSett upsert error: %s", err)
+			}
+		}
+	}
 }
 
 // genLocalBlendMap 根据当天交易生成本地勾兑数据集
 func genLocalBlendMap(date string) (lbm model.LocalBlendMap, alpChanMer map[string]string, wxpChanMer map[string]string, err error) {
 
 	var transSetts []model.TransSett
-	transSetts, err = mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date, ChanMerId: []string{"2088411862197603"}})
+	transSetts, err = mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date, IsForReport: true})
 	if err != nil {
 		return
 	}
+
+	log.Infof("the trans len is %d", len(transSetts))
 
 	if len(transSetts) == 0 {
 		return

@@ -1,8 +1,9 @@
 package settle
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
 	"testing"
+
+	"github.com/CardInfoLink/quickpay/model"
 
 	"github.com/CardInfoLink/quickpay/util"
 	"gopkg.in/mgo.v2/bson"
@@ -11,7 +12,7 @@ import (
 func TestSpSettle(t *testing.T) {
 	s := &scanpayDomestic{}
 
-	s.Reconciliation("2015-12-23")
+	s.Reconciliation("2016-01-11")
 }
 
 func TestGenReport(t *testing.T) {
