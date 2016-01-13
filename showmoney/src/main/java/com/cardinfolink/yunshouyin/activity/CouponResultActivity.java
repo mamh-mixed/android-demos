@@ -40,6 +40,7 @@ public class CouponResultActivity extends Activity {
         mPayByCash = (Button) findViewById(R.id.bt_money);
         mPayByScanCode = (Button) findViewById(R.id.bt_scancode);
         mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
+        mActionBar.setLeftText(getString(R.string.coupon_vertical));
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
