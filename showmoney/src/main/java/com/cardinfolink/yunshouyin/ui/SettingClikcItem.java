@@ -17,9 +17,9 @@ import com.cardinfolink.yunshouyin.R;
  * 自定义的组合控件
  */
 public class SettingClikcItem extends RelativeLayout {
-    private ImageView mImageView;
-    private TextView mTitle;
-    private TextView mRightText;
+    protected ImageView mImageView;
+    protected TextView mTitle;
+    protected TextView mRightText;
 
 
     public SettingClikcItem(Context context) {
@@ -47,7 +47,7 @@ public class SettingClikcItem extends RelativeLayout {
         initView(context);
     }
 
-    private void initView(Context context) {
+    protected void initView(Context context) {
         View.inflate(context, R.layout.setting_click_item, this);
         mImageView = (ImageView) this.findViewById(R.id.iv_setting);
         mTitle = (TextView) this.findViewById(R.id.tv_title);
