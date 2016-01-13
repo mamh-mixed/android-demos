@@ -127,7 +127,7 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
         mUserScan = (RadioButton) findViewById(R.id.rb_user_scan);
         switchFlag=sp.getString("scancodeaccess", "00");
         if("00".equals(switchFlag)) {
-            btnsm.setText("输入支付码");
+            btnsm.setText(ShowMoneyApp.getResString(R.string.txt_enter_paycode));
             mScanGun.setChecked(true);
         }else if("01".equals(switchFlag)){
                 btnsm.setText(ShowMoneyApp.getResString(R.string.scancode_view_scaning_code));
@@ -139,10 +139,9 @@ public class ScanCodeView extends LinearLayout implements OnClickListener {
                 radioBittonId = group.getCheckedRadioButtonId();
                 switch (radioBittonId) {
                     case R.id.rb_scangun:
-                        btnsm.setText("输入支付码");
+                        btnsm.setText(ShowMoneyApp.getResString(R.string.txt_enter_paycode));
                         switchFlag = "00";
                         editor.putString("scancodeaccess", "00").commit();
-
 
                         break;
                     case R.id.rb_camera:
