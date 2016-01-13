@@ -207,6 +207,12 @@
                   <div class="th key">更新时间</div>
                   <div class="td">{{item.updateTime}}</div>
                 </div>
+                <div class="tr">
+                  <div class="th key">限额(分)</div>
+                  <div class="td">{{item.limitAmt}}</div>
+                  <div class="th key">提升限额标记</div>
+                  <div class="td">{{getEnhanceType(item.enhanceType)}}</div>
+                </div>
               </div>
             </div>
             <dl>
@@ -237,6 +243,14 @@
                 <dd>{{alipay.signCert}}</dd>
                 <dt>代理代码:</dt>
                 <dd>{{alipay.agentCode}}</dd>
+                <dt>支付宝版本:</dt>
+                <dd>{{alipay.version}}</dd>
+                <dt>支付宝AppId:</dt>
+                <dd>{{alipay.wxpAppId}}</dd>
+                <dt>RSA 密钥(当面付2.0):</dt>
+                <dd>
+                    <pre>{{alipay.privateKey}}</pre>
+                </dd>
               </dl>
             </paper-dialog-scrollable>
           </section>
@@ -334,12 +348,6 @@
           }, {
             key: 'VERI',
             value: '卡券核销'
-        //   }, {
-        //     key: 'CRVE',
-        //     value: '刷卡核销'
-        //   }, {
-        //     key: 'QUVE',
-        //     value: '验券查询'
           }, {
             key: 'CAVE',
             value: '卡券撤销'
@@ -538,6 +546,14 @@
         this.set('ulive', response.data);
         this.set('ulive.chanCode', 'ULIVE');
       },
+      getEnhanceType:function(value){
+          var map = {
+              '0':'提升',
+              '1':'没提升',
+              '2':'审核中'
+          };
+          return map[value];
+      }
     });
   </script>
 </dom-module>
