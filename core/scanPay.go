@@ -310,6 +310,8 @@ func BarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	default:
 		return adaptor.LogicErrorHandler(t, "NO_CHANNEL")
 	}
+
+	// 处理卡券相关逻辑
 	errCode := couponLogicProcess(req, shouldChcd)
 	if errCode != "" {
 		return adaptor.LogicErrorHandler(t, errCode)
@@ -394,6 +396,7 @@ func QrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 补充关联字段
 	addRelatedProperties(t, req.M)
 
+	// 处理卡券相关逻辑
 	errCode := couponLogicProcess(req, req.Chcd)
 	if errCode != "" {
 		return adaptor.LogicErrorHandler(t, errCode)
@@ -762,7 +765,7 @@ func Cancel(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	case model.TransClosed:
 		return adaptor.LogicErrorHandler(cancel, "ORDER_CLOSED")
 	case model.TransHandling:
-		return adaptor.LogicErrorHandler(cancel, "INPROCESS")
+		return adaptor.LogicErrorHandler(cancel, "NOT_SUCESS_TRADE")
 	default:
 		orig.RefundStatus = model.TransRefunded // 撤销，全部退款
 		orig.TransStatus = model.TransClosed

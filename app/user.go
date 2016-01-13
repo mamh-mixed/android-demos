@@ -65,6 +65,14 @@ func (u *user) register(req *reqParams) (result model.AppResult) {
 		return model.USERNAME_EXIST
 	}
 
+	// 邀请码是否合法
+	if req.InvitationCode != "" {
+		_, err = mongo.UserColl.FindOne(req.InvitationCode)
+		if err != nil {
+			return model.COMPANY_LOGIN_NAME_ERROR
+		}
+	}
+
 	user := &model.AppUser{
 		UserName:       req.UserName,
 		Password:       req.Password,
@@ -443,26 +451,37 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 		return model.USER_ALREADY_IMPROVED
 	}
 
-	agentCode, agentName := "99911888", "讯联O2O机构"
+	// TODO 做到页面可以配置
+	var (
+		agentCode    = "99911888"
+		agentName    = "讯联O2O机构"
+		subAgentCode = ""
+		subAgentName = ""
+	)
+
+	// 关联角色
 	if user.InvitationCode != "" {
-		agent, err := mongo.AgentColl.Find(user.InvitationCode)
+		lu, err := mongo.UserColl.FindOne(user.InvitationCode)
 		if err == nil {
-			agentCode, agentName = agent.AgentCode, agent.AgentName
+			agentCode, agentName = lu.AgentCode, lu.AgentName
+			subAgentCode, subAgentName = lu.SubAgentCode, lu.SubAgentName
 		}
 	}
 
 	// 创建商户
 	permission := []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
 	merchant := &model.Merchant{
-		AgentCode:  agentCode,
-		AgentName:  agentName,
-		Permission: permission,
-		MerStatus:  model.MerStatusNormal,
-		TransCurr:  "156",
-		Remark:     "app_register",
-		RefundType: model.CurrentDayRefund, // 只能当天退
-		IsNeedSign: true,
-		SignKey:    fmt.Sprintf("%x", randBytes(16)),
+		AgentCode:    agentCode,
+		AgentName:    agentName,
+		Permission:   permission,
+		MerStatus:    model.MerStatusNormal,
+		SubAgentCode: subAgentCode,
+		SubAgentName: subAgentName,
+		TransCurr:    "CNY",
+		Remark:       "app_register",
+		RefundType:   model.CurrentDayRefund, // 只能当天退
+		IsNeedSign:   true,
+		SignKey:      fmt.Sprintf("%x", randBytes(16)),
 		Detail: model.MerDetail{
 			MerName:       "云收银",
 			CommodityName: "讯联云收银在线注册商户",

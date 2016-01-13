@@ -281,7 +281,7 @@ func getBillsCtrl(q *model.ScanPayRequest) *model.ScanPayResponse {
 	return result
 }
 
-//限额较验
+//checkLimitAmt 限额较验
 func checkLimitAmt(req *model.ScanPayRequest, merInfo *model.Merchant) *model.ScanPayResponse {
 	switch req.Busicd {
 	case model.Purc, model.Paut, model.Jszf, model.Qyzf:
@@ -296,7 +296,7 @@ func checkLimitAmt(req *model.ScanPayRequest, merInfo *model.Merchant) *model.Sc
 
 			totalAmt, err := mongo.SpTransColl.FindTotalAmtByMerId(req.Mchntid, time.Now().Format("2006-01-02"))
 			if err != nil {
-				log.Infof("compute the total amt error merId:%s", req.Mchntid)
+				log.Errorf("compute the total amt error merId=%s, orderNum=%s", req.Mchntid, req.OrderNum)
 				return nil
 			}
 			if (int(totalAmt) + amt) > merInfo.LimitAmt { //当天
