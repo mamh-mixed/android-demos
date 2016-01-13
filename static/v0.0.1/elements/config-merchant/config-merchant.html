@@ -207,6 +207,7 @@
         </div>
         <div class="row">
           <paper-input label="JS支付版本" value="{{merchant.jsPayVersion::input}}"></paper-input>
+          <paper-input label="限额" value="{{merchant.limitAmt::input}}"></paper-input>
         </div>
         <div class="row">
           <x-select label="门店状态" id="merStatus" items="[[merStatusMap]]" selected-item="{{merStatus}}" class="validate-container" error-message="必填项" required></x-select>
@@ -1124,6 +1125,12 @@
           Util.toast('签名密钥长度不能小于8位', 3000);
           return;
         }
+        var limitAmt = parseInt(this.merchant.limitAmt);
+        if (isNaN(limitAmt)) {
+          Util.toast('限额必须为数字', 3000);
+          return;
+        }
+        this.set('merchant.limitAmt', limitAmt);
         if (this.update) {
           if (this.merchant.signKey !== this.oldSignKey && this.merchant.signKey.indexOf('*') !== -1) {
             Util.toast('门店签名密钥不能包含 *,已恢复为原签名密钥', 3000);
@@ -1137,6 +1144,7 @@
             Util.toast('门店签名密钥不能包含 *', 3000);
             return;
           }
+          this.set('merchant.enhanceType', 1);
           this.$.saveMerchantAjax.body = JSON.stringify(this.merchant);
           this.$.saveMerchantAjax.generateRequest();
         }
