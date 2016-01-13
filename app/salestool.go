@@ -32,7 +32,7 @@ func CompanyLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	username := r.FormValue("username")
-	user, err := mongo.UserColl.FindOneUser(username, "", "")
+	user, err := mongo.UserColl.FindOne(username)
 	if err != nil {
 		w.Write(jsonMarshal(model.USERNAME_NO_EXIST))
 		return
@@ -308,7 +308,7 @@ func UserActivate(w http.ResponseWriter, r *http.Request) {
 
 		// 抄送业务人员
 		var cc string
-		luser, err := mongo.UserColl.FindOneUser(appUser.BelongsTo, "", "")
+		luser, err := mongo.UserColl.FindOne(appUser.BelongsTo)
 		if err != nil {
 			log.Errorf("find operator user error: %s", err)
 		} else {
@@ -452,7 +452,7 @@ func NotifySalesman() {
 
 	// 向业务员发邮箱
 	for k, v := range c {
-		user, err := mongo.UserColl.FindOneUser(k, "", "")
+		user, err := mongo.UserColl.FindOne(k)
 		if err != nil {
 			log.Errorf("fail to find login user(%s): %s", k, err)
 			continue

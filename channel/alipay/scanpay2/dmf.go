@@ -27,7 +27,7 @@ func (d *dmf2) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespo
 
 	p := &PayReq{}
 	p.CommonParams = *getCommonParams(req)
-	p.CommonParams.NotifyUrl = Alipay2NotifyUrl
+	// p.CommonParams.NotifyUrl = Alipay2NotifyUrl
 	p.OutTradeNo = req.OrderNum
 	p.Scene = "bar_code"
 	p.AuthCode = req.ScanCodeId

@@ -15,18 +15,12 @@ type userCollection struct {
 // UserColl 用户 Collection
 var UserColl = userCollection{"user"}
 
-// FindOneUser 根据userName,mail,phoneNum查找
-func (col *userCollection) FindOneUser(userName, mail, phoneNum string) (u *model.User, err error) {
+// FindOneUser 根据userName查找
+func (col *userCollection) FindOne(userName string) (u *model.User, err error) {
 
 	bo := bson.M{}
 	if userName != "" {
 		bo["userName"] = userName
-	}
-	if mail != "" {
-		bo["mail"] = mail
-	}
-	if phoneNum != "" {
-		bo["phoneNum"] = phoneNum
 	}
 	u = new(model.User)
 	err = database.C(col.name).Find(bo).One(u)

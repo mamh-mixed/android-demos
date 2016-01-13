@@ -717,15 +717,15 @@ func (col *transCollection) AddSettRole(settRole, merId, orderNum string) error 
 }
 
 // ExportAgentProfit 导出分润 // TODO:DELETE
-func (col *transCollection) ExportAgentProfit(bt string) ([]agentProfit, error) {
+func (col *transCollection) ExportAgentProfit(bt string, st string) ([]agentProfit, error) {
 	pipeline := []bson.M{
 		{"$match": bson.M{
-			"createTime": bson.M{"$lte": bt},
+			"createTime": bson.M{"$lte": bt, "$gte": st},
 			"transType":  1,
 			"$or":        []bson.M{bson.M{"transStatus": "30"}, bson.M{"refundStatus": 1}},
 		}},
 		{"$group": bson.M{
-			"_id":       bson.M{"merId": "$merId", "chanCode": "$chanCode", "date": bson.M{"$substr": []interface{}{"$createTime", 0, 10}}},
+			"_id":       bson.M{"merId": "$merId", "chanCode": "$chanCode", "chanMerId": "$chanMerId", "date": bson.M{"$substr": []interface{}{"$createTime", 0, 10}}},
 			"transAmt":  bson.M{"$sum": "$transAmt"},
 			"refundAmt": bson.M{"$sum": "$refundAmt"},
 			"transNum":  bson.M{"$sum": 1},
@@ -740,9 +740,10 @@ func (col *transCollection) ExportAgentProfit(bt string) ([]agentProfit, error) 
 
 type agentProfit struct {
 	ID struct {
-		MerId    string `bson:"merId"`
-		ChanCode string `bson:"chanCode"`
-		Date     string `bson:"date"`
+		MerId     string `bson:"merId"`
+		ChanCode  string `bson:"chanCode"`
+		Date      string `bson:"date"`
+		ChanMerId string `bson:"chanMerId"`
 	} `bson:"_id"`
 	TransAmt  int64  `bson:"transAmt"`
 	RefundAmt int64  `bson:"refundAmt"`
@@ -779,31 +780,31 @@ func handleTransStatus(q *model.QueryCondition, match bson.M) {
 	}
 }
 
+// FindTotalAmtByMerId 查出某个商户一天交易额
 func (col *transCollection) FindTotalAmtByMerId(merId, day string) (int64, error) {
 
 	var amt = &struct {
 		TransAmt    int64 `bson:"transAmt"`
-		RefundedAmt int64 `bson:"refundedAmt"`
+		RefundedAmt int64 `bson:"refundAmt"`
 	}{}
 	find := bson.M{
-		"createTime": bson.RegEx{day, "."},
-		"merId":      merId,
-		"respCode":   "00",
-		"transType":  1,
+		"createTime":  bson.RegEx{day, "."},
+		"merId":       merId,
+		"transStatus": model.TransSuccess,
+		"transType":   model.PayTrans,
 	}
 
 	err := database.C(col.name).Pipe([]bson.M{
 		{"$match": find},
 		{"$group": bson.M{
-			"_id":         "$merId",
-			"transAmt":    bson.M{"$sum": "$transAmt"},
-			"refundedAmt": bson.M{"$sum": "$refundedAmt"},
+			"_id":       "$merId",
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
 		}},
 		{"$project": bson.M{
-			"transAmt":    1,
-			"refundedAmt": 1,
+			"transAmt":  1,
+			"refundAmt": 1,
 		}},
 	}).One(amt)
-	fmt.Printf("the trans amt is: %d, refundAmt is %d", amt.TransAmt, amt.RefundedAmt)
 	return amt.TransAmt - amt.RefundedAmt, err
 }
