@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="50dp"
+    android:background="@drawable/white1_selector">
+
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:text="标题"
+        android:textColor="@color/textview_textcolor_setting_click_item_left"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/tv_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="2dp"
+        android:layout_marginTop="10dp"
+        android:layout_toLeftOf="@+id/iv_setting"
+        android:layout_toRightOf="@+id/tv_title"
+        android:gravity="right"
+        android:text="右边的文本"
+        android:textColor="@color/textview_textcolor_setting_click_item_right"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/iv_setting"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="15dp"
+        android:clickable="false"
+        android:src="@drawable/login_increase" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="0.1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/horizontal_view_background" />
+
+</RelativeLayout>
