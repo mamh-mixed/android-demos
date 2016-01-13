@@ -414,7 +414,13 @@
     <string name="coupon_pay_again">重新支付</string>
     <string name="coupon_verial_success">冲正成功</string>
     <string name="coupon_verial_fail">冲正失败</string>
-    <string name="coupon_doing_info">正在销券中，请稍等</string>
+    <string name="coupon_man">满</string>
+    <string name="coupon_da">打</string>
+    <string name="coupon_zhe">折</string>
+    <string name="coupon_jian">减</string>
+    <string name="coupon_doing_info">正在核销中，请等待。</string>
+    <string name="coupon_yuan">元</string>
+
 
 
     <!--  欢迎界面 要用到的文本 -->
