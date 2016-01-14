@@ -250,8 +250,8 @@ func messagePullHandler(w http.ResponseWriter, r *http.Request) {
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
 		Size:      r.FormValue("size"),
-		LastTime:  r.FormValue("lasttime"),
-		MaxTime:   r.FormValue("maxtime"),
+		LastTime:  r.FormValue("lastTime"),
+		MaxTime:   r.FormValue("maxTime"),
 	})
 
 	w.Write(jsonMarshal(result))

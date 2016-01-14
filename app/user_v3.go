@@ -26,6 +26,11 @@ func (u *userV3) messagePullHandler(req *reqParams) (result model.AppResult) {
 		return model.InvalidSizeParams
 	}
 
+	// lastTime 和 maxTime 不能同时出现
+	if req.LastTime != "" {
+		req.MaxTime = ""
+	}
+
 	result = User.findPushMessage(req)
 
 	return result
