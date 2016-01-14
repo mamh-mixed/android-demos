@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
@@ -44,6 +45,8 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
     private HintBillDialog mHintDialog;
 
+    private boolean isSearch = false;
+
     public BillExpandableListAdapter(Context context, List<MonthBill> groupData, List<List<TradeBill>> childrenData) {
         this.mContext = context;
         this.groupData = groupData;
@@ -52,6 +55,10 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
     public void setHintDialog(View view) {
         this.mHintDialog = new HintBillDialog(mContext, view);
+    }
+
+    public void setIsSearch(boolean isSearch) {
+        this.isSearch = isSearch;
     }
 
     @Override
@@ -106,11 +113,20 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             groupViewHolder.total = (TextView) convertView.findViewById(R.id.tv_total);
             groupViewHolder.count = (TextView) convertView.findViewById(R.id.tv_count);
             groupViewHolder.folder = (ImageView) convertView.findViewById(R.id.iv_fold);
+            groupViewHolder.leftLinearLayout = (LinearLayout) convertView.findViewById(R.id.ll_left);
 
             convertView.setTag(groupViewHolder);
         } else {
             groupViewHolder = (GroupViewHolder) convertView.getTag();
         }
+
+        //如果是搜索 出来的账单 不显示 总收入
+        if (isSearch) {
+            groupViewHolder.leftLinearLayout.setVisibility(View.INVISIBLE);
+        } else {
+            groupViewHolder.leftLinearLayout.setVisibility(View.VISIBLE);
+        }
+
         //设置一下月份
         groupViewHolder.month.setText(groupData.get(groupPosition).getCurrentMonth());
         groupViewHolder.year.setText(groupData.get(groupPosition).getCurrentYear());
@@ -122,8 +138,15 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         }
         groupViewHolder.total.setText(totalStr);
 
-        String countStr = String.valueOf(groupData.get(groupPosition).getTotalRecord());
-        groupViewHolder.count.setText(countStr);
+        //如果是搜索 出来的账单 使用childrenData list的size来
+        if (isSearch) {
+            String countStr = String.valueOf(childrenData.get(groupPosition).size());
+            groupViewHolder.count.setText(countStr);
+        } else {
+            String countStr = String.valueOf(groupData.get(groupPosition).getTotalRecord());
+            groupViewHolder.count.setText(countStr);
+        }
+
 
         if (isExpanded) {
             groupViewHolder.folder.setBackgroundResource(R.drawable.bill_pack);
@@ -226,7 +249,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
                 childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             } else {
                 //全额退款
-                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_partrefd);
+                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_allrefd);
                 childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             }
         } else {
@@ -331,6 +354,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         public TextView year;
         public TextView total;
         public TextView count;
+        public LinearLayout leftLinearLayout;
     }
 
     public final class ChildViewHolder {
