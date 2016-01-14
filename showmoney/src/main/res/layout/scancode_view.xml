@@ -75,7 +75,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="5dp"
                         android:layout_toRightOf="@id/iv_cash"
-                        android:text="折扣价"
+                        android:text="@string/coupon_discount_cash"
                         android:visibility="invisible" />
 
 
