@@ -155,11 +155,11 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
         if (!TextUtils.isEmpty(bill.couponType)) {
             //有chcd渠道的话,这里设置不同渠道的图片
             if ("1".equals(bill.couponType)) {
-                childViewHolder.couponType.setImageResource(R.drawable.bill_discount1);
+                childViewHolder.couponType.setImageResource(R.drawable.bill_subtract);
             } else if ("2".equals(bill.chcd)) {
                 childViewHolder.couponType.setImageResource(R.drawable.bill_exchang);
             } else if ("3".equals(bill.couponType)) {
-                childViewHolder.couponType.setImageResource(R.drawable.bill_subtract);
+                childViewHolder.couponType.setImageResource(R.drawable.bill_discount1);
             } else {
                 childViewHolder.couponType.setImageDrawable(null);
             }
