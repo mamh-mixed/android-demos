@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--开启闪光灯 的背景，黑色的一个圆圈 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval"
+    android:useLevel="false">
+    <solid android:color="#222222" />
+
+    <size
+        android:width="50dp"
+        android:height="50dp" />
+</shape>

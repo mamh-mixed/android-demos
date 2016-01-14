@@ -29,6 +29,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.carmera.CameraManager;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.Coupon;
+import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.decoding.CaptureActivityHandler;
 import com.cardinfolink.yunshouyin.decoding.InactivityTimer;
@@ -100,15 +101,12 @@ public class CaptureActivity extends BaseActivity implements Callback {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_capture);
-
-        CameraManager.init(getApplication());
-
+        initCamera();
         initHandler();
         initLayout();
         initListener();
 
-        hasSurface = false;
-        inactivityTimer = new InactivityTimer(this);
+
     }
 
     private void initLayout() {
@@ -150,6 +148,55 @@ public class CaptureActivity extends BaseActivity implements Callback {
                 }
             }
         });
+
+
+        findViewById(R.id.reversal).setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                CameraManager.isCameraFront = !CameraManager.isCameraFront;
+                SaveData.setCameraFront(getApplication(), CameraManager.isCameraFront);
+                if (captureActivityHandler != null) {
+                    captureActivityHandler.quitSynchronously();
+                    captureActivityHandler = null;
+                }
+                CameraManager.get().closeDriver();
+                openCamera();
+
+
+            }
+        });
+
+
+    }
+
+    private void initCamera() {
+        CameraManager.isCameraFront = SaveData.isCameraFront(this);
+        CameraManager.init(getApplication());
+        hasSurface = false;
+        inactivityTimer = new InactivityTimer(this);
+    }
+
+
+    private void openCamera() {
+        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+        SurfaceHolder surfaceHolder = surfaceView.getHolder();
+        if (hasSurface) {
+            initCamera(surfaceHolder);
+        } else {
+            surfaceHolder.addCallback(this);
+            surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        }
+        decodeFormats = null;
+        characterSet = null;
+
+        playBeep = true;
+        AudioManager audioService = (AudioManager) getSystemService(AUDIO_SERVICE);
+        if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+            playBeep = false;
+        }
+        initBeepSound();
+        vibrate = true;
     }
 
     public void initHandler() {
