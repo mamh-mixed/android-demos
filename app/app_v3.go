@@ -106,7 +106,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 // forgetPasswordHandler 忘记密码处理
 func forgetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	result := User.forgetPassword(&reqParams{
-		UserName: r.FormValue("username"),
+		UserName:  r.FormValue("username"),
+		Transtime: r.FormValue("transtime"),
 	})
 
 	w.Write(jsonMarshal(result))
