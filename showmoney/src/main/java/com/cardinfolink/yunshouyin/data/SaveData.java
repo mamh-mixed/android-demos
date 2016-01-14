@@ -45,5 +45,36 @@ public class SaveData {
         return mySharedPreferences.getBoolean("isfront", false);
     }
 
+    public static void setMessageTime(Context context, String lasttime) {
+        SharedPreferences mySharedPreferences = context.getSharedPreferences("savedata",
+                Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putString("lasttime", lasttime);
+        editor.commit();
+    }
+
+    public static String  getMessageTime(Context context) {
+        SharedPreferences mySharedPreferences = context.getSharedPreferences("savedata",
+                Activity.MODE_PRIVATE);
+        return mySharedPreferences.getString("lasttime", "");
+    }
+
+
+
+    public static void setMessageClick(Context context, boolean isClick) {
+        SharedPreferences mySharedPreferences = context.getSharedPreferences("savedata",
+                Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putBoolean("isClick", isClick);
+        editor.commit();
+    }
+
+
+    public static boolean  getMessageClick(Context context) {
+        SharedPreferences mySharedPreferences = context.getSharedPreferences("savedata",
+                Activity.MODE_PRIVATE);
+        return mySharedPreferences.getBoolean("isClick", false);
+    }
+
 
 }
