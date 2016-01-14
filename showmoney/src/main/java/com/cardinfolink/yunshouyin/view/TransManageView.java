@@ -167,9 +167,11 @@ public class TransManageView extends LinearLayout {
             @Override
             public void onClick(View v) {
                 mActionBar.setLeftTextVisibility(INVISIBLE);
+                mBillAdapter.setIsSearch(false);
                 mRadioGroup.setVisibility(VISIBLE);
                 mSearchLinearLayout.setVisibility(GONE);
                 mSearchConditionLinearLayout.setVisibility(GONE);
+                refresh();
             }
         });
 
@@ -310,6 +312,8 @@ public class TransManageView extends LinearLayout {
                         mSearchLinearLayout.setVisibility(VISIBLE);
                         mSearchConditionLinearLayout.setVisibility(VISIBLE);
                         mActionBar.setLeftTextVisibility(VISIBLE);
+                        mBillAdapter.setIsSearch(true);
+                        searchBill();
                     }
                 } else {
                     Log.e(TAG, "搜索功能暂时 只支持收款账单");
