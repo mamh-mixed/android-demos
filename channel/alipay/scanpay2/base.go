@@ -22,6 +22,7 @@ type BaseReq interface {
 	Values() url.Values             // 组装公共参数
 	GetPrivateKey() *rsa.PrivateKey // 商户 RSA 私钥
 	GetSpReq() *model.ScanPayRequest
+	SaveLog() bool // 是否需要记录日志
 }
 
 // CommonParams 组装公共参数
@@ -53,6 +54,12 @@ type Params struct {
 	SysServiceProviderId string `json:"sys_service_provider_id,omitempty"`
 }
 
+// SaveLog 是否需要记录日志
+func (c *CommonParams) SaveLog() bool {
+	return true
+}
+
+// GetSpReq 前端请求报文
 func (c *CommonParams) GetSpReq() *model.ScanPayRequest {
 	return c.Req
 }

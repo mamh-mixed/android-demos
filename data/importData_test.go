@@ -61,7 +61,7 @@ func TestAddSpChanFromCSV(t *testing.T) {
 }
 
 // 导入scanPay应答码，同quickpay
-func xTestAddScanPayRespFromCSV(t *testing.T) {
+func TestAddScanPayRespFromCSV(t *testing.T) {
 
 	err := AddScanPayFromCSV("respCode_scanpay.csv")
 	// data, err := readScanPayCSV("respCode_scanpay.csv")
