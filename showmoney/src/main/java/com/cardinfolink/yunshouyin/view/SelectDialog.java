@@ -1,6 +1,7 @@
 package com.cardinfolink.yunshouyin.view;
 
 import android.content.Context;
+import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -221,5 +222,12 @@ public class SelectDialog {
         mSearch.setText(text);
     }
 
+    public String getSearchText() {
+        return mSearch.getText().toString();
+    }
+
+    public void addSearchTextChangedListener(TextWatcher l) {
+        mSearch.addTextChangedListener(l);
+    }
 
 }

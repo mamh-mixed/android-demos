@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -96,12 +98,15 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         mSetBank = (SettingClikcItem) findViewById(R.id.bank);
 
         mName = (SettingInputItem) findViewById(R.id.name);//姓名
+        mName.setImageViewDrawable(null);
         mBankNumber = (SettingInputItem) findViewById(R.id.bank_number);//银行卡号
         mBankNumber.setInputType(InputType.TYPE_CLASS_NUMBER);//限制银行卡号输入法只能是数字
         mBankNumber.setTextFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_BANK_NUMBER_LENGTH)});//限制输入长度
         VerifyUtil.bankCardNumAddSpace(mBankNumber.getmText());
+        mBankNumber.setImageViewDrawable(null);
 
         mPhone = (SettingInputItem) findViewById(R.id.phone_number);//手机号
+        mPhone.setImageViewDrawable(null);
         mPhone.setInputType(InputType.TYPE_CLASS_PHONE);
         mPhone.setTextFilters(new InputFilter[]{new InputFilter.LengthFilter(MAX_PHONE_NUMBER_LENTH)});//限制输入长度
 
@@ -272,8 +277,9 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
 
         updateBankData();//去获取银行信息
 
+        selectDialog.setSearchText("");
+
         selectDialog.addLeftScrollingListener(new BankOnWheelScrollListener());
-        selectDialog.addRightScrollingListener(new SubBankOnWheelScrollListener());
 
         selectDialog.setOkOnClickListener(new View.OnClickListener() {
             @Override
@@ -311,7 +317,58 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
             }
         });
 
+        selectDialog.addSearchTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                searchBank();
+            }
+        });
+
         selectDialog.show();
+    }
+
+    /**
+     * 模糊搜索银行
+     */
+    private void searchBank() {
+        try {
+            String bank = selectDialog.getSearchText();
+            try {
+                for (int i = 0; i <= bankList.size(); i++) {
+                    String bankName = bankList.get(i).getBankName();
+                    if (bankName.contains(bank)) {
+                        selectDialog.setWheelLeftCurrentItem(i);
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+
+            }
+
+            try {
+                for (int i = 0; i <= subbankList.size(); i++) {
+                    String bankName = subbankList.get(i).getBankName();
+                    if (bankName.contains(bank)) {
+                        selectDialog.setWheelRightCurrentItem(i);
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -322,7 +379,6 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         updateProvinceData();
 
         selectDialog.addLeftScrollingListener(new ProvinceOnWheelScrollListener());
-        selectDialog.addRightScrollingListener(new CityOnWheelScrollListener());
 
         //点击确定按钮 就把滚轮当前的 值设置到相应的位置
         selectDialog.setOkOnClickListener(new View.OnClickListener() {
@@ -467,28 +523,10 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         public void onScrollingFinished(WheelView wheel) {
             //滚动结束调用跟新城市的方法
             Province currentProvince = provinceList.get(wheel.getCurrentItem());
-            selectDialog.setSearchText(currentProvince.getProvinceName());
             if (provinceCityMap != null && provinceCityMap.get(currentProvince) != null) {
                 selectDialog.setWheelRigthAdapter(new RegisterWheelAdapter<City>(mContext, provinceCityMap.get(currentProvince)));
             } else {
                 updateCityData(currentProvince);
-            }
-        }
-    }
-
-    private class CityOnWheelScrollListener implements OnWheelScrollListener {
-        @Override
-        public void onScrollingStarted(WheelView wheel) {
-
-        }
-
-        @Override
-        public void onScrollingFinished(WheelView wheel) {
-            try {
-                City currentCity = cityList.get(wheel.getCurrentItem());
-                selectDialog.setSearchText(currentCity.getCityName());
-            } catch (Exception e) {
-
             }
         }
     }
@@ -506,7 +544,6 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         @Override
         public void onScrollingFinished(WheelView wheel) {
             Bank currentBank = bankList.get(wheel.getCurrentItem());
-            selectDialog.setSearchText(currentBank.getBankName());
             String mapKey = mCityCode + SEPARATOR + currentBank.getBankName();
             if (bankSubBankMap != null && bankSubBankMap.get(mapKey) != null) {
                 selectDialog.setWheelRigthAdapter(new RegisterWheelAdapter<SubBank>(mContext, bankSubBankMap.get(mapKey)));
@@ -516,22 +553,6 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         }
     }
 
-    private class SubBankOnWheelScrollListener implements OnWheelScrollListener {
-        @Override
-        public void onScrollingStarted(WheelView wheel) {
-
-        }
-
-        @Override
-        public void onScrollingFinished(WheelView wheel) {
-            try {
-                SubBank currentSubBank = subbankList.get(wheel.getCurrentItem());
-                selectDialog.setSearchText(currentSubBank.getBankName());
-            } catch (Exception e) {
-
-            }
-        }
-    }
 
     /**
      * 滚轮组件的适配器，泛型的，里面存了一个 list，构建方法的时候传人这个list
