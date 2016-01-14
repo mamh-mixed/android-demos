@@ -1,5 +1,3 @@
-// var SHA256 = require("crypto-js/sha256");
-// import { SHA256 } from 'crypto-js';
 export class PasswordResetService {
 	constructor($http, toastr, $log, $state) {
 		'ngInject';
@@ -36,7 +34,7 @@ export class PasswordResetService {
 		let data = {
 			username: params.username,
 			checkCode: params.checkCode,
-			password: CryptoJS.SHA1(params.password).toString()
+			password: CryptoJS.MD5(params.password).toString()
 		};
 
 		return this.$http.post(this.apiHost, angular.toJson(data))
