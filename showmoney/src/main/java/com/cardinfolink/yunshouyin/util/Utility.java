@@ -1,7 +1,9 @@
 package com.cardinfolink.yunshouyin.util;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.view.inputmethod.InputMethodManager;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -104,4 +106,16 @@ public class Utility {
 
         return bitmap;
     }
+
+
+    public static void hideInput(Context context) {
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 }
