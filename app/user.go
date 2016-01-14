@@ -270,6 +270,8 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 		user.AgentCode = merchant.AgentCode
 		user.PayUrl = merchant.Detail.PayUrl
 		user.MerName = merchant.Detail.MerName
+		user.DeviceType = userInfo.DeviceType //由于更新数据库有延迟，所以查出来的是旧数据，重新赋值返回
+		user.DeviceToken = userInfo.DeviceToken
 	}
 
 	result = model.AppResult{
@@ -1140,7 +1142,7 @@ func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
 
 	log.Debugf("userName=%s", req.UserName)
 	// 参数不能为空
-	if req.UserName == "" {
+	if req.UserName == "" || req.Transtime == "" {
 		return model.PARAMS_EMPTY
 	}
 
