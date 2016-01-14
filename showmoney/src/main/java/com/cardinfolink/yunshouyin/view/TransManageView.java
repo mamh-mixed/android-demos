@@ -33,6 +33,7 @@ import com.cardinfolink.yunshouyin.model.QRequest;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.Txn;
 import com.cardinfolink.yunshouyin.ui.EditTextClear;
+import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
@@ -107,7 +108,8 @@ public class TransManageView extends LinearLayout {
     //****************************************************************************************
 
 
-    private TextView mTitle;
+    private SettingActionBarItem mActionBar;
+
     private RadioButton mRaidoBill;//收款账单
     private RadioButton mRadioTicket;//卡券账单
     private RadioButton mRadioCollection;//收款码账单
@@ -159,7 +161,18 @@ public class TransManageView extends LinearLayout {
         mTicketCurrentYearMonth = mCurrentYearMonth;
         billIndex = ticketIndex = 0;
 
-        mTitle = (TextView) findViewById(R.id.tv_title);
+        mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
+        mActionBar.setLeftTextVisibility(INVISIBLE);
+        mActionBar.setLeftTextOnclickListner(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mActionBar.setLeftTextVisibility(INVISIBLE);
+                mRadioGroup.setVisibility(VISIBLE);
+                mSearchLinearLayout.setVisibility(GONE);
+                mSearchConditionLinearLayout.setVisibility(GONE);
+            }
+        });
+
         mLoadingDialog = new LoadingDialog(mContext, findViewById(R.id.loading_dialog));
 
         //***普通的收款账单***************************************************************************************
@@ -296,10 +309,7 @@ public class TransManageView extends LinearLayout {
                         mRadioGroup.setVisibility(GONE);
                         mSearchLinearLayout.setVisibility(VISIBLE);
                         mSearchConditionLinearLayout.setVisibility(VISIBLE);
-                    } else if (mRadioGroup.getVisibility() == GONE) {
-                        mRadioGroup.setVisibility(VISIBLE);
-                        mSearchLinearLayout.setVisibility(GONE);
-                        mSearchConditionLinearLayout.setVisibility(GONE);
+                        mActionBar.setLeftTextVisibility(VISIBLE);
                     }
                 } else {
                     Log.e(TAG, "搜索功能暂时 只支持收款账单");
@@ -348,7 +358,7 @@ public class TransManageView extends LinearLayout {
                 mBillPullRefreshListView.setVisibility(VISIBLE);
                 mTicketPullRefreshListView.setVisibility(GONE);
                 mCollectionPullRefreshListView.setVisibility(GONE);
-                mTitle.setText(mRaidoBill.getText());//设置标题
+                mActionBar.setTitle(mRaidoBill.getText().toString());//设置标题
             }
         });
 
@@ -361,7 +371,7 @@ public class TransManageView extends LinearLayout {
                 mBillPullRefreshListView.setVisibility(GONE);
                 mTicketPullRefreshListView.setVisibility(VISIBLE);
                 mCollectionPullRefreshListView.setVisibility(GONE);
-                mTitle.setText(mRadioTicket.getText());
+                mActionBar.setTitle(mRadioTicket.getText().toString());
             }
         });
 
@@ -374,7 +384,7 @@ public class TransManageView extends LinearLayout {
                 mBillPullRefreshListView.setVisibility(GONE);
                 mTicketPullRefreshListView.setVisibility(GONE);
                 mCollectionPullRefreshListView.setVisibility(VISIBLE);
-                mTitle.setText(mRadioCollection.getText());
+                mActionBar.setTitle(mRadioCollection.getText().toString());
             }
         });
 
