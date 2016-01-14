@@ -25,7 +25,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
-            android:src="@drawable/setting_news_has" />
+            android:src="@drawable/setting_news" />
     </RelativeLayout>
 
     <RelativeLayout

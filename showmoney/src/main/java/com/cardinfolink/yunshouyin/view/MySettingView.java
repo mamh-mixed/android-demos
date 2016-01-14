@@ -18,6 +18,8 @@ import com.cardinfolink.yunshouyin.activity.MyChannelActivity;
 import com.cardinfolink.yunshouyin.activity.MyWebActivity;
 import com.cardinfolink.yunshouyin.activity.StartIncreaseActivity;
 import com.cardinfolink.yunshouyin.activity.UnReadMessageActivity;
+import com.cardinfolink.yunshouyin.data.MessageDB;
+import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
@@ -44,9 +46,15 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
 
     private ImageView mMessage;
 
+    private MessageDB mMessageDB;
+
+
     public MySettingView(Context context) {
         super(context);
         mContext = context;
+        mMessageDB = new MessageDB(mContext);
+
+
         View contentView = LayoutInflater.from(context).inflate(R.layout.my_setting_view, null);
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         contentView.setLayoutParams(layoutParams);
@@ -75,7 +83,31 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         mMessage.setOnClickListener(this);
 
         checkLimit();
+        checkMessageCount();
     }
+
+    private void checkMessageCount() {
+        String lastTime = mMessageDB.getLastTime(SessonData.loginUser.getUsername());
+        int count = mMessageDB.countUnreadedMessages(SessonData.loginUser.getUsername());
+        if (count > 0) {
+            String thisTime = SaveData.getMessageTime(mContext);
+            if (lastTime.compareTo(thisTime) > 0) {
+                SaveData.setMessageTime(mContext, lastTime);
+                SaveData.setMessageClick(mContext, false);
+                mMessage.setImageResource(R.drawable.setting_news_has);
+            } else {
+                if (SaveData.getMessageClick(mContext)) {
+                    mMessage.setImageResource(R.drawable.setting_news);
+                } else {
+                    mMessage.setImageResource(R.drawable.setting_news_has);
+                }
+            }
+        } else {
+
+
+        }
+    }
+
 
     private void checkLimit() {
         User user = SessonData.loginUser;
@@ -125,6 +157,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
                 break;
             case R.id.iv_message:
                 //这里要加个判断 是否有 未读消息，有的话跳转未读消息界面。
+                SaveData.setMessageClick(mContext, true);
                 intent = new Intent(mContext, UnReadMessageActivity.class);
                 mContext.startActivity(intent);
                 break;
