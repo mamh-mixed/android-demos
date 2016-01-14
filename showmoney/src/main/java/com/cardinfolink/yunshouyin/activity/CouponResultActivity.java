@@ -87,7 +87,7 @@ public class CouponResultActivity extends Activity {
                     mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_man) + mSaleMinAccount + getString(R.string.coupon_yuan) + getString(R.string.coupon_jian) + mDiscount + getString(R.string.coupon_yuan));
 
                 } else {
-                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_jian) + mDiscount);
+                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_jian) + mDiscount+getString(R.string.coupon_yuan));
                     //返回销券
                 }
 
