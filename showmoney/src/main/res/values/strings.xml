@@ -418,7 +418,6 @@
     <string name="coupon_da">打</string>
     <string name="coupon_zhe">折</string>
     <string name="coupon_jian">减</string>
-    <string name="coupon_doing_info">正在核销中，请等待。</string>
     <string name="coupon_yuan">元</string>
     <string name="coupon_doing_info">正在销券中，请稍等</string>
     <string name="coupon_vertical">销券</string>
