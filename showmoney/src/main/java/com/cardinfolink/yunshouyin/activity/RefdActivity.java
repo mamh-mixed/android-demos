@@ -17,6 +17,7 @@ import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
+import com.cardinfolink.yunshouyin.ui.EditTextClear;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
@@ -34,7 +35,7 @@ public class RefdActivity extends BaseActivity {
     private SettingActionBarItem mActionBar;
     private TextView mRefdAmount;
     private SettingInputItem mRefdMoney;
-    private SettingPasswordItem mPassword;
+    private EditTextClear mPassword;
     private Button mRefdButton;
 
     private double maxRefd = 0;
@@ -61,13 +62,15 @@ public class RefdActivity extends BaseActivity {
 
         mRefdAmount = (TextView) findViewById(R.id.refd_amount);
         mRefdMoney = (SettingInputItem) findViewById(R.id.refd_money);
+        mRefdMoney.setImageViewDrawable(null);
         mRefdMoney.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);//限制输入法只能是数字
-        mPassword = (SettingPasswordItem) findViewById(R.id.refd_password);
+        mPassword = (EditTextClear) findViewById(R.id.refd_password);
 
         mRefdButton = (Button) findViewById(R.id.btnrefd);
         mRefdButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Utility.hideInput(mContext, v);
                 refdOnClick(v);
             }
         });
@@ -215,7 +218,7 @@ public class RefdActivity extends BaseActivity {
             mAlertDialog.show(alertMsg, bitmap);
             return false;
         }
-        if (!mPassword.getPassword().equals(SessonData.loginUser.getPassword())) {
+        if (!mPassword.getText().toString().equals(SessonData.loginUser.getPassword())) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog__password_error);
             mAlertDialog.show(alertMsg, bitmap);
             return false;
