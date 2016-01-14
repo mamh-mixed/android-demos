@@ -30,4 +30,20 @@ public class SaveData {
     }
 
 
+    public static void setCameraFront(Context context, boolean isfront) {
+        SharedPreferences mySharedPreferences = context.getSharedPreferences("savedata",
+                Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = mySharedPreferences.edit();
+        editor.putBoolean("isfront", isfront);
+        editor.commit();
+    }
+
+
+    public static boolean isCameraFront(Context context) {
+        SharedPreferences mySharedPreferences = context.getSharedPreferences("savedata",
+                Activity.MODE_PRIVATE);
+        return mySharedPreferences.getBoolean("isfront", false);
+    }
+
+
 }
