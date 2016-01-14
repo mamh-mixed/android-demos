@@ -270,6 +270,8 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 		user.AgentCode = merchant.AgentCode
 		user.PayUrl = merchant.Detail.PayUrl
 		user.MerName = merchant.Detail.MerName
+		user.DeviceType = userInfo.DeviceType //由于更新数据库有延迟，所以查出来的是旧数据，重新赋值返回
+		user.DeviceToken = userInfo.DeviceToken
 	}
 
 	result = model.AppResult{
@@ -1140,7 +1142,7 @@ func (u *user) forgetPassword(req *reqParams) (result model.AppResult) {
 
 	log.Debugf("userName=%s", req.UserName)
 	// 参数不能为空
-	if req.UserName == "" {
+	if req.UserName == "" || req.Transtime == "" {
 		return model.PARAMS_EMPTY
 	}
 
@@ -1298,7 +1300,7 @@ func (u *user) findPushMessage(req *reqParams) (result model.AppResult) {
 // 卡券列表
 func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
 	//判断必填项不能为空
-	if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.ClientId == "" || req.Index == "" {
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.Index == "" {
 		return model.PARAMS_EMPTY
 	}
 	// 字段长度验证
@@ -1534,7 +1536,7 @@ func genMerId(merchant *model.Merchant, prefix string) error {
 
 func checkPWD(req *reqParams) (user *model.AppUser, errResult *model.AppResult) {
 	// 参数不能为空
-	if req.UserName == "" || req.Password == "" {
+	if req.UserName == "" || req.Password == "" || req.Transtime == "" {
 		return nil, &model.PARAMS_EMPTY
 	}
 	// 根据用户名查找用户
