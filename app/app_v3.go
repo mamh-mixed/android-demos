@@ -245,7 +245,7 @@ func couponsHandler(w http.ResponseWriter, r *http.Request) {
 
 // messagePullHandler 消息接口
 func messagePullHandler(w http.ResponseWriter, r *http.Request) {
-	result := User.messagePullHandler(&reqParams{
+	result := UserV3.messagePullHandler(&reqParams{
 		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),

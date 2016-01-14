@@ -11,7 +11,25 @@ import (
 
 type userV3 struct{}
 
+// UserV3 app v3版本的相关逻辑代码
 var UserV3 userV3
+
+// 拉取消息的处理器
+func (u *userV3) messagePullHandler(req *reqParams) (result model.AppResult) {
+	// 非空校验
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.Size == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 校验size是不是非数字的
+	if !regexDigit.MatchString(req.Size) {
+		return model.InvalidSizeParams
+	}
+
+	result = User.findPushMessage(req)
+
+	return result
+}
 
 // getUserBills 获取账单
 func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {

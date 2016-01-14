@@ -7,6 +7,19 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 )
 
+func TestUserV3MessagePullHandler(t *testing.T) {
+	result := UserV3.messagePullHandler(&reqParams{
+		UserName:  "fnghwsj@qq.com",
+		Password:  "xxxxxx",
+		Transtime: "20160114142946",
+		Size:      "1334",
+		LastTime:  "lasttime",
+		MaxTime:   "maxtime",
+	})
+
+	t.Logf("result is %#v", result)
+}
+
 func TestGetQiniuToken(t *testing.T) {
 	result := User.getQiniuToken(&reqParams{
 		UserName: "fnghwsj@qq.com",
