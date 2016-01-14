@@ -11,7 +11,30 @@ import (
 
 type userV3 struct{}
 
+// UserV3 app v3版本的相关逻辑代码
 var UserV3 userV3
+
+// 拉取消息的处理器
+func (u *userV3) messagePullHandler(req *reqParams) (result model.AppResult) {
+	// 非空校验
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.Size == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 校验size是不是非数字的
+	if !regexDigit.MatchString(req.Size) {
+		return model.InvalidSizeParams
+	}
+
+	// lastTime 和 maxTime 不能同时出现
+	if req.LastTime != "" {
+		req.MaxTime = ""
+	}
+
+	result = User.findPushMessage(req)
+
+	return result
+}
 
 // getUserBills 获取账单
 func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
@@ -135,6 +158,58 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 	}
 
 	return result
+}
+
+// findOrderHandle 查找订单处理器
+func (u *userV3) findOrderHandle(req *reqParams) (result model.AppResult) {
+	// 用户名不为空
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.Index == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 校验index是不是非数字的
+	if !regexDigit.MatchString(req.Index) {
+		return model.InvalidIndexParams
+	}
+
+	user, errResult := checkPWD(req)
+	if errResult != nil {
+		return *errResult
+	}
+
+	index, size := pagingParams(req)
+	q := &model.QueryCondition{
+		OrderNum:  req.OrderNum,
+		TransType: model.PayTrans, // 只是支付交易
+		MerId:     user.MerId,
+		Skip:      index,
+		Size:      size,
+		Page:      1,
+	}
+
+	// 初始化查询参数
+	findOrderParams(req, q)
+	trans, total, err := mongo.SpTransColl.Find(q)
+
+	if err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	var txns []*model.AppTxn
+	for i, t := range trans {
+		log.Debugf("%d: trans is %+v", i, t)
+		txns = append(txns, transToTxn(t))
+	}
+	log.Debugf("txns's length is %d", len(txns))
+
+	if len(txns) == 0 {
+		txns = make([]*model.AppTxn, 0)
+	}
+	result = model.SUCCESS1
+	result.Txn = txns
+	result.TotalRecord = total
+	result.Size = len(txns)
+	return
 }
 
 // getDaySummary 获取单日汇总的处理
