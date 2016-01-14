@@ -24,9 +24,9 @@ gulp.task('deploy', ['build'], function() {
 });
 gulp.task('deploy:test', ['build'], function() {
   let username = 'webapp';
-	let hostname = 'dev.ipay.so';
+	let hostname = 'test.ipay.so';
 	let destination = '/opt/quickpay/admin';
-	return deployToServer(conf.paths.dist, server);
+	return deployToServer(conf.paths.dist, username, hostname, destination);
 });
 gulp.task('deploy:product', ['build'], function() {
   let username = 'webapp';
