@@ -40,6 +40,9 @@ public class DetailActivity extends BaseActivity {
     private SettingActionBarItem mActionBar;
     private TextView mPayResult;
     private ImageView mPayResultImage;
+    private ImageView mDoFold;
+
+    private View mPayInfo;
 
     private TextView mPayMoneyText;
     private TextView mPayMoney;
@@ -163,6 +166,22 @@ public class DetailActivity extends BaseActivity {
         mCouponName = (TextView) findViewById(R.id.tv_coupon_name);
         mPayResult = (TextView) findViewById(R.id.tv_pay_result);
         mPayResultImage = (ImageView) findViewById(R.id.iv_pay_result);
+        mDoFold = (ImageView) findViewById(R.id.iv_dofold);
+        mDoFold.setOnClickListener(new View.OnClickListener() {
+            private boolean isFold = false;
+
+            @Override
+            public void onClick(View v) {
+                if (isFold) {//如果是 折叠，这里让其显示
+                    mPayInfo.setVisibility(View.VISIBLE);
+                    mDoFold.setImageResource(R.drawable.bill_up);
+                } else {
+                    mPayInfo.setVisibility(View.GONE);
+                    mDoFold.setImageResource(R.drawable.bill_down);
+                }
+                isFold = !isFold;
+            }
+        });
 
         mPayMoneyText = (TextView) findViewById(R.id.pay_money_text);
         mPayMoney = (TextView) findViewById(R.id.pay_money);//到账金额
@@ -170,6 +189,8 @@ public class DetailActivity extends BaseActivity {
         mCardDiscount = (ResultInfoItem) findViewById(R.id.card_discount);//卡券折扣
         mRefdMoney = (ResultInfoItem) findViewById(R.id.refd_money);
         mArriavlMoney = (ResultInfoItem) findViewById(R.id.pay_arrival_money);
+
+        mPayInfo = findViewById(R.id.ll_pay_info);
 
         //核销订单号，这个只在卡券详情的时候显示
         mVeriOrder = (ResultInfoItem) findViewById(R.id.veri_order);
@@ -260,7 +281,12 @@ public class DetailActivity extends BaseActivity {
         //支付终端
         mPayTerminator.setRightText(mTradeBill.terminalid);
 
-        mPayCheckCode.setRightText(mTradeBill.checkCode);
+        if (TextUtils.isEmpty(mTradeBill.checkCode)) {
+            mPayCheckCode.setVisibility(View.GONE);
+        } else {
+            mPayCheckCode.setVisibility(View.VISIBLE);
+            mPayCheckCode.setRightText(mTradeBill.checkCode);
+        }
 
         //支付方式
         if (!TextUtils.isEmpty(mTradeBill.tradeFrom)) {
@@ -286,6 +312,7 @@ public class DetailActivity extends BaseActivity {
         if ("10".equals(mTradeBill.transStatus)) {
             //处理中
             mPayResult.setText(getString(R.string.detail_activity_trade_status_nopay));
+            mPayResultImage.setVisibility(View.VISIBLE);
             mPayResultImage.setImageResource(R.drawable.bill_fresh);
             mPayResultImage.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -300,6 +327,7 @@ public class DetailActivity extends BaseActivity {
                     //成功的
                     mPayResult.setTextColor(getResources().getColor(R.color.textview_textcolor_pay_success));
                     mPayResult.setText(getString(R.string.detail_activity_trade_status_success));
+                    mPayResultImage.setVisibility(View.GONE);
                     mPayResultImage.setImageResource(R.drawable.pay_result_succeed);
                 } else {
                     //部分退款的
@@ -320,6 +348,7 @@ public class DetailActivity extends BaseActivity {
             //失败的
             mPayResult.setText(getString(R.string.detail_activity_trade_status_fail));
             mPayResult.setTextColor(Color.RED);
+            mPayResultImage.setVisibility(View.GONE);
             mPayResultImage.setImageResource(R.drawable.pay_result_fail);
         }
 
@@ -360,14 +389,25 @@ public class DetailActivity extends BaseActivity {
             if (refdBD.compareTo(bg0) <= 0) {
                 mRefdMoney.setVisibility(View.GONE);
             }
+
+            //"当没有退款和折扣时，收款金额需要显示为原金额；当有退款或者折扣时，收款金额需要显示为金额"
+            if (discountBD.compareTo(bg0) <= 0 && refdBD.compareTo(bg0) <= 0) {
+                mPayMoneyText.setText(R.string.detail_activity_pay_money1);//原金额
+                mPayInfo.setVisibility(View.GONE);
+                mDoFold.setVisibility(View.GONE);
+            } else {
+                mPayMoneyText.setText(R.string.detail_activity_pay_money);//金额
+                mPayInfo.setVisibility(View.VISIBLE);
+                mDoFold.setVisibility(View.VISIBLE);
+            }
         } catch (Exception e) {
 
         }
 
         mPayMoney.setText(amount);//金额，最上面显示的那个数字
-        mRefdMoney.setRightText(refd);//退款金额
+        mRefdMoney.setRightText("-" + refd);//退款金额
         mArriavlMoney.setRightText(arriavl);//到款金额
-        mCardDiscount.setRightText(discount);//卡券金额
+        mCardDiscount.setRightText("-" + discount);//卡券金额
 
     }
 
