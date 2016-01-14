@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -57,8 +58,12 @@ public class MyWebActivity extends BaseActivity {
         try {
             String qrcode = SessonData.loginUser.getPayUrl();
             if (!TextUtils.isEmpty(qrcode)) {
-                Bitmap icon = BitmapFactory.decodeResource(getResources(), R.drawable.scan_wechat);
-                mQRBitmap = Utility.cretaeBitmap(qrcode, icon, QR_WIDTH, QR_HEIGHT);
+                WindowManager wm = this.getWindowManager();
+
+                int width = wm.getDefaultDisplay().getWidth();
+                int height = wm.getDefaultDisplay().getHeight();
+                width = (int) (0.7 * width);
+                mQRBitmap = Utility.cretaeBitmap(qrcode, width, width);
             }
         } catch (WriterException e) {
             e.printStackTrace();
