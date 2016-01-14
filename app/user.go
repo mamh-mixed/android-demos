@@ -67,8 +67,11 @@ func (u *user) register(req *reqParams) (result model.AppResult) {
 
 	// 邀请码是否合法
 	if req.InvitationCode != "" {
-		_, err = mongo.UserColl.FindOne(req.InvitationCode)
+		lu, err := mongo.UserColl.FindOne(req.InvitationCode)
 		if err != nil {
+			return model.COMPANY_LOGIN_NAME_ERROR
+		}
+		if lu.UserType != model.UserTypeCompany {
 			return model.COMPANY_LOGIN_NAME_ERROR
 		}
 	}
