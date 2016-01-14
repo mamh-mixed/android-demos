@@ -57,8 +57,9 @@ func billV3Handle(w http.ResponseWriter, r *http.Request) {
 func qiniuTokenHandler(w http.ResponseWriter, r *http.Request) {
 	log.Debugf("username is %s; password is %s", r.FormValue("username"), r.FormValue("password"))
 	result := User.getQiniuToken(&reqParams{
-		UserName: r.FormValue("username"),
-		Password: r.FormValue("password"),
+		UserName:  r.FormValue("username"),
+		Password:  r.FormValue("password"),
+		Transtime: r.FormValue("transtime"),
 	})
 
 	if result.State == "success" {
@@ -169,6 +170,7 @@ func certificateAccountHandler(w http.ResponseWriter, r *http.Request) {
 	result := User.improveCertInfo(&reqParams{
 		UserName:         r.FormValue("username"),
 		Password:         r.FormValue("password"),
+		Transtime:        r.FormValue("transtime"),
 		CertName:         r.FormValue("certName"),
 		CertAddr:         r.FormValue("certAddr"),
 		LegalCertPos:     r.FormValue("legalCertPos"),
@@ -233,7 +235,6 @@ func couponsHandler(w http.ResponseWriter, r *http.Request) {
 		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
-		ClientId:  r.FormValue("clientId"),
 		Month:     r.FormValue("month"),
 		Index:     r.FormValue("index"),
 		Size:      r.FormValue("size"),
