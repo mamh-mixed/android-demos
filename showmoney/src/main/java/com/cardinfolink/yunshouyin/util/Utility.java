@@ -20,7 +20,7 @@ import java.util.Random;
  * 工具类 方法，这里面存放一些通用的工具类方法
  */
 public class Utility {
-    private static final int IMAGE_HALFWIDTH = 40;
+    private static final int IMAGE_HALFWIDTH = 30;
     private static final int FOREGROUND_COLOR = 0xff000000;
     private static final int BACKGROUND_COLOR = 0xffffffff;
 
@@ -51,6 +51,10 @@ public class Utility {
         return mOrderNum;
     }
 
+    public static Bitmap cretaeBitmap(String str, int widthx, int heighty) throws WriterException {
+        return cretaeBitmap(str, null, widthx, heighty);
+    }
+
     /**
      * //生成bitmap 二维码图片,生成一个固定长宽都是width和height的二维码图片
      *
@@ -62,7 +66,10 @@ public class Utility {
      * @throws WriterException
      */
     public static Bitmap cretaeBitmap(String str, Bitmap icon, int widthx, int heighty) throws WriterException {
-        icon = zoomBitmap(icon, IMAGE_HALFWIDTH);
+        if (icon != null) {
+            icon = zoomBitmap(icon, IMAGE_HALFWIDTH);
+        }
+
         Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
@@ -78,7 +85,7 @@ public class Utility {
         int[] pixels = new int[width * height];
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (x > halfW - IMAGE_HALFWIDTH && x < halfW + IMAGE_HALFWIDTH
+                if (icon != null && x > halfW - IMAGE_HALFWIDTH && x < halfW + IMAGE_HALFWIDTH
                         && y > halfH - IMAGE_HALFWIDTH
                         && y < halfH + IMAGE_HALFWIDTH) {
                     pixels[y * width + x] = icon.getPixel(x - halfW + IMAGE_HALFWIDTH, y - halfH + IMAGE_HALFWIDTH);
