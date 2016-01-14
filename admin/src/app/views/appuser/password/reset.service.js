@@ -1,5 +1,3 @@
-// var SHA256 = require("crypto-js/sha256");
-// import { SHA256 } from 'crypto-js';
 export class PasswordResetService {
 	constructor($http, toastr, $log, $state) {
 		'ngInject';
