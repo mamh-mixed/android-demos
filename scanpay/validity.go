@@ -16,21 +16,22 @@ const (
 
 // fieldName
 const (
-	txamt      = "txamt"
-	orderNum   = "orderNum 或 origOrderNum"
-	agentCode  = "inscd"
-	mchntid    = "mchntid"
-	scanCodeId = "scanCodeId"
-	chcd       = "chcd"
-	goodsInfo  = "goodsInfo"
-	buiscd     = "busicd"
-	terminalid = "terminalid"
-	openId     = "openid"
-	checkName  = "checkName"
-	desc       = "desc"
-	userName   = "userName"
-	txndir     = "txndir"
-	sign       = "sign"
+	txamt       = "txamt"
+	orderNum    = "orderNum 或 origOrderNum"
+	agentCode   = "inscd"
+	mchntid     = "mchntid"
+	scanCodeId  = "scanCodeId"
+	chcd        = "chcd"
+	goodsInfo   = "goodsInfo"
+	buiscd      = "busicd"
+	terminalid  = "terminalid"
+	openId      = "openid"
+	checkName   = "checkName"
+	desc        = "desc"
+	userName    = "userName"
+	txndir      = "txndir"
+	sign        = "sign"
+	discountAmt = "discountAmt"
 )
 
 var (
@@ -72,6 +73,12 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	}
 	if matched, err := validateOrderNum(req.OrderNum); !matched {
 		return err
+	}
+
+	if req.DiscountAmt != "" {
+		if matched, err := validateDiscountAmt(req); !matched {
+			return err
+		}
 	}
 
 	return
@@ -448,4 +455,20 @@ func fieldFormatError(f string) *model.ScanPayResponse {
 		ErrorDetail: errMsg,
 		ErrorCode:   formatError.ErrorCode,
 	}
+}
+
+// validateDiscountAmt 验证优惠金额
+func validateDiscountAmt(req *model.ScanPayRequest) (bool, *model.ScanPayResponse) {
+
+	if matched, _ := regexp.MatchString(`^\d{12}$`, req.DiscountAmt); !matched {
+		return false, fieldFormatError(discountAmt)
+	}
+
+	// 转换金额
+	toInt, err := strconv.ParseInt(req.DiscountAmt, 10, 64)
+	if err != nil {
+		return false, fieldFormatError(discountAmt)
+	}
+	req.IntDiscountAmt = toInt
+	return true, nil
 }

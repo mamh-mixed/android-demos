@@ -1,13 +1,13 @@
 package domestic
 
 import (
+	"bufio"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
-	// "github.com/omigo/mahonia"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -46,7 +46,7 @@ func (a *alp) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespon
 		OutTradeNo:     req.OrderNum,                      // 送的是原订单号，不转换
 		PassbackParams: req.SysOrderNum + "," + req.ReqId, // 格式：系统订单号,日志Id
 		Subject:        req.Subject,
-		GoodsDetail:    req.AlpMarshalGoods(),
+		GoodsDetail:    parseGoods(req),
 		ProductCode:    "BARCODE_PAY_OFFLINE",
 		TotalFee:       req.ActTxamt,
 		ExtendParams:   req.ExtendParams, //...
@@ -75,7 +75,7 @@ func (a *alp) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPay
 		NotifyUrl:      alipayNotifyUrl,
 		OutTradeNo:     req.OrderNum, // 送的是原订单号，不转换,
 		Subject:        req.Subject,
-		GoodsDetail:    req.AlpMarshalGoods(),
+		GoodsDetail:    parseGoods(req),
 		PassbackParams: req.SysOrderNum + "," + req.ReqId, // 格式：系统订单号,日志Id
 		ProductCode:    "QR_CODE_OFFLINE",
 		TotalFee:       req.ActTxamt,
@@ -274,45 +274,25 @@ func (a *alp) ProcessSettleEnquiry(req *model.ScanPayRequest, cbd model.ChanBlen
 func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlendMap) {
 
 	csv := csvData.CsvStr
-	count, err := strconv.Atoi(csvData.Count)
-	if err != nil {
-		log.Errorf("change data count errDetail:%s", err)
-		return
-	}
 	// 截取内容
 	if strings.Contains(csv, "<![CDATA[") {
 		csv = csv[9 : len(csv)-3]
-		log.Debugf("csv content: %s", csv)
+		// log.Debugf("csv content: %s", csv)
 	}
-
-	element := strings.Split(csv, ",")
 
 	// 检查要取关键位置是否变化 如：
 	// 外部订单号,账户余额（元）,时间,流水号,支付宝交易号,交易对方Email,交易对方,用户编号,收入（元）,支出（元）,交易场所,商品名称,类型,说明,
-	if len(element) > 13 {
-		if element[0] != "外部订单号" {
-			log.Errorf("the first position is different")
-			return
-		}
-		if element[2] != "时间" {
-			log.Errorf("the third position is different")
-			return
-		}
-		if element[4] != "支付宝交易号" {
-			log.Errorf("the fifth position is different")
-			return
-		}
-		if element[8] != "收入（元）" {
-			log.Errorf("the eighth position is different")
-			return
-		}
-		if element[9] != "支出（元）" {
-			log.Errorf("the ninth position is different")
-			return
-		}
-		if element[12] != "类型" {
-			log.Errorf("the twelve position is different")
-			return
+	s := bufio.NewScanner(strings.NewReader(csv))
+	// skip 1
+	var data [][]string
+	for i := 0; s.Scan(); i++ {
+		if i > 0 {
+			ts := strings.Split(s.Text(), ",")
+			if len(ts) != 15 {
+				log.Errorf("length invalid , skip, data=%s", ts)
+				continue
+			}
+			data = append(data, ts)
 		}
 	}
 
@@ -321,29 +301,61 @@ func analysisSettleData(csvData csvDetail, chanMerId string, cbd model.ChanBlend
 		recsMap = make(map[string][]model.BlendElement)
 	}
 
-	for i := 0; i < count; i++ {
+	for _, d := range data {
 		var elementModel model.BlendElement
-		elementModel.LocalID = element[14*(i+1)]
 		elementModel.Chcd = "ALP"
 		elementModel.ChcdName = "支付宝"
-		elementModel.ChanMerID = chanMerId
-		elementModel.OrderTime = element[14*(i+1)+2] //时间
-		elementModel.OrderID = element[14*(i+1)+4]   //支付宝交易号
-		elementModel.IsBlend = false
-		elementModel.OrderType = element[14*(i+1)+12]
-		if elementModel.OrderType == "在线支付" {
-			elementModel.OrderAct = element[14*(i+1)+8] //收入
-		} else if elementModel.OrderType == "交易退款" {
-			elementModel.OrderAct = element[14*(i+1)+9] //支出
+		elementModel.LocalID = d[0]
+		elementModel.OrderTime = d[2] // 时间
+		elementModel.OrderID = d[4]   // 支付宝交易号
+		elementModel.Account = d[5]
+		elementModel.OrderAct = d[8] // 收入
+		if elementModel.OrderAct == "" {
+			elementModel.OrderAct = d[9] // 支出
+		}
+		elementModel.OrderType = d[12]
+
+		if strings.Contains(elementModel.LocalID, "-r-") {
+			elementModel.LocalID = strings.Split(elementModel.LocalID, "-r-")[0]
+			// log.Debugf("退费交易: %+v", elementModel)
 		}
 
-		// 归类
-		if elementArray, ok := recsMap[elementModel.OrderID]; ok {
-			elementArray = append(elementArray, elementModel)
-			recsMap[elementModel.OrderID] = elementArray
-		} else {
-			recsMap[elementModel.OrderID] = []model.BlendElement{elementModel}
+		var key string
+		switch elementModel.OrderType {
+		case "收费", "退费":
+			// 取的是外部订单号
+			key = elementModel.LocalID
+		default:
+			key = elementModel.OrderID
 		}
+
+		if elementArray, ok := recsMap[key]; ok {
+			elementArray = append(elementArray, elementModel)
+			recsMap[key] = elementArray
+		} else {
+			recsMap[key] = []model.BlendElement{elementModel}
+		}
+
 	}
+	log.Debugf("debug data: %+v", recsMap["2015122221001004770044413116"])
 	cbd[chanMerId] = recsMap
+}
+
+// parseGoods 按照dmf1.0格式输出商品详情
+func parseGoods(req *model.ScanPayRequest) string {
+	goods, err := req.MarshalGoods()
+	if err != nil {
+		return ""
+	}
+
+	if len(goods) > 0 {
+		gbs, err := json.Marshal(goods)
+		if err != nil {
+			log.Errorf("goodsInfo marshal error:%s", err)
+			return ""
+		}
+		return string(gbs)
+	}
+
+	return ""
 }

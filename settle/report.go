@@ -14,8 +14,8 @@ const (
 	ReconciliationReport = 2 // 对账报表
 	InsFlowReport        = 3 // 机构流水报表
 	ChanMerReport        = 4 // 渠道商户报表
-	ChanLessReport       = 5 // 对账不平报表-渠道少的
-	ChanMoreReport       = 6 // 对账不平报表-渠道多的
+	ChanLessReport       = 5 // 对账不平报表-渠道少清
+	ChanMoreReport       = 6 // 对账不平报表-渠道多清
 	// 分润报表
 )
 
@@ -186,6 +186,10 @@ func settDataHandle(sg model.SettRoleGroup) []reportData {
 
 	var rds []reportData
 	for _, mg := range sg.MerGroups {
+		// 交易金额为0的过滤掉
+		if mg.TransAmt == 0 {
+			continue
+		}
 		m, err := mongo.MerchantColl.Find(mg.MerId)
 		if err != nil {
 			// cmMap[mg.MerId] = 0 // 标识不成功

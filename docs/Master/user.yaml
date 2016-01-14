@@ -1,0 +1,75 @@
+swagger: '2.0'
+info:
+  title: 管理平台 API
+  description: 云收银系统管理平台API
+  version: 3.0.0
+host: 'localhost:6800'
+schemes:
+  - http
+  - https
+basePath: /master/user/app
+produces:
+  - application/json
+  - application/x-www-form-urlencoded
+paths:
+  /password/reset:
+    post:
+      tags:
+        - App
+      summary: APP用户密码充值
+      description: |
+        APP用户忘记密码后，在客户端请求密码重置，会发送一封邮件到注册邮箱，然后点击邮箱进入密码重置页面
+      parameters:
+        - in: body
+          name: body
+          description: 密码重置请求对象体。请使用JSON字符串格式发送请求
+          required: true
+          schema:
+            $ref: '#/definitions/PasswordResetRequest'
+      responses:
+        '200':
+          description: 成功响应
+          schema:
+            $ref: '#/definitions/PasswordResetResponse'
+definitions:
+  PasswordResetRequest:
+    type: object
+    required:
+      - username
+      - password
+      - checkCode
+    properties:
+      username:
+        type: string
+        example: wonsikin
+        description: 用户名
+      password:
+        type: string
+        example: '120943629'
+        description: 密码
+      checkCode:
+        type: string
+        example: a5ffe79d15b5a05738f35ee6c061a10c7c4ec136e1bd2b6cf5e096f24cce1fce
+        description: 校验码
+  PasswordResetResponse:
+    type: object
+    required:
+      - status
+      - message
+    properties:
+      status:
+        type: integer
+        description: 状态码， 0 表示成功；非0表示失败。
+      message:
+        type: string
+        description: '状态码对应的描述:
+        0:SUCCESS;
+        1:MISS_REQUIRED_PARAMETER;
+        2:SYSTEM_ERROR;
+        3:USERNAME_NOT_MATCH;
+        4:INVALID_CHECK_CODE;
+        5:OPERATION_OUT_OF_DATE.
+        6:ALREADY_OPERATED(已经变更过密码了)' 
+      data:
+        type: string
+        description: 如果返回状态码为1，请在此字段返回缺失的必填项

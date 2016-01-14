@@ -13,6 +13,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/CardInfoLink/quickpay/core"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
@@ -389,6 +390,50 @@ func TestGetDownloadUrl(t *testing.T) {
 	t.Logf("%s", string(bs))
 }
 
+func TestFindOrderHandle(t *testing.T) {
+	values := url.Values{}
+	values.Add("username", "842712881@Qq.com")
+	values.Add("password", "e10adc3949ba59abbe56e057f20f883e")
+	// values.Add("orderNum", "15101918251020326")
+	values.Add("payType", "3")
+	values.Add("recType", "1")
+	values.Add("txnStatus", "5")
+	values.Add("index", "0")
+	values.Add("size", "50")
+
+	// OrderNum: r.FormValue("ordernum"),
+	// 	PayType:  r.FormValue("payType"),
+	// 	RecType:  r.FormValue("recType"),
+	// 	Status:   r.FormValue("txnStatus"),
+	// 	Index:    r.FormValue("index"),
+	// 	Size:     r.FormValue("size"),
+	result, err := post(values, findOrderHandle)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	bs, _ := json.Marshal(result)
+	t.Logf("%s", string(bs))
+}
+
+func TestUpdatePushMsg(t *testing.T) {
+	values := url.Values{}
+	values.Add("username", "453481716@qq.com")
+	values.Add("password", "e10adc3949ba59abbe56e057f20f883e")
+	values.Add("message", `[{"msgId":"56793eb1dc1ee7f0a906e140","status":0},{"msgId":"5678a194dc1ee7f0a9069b53","status":0}]`)
+
+	result, err := post(values, updateMessageHandle)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	bs, _ := json.Marshal(result)
+	t.Logf("%s", string(bs))
+
+}
+
 func TestDownload(t *testing.T) {
 
 	dlUrl := qiniu.MakePrivateUrl(fmt.Sprintf(qrImage, "199005050000019", "pay"))
@@ -433,4 +478,12 @@ func TestTickHandle(t *testing.T) {
 
 	bs, _ := json.Marshal(result)
 	t.Logf("%s", string(bs))
+}
+
+func TestPush(t *testing.T) {
+	StartPush()
+	tran, _ := mongo.SpTransColl.FindOne("999118880000017", "15122219215453089")
+	core.MsgQueue <- tran
+
+	time.Sleep(10 * time.Second)
 }

@@ -404,8 +404,9 @@ func updateCouponTrans(t *model.Trans, ret *model.ScanPayResponse) error {
 	//更新核销状态
 	if ret.Respcd == "00" {
 		t.WriteoffStatus = model.COUPON_WO_SUCCESS
-	} else if ret.Respcd == "09" {
-		t.WriteoffStatus = model.COUPON_WO_PROCESS
+		t.TransStatus = model.TransSuccess
+		// } else if ret.Respcd == "09" {
+		// 	t.WriteoffStatus = model.COUPON_WO_PROCESS
 	} else {
 		t.WriteoffStatus = model.COUPON_WO_ERROR
 	}
@@ -446,4 +447,190 @@ func processCouponChcd(req *model.ScanPayRequest) {
 	if req.Chcd == "" {
 		req.Chcd = "ULIVE"
 	}
+}
+
+// PurchaseCouponsSingle 卡券核销
+func PurchaseCouponsSingle(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	// 判断订单是否存在
+	if err, exist := isCouponOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+		return err
+	}
+	// 核销次数不填默认为1
+	processVeriTime(req)
+
+	// 如果渠道号为空，默认设置为ULIVE
+	processCouponChcd(req)
+
+	// 记录该笔交易
+	t := &model.Trans{
+		MerId:       req.Mchntid,
+		SysOrderNum: util.SerialNumber(),
+		OrderNum:    req.OrderNum,
+		TransType:   model.PurchaseCoupons,
+		Busicd:      req.Busicd,
+		AgentCode:   req.AgentCode,
+		ChanCode:    req.Chcd,
+		Terminalid:  req.Terminalid,
+		TradeFrom:   req.TradeFrom,
+		CouponsNo:   req.ScanCodeId,
+		VeriTime:    req.VeriTime,
+		Cardbin:     req.Cardbin,
+		TransAmt:    req.IntTxamt,
+		PayType:     req.PayType,
+	}
+
+	// 补充关联字段
+	addRelatedProperties(t, req.M)
+
+	// 通过路由策略找到渠道和渠道商户
+	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
+	if rp == nil {
+		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+	}
+	t.ChanMerId = rp.ChanMerId
+
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+	}
+
+	// 记录交易
+	err = mongo.CouTransColl.Add(t)
+	if err != nil {
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+	submitTime, err := time.ParseInLocation("2006-01-02 15:04:05", t.CreateTime, time.Local)
+	if err != nil {
+		log.Errorf("format submitTime err,%s", err)
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+	req.CreateTime = submitTime.Format("20060102150405")
+	req.SysOrderNum = t.SysOrderNum
+	req.ChanMerId = c.ChanMerId
+	req.Terminalsn = req.Terminalid
+	req.Terminalid = c.TerminalId
+
+	// 获得渠道实例，请求
+	client := unionlive.DefaultClient
+	ret, err = client.ProcessPurchaseCouponsSingle(req)
+	if err != nil {
+		log.Errorf("process PurchaseCouponsSingle error:%s", err)
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	// 更新交易信息
+	updateCouponTrans(t, ret)
+
+	return ret
+}
+
+// RecoverCoupons 电子券验证冲正
+func RecoverCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
+
+	// 判断订单是否存在
+	if err, exist := isCouponOrderDuplicate(req.Mchntid, req.OrderNum); exist {
+		return err
+	}
+	// 如果渠道号为空，默认设置为ULIVE
+	processCouponChcd(req)
+
+	// 记录该笔交易
+	t := &model.Trans{
+		MerId:        req.Mchntid,
+		SysOrderNum:  util.SerialNumber(),
+		OrderNum:     req.OrderNum,
+		Busicd:       req.Busicd,
+		AgentCode:    req.AgentCode,
+		ChanCode:     req.Chcd,
+		Terminalid:   req.Terminalid,
+		OrigOrderNum: req.OrigOrderNum,
+		TradeFrom:    req.TradeFrom,
+	}
+	// 补充关联字段
+	addRelatedProperties(t, req.M)
+
+	// 判断是否存在该订单
+	orig, err := mongo.CouTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
+	if err != nil {
+		return adaptor.LogicErrorHandler(t, "TRADE_NOT_EXIST")
+	}
+
+	//从原始交易中获取订单号，赋值给该请求的原始订单号字段。
+	t.OrigOrderNum = orig.OrderNum
+	t.CouponsNo = orig.CouponsNo
+
+	// 通过路由策略找到渠道和渠道商户
+	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
+	if rp == nil {
+		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+	}
+	t.ChanMerId = rp.ChanMerId
+
+	// 获取渠道商户
+	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
+	if err != nil {
+		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+	}
+
+	// 记录交易
+	// t.TransStatus = model.TransNotPay
+	err = mongo.CouTransColl.Add(t)
+	if err != nil {
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+	submitTime, err := time.ParseInLocation("2006-01-02 15:04:05", t.CreateTime, time.Local)
+	if err != nil {
+		log.Errorf("format submitTime err,%s", err)
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+	origSubmitTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.CreateTime, time.Local)
+	if err != nil {
+		log.Errorf("format origSubmitTime err,%s", err)
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	origVeriTime, err := strconv.Atoi(orig.VeriTime)
+	if err != nil {
+		log.Errorf("format veriTime to int err,%s", err)
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+
+	req.CreateTime = submitTime.Format("20060102150405")
+	req.SysOrderNum = t.SysOrderNum
+	req.ChanMerId = c.ChanMerId
+	req.Terminalsn = orig.Terminalid
+	req.Terminalid = c.TerminalId
+	req.OrigSubmitTime = origSubmitTime.Format("20060102150405")
+	req.OrigVeriTime = origVeriTime
+	req.OrigScanCodeId = orig.CouponsNo
+	req.OrigCardbin = orig.Cardbin
+	req.IntTxamt = orig.TransAmt
+	intPayType := 0
+	if orig.PayType != "" {
+		intPayType, err = strconv.Atoi(orig.PayType)
+		if err != nil {
+			log.Errorf("format payType to int err,%s", err)
+			return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+		}
+	}
+	req.IntPayType = intPayType
+
+	// 获得渠道实例，请求
+	client := unionlive.DefaultClient
+	ret, err = client.ProcessRecoverCoupons(req)
+	if err != nil {
+		log.Errorf("process RecoverCoupons error:%s", err)
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+	}
+	// 更新原交易信息，如果撤销成功，则将原订单关闭掉
+	if ret.Respcd == "00" {
+		orig.TransStatus = model.TransClosed
+		mongo.CouTransColl.UpdateAndUnlock(orig)
+	}
+	// 更新交易信息
+	updateCouponTrans(t, ret)
+
+	return ret
 }

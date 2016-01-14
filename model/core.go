@@ -9,6 +9,7 @@ import (
 // status
 const (
 	// refundStatus
+	TransNoRefunded     = 0 // 正常
 	TransRefunded       = 1 // 已退款
 	TransPartRefunded   = 2 // 部分退款
 	TransMerClosed      = 3 // 商户发起关闭
@@ -58,6 +59,11 @@ const (
 	SR_COMPANY = "COMPANY"
 	SR_AGENT   = "AGENT"
 	SR_GROUP   = "GROUP"
+
+	// EnhanceType 额度提升
+	Enhanced  = 0 //提升
+	NoEnhance = 1 //没提升
+	Checking  = 2 //审核中
 )
 
 // cache name
@@ -90,6 +96,7 @@ type RouterPolicy struct {
 	AcqFee     float64 `json:"acqFee" bson:"acqFee,omitempty"`
 	CreateTime string  `bson:"createTime,omitempty" json:"createTime,omitempty"` // 创建时间
 	UpdateTime string  `bson:"updateTime,omitempty" json:"updateTime,omitempty"` // 更新时间
+	Priority   int     `bson:"priority" json:"priority"`                         // 路由优先级
 }
 
 // BindingInfo 商家绑定信息
@@ -153,6 +160,8 @@ type Merchant struct {
 	Detail       MerDetail       `bson:"merDetail,omitempty" json:"detail,omitempty"`          // 商户详细信息
 	CreateTime   string          `bson:"createTime,omitempty" json:"createTime,omitempty"`     // 创建时间
 	UpdateTime   string          `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 更新时间
+	EnhanceType  int             `bson:"enhanceType" json:"enhanceType"`                       // 提升额度标记 0-提升 1-没提升 2-审核中
+	LimitAmt     int             `bson:"limitAmt" json:"limitAmt"`                             // 限额
 	JsPayVersion string          `bson:"jsPayVersion,omitempty" json:"jsPayVersion,omitempty"`
 	Options      *OverseasParams `bson:"options,omitempty"`
 }
@@ -170,42 +179,49 @@ type OverseasParams struct {
 // MerDetail 商户详细信息
 type MerDetail struct {
 	// MerId         string `bson:"merId,omitempty"`         // 商户号
-	MerName       string   `bson:"merName,omitempty" json:"merName,omitempty"`             // 商户名称
-	GoodsTag      string   `bson:"goodsTag,omitempty" json:"goodsTag,omitempty"`           // 商品标识
-	CommodityName string   `bson:"commodityName,omitempty" json:"commodityName,omitempty"` // 商品名称
-	ShortName     string   `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
-	Area          string   `bson:"area,omitempty" json:"area,omitempty"`
-	TitleOne      string   `bson:"titleOne,omitempty" json:"titleOne,omitempty"`           // 微信扫固定码支付页面的标题1
-	TitleTwo      string   `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`           // 微信扫固定码支付页面的标题2
-	SuccBtnTxt    string   `bson:"succBtnTxt,omitempty" json:"succBtnTxt,omitempty"`       // 微信扫固定码支付成功后的按钮text
-	SuccBtnLink   string   `bson:"succBtnLink,omitempty" json:"succBtnLink,omitempty"`     // 微信扫固定码支付成功后的按钮连接
-	IsPostAmount  bool     `bson:"isPostAmount,omitempty" json:"isPostAmount,omitempty"`   // 微信扫固定码支付成功后的按钮连接是否传输金额
-	Province      string   `bson:"province,omitempty" json:"province,omitempty"`           // 商户省份
-	City          string   `bson:"city,omitempty" json:"city,omitempty"`                   // 商户城市
-	Nation        string   `bson:"nation,omitempty" json:"nation,omitempty"`               // 商户国家
-	MerType       string   `bson:"merType,omitempty" json:"merType,omitempty"`             // 商户类型
-	BillingScheme string   `bson:"billingScheme,omitempty" json:"billingScheme,omitempty"` // 商户计费方案代码
-	SettCurr      string   `bson:"SettCurr,omitempty" json:"SettCurr,omitempty"`           // 商户清算币种
-	AcctName      string   `bson:"acctName,omitempty" json:"acctName,omitempty"`           // 商户账户名称
-	AcctNum       string   `bson:"acctNum,omitempty" json:"acctNum,omitempty"`             // 商户账户
-	Corp          string   `bson:"corp,omitempty" json:"corp,omitempty"`                   // 法人代表
-	Master        string   `bson:"master,omitempty" json:"master,omitempty"`               // 商户负责人
-	Contact       string   `bson:"contact,omitempty" json:"contact,omitempty"`             // 商户联系人
-	ContactTel    string   `bson:"contactTel,omitempty" json:"contactTel,omitempty"`       // 商户联系电话
-	Fax           string   `bson:"fax,omitempty" json:"fax,omitempty"`                     // 商户传真
-	Email         string   `bson:"email,omitempty" json:"email,omitempty"`                 // 商户邮箱
-	Addr          string   `bson:"addr,omitempty" json:"addr,omitempty"`                   // 商户地址
-	Postcode      string   `bson:"postcode,omitempty" json:"postcode,omitempty"`           // 商户邮编
-	Password      string   `bson:"password,omitempty" json:"password,omitempty"`           // 商户密码
-	ShopID        string   `bson:"shopID,omitempty" json:"shopID,omitempty"`               // 门店id
-	ShopType      string   `bson:"shopType,omitempty" json:"shopType,omitempty"`           // 门店类型
-	BrandNum      string   `bson:"brandNum,omitempty" json:"brandNum,omitempty"`           // 品牌编号
-	BankId        string   `bson:"bankId,omitempty" json:"bankId,omitempty"`               // 行号
-	OpenBankName  string   `bson:"openBankName,omitempty" json:"openBankName,omitempty"`   // 开户银行名称
-	BankName      string   `bson:"bankName,omitempty" json:"bankName,omitempty"`           // 银行名称
-	BillUrl       string   `bson:"billUrl,omitempty" json:"billUrl,omitempty"`             // 扫固定码URL,获取账单
-	PayUrl        string   `bson:"payUrl,omitempty" json:"payUrl,omitempty"`               // 扫固定码URL,支付地址
-	Images        []string `bson:"images,omitempty" json:"images,omitempty"`               // 有关商户的一些图片路径
+	MerName          string   `bson:"merName,omitempty" json:"merName,omitempty"`             // 商户名称
+	GoodsTag         string   `bson:"goodsTag,omitempty" json:"goodsTag,omitempty"`           // 商品标识
+	CommodityName    string   `bson:"commodityName,omitempty" json:"commodityName,omitempty"` // 商品名称
+	ShortName        string   `bson:"shortName,omitempty" json:"shortName,omitempty"`         // 商户简称
+	Area             string   `bson:"area,omitempty" json:"area,omitempty"`
+	TitleOne         string   `bson:"titleOne,omitempty" json:"titleOne,omitempty"`                 // 微信扫固定码支付页面的标题1
+	TitleTwo         string   `bson:"titleTwo,omitempty" json:"titleTwo,omitempty"`                 // 微信扫固定码支付页面的标题2
+	SuccBtnTxt       string   `bson:"succBtnTxt,omitempty" json:"succBtnTxt,omitempty"`             // 微信扫固定码支付成功后的按钮text
+	SuccBtnLink      string   `bson:"succBtnLink,omitempty" json:"succBtnLink,omitempty"`           // 微信扫固定码支付成功后的按钮连接
+	IsPostAmount     bool     `bson:"isPostAmount,omitempty" json:"isPostAmount,omitempty"`         // 微信扫固定码支付成功后的按钮连接是否传输金额
+	Province         string   `bson:"province,omitempty" json:"province,omitempty"`                 // 商户省份
+	City             string   `bson:"city,omitempty" json:"city,omitempty"`                         // 商户城市
+	Nation           string   `bson:"nation,omitempty" json:"nation,omitempty"`                     // 商户国家
+	MerType          string   `bson:"merType,omitempty" json:"merType,omitempty"`                   // 商户类型
+	BillingScheme    string   `bson:"billingScheme,omitempty" json:"billingScheme,omitempty"`       // 商户计费方案代码
+	SettCurr         string   `bson:"SettCurr,omitempty" json:"SettCurr,omitempty"`                 // 商户清算币种
+	AcctName         string   `bson:"acctName,omitempty" json:"acctName,omitempty"`                 // 商户账户名称
+	AcctNum          string   `bson:"acctNum,omitempty" json:"acctNum,omitempty"`                   // 商户账户
+	Corp             string   `bson:"corp,omitempty" json:"corp,omitempty"`                         // 法人代表
+	Master           string   `bson:"master,omitempty" json:"master,omitempty"`                     // 商户负责人
+	Contact          string   `bson:"contact,omitempty" json:"contact,omitempty"`                   // 商户联系人
+	ContactTel       string   `bson:"contactTel,omitempty" json:"contactTel,omitempty"`             // 商户联系电话
+	Fax              string   `bson:"fax,omitempty" json:"fax,omitempty"`                           // 商户传真
+	Email            string   `bson:"email,omitempty" json:"email,omitempty"`                       // 商户邮箱
+	Addr             string   `bson:"addr,omitempty" json:"addr,omitempty"`                         // 商户地址
+	Postcode         string   `bson:"postcode,omitempty" json:"postcode,omitempty"`                 // 商户邮编
+	Password         string   `bson:"password,omitempty" json:"password,omitempty"`                 // 商户密码
+	ShopID           string   `bson:"shopID,omitempty" json:"shopID,omitempty"`                     // 门店id
+	ShopType         string   `bson:"shopType,omitempty" json:"shopType,omitempty"`                 // 门店类型
+	BrandNum         string   `bson:"brandNum,omitempty" json:"brandNum,omitempty"`                 // 品牌编号
+	BankId           string   `bson:"bankId,omitempty" json:"bankId,omitempty"`                     // 行号
+	OpenBankName     string   `bson:"openBankName,omitempty" json:"openBankName,omitempty"`         // 开户银行名称
+	BankName         string   `bson:"bankName,omitempty" json:"bankName,omitempty"`                 // 银行名称
+	BillUrl          string   `bson:"billUrl,omitempty" json:"billUrl,omitempty"`                   // 扫固定码URL,获取账单
+	PayUrl           string   `bson:"payUrl,omitempty" json:"payUrl,omitempty"`                     // 扫固定码URL,支付地址
+	Images           []string `bson:"images,omitempty" json:"images,omitempty"`                     // 有关商户的一些图片路径
+	CertName         string   `bson:"certName,omitempty" json:"certName,omitempty"`                 // 证书上的店铺名字
+	CertAddr         string   `bson:"certAddr,omitempty" json:"certAddr,omitempty"`                 // 证书上的店铺地址
+	LegalCertPos     string   `bson:"legalCertPos,omitempty" json:"legalCertPos,omitempty"`         // 法人证书正面
+	LegalCertOpp     string   `bson:"legalCertOpp,omitempty" json:"legalCertOpp,omitempty"`         // 法人证书反面
+	BusinessLicense  string   `bson:"businessLicense,omitempty" json:"businessLicense,omitempty"`   // 营业执照
+	TaxRegistCert    string   `bson:"taxRegistCert,omitempty" json:"taxRegistCert,omitempty"`       // 税务登记证
+	OrganizeCodeCert string   `bson:"organizeCodeCert,omitempty" json:"organizeCodeCert,omitempty"` // 组织机构代码证书
 }
 
 // ChanMer 渠道商户
@@ -218,7 +234,7 @@ type ChanMer struct {
 	SignKey     string   `bson:"signCert,omitempty" json:"signCert,omitempty"`       // 签名密钥 !!!!数据库存的是signCert
 	PrivateKey  string   `bson:"privateKey,omitempty" json:"privateKey,omitempty"`   // 渠道商户私钥
 	PublicKey   string   `bson:"publicKey,omitempty" json:"publicKey,omitempty"`     // 渠道商户公钥
-	WxpAppId    string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`       // 微信支付App Id
+	WxpAppId    string   `bson:"wxpAppId,omitempty" json:"wxpAppId,omitempty"`       // 微信、支付宝appId 备注：名字之前起的不好，该字段适合与支付宝、微信
 	InsCode     string   `bson:"insCode,omitempty" json:"insCode,omitempty"`         // 机构号，Apple Pay支付需要把该字段对应到线下网关的chcd域
 	TerminalId  string   `bson:"terminalId,omitempty" json:"terminalId,omitempty"`   // 终端号，Apple Pay支付需要把该字段对应到线下网关的terminalid域
 	AcqFee      float64  `bson:"acqFee,omitempty" json:"acqFee,omitempty"`           // 讯联跟渠道费率
@@ -227,10 +243,11 @@ type ChanMer struct {
 	AgentCode   string   `bson:"agentCode,omitempty" json:"agentCode,omitempty"`     // 支付宝代理代码
 	IsAgentMode bool     `bson:"isAgentMode" json:"isAgentMode"`                     // 是否受理商模式
 	AgentMer    *ChanMer `bson:"agentMer,omitempty" json:"agentMer,omitempty"`       // 受理商商户
-	TransMode   int      `bson:"transMode,omitempty" json:"transMode,omitempty"`     // 交易模式 1-商户模式 2-市场模式
+	TransMode   int      `bson:"transMode,omitempty" json:"transMode,omitempty"`     // 绑定支付交易模式 1-商户模式 2-市场模式
 	AreaType    int      `bson:"areaType,omitempty" json:"areaType,omitempty"`       // 境内外区分字段0-境内 1-境外
 	CreateTime  string   `bson:"createTime,omitempty" json:"createTime,omitempty"`   // 创建时间
 	UpdateTime  string   `bson:"updateTime,omitempty" json:"updateTime,omitempty"`   // 更新时间
+	Version     string   `bson:"version,omitempty" json:"version,omitempty"`         // 版本号 如ALP1_0,ALP2_0，默认为空
 
 	// 0. 渠道退手续费，手续费原路返还，支付宝→机构→商户，统计报表及清算报表中的交易金额 =  负的原交易金额；
 	// 1. 渠道不退手续费，机构承担手续费，统计报表及清算报表中的交易金额 =  负的原交易金额；
@@ -303,11 +320,12 @@ type Trans struct {
 	TransStatus  string        `bson:"transStatus,omitempty" json:"transStatus"`             // 交易状态 10-处理中 20-失败 30-成功 40-已关闭
 	TransType    int8          `bson:"transType,omitempty" json:"transType"`                 // 交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
 	ChanMerId    string        `bson:"chanMerId,omitempty" json:"chanMerId,omitempty"`       // 渠道商户号
+	AppID        string        `bson:"appID,omitempty" json:"appID,omitempty"`               // 渠道商户对应的AppID
 	ChanCode     string        `bson:"chanCode,omitempty" json:"chanCode"`                   // 渠道代码
 	ChanRespCode string        `bson:"chanRespCode,omitempty" json:"-"`                      // 渠道应答码
 	CreateTime   string        `bson:"createTime,omitempty" json:"transTime,omitempty"`      // 交易创建时间 yyyy-mm-dd hh:mm:ss
 	UpdateTime   string        `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 交易更新时间 yyyy-mm-dd hh:mm:ss
-	RefundStatus int8          `bson:"refundStatus,omitempty" json:"refundStatus"`           // 退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
+	RefundStatus int8          `bson:"refundStatus" json:"refundStatus"`                     // 退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
 	RefundAmt    int64         `bson:"refundAmt,omitempty" json:"-"`                         // 已退款金额
 	Remark       string        `bson:"remark,omitempty" json:"-"`                            // 备注
 	Fee          int64         `bson:"fee" json:"-"`                                         // 手续费
@@ -352,6 +370,7 @@ type Trans struct {
 	NickName        string `bson:"nickName,omitempty" json:"-"`
 	HeadImgUrl      string `bson:"headImgUrl,omitempty" json:"-"`
 	Attach          string `bson:"attach,omitempty" json:"-"`
+	DiscountAmt     int64  `bson:"discountAmt" json:"discountAmt"` // 卡券优惠金额，显示在扫码交易账单中
 
 	// APP
 	TicketNum string `bson:"ticketNum,omitempty" json:"ticketNum,omitempty"` // 关联的小票号
@@ -369,25 +388,26 @@ type Trans struct {
 	MerFee float64 `bson:"-" json:"-"` // 商户费率，方便计算
 
 	//卡券字段
-	CouponsNo       string `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`              // 卡券号
-	Prodname        string `bson:"prodname,omitempty" json:"prodname,omitempty"`                // 卡券名称
-	WriteoffStatus  string `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"`    // 核销状态
-	VeriTime        string `json:"veriTime,omitempty" bson:"veriTime,omitempty"`                // 核销次数
-	CardInfo        string `json:"cardInfo,omitempty"  bson:"cardInfo,omitempty"`               // 卡券详情
-	AvailCount      string `json:"availCount,omitempty"  bson:"availCount,omitempty"`           // 卡券剩余可用次数
-	ExpDate         string `json:"expDate,omitempty"  bson:"expDate,omitempty"`                 // 卡券有效期
-	Authcode        int    `json:"authcode,omitempty"  bson:"authcode,omitempty"`               // 卡券有效期
-	VoucherType     string `json:"voucherType,omitempty"  bson:"voucherType,omitempty"`         // 券类型
-	SaleMinAmount   string `json:"saleMinAmount,omitempty" bson:"saleMinAmount,omitempty"`      // 满足优惠条件的最小金额
-	SaleDiscount    string `json:"saleDiscount,omitempty"  bson:"saleDiscount,omitempty"`       // 抵扣值
-	Cardbin         string `json:"cardbin,omitempty" bson:"cardbin,omitempty"`                  // 银行卡cardbin或者用户标识等
-	TransAmount     string `json:"transAmount,omitempty"  bson:"transAmount,omitempty"`         // 交易原始金额
-	PayType         string `json:"payType,omitempty"  bson:"payType,omitempty"`                 // 支付方式
-	ActualPayAmount string `json:"actualPayAmount,omitempty" bson:"actualPayAmount,omitempty"`  // 实际支付金额
-	ChannelTime     string `json:"channelTime,omitempty"  bson:"channelTime,omitempty"`         // 渠道处理时间
-	OrigRespCode    string `bson:"origRespCode,omitempty" json:"origRespcd,omitempty"`          // 网关应答码
-	OrigErrorDetail string `json:"origErrorDetail,omitempty"  bson:"origErrorDetail,omitempty"` // 原错误信息   C
-
+	CouponsNo       string         `bson:"couponsNo,omitempty" json:"couponsNo,omitempty"`              // 卡券号
+	CouponOrderNum  string         `json:"couponOrderNum,omitempty" bson:"couponOrderNum,omitempty"`    // 卡券的系统订单号，使用优惠券支付的时候需要存储该字段
+	Prodname        string         `bson:"prodname,omitempty" json:"prodname,omitempty"`                // 卡券名称
+	WriteoffStatus  string         `bson:"writeoffStatus,omitempty" json:"writeoffStatus,omitempty"`    // 核销状态
+	VeriTime        string         `json:"veriTime,omitempty" bson:"veriTime,omitempty"`                // 核销次数
+	CardInfo        string         `json:"cardInfo,omitempty"  bson:"cardInfo,omitempty"`               // 卡券详情
+	AvailCount      string         `json:"availCount,omitempty"  bson:"availCount,omitempty"`           // 卡券剩余可用次数
+	ExpDate         string         `json:"expDate,omitempty"  bson:"expDate,omitempty"`                 // 卡券有效期
+	Authcode        int            `json:"authcode,omitempty"  bson:"authcode,omitempty"`               // 卡券有效期
+	VoucherType     string         `json:"voucherType,omitempty"  bson:"voucherType,omitempty"`         // 券类型
+	SaleMinAmount   string         `json:"saleMinAmount,omitempty" bson:"saleMinAmount,omitempty"`      // 满足优惠条件的最小金额
+	SaleDiscount    string         `json:"saleDiscount,omitempty"  bson:"saleDiscount,omitempty"`       // 抵扣值
+	Cardbin         string         `json:"cardbin,omitempty" bson:"cardbin,omitempty"`                  // 银行卡cardbin或者用户标识等
+	TransAmount     string         `json:"transAmount,omitempty"  bson:"transAmount,omitempty"`         // 交易原始金额
+	PayType         string         `json:"payType,omitempty"  bson:"payType,omitempty"`                 // 支付方式
+	ActualPayAmount string         `json:"actualPayAmount,omitempty" bson:"actualPayAmount,omitempty"`  // 实际支付金额
+	ChannelTime     string         `json:"channelTime,omitempty"  bson:"channelTime,omitempty"`         // 渠道处理时间
+	OrigRespCode    string         `bson:"origRespCode,omitempty" json:"origRespcd,omitempty"`          // 网关应答码
+	OrigErrorDetail string         `json:"origErrorDetail,omitempty"  bson:"origErrorDetail,omitempty"` // 原错误信息   C
+	ScanPayCoupon   *ScanPayCoupon `json:"scanPayCoupon,omitempty"  bson:"scanPayCoupon,omitempty"`     //支付信息
 }
 
 // SummarySettData 交易汇总
@@ -534,4 +554,26 @@ type Task struct {
 	F          func()        `bson:"-"`
 	CreateTime string        `bson:"createTime"`
 	UpdateTime string        `bson:"updateTime"`
+}
+
+//ScanPayCoupon 保存在卡券交易表中和支付做关联
+type ScanPayCoupon struct {
+	OrderNum     string `bson:"orderNum,omitempty" json:"orderNum"`               // 商户订单流水号、退款流水号
+	RespCode     string `bson:"respCode,omitempty" json:"respcd,omitempty"`       // 网关应答码
+	TransAmt     int64  `bson:"transAmt" json:"transAmt"`                         // 交易金额 没有即为0
+	TransStatus  string `bson:"transStatus,omitempty" json:"transStatus"`         // 交易状态 10-处理中 20-失败 30-成功 40-已关闭
+	TransType    int8   `bson:"transType,omitempty" json:"transType"`             // 交易类型 1-支付 2-退款 3-预授权 4-撤销 5-关单
+	ChanCode     string `bson:"chanCode,omitempty" json:"chanCode"`               // 渠道代码
+	CreateTime   string `bson:"createTime,omitempty" json:"transTime,omitempty"`  // 交易创建时间 yyyy-mm-dd hh:mm:ss
+	UpdateTime   string `bson:"updateTime,omitempty" json:"updateTime,omitempty"` // 交易更新时间 yyyy-mm-dd hh:mm:ss
+	TradeFrom    string `bson:"tradeFrom,omitempty" json:"-"`                     // 交易来源
+	PayTime      string `bson:"payTime,omitempty" json:"payTime,omitempty"`       // 支付时间
+	Currency     string `bson:"currency,omitempty" json:"currency"`
+	ExchangeRate string `bson:"exchangeRate,omitempty" json:"-"`
+	DiscountAmt  int64  `bson:"discountAmt" json:"discountAmt"`                   // 卡券优惠金额
+	PayType      string `json:"payType,omitempty"  bson:"payType,omitempty"`      // 支付方式
+	MerId        string `bson:"merId,omitempty" json:"merId"`                     // 商户号
+	Busicd       string `bson:"busicd,omitempty" json:"busicd"`                   // 业务id
+	AgentCode    string `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理/机构号
+	Terminalid   string `bson:"terminalid,omitempty" json:"terminalid,omitempty"` // 终端号
 }

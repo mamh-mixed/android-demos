@@ -92,10 +92,10 @@ func TestProcessSettleEnquiry(t *testing.T) {
 	spReq := &model.ScanPayRequest{}
 
 	spReq.AppID = "wx25ac886b6dac7dd2" // 公众账号ID
-	spReq.ChanMerId = "1236593202"     // 商户号
+	spReq.ChanMerId = "1276970101"     // 商户号
 	// SubMchId: "1247075201",        // 子商户号
-	spReq.SubMchId = "1244891002" // 子商户号
-	spReq.SignKey = "12sdffjjguddddd2widousldadi9o0i1"
+	spReq.SubMchId = "1295117001" // 子商户号
+	spReq.SignKey = "tgsdhaysysdglzjjhdgbyyyhdgsbxhsh"
 
 	// ClientCert: readPEMBlock(goconf.Config.WeixinScanPay.ClientCert),
 	// ClientKey:  readPEMBlock(goconf.Config.WeixinScanPay.ClientKey),
@@ -153,7 +153,7 @@ func TestProcessSettleEnquiry(t *testing.T) {
 			gkztyH0g0nY1tD7WPAwM/kNupd0SI9z9q5K36wGrNlETF7wdOHgWl3sQlTDepNzr
 			lCxbgNyTgFhC6N+1YhY1QKOvjjPS+tHAhMR0FnH9gUW1RtBQLUxpfFM=
 			-----END RSA PRIVATE KEY-----`)*/
-	spReq.SettleDate = "20151015"
+	// spReq.SettleDate = "20151015"
 	cbd := make(model.ChanBlendMap)
 	err := DefaultWeixinScanPay.ProcessSettleEnquiry(spReq, cbd)
 	if err != nil {

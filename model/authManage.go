@@ -23,16 +23,17 @@ type User struct {
 	UserName     string `json:"userName" bson:"userName"`
 	NickName     string `json:"nickName" bson:"nickName"`
 	Password     string `json:"password" bson:"password"`
-	Mail         string `json:"mail" bson:"mail"`
-	PhoneNum     string `json:"phoneNum" bson:"phoneNum"`
+	Mail         string `json:"mail" bson:"mail,omitempty"`
+	PhoneNum     string `json:"phoneNum" bson:"phoneNum,omitempty"`
 	UserType     string `json:"userType" bson:"userType"` // 用户类型： admin,genAdmin,agent, subAgent, group, merchant
-	AgentCode    string `json:"agentCode" bson:"agentCode"`
-	SubAgentCode string `json:"subAgentCode" bson:"subAgentCode"`
-	// AgentName string `json:"agentName" bson:"agentName"`
-	GroupCode string `json:"groupCode" bson:"groupCode"`
-	// GroupName string `json:"groupName" bson:"groupName"`
-	MerId string `json:"merId" bson:"merId"`
-	// MerName   string `json:"merName" bson:"merName"`
+	AgentCode    string `json:"agentCode" bson:"agentCode,omitempty"`
+	AgentName    string `json:"agentName" bson:"agentName,omitempty"`
+	SubAgentCode string `json:"subAgentCode" bson:"subAgentCode,omitempty"`
+	SubAgentName string `json:"subAgentName" bson:"subAgentName,omitempty"`
+	GroupCode    string `json:"groupCode" bson:"groupCode,omitempty"`
+	GroupName    string `json:"groupName" bson:"groupName,omitempty"`
+	MerId        string `json:"merId" bson:"merId,omitempty"`
+	MerName      string `json:"merName" bson:"merName,omitempty"`
 	RelatedEmail string `json:"relatedEmail" bson:"relatedEmail,omitempty"`       // 关联email
 	AreaCode     string `json:"areaCode" bson:"areaCode,omitempty"`               // 地区代码
 	CreateTime   string `bson:"createTime,omitempty" json:"createTime,omitempty"` // 创建时间
@@ -57,4 +58,10 @@ type UserPwd struct {
 	UserName string `json:'userName'`
 	Password string `json:'password'`
 	NewPwd   string `json:'newPwd'`
+}
+
+type ResetUser struct {
+	UserName  string `json:'username'`
+	PassWord  string `json:'password'`
+	CheckCode string `json:'checkCode'`
 }

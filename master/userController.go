@@ -33,7 +33,7 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 	}
 
 	var encryptPass string
-	user, err := mongo.UserColl.FindOneUser(userName, "", "")
+	user, err := mongo.UserColl.FindOne(userName)
 	var isAppUser = false
 	if err != nil {
 
@@ -41,7 +41,7 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 		appUser, err := mongo.AppUserCol.FindOne(userName)
 		if err != nil {
 			log.Errorf("find user(%s) error: %s", userName, err)
-			return model.NewResultBody(2, "无此用户名")
+			return model.NewResultBody(2, "USERNAME_PASSWORD_ERROR")
 		} else {
 			pb := md5.Sum([]byte(password))
 			encryptPass = fmt.Sprintf("%x", pb[:])
@@ -198,7 +198,7 @@ func (u *userController) Login(userName, password string) (ret *model.ResultBody
 			}
 		}
 		log.Errorf("wrong password, expect %s but get %s", user.Password, encryptPass)
-		return model.NewResultBody(3, "密码错误")
+		return model.NewResultBody(3, "USERNAME_PASSWORD_ERROR")
 	}
 
 	//密码正确，清空登陆记录
@@ -227,102 +227,34 @@ func (u *userController) CreateUser(data []byte) (ret *model.ResultBody) {
 		log.Errorf("json unmsrshal err,%s", err)
 		return model.NewResultBody(1, "json失败")
 	}
+
+	// 用户名不能重复
+	_, err = mongo.UserColl.FindOne(user.UserName)
+	if err == nil {
+		return model.NewResultBody(3, "用户名已存在")
+	}
+
 	// 设置默认密码
 	passData := []byte(model.RAND_PWD + "{" + user.UserName + "}" + model.DEFAULT_PWD)
 	user.Password = fmt.Sprintf("%x", sha1.Sum(passData))
 
 	// 判断必填项是否为空
 	if user.UserName == "" {
-		log.Errorf("必填项不能为空")
 		return model.NewResultBody(2, "必填项不能为空")
 	}
-	if user.UserType == model.UserTypeAgent {
-		if user.AgentCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
-		}
-		_, err := mongo.AgentColl.Find(user.AgentCode)
-		if err != nil {
-			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此代理代码")
-			}
-			log.Errorf("查询代理(%s)出错:%s", user.AgentCode, err)
-			return model.NewResultBody(1, "查询失败")
-		}
-	} else if user.UserType == model.UserTypeCompany {
-		if user.SubAgentCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
-		}
-		subAgent, err := mongo.SubAgentColl.Find(user.SubAgentCode)
-		if err != nil {
-			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此公司代码")
-			}
-			log.Errorf("查询二级代理(%s)出错:%s", user.SubAgentCode, err)
-			return model.NewResultBody(1, "查询失败")
-		}
-		user.AgentCode = subAgent.AgentCode
 
-	} else if user.UserType == model.UserTypeMerchant {
-		if user.GroupCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
-		}
-		group, err := mongo.GroupColl.Find(user.GroupCode)
-		if err != nil {
-			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此商户代码")
-			}
-			log.Errorf("查询集团(%s)出错: %s", user.GroupCode, err)
-			return model.NewResultBody(1, "查询失败")
-		}
-		user.AgentCode = group.AgentCode
-		user.SubAgentCode = group.SubAgentCode
-	} else if user.UserType == model.UserTypeShop {
-		if user.MerId == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
-		}
-		merchant, err := mongo.MerchantColl.FindNotInCache(user.MerId)
-		if err != nil {
-			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此门店代码")
-			}
-			log.Errorf("查询一个商户(%s)出错: %s", user.MerId, err)
-			return model.NewResultBody(1, "查询失败")
-		}
-		user.AgentCode = merchant.AgentCode
-		user.SubAgentCode = merchant.SubAgentCode
-		user.GroupCode = merchant.GroupCode
-
+	// 验证用户类型是否合法
+	if errResult := validUserType(user); errResult != nil {
+		return errResult
 	}
+
 	user.LoginTime = ""
 	user.LockTime = ""
 
-	// 用户名不能重复
-	_, err = mongo.UserColl.FindOneUser(user.UserName, "", "")
-	if err == nil {
-		log.Errorf("用户名已存在,userName=%s", user.UserName)
-		return model.NewResultBody(3, "用户名已存在")
-	}
-	// 邮箱不能重复
-	// _, err = mongo.UserColl.FindOneUser("", user.Mail, "")
-	// if err == nil {
-	// 	log.Errorf("邮箱已存在,userName=%s", user.UserName)
-	// 	return model.NewResultBody(4, "邮箱已存在")
-	// }
-	// 手机号码不能重复
-	// _, err = mongo.UserColl.FindOneUser("", "", user.PhoneNum)
-	// if err == nil {
-	// 	log.Errorf("用手机号码已存在,userName=%s", user.UserName)
-	// 	return model.NewResultBody(5, "手机号码已存在")
-	// }
-
 	err = mongo.UserColl.Add(user)
 	if err != nil {
-		log.Errorf("创建用户失败,%s", err)
-		return model.NewResultBody(6, "创建用户失败")
+		log.Errorf("user save error, username=%s, err: %s", user.UserName, err)
+		return model.NewResultBody(6, "系统错误，请重试")
 	}
 	ret = &model.ResultBody{
 		Status:  0,
@@ -338,83 +270,21 @@ func (u *userController) UpdateUser(data []byte) (ret *model.ResultBody) {
 	err := json.Unmarshal(data, user)
 	if err != nil {
 		log.Errorf("json unmsrshal err,%s", err)
-		return model.NewResultBody(1, "json失败")
+		return model.NewResultBody(1, "系统错误，请重试")
 	}
 	if user.UserName == "" || user.Password == "" {
-		log.Errorf("用户名和密码不能为空")
-		return model.NewResultBody(2, "用户名和密码不能为空")
+		return model.NewResultBody(2, "用户名或密码为空")
 	}
-	if user.UserName == "" {
-		log.Errorf("必填项不能为空")
-		return model.NewResultBody(2, "必填项不能为空")
-	}
-	if user.UserType == model.UserTypeAgent {
-		if user.AgentCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
-		}
-		_, err := mongo.AgentColl.Find(user.AgentCode)
-		if err != nil {
-			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此代理代码")
-			}
-			log.Errorf("查询代理(%s)出错:%s", user.AgentCode, err)
-			return model.NewResultBody(1, "查询失败")
-		}
-	} else if user.UserType == model.UserTypeCompany {
-		if user.SubAgentCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
-		}
-		subAgent, err := mongo.SubAgentColl.Find(user.SubAgentCode)
-		if err != nil {
-			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此公司代码")
-			}
-			log.Errorf("查询二级代理(%s)出错:%s", user.SubAgentCode, err)
-			return model.NewResultBody(1, "查询失败")
-		}
-		user.AgentCode = subAgent.AgentCode
 
-	} else if user.UserType == model.UserTypeMerchant {
-		if user.GroupCode == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
-		}
-		group, err := mongo.GroupColl.Find(user.GroupCode)
-		if err != nil {
-			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此商户代码")
-			}
-			log.Errorf("查询集团(%s)出错: %s", user.GroupCode, err)
-			return model.NewResultBody(1, "查询失败")
-		}
-		user.AgentCode = group.AgentCode
-		user.SubAgentCode = group.SubAgentCode
-	} else if user.UserType == model.UserTypeShop {
-		if user.MerId == "" {
-			log.Errorf("必填项不能为空")
-			return model.NewResultBody(2, "必填项不能为空")
-		}
-		merchant, err := mongo.MerchantColl.FindNotInCache(user.MerId)
-		if err != nil {
-			if err.Error() == "not found" {
-				return model.NewResultBody(3, "无此门店代码")
-			}
-			log.Errorf("查询一个商户(%s)出错: %s", user.MerId, err)
-			return model.NewResultBody(1, "查询失败")
-		}
-
-		user.AgentCode = merchant.AgentCode
-		user.SubAgentCode = merchant.SubAgentCode
-		user.GroupCode = merchant.GroupCode
-
+	// 验证用户类型是否合法
+	if errResult := validUserType(user); errResult != nil {
+		return errResult
 	}
 
 	err = mongo.UserColl.Update(user)
 	if err != nil {
-		log.Errorf("更新用户失败,%s", err)
-		return model.NewResultBody(5, "更新用户失败")
+		log.Errorf("user update error, username=%s, err: %s", user.UserName, err)
+		return model.NewResultBody(5, "系统错误，请重试")
 	}
 	ret = &model.ResultBody{
 		Status:  0,
@@ -466,7 +336,7 @@ func (u *userController) RemoveUser(userName string) (ret *model.ResultBody) {
 	}
 	err := mongo.UserColl.Remove(userName)
 	if err != nil {
-		log.Debugf("删除用户失败，%s", err)
+		log.Debugf("remove user(%s) fail: %s", userName, err)
 		return model.NewResultBody(2, "删除用户失败")
 	}
 	ret = &model.ResultBody{
@@ -495,7 +365,7 @@ func (u *userController) UpdatePwd(data []byte) (ret *model.ResultBody) {
 	var appUser *model.AppUser
 	oldPwdEncrypt, oldPwd := "", ""
 
-	user, err := mongo.UserColl.FindOneUser(userPwd.UserName, "", "")
+	user, err := mongo.UserColl.FindOne(userPwd.UserName)
 	if err != nil {
 		appUser, err = mongo.AppUserCol.FindOne(userPwd.UserName)
 		if err != nil {
@@ -592,7 +462,7 @@ func (u *userController) ResetPwd(data []byte, curUser *model.User) (ret *model.
 		return model.NewResultBody(1, "json失败")
 	}
 
-	user, err := mongo.UserColl.FindOneUser(userPwd.UserName, "", "")
+	user, err := mongo.UserColl.FindOne(userPwd.UserName)
 	if err != nil {
 		if err.Error() == "not found" {
 			return model.NewResultBody(1, "USERNAME_NOT_FOUND")
@@ -645,4 +515,132 @@ func (u *userController) ResetPwd(data []byte, curUser *model.User) (ret *model.
 		Message: "重置密码成功",
 	}
 	return ret
+}
+
+// PasswordReset 密码重置整理
+func (u *userController) PasswordReset(data []byte) (ret *model.ResultBody) {
+	log.Debugf("data:%s", string(data))
+	resetUser := &model.ResetUser{}
+	err := json.Unmarshal(data, resetUser)
+	if err != nil {
+		log.Errorf("json unmsrshal err,%s", err)
+		return model.NewResultBody(6, "JSON_ERROR")
+	}
+
+	if resetUser.UserName == "" || resetUser.PassWord == "" || resetUser.CheckCode == "" {
+		return model.NewResultBody(1, "MISS_REQUIRED_PARAMETER")
+	}
+
+	// 查找发送邮件的纪录
+	emailInfo, err := mongo.EmailCol.FindOne(resetUser.UserName)
+	if err != nil {
+		log.Errorf("find user error, user:%s, error:%s", resetUser.UserName, err)
+		return model.NewResultBody(2, "SYSTEM_ERROR")
+	}
+
+	// 是否已经激活过
+	if emailInfo.IsOperated {
+		return model.NewResultBody(6, "ALREADY_OPERATED")
+	}
+
+	// 是否操作过时
+	timestamp, _ := time.ParseInLocation("2006-01-02 15:04:05", emailInfo.Timestamp, time.Local)
+	if time.Now().Sub(timestamp) > 12*time.Hour {
+		return model.NewResultBody(5, "OPERATION_OUT_OF_DATE")
+	}
+
+	if resetUser.CheckCode != emailInfo.Code {
+		return model.NewResultBody(4, "INVALID_CHECK_CODE")
+	}
+
+	appUser, err := mongo.AppUserCol.FindOne(resetUser.UserName)
+	if err != nil {
+		if err.Error() == "not found" {
+			return model.NewResultBody(3, "USERNAME_NOT_MATCH")
+		}
+		log.Errorf("select user by userName err,userName=%s,%s", resetUser.UserName, err)
+		return model.NewResultBody(2, "SYSTEM_ERROR")
+	}
+
+	appUser.Password = resetUser.PassWord
+	err = mongo.AppUserCol.Update(appUser)
+	if err != nil {
+		log.Errorf("reset password err,userName=%s,%s", resetUser.UserName, err)
+		return model.NewResultBody(2, "SYSTEM_ERROR")
+	}
+
+	// 更新到EMAIL集合
+	e := &model.Email{
+		UserName:   resetUser.UserName,
+		Code:       resetUser.CheckCode,
+		Success:    true,
+		IsOperated: true,
+		Timestamp:  time.Now().Format("2006-01-02 15:04:05"),
+	}
+	mongo.EmailCol.Upsert(e)
+
+	ret = &model.ResultBody{
+		Status:  0,
+		Message: "SUCCESS",
+	}
+	return ret
+}
+
+// validUserType 校验用户类型是否合法
+func validUserType(user *model.User) (ret *model.ResultBody) {
+	if user.UserType == model.UserTypeAgent {
+		if user.AgentCode == "" {
+			return model.NewResultBody(2, "必填项不能为空")
+		}
+		agent, err := mongo.AgentColl.Find(user.AgentCode)
+		if err != nil {
+			return model.NewResultBody(3, "无此代理代码")
+		}
+		user.AgentName = agent.AgentName
+
+	} else if user.UserType == model.UserTypeCompany {
+		if user.SubAgentCode == "" {
+			log.Errorf("必填项不能为空")
+			return model.NewResultBody(2, "必填项不能为空")
+		}
+		subAgent, err := mongo.SubAgentColl.Find(user.SubAgentCode)
+		if err != nil {
+			return model.NewResultBody(3, "无此公司代码")
+		}
+		user.AgentCode = subAgent.AgentCode
+		user.AgentName = subAgent.AgentName
+		user.SubAgentName = subAgent.SubAgentName
+
+	} else if user.UserType == model.UserTypeMerchant {
+		if user.GroupCode == "" {
+			return model.NewResultBody(2, "必填项不能为空")
+		}
+		group, err := mongo.GroupColl.Find(user.GroupCode)
+		if err != nil {
+			return model.NewResultBody(3, "无此商户代码")
+		}
+		user.AgentCode = group.AgentCode
+		user.AgentName = group.AgentName
+		user.SubAgentCode = group.SubAgentCode
+		user.SubAgentName = group.SubAgentName
+		user.GroupName = group.GroupName
+
+	} else if user.UserType == model.UserTypeShop {
+		if user.MerId == "" {
+			log.Errorf("必填项不能为空")
+			return model.NewResultBody(2, "必填项不能为空")
+		}
+		merchant, err := mongo.MerchantColl.FindNotInCache(user.MerId)
+		if err != nil {
+			return model.NewResultBody(3, "无此门店代码")
+		}
+		user.AgentCode = merchant.AgentCode
+		user.AgentName = merchant.AgentName
+		user.SubAgentCode = merchant.SubAgentCode
+		user.SubAgentName = merchant.SubAgentName
+		user.GroupCode = merchant.GroupCode
+		user.GroupName = merchant.GroupName
+		user.MerName = merchant.Detail.MerName
+	}
+	return nil
 }

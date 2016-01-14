@@ -106,8 +106,7 @@ func (col *transCollection) Update(t *model.Trans) error {
 
 	t.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
 	// 查找条件
-	update := bson.M{"_id": t.Id}
-	err := database.C(col.name).Update(update, t)
+	err := database.C(col.name).UpdateId(t.Id, t)
 	if err != nil {
 		log.Errorf("update trans(%+v) fail: %s", t, err)
 	}
@@ -115,7 +114,7 @@ func (col *transCollection) Update(t *model.Trans) error {
 }
 
 // UpdateFields 根据键值对更新某些字段
-func (col *transCollection) UpdateFields(merId, orderNum string, fv ...string) error {
+func (col *transCollection) UpdateFields(merId, orderNum string, fv ...interface{}) error {
 	if len(fv) == 0 {
 		return nil
 	}
@@ -126,11 +125,15 @@ func (col *transCollection) UpdateFields(merId, orderNum string, fv ...string) e
 
 	set := bson.M{}
 	for i := 0; i < len(fv); i += 2 {
-		set[fv[i]] = fv[i+1]
+		key, ok := fv[i].(string)
+		if ok {
+			set[key] = fv[i+1]
+		} else {
+			return fmt.Errorf("type of field must be string")
+		}
+
 	}
 	update := bson.M{"$set": set}
-	log.Debugf("%+v", update)
-
 	return database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, update)
 }
 
@@ -161,7 +164,7 @@ func (col *transCollection) Count(merId, orderNum string) (count int, err error)
 	return
 }
 
-// FindPay 通过订单号、商户号查找一条交易记录
+// FindOne 通过订单号、商户号查找一条交易记录
 func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err error) {
 
 	q := bson.M{
@@ -171,6 +174,20 @@ func (col *transCollection) FindOne(merId, orderNum string) (t *model.Trans, err
 	}
 	t = new(model.Trans)
 	err = database.C(col.name).Find(q).One(t)
+
+	return
+}
+
+// FindOneInMaster 通过订单号、商户号在master中查找一条交易记录
+func (col *transCollection) FindOneInMaster(merId, orderNum string) (t *model.Trans, err error) {
+
+	q := bson.M{
+		"orderNum": orderNum,
+		"merId":    merId,
+		// "transType": transType,
+	}
+	t = new(model.Trans)
+	err = masterDB.C(col.name).Find(q).One(t)
 
 	return
 }
@@ -209,7 +226,10 @@ func (col *transCollection) FindOneByOrigOrderNum(q *model.QueryCondition) (ts [
 // FindHandingTrans 找到处理中的交易
 func (col *transCollection) FindHandingTrans(d time.Duration, busicd ...string) ([]model.Trans, error) {
 	q := bson.M{
-		"createTime":  bson.M{"$lte": time.Now().Add(-d).Format("2006-01-02 15:04:05")},
+		"createTime": bson.M{
+			"$gte": time.Now().Add(-(d + time.Hour*48)).Format("2006-01-02 15:04:05"), // d+48小时之前
+			"$lte": time.Now().Add(-d).Format("2006-01-02 15:04:05"),                  // d小时之前
+		},
 		"lockFlag":    0,
 		"transStatus": model.TransHandling,
 		"transType":   model.PayTrans,
@@ -335,14 +355,27 @@ func (col *transCollection) FindTransRefundAmt(merId, origOrderNum string) (int6
 	return s.Amt, err
 }
 
-// FindByOrderNum 根据渠道订单号查找
-func (col *transCollection) FindByOrderNum(sysOrderNum string) (t *model.Trans, err error) {
+// FindBySysOrderNum 根据系统订单号在master中查找
+func (col *transCollection) FindBySysOrderNum(sysOrderNum string) (t *model.Trans, err error) {
 	// 订单是uuid 全局唯一
 	t = new(model.Trans)
 	q := bson.M{
 		"sysOrderNum": sysOrderNum,
 	}
-	err = database.C(col.name).Find(q).One(t)
+	err = masterDB.C(col.name).Find(q).One(t)
+
+	return
+}
+
+// FindByAppID 根据订单号、appID在master中查找
+func (col *transCollection) FindByAppID(orderNum, appID string) (t *model.Trans, err error) {
+	// 订单是uuid 全局唯一
+	t = new(model.Trans)
+	q := bson.M{
+		"appID":    appID,
+		"orderNum": orderNum,
+	}
+	err = masterDB.C(col.name).Find(q).One(t)
 
 	return
 }
@@ -421,8 +454,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.RespcdNotIn != "" {
 		match["respCode"] = bson.M{"$ne": q.RespcdNotIn}
 	}
-	if q.TradeFrom != "" {
-		match["tradeFrom"] = q.TradeFrom
+	if len(q.TradeFrom) != 0 {
+		match["tradeFrom"] = bson.M{"$in": q.TradeFrom}
 	}
 	if q.TransType != 0 {
 		match["transType"] = q.TransType
@@ -442,33 +475,20 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	if q.SettRole != "" {
 		match["settRole"] = q.SettRole
 	}
-	// or 退款的和成功的
-	or := []bson.M{}
-	if len(q.TransStatus) != 0 {
-		or = append(or, bson.M{"transStatus": bson.M{"$in": q.TransStatus}})
-	}
-	if q.RefundStatus != 0 {
-		or = append(or, bson.M{"refundStatus": q.RefundStatus})
-	}
-	if len(or) > 0 {
-		match["$or"] = or
-	}
 	if q.StartTime != "" && q.EndTime != "" {
 		if q.TimeType == "" {
 			q.TimeType = "createTime"
 		}
 		match[q.TimeType] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
-
-	// 如果报表的话，将取消订单原交易不成功的过滤掉，如果原交易不成功则取消这笔订单的金额为0
-	// if q.IsForReport {
-	// 	match["transAmt"] = bson.M{"$ne": 0}
-	// }
+	// 处理交易状态查询条件
+	handleTransStatus(q, match)
 
 	p := []bson.M{
 		{"$match": match},
 	}
 
+	log.Debugf("find condition: %+v", match)
 	// total
 	total, err := database.C(col.name).Find(match).Count()
 	if err != nil {
@@ -640,19 +660,15 @@ func (col *transCollection) MerBills(q *model.QueryCondition) ([]model.TransType
 	}
 	find["merId"] = q.MerId
 
-	var or []bson.M
-	if len(q.TransStatus) != 0 {
-		or = append(or, bson.M{"transStatus": bson.M{"$in": q.TransStatus}})
-	}
-	if q.RefundStatus != 0 {
-		or = append(or, bson.M{"refundStatus": q.RefundStatus})
-	}
-	if len(or) > 0 {
-		find["$or"] = or
-	}
+	// 处理交易状态查询条件
+	handleTransStatus(q, find)
 
 	// 过滤掉取消不成功的订单
 	find["transAmt"] = bson.M{"$ne": 0}
+
+	if q.IsRelatedCoupon {
+		find["couponOrderNum"] = bson.M{"$ne": nil}
+	}
 
 	var results []model.TransTypeGroup
 	err := database.C(col.name).Pipe([]bson.M{
@@ -660,13 +676,15 @@ func (col *transCollection) MerBills(q *model.QueryCondition) ([]model.TransType
 		{"$group": bson.M{"_id": "$transType",
 			"transAmt": bson.M{"$sum": "$transAmt"},
 			// "refundAmt": bson.M{"$sum": "$refundAmt"},
-			"transNum": bson.M{"$sum": 1},
+			"transNum":    bson.M{"$sum": 1},
+			"discountAmt": bson.M{"$sum": "$discountAmt"},
 		}},
 		{"$project": bson.M{
 			"transType": "$_id",
 			"transAmt":  1,
 			"transNum":  1,
 			// "refundAmt": 1,
+			"discountAmt": 1,
 		}},
 	}).All(&results)
 	return results, err
@@ -699,15 +717,15 @@ func (col *transCollection) AddSettRole(settRole, merId, orderNum string) error 
 }
 
 // ExportAgentProfit 导出分润 // TODO:DELETE
-func (col *transCollection) ExportAgentProfit(bt string) ([]agentProfit, error) {
+func (col *transCollection) ExportAgentProfit(bt string, st string) ([]agentProfit, error) {
 	pipeline := []bson.M{
 		{"$match": bson.M{
-			"createTime": bson.M{"$lte": bt},
+			"createTime": bson.M{"$lte": bt, "$gte": st},
 			"transType":  1,
 			"$or":        []bson.M{bson.M{"transStatus": "30"}, bson.M{"refundStatus": 1}},
 		}},
 		{"$group": bson.M{
-			"_id":       bson.M{"merId": "$merId", "chanCode": "$chanCode", "date": bson.M{"$substr": []interface{}{"$createTime", 0, 10}}},
+			"_id":       bson.M{"merId": "$merId", "chanCode": "$chanCode", "chanMerId": "$chanMerId", "date": bson.M{"$substr": []interface{}{"$createTime", 0, 10}}},
 			"transAmt":  bson.M{"$sum": "$transAmt"},
 			"refundAmt": bson.M{"$sum": "$refundAmt"},
 			"transNum":  bson.M{"$sum": 1},
@@ -722,12 +740,71 @@ func (col *transCollection) ExportAgentProfit(bt string) ([]agentProfit, error) 
 
 type agentProfit struct {
 	ID struct {
-		MerId    string `bson:"merId"`
-		ChanCode string `bson:"chanCode"`
-		Date     string `bson:"date"`
+		MerId     string `bson:"merId"`
+		ChanCode  string `bson:"chanCode"`
+		Date      string `bson:"date"`
+		ChanMerId string `bson:"chanMerId"`
 	} `bson:"_id"`
 	TransAmt  int64  `bson:"transAmt"`
 	RefundAmt int64  `bson:"refundAmt"`
 	TransNum  int    `bson:"transNum"`
 	AgentCode string `bson:"agentCode"`
+}
+
+func handleTransStatus(q *model.QueryCondition, match bson.M) {
+	if len(q.TransStatus) > 0 && len(q.RefundStatus) > 0 {
+		var containsClosed bool
+		for _, rs := range q.RefundStatus {
+			// 简单点，只要有全额退的，那么认为是OR
+			if rs == model.TransRefunded {
+				containsClosed = true
+				match["$or"] = []bson.M{
+					bson.M{"transStatus": bson.M{"$in": q.TransStatus}},
+					bson.M{"refundStatus": bson.M{"$in": q.RefundStatus}},
+				}
+				break
+			}
+		}
+		if !containsClosed {
+			match["transStatus"] = bson.M{"$in": q.TransStatus}
+			match["refundStatus"] = bson.M{"$in": q.RefundStatus}
+		}
+
+	} else {
+		if len(q.TransStatus) > 0 {
+			match["transStatus"] = bson.M{"$in": q.TransStatus}
+		}
+		if len(q.RefundStatus) > 0 {
+			match["refundStatus"] = bson.M{"$in": q.RefundStatus}
+		}
+	}
+}
+
+// FindTotalAmtByMerId 查出某个商户一天交易额
+func (col *transCollection) FindTotalAmtByMerId(merId, day string) (int64, error) {
+
+	var amt = &struct {
+		TransAmt    int64 `bson:"transAmt"`
+		RefundedAmt int64 `bson:"refundAmt"`
+	}{}
+	find := bson.M{
+		"createTime":  bson.RegEx{day, "."},
+		"merId":       merId,
+		"transStatus": model.TransSuccess,
+		"transType":   model.PayTrans,
+	}
+
+	err := database.C(col.name).Pipe([]bson.M{
+		{"$match": find},
+		{"$group": bson.M{
+			"_id":       "$merId",
+			"transAmt":  bson.M{"$sum": "$transAmt"},
+			"refundAmt": bson.M{"$sum": "$refundAmt"},
+		}},
+		{"$project": bson.M{
+			"transAmt":  1,
+			"refundAmt": 1,
+		}},
+	}).One(amt)
+	return amt.TransAmt - amt.RefundedAmt, err
 }

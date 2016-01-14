@@ -200,6 +200,15 @@ func AddSpChanCodeFromScv(channel, path string) error {
 				}
 			}
 			q.Alp = append(q.Alp, v)
+		case channel == "alp2":
+			// 过滤重复的
+			for i, alp := range q.Alp2 {
+				if alp.Code == v.Code && alp.Busicd == v.Busicd {
+					// delete
+					q.Alp2 = append(q.Alp2[:i], q.Alp2[i+1:]...)
+				}
+			}
+			q.Alp2 = append(q.Alp2, v)
 		default:
 			// ...更多渠道
 		}

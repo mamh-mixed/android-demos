@@ -302,9 +302,9 @@ func updateValidate(r *rowData, im *ImportMessage) error {
 			return fmt.Errorf(m.OpenSignValueErr, r.IsNeedSignStr)
 		}
 		if r.IsNeedSignStr == yes {
-			if r.SignKey == "" {
-				return fmt.Errorf(m.NoSignKey, r.MerId)
-			}
+			// if r.SignKey == "" {
+			// 	return fmt.Errorf(m.NoSignKey, r.MerId)
+			// }
 			r.IsNeedSign = true
 		}
 	}
@@ -431,19 +431,17 @@ func insertValidate(r *rowData, im *ImportMessage) error {
 		if !util.StringInSlice(r.AlpSettFlag, settFlagArray) {
 			return fmt.Errorf(m.ALPSettFlagErr, r.AlpSettFlag)
 		}
-		if r.IsDomesticStr != "" {
-			if r.IsDomesticStr == no {
-				// 海外支付宝商户必填字段
-				if r.AlpMerName == "" || r.AlpMerNo == "" {
-					return fmt.Errorf(m.NoOverseasChanMer, r.MerId)
-				}
-				if r.AlpSchemeType == "" {
-					return fmt.Errorf(m.NoSchemeType, r.MerId)
-				}
-			} else {
-				// 其他情况默认都是国内的
-				r.IsDomestic = true
+		if r.IsDomesticStr == no {
+			// 海外支付宝商户必填字段
+			if r.AlpMerName == "" || r.AlpMerNo == "" {
+				return fmt.Errorf(m.NoOverseasChanMer, r.MerId)
 			}
+			if r.AlpSchemeType == "" {
+				return fmt.Errorf(m.NoSchemeType, r.MerId)
+			}
+		} else {
+			// 其他情况默认都是国内的
+			r.IsDomestic = true
 		}
 	}
 
@@ -800,6 +798,10 @@ func (i *importer) doDataWrap() {
 			}
 			if r.IsNeedSignStr != "" {
 				mer.IsNeedSign = r.IsNeedSign
+				if mer.IsNeedSign && mer.SignKey == "" {
+					log.Infof("gen new sign key...merId=%s", mer.MerId)
+					mer.SignKey = util.SignKey()
+				}
 			}
 			if r.BankId != "" {
 				mer.Detail.BankId = r.BankId

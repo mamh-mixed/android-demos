@@ -53,8 +53,11 @@ function main() {
         version=$(git describe --abbrev=0 --tags)
     fi
 
+    # 前端打包 admin 文件夹
+    f2eAdmin
+
     # 前端打包
-    echo ">>> Use Gulp to package frontend html/js/css..."
+    echo ">>> Use Gulp to package frontend html/js/css... in the folder 'static'"
     gulpPackage $version
     echo
 
@@ -83,6 +86,8 @@ function goBuild() {
     cp -r config distrib/
     mkdir -p distrib/app/material
     cp -r app/material/ distrib/app/material
+    mkdir -p distrib/push/pem
+    cp -r push/pem/ distrib/push/pem
     if [ "$env" == "develop" ]; then
         rm distrib/config/*testing*
         rm distrib/config/*product*
@@ -93,6 +98,15 @@ function goBuild() {
         rm distrib/config/*testing*
         rm distrib/config/*develop*
     fi
+}
+
+function f2eAdmin() {
+    echo "build frontend resources in the folder 'admin'"
+
+    cd admin
+    gulp # 压缩文件
+    cd ..
+    cp -r admin/dist/ distrib/admin/
 }
 
 function gulpPackage() {

@@ -12,8 +12,8 @@ func TestDownloadBill(t *testing.T) {
 
 	p := &DownloadBillReq{
 		CommonParams: testCommonParams,
-		BillDate:     "20151123",
-		BillType:     "SUCCESS",
+		BillDate:     "20151221",
+		BillType:     "REFUND",
 	}
 
 	p.CommonParams.Req = spReq

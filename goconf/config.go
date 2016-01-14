@@ -61,11 +61,12 @@ type configStruct struct {
 	}
 
 	AlipayScanPay struct {
-		AlipayPubKey string
-		OpenAPIURL   string
-		URL          string
-		NotifyUrl    string
-		AgentId      string
+		AlipayPubKey  string
+		OpenAPIURL    string
+		URL           string
+		NotifyUrl     string
+		ALP1_0AgentID string
+		ALP2_0AgentID string
 	}
 
 	MobileApp struct {

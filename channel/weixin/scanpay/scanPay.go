@@ -3,14 +3,14 @@ package scanpay
 import (
 	"bufio"
 	"fmt"
-	"strconv"
-	"strings"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/channel/weixin"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
+	"github.com/omigo/log"
+	"strconv"
+	"strings"
+	"time"
 )
 
 // WeixinScanPay 微信扫码支付
@@ -23,12 +23,13 @@ func getCommonParams(m *model.ScanPayRequest) *weixin.CommonParams {
 	return &weixin.CommonParams{
 		Appid:        m.AppID,        // 公众账号ID
 		MchID:        m.ChanMerId,    // 商户号
+		SubAppid:     m.SubAppID,     // 子公众账号ID
 		SubMchId:     m.SubMchId,     // 子商户号
 		NonceStr:     util.Nonce(32), // 随机字符串
 		Sign:         "",             // 签名
 		WeixinMD5Key: m.SignKey,      // md5key
-		ClientCert:   m.WeixinClientCert,
-		ClientKey:    m.WeixinClientKey,
+		ClientCert:   m.PemCert,
+		ClientKey:    m.PemKey,
 		Req:          m,
 	}
 }
@@ -43,11 +44,11 @@ func (sp *WeixinScanPay) ProcessBarcodePay(m *model.ScanPayRequest) (ret *model.
 	d := &PayReq{
 		CommonParams: *getCommonParams(m),
 
-		Body:           m.WxpMarshalGoods(), // 商品描述
-		OutTradeNo:     m.OrderNum,          // 商户订单号
-		AuthCode:       m.ScanCodeId,        // 授权码
-		TotalFee:       m.ActTxamt,          // 总金额
-		SpbillCreateIP: util.LocalIP,        // 终端IP
+		Body:           parseGoods(m), // 商品描述
+		OutTradeNo:     m.OrderNum,    // 商户订单号
+		AuthCode:       m.ScanCodeId,  // 授权码
+		TotalFee:       m.ActTxamt,    // 总金额
+		SpbillCreateIP: util.LocalIP,  // 终端IP
 
 		TimeStart:  startTime.Format("20060102150405"), // 交易起始时间
 		TimeExpire: endTime.Format("20060102150405"),   // 交易结束时间
@@ -157,7 +158,7 @@ func (sp *WeixinScanPay) ProcessQrCodeOfflinePay(m *model.ScanPayRequest) (ret *
 		CommonParams: *getCommonParams(m),
 
 		DeviceInfo:     m.DeviceInfo,                  // 设备号
-		Body:           m.WxpMarshalGoods(),           // 商品描述
+		Body:           parseGoods(m),                 // 商品描述
 		Attach:         m.SysOrderNum + "," + m.ReqId, // 格式：系统订单号,日志Id
 		OutTradeNo:     m.OrderNum,                    // 商户订单号
 		TotalFee:       m.ActTxamt,                    // 总金额
@@ -345,7 +346,7 @@ func analysisSettleData(dataStr string, cbd model.ChanBlendMap) { //外部map ke
 	}
 
 	dataStr = strings.Replace(dataStr, "`", "", -1)
-
+	log.Debugf("weixin settle csv: %s", dataStr)
 	//modelMMap := make(map[string]map[string][]model.BlendElement)
 	strStream := strings.NewReader(dataStr)
 	rd := bufio.NewReader(strStream)
@@ -367,7 +368,7 @@ func analysisSettleData(dataStr string, cbd model.ChanBlendMap) { //外部map ke
 		var elementModel model.BlendElement
 		elementModel.Chcd = "WXP"
 		elementModel.ChcdName = "微信"
-		elementModel.ChanMerID = dataArray[3] // 商户号
+		elementModel.ChanMerID = dataArray[3] // 子商户号
 		elementModel.OrderTime = dataArray[0] // 时间
 		elementModel.OrderID = dataArray[5]   // 微信交易号
 		elementModel.LocalID = dataArray[6]   // 商户订单号
@@ -378,27 +379,21 @@ func analysisSettleData(dataStr string, cbd model.ChanBlendMap) { //外部map ke
 			recsMap = make(map[string][]model.BlendElement)
 		}
 
-		if dataArray[9] == "SUCCESS" { //交易成功
+		switch dataArray[9] {
+		case "SUCCESS":
 			elementModel.OrderAct = dataArray[12] //金额
-			elementModel.OrderType = "交易成功"
-			elementArray, ok := recsMap[elementModel.OrderID]
-			if !ok {
-				elementArray = make([]model.BlendElement, 0)
-			}
-			elementArray = append(elementArray, elementModel)
-			recsMap[elementModel.OrderID] = elementArray
-		} else if dataArray[9] == "REFUND" { //退款
-			if dataArray[19] == "SUCCESS" {
-				elementModel.OrderAct = "-" + dataArray[16]
-				elementModel.OrderType = "退款"
-				elementArray, ok := recsMap[elementModel.OrderID]
-				if !ok {
-					elementArray = make([]model.BlendElement, 0)
-				}
-				elementArray = append(elementArray, elementModel)
-				recsMap[elementModel.OrderID] = elementArray
-			}
+		case "REFUND", "REVOKED":
+			elementModel.OrderAct = "-" + dataArray[16]
+			elementModel.RefundOrderID = dataArray[15]
 		}
+
+		elementModel.OrderType = dataArray[9]
+		elementArray, ok := recsMap[elementModel.OrderID]
+		if !ok {
+			elementArray = make([]model.BlendElement, 0)
+		}
+		elementArray = append(elementArray, elementModel)
+		recsMap[elementModel.OrderID] = elementArray
 
 		// back
 		cbd[elementModel.ChanMerID] = recsMap
@@ -428,4 +423,31 @@ func handleExpireTime(expirtTime string) (string, string) {
 	}
 
 	return stStr, expirtTime
+}
+
+// parseGoods 按照微信格式输出商品详细
+func parseGoods(req *model.ScanPayRequest) string {
+
+	goods, err := req.MarshalGoods()
+	if err != nil {
+		// 格式不对，送配置的商品名称，防止商户送的内容过长
+		return req.Subject
+	}
+
+	var goodsName []string
+	if len(goods) > 0 {
+		for _, v := range goods {
+			goodsName = append(goodsName, v.GoodsName)
+		}
+
+		body := strings.Join(goodsName, ",")
+		bodySizes := []rune(body)
+		if len(bodySizes) > 20 {
+			body = string(bodySizes[:20]) + "..."
+		}
+		return body
+	}
+
+	// 假如商品详细为空，送配置的商品名称
+	return req.Subject
 }

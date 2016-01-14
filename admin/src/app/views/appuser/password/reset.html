@@ -1,0 +1,25 @@
+<div class="login-content">
+	<div class="lc-block" id="login">
+		<div class="input-group m-b-20">
+			<span class="input-group-addon"><i class="fa fa-user fa-fw fa-2x"></i></span>
+			<div class="fg-line">
+				<input type="text" class="form-control" placeholder="用户名" data-ng-model="prc.request.username">
+			</div>
+		</div>
+
+		<div class="input-group m-b-20">
+			<span class="input-group-addon"><i class="fa fa-key fa-fw fa-2x"></i></span>
+			<div class="fg-line">
+				<input type="password" class="form-control" placeholder="密码" data-ng-model="prc.request.password">
+			</div>
+		</div>
+		<div class="input-group m-b-20">
+			<span class="input-group-addon"><i class="fa fa-key fa-fw fa-2x"></i></span>
+			<div class="fg-line">
+				<input type="password" class="form-control" placeholder="重复密码" data-ng-model="prc.request.passwordRepeat">
+			</div>
+		</div>
+
+		<a data-ng-click="prc.sendRequest()" href="" class="btn btn-login btn-danger btn-float waves-effect waves-circle"><i class="fa fa-arrow-right fa-2x"></i></a>
+	</div>
+</div>

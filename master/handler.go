@@ -322,7 +322,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 	// 报表需求来自汇总
 	if params.Get("from") == "summary" {
 		cond.TransStatus = []string{model.TransSuccess}
-		cond.RefundStatus = model.TransRefunded
+		cond.RefundStatus = []int{model.TransRefunded}
 	}
 
 	// 如果前台传过来‘按商户号分组’的条件，解析成bool成功的话就赋值，不���功的话���不处理，默认为false
@@ -1409,6 +1409,31 @@ func appResetPwdHandle(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(501)
 		w.Write([]byte("mashal data error"))
 		return
+	}
+
+	log.Tracef("response message: %s", rdata)
+	w.Write(rdata)
+}
+
+//邮件重置密码
+func passwordResetHandle(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "POST" {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	data, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Errorf("Read all body error: %s", err)
+		w.WriteHeader(501)
+		return
+	}
+
+	ret := User.PasswordReset(data)
+
+	rdata, err := json.Marshal(ret)
+	if err != nil {
+		w.Write([]byte("mashal data error"))
 	}
 
 	log.Tracef("response message: %s", rdata)

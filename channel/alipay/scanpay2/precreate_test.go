@@ -3,15 +3,17 @@ package scanpay2
 import (
 	"testing"
 
-	"github.com/dawei888/quickpay/util"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/quickpay/util"
 )
 
 func TestPrecreate(t *testing.T) {
 	num := util.SerialNumber()
 	req := &PrecreateReq{
 		CommonParams: CommonParams{
-			AppID:      "2015051100069108",
+			AppID:      "2014122500021754",
 			PrivateKey: LoadPrivateKey([]byte(privateKeyPem)),
+			Req:        &model.ScanPayRequest{},
 		},
 		OutTradeNo:  num,
 		Subject:     "2024-" + num,
