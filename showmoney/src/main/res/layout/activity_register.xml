@@ -35,14 +35,6 @@
             cardinfolink:password_hint="@string/register_hint_password"
             cardinfolink:title="@string/register_password" />
 
-        <com.cardinfolink.yunshouyin.ui.SettingPasswordItem
-            android:id="@+id/register_qr_password"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            cardinfolink:password_hint="@string/register_hint_qr_password"
-            cardinfolink:title="@string/register_qr_password" />
-
         <com.cardinfolink.yunshouyin.ui.SettingInputItem
             android:id="@+id/register_invite_code"
             android:layout_width="wrap_content"
