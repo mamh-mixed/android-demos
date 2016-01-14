@@ -48,7 +48,7 @@ import java.util.Date;
 
 public class ScanCodeView extends LinearLayout implements View.OnClickListener, View.OnTouchListener {
     private static final String TAG = "ScanCodeView";
-    private static final int MAX_MONEY = 99999999;//能够进行交易的最大金额数
+    private static final double MAX_MONEY = 99999999.99;//能够进行交易的最大金额数
     private static final int MAX_LIMIT_MONEY = 500;//单日限额的最大金额数
     private TranslateAnimation mShowAnimation;
     private TranslateAnimation mHideAnimation;
@@ -867,7 +867,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     //子线程内部的 订单号 和外面的 订单号
                     if (orderNumInThread.equals(mOrderNum)) {
                         searchBill(orderNumInThread);
-                    }else {
+                    } else {
                         cancelBill(orderNumInThread);
                         break;
                     }
@@ -900,7 +900,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         int dx = (int) (rightArrow.getX() - leftArrow.getX());
         int min = Math.min(dx, dy);//求出最小的
         min = Math.abs(min);
-        min = Math.abs(min - 2 * leftArrow.getWidth() );
+        min = Math.abs(min - 2 * leftArrow.getWidth());
         try {
             //创建二维码图片
             if (!TextUtils.isEmpty(mResultData.qrcode)) {
