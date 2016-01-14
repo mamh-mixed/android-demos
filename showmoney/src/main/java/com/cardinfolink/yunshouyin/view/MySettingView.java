@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.view;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -69,7 +70,12 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         mAbout = (SettingClikcItem) contentView.findViewById(R.id.about);
 
         mEmail = (TextView) contentView.findViewById(R.id.tv_email);//账户名
-        mEmail.setText(SessonData.loginUser.getUsername());//通过sessonData设置一下用户名
+        String merName = SessonData.loginUser.getMerName();
+        if (!TextUtils.isEmpty(merName)) {
+            mEmail.setText(SessonData.loginUser.getMerName());
+        } else {
+            mEmail.setText(SessonData.loginUser.getUsername());//通过sessonData设置一下用户名
+        }
 
         mLimit = (TextView) contentView.findViewById(R.id.tv_limit_info);//显示限额的一些信息的
         mMessage = (ImageView) contentView.findViewById(R.id.iv_message);//右上角显示是否有未读消息的图片
@@ -118,6 +124,8 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
             mIncreaseLimit.setVisibility(VISIBLE);//把提升限额的按钮显示出来
         } else {
             //else这里表示用户没有限额
+            mLimit.setText(getResources().getString(R.string.setting_limit_message_updated));//这里设置限额多少的提示文本
+            mIncreaseLimit.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -126,6 +134,9 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         Intent intent = null;
         switch (v.getId()) {
             case R.id.btn_exit:
+                User user = new User();
+                user.setUsername(SessonData.loginUser.getUsername());
+                SaveData.setUser(mContext, user);
                 intent = new Intent(mContext, LoginActivity.class);
                 mContext.startActivity(intent);
                 ((Activity) mContext).finish();
