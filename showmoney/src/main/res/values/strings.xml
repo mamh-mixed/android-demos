@@ -421,6 +421,7 @@
     <string name="coupon_yuan">元</string>
     <string name="coupon_doing_info">正在销券中，请稍等</string>
     <string name="coupon_vertical">销券</string>
+    <string name="coupon_discount_cash">优惠后金额</string>
 
 
     <!--  欢迎界面 要用到的文本 -->
