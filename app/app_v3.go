@@ -106,7 +106,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 // forgetPasswordHandler 忘记密码处理
 func forgetPasswordHandler(w http.ResponseWriter, r *http.Request) {
 	result := User.forgetPassword(&reqParams{
-		UserName: r.FormValue("username"),
+		UserName:  r.FormValue("username"),
+		Transtime: r.FormValue("transtime"),
 	})
 
 	w.Write(jsonMarshal(result))
@@ -214,7 +215,7 @@ func totalSummaryHandler(w http.ResponseWriter, r *http.Request) {
 
 // ordersHandler 查询订单
 func ordersHandler(w http.ResponseWriter, r *http.Request) {
-	result := User.findOrderHandle(&reqParams{
+	result := UserV3.findOrderHandle(&reqParams{
 		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
@@ -244,13 +245,13 @@ func couponsHandler(w http.ResponseWriter, r *http.Request) {
 
 // messagePullHandler 消息接口
 func messagePullHandler(w http.ResponseWriter, r *http.Request) {
-	result := User.messagePullHandler(&reqParams{
+	result := UserV3.messagePullHandler(&reqParams{
 		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
 		Size:      r.FormValue("size"),
-		LastTime:  r.FormValue("lasttime"),
-		MaxTime:   r.FormValue("maxtime"),
+		LastTime:  r.FormValue("lastTime"),
+		MaxTime:   r.FormValue("maxTime"),
 	})
 
 	w.Write(jsonMarshal(result))
