@@ -39,6 +39,17 @@ public class User {
 
     private ResultData resultData;
 
+    //新加字段商户名称merName by ChenFeng@20160114
+    private String merName;
+
+    public String getMerName() {
+        return merName;
+    }
+
+    public void setMerName(String merName) {
+        this.merName = merName;
+    }
+
     public String getProvince() {
         return province;
     }
@@ -250,6 +261,7 @@ public class User {
                 ", limitPhone='" + limitPhone + '\'' +
                 ", payUrl='" + payUrl + '\'' +
                 ", resultData=" + resultData +
+                ", merName=" + merName +
                 '}';
     }
 }

@@ -2,6 +2,7 @@ package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
@@ -22,8 +24,6 @@ import com.google.zxing.WriterException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-
-import android.graphics.Bitmap.CompressFormat;
 
 /**
  * 我的网页版，这里显示一个二维码图片。通过payUrl来显示二维码图片。
@@ -40,6 +40,7 @@ public class MyWebActivity extends BaseActivity {
     private Button mSaveQR;
     private Bitmap mQRBitmap;
     private View mMerchantInfo;
+    private TextView merchantName;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +83,15 @@ public class MyWebActivity extends BaseActivity {
                 }
             }
         });
+
+        merchantName = (TextView) findViewById(R.id.merchant_name);
+        String merName = SessonData.loginUser.getMerName();
+        if (!TextUtils.isEmpty(merName)) {
+            merchantName.setText(getResources().getString(R.string.my_web_activity_merchant_name) + SessonData.loginUser.getMerName());
+        } else {
+            merchantName.setText(getResources().getString(R.string.my_web_activity_merchant_name) + getString(R.string.app_name));
+        }
+
 
     }
 
