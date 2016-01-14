@@ -31,6 +31,11 @@ func transform(transType, code, msg, subCode, subMsg string) (respCode, respMsg 
 		// 20000 业务出现未知错误或者系统异常，如果支付接口返回，需要调用查询接口确认订单状态或者发起撤销
 		// 10003 业务处理中
 		respCode, respMsg = inprocessCode, inprocessMsg
+	default:
+		// 其他错误码
+		dr := mongo.ScanPayRespCol.DefaultResp
+		respCode = dr.ISO8583Code
+		respMsg = subMsg
 	}
 
 	return
