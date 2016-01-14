@@ -36,7 +36,7 @@ export class PasswordResetService {
 		let data = {
 			username: params.username,
 			checkCode: params.checkCode,
-			password: CryptoJS.SHA1(params.password).toString()
+			password: CryptoJS.MD5(params.password).toString()
 		};
 
 		return this.$http.post(this.apiHost, angular.toJson(data))
