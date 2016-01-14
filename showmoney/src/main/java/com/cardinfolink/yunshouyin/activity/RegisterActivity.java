@@ -58,7 +58,7 @@ public class RegisterActivity extends BaseActivity {
         mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utility.hideInput(mContext);
+                Utility.hideInput(mContext, v);
                 finish();
             }
         });
@@ -67,7 +67,7 @@ public class RegisterActivity extends BaseActivity {
         mRegisterNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utility.hideInput(mContext);
+                Utility.hideInput(mContext, v);
                 btnRegisterNextOnClick(v);
             }
         });
@@ -75,7 +75,7 @@ public class RegisterActivity extends BaseActivity {
         mAgreement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utility.hideInput(mContext);
+                Utility.hideInput(mContext, v);
                 Intent intent = new Intent(RegisterActivity.this, AgreementActivity.class);
                 startActivity(intent);
             }

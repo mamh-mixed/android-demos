@@ -44,7 +44,7 @@ public class ForgetPasswordActivity extends BaseActivity {
         mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utility.hideInput(mContext);
+                Utility.hideInput(mContext, v);
                 finish();
             }
         });
@@ -53,7 +53,7 @@ public class ForgetPasswordActivity extends BaseActivity {
         mEmail.setImageViewOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utility.hideInput(mContext);
+                Utility.hideInput(mContext, v);
                 String title = getResources().getString(R.string.forget_account_message);
                 String ok = getResources().getString(R.string.forget_i_known);
                 mHintDialog.setCancelVisibility(View.GONE);
@@ -66,7 +66,7 @@ public class ForgetPasswordActivity extends BaseActivity {
         mCnfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utility.hideInput(mContext);
+                Utility.hideInput(mContext, v);
                 forgetPassowd(); //忘记密码了
             }
         });

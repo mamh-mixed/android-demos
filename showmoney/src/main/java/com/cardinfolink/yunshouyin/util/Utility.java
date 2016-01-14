@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.util;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.google.zxing.BarcodeFormat;
@@ -108,10 +109,10 @@ public class Utility {
     }
 
 
-    public static void hideInput(Context context) {
+    public static void hideInput(Context context, View view) {
         try {
             InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMethodManager.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+            inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         } catch (Exception e) {
             e.printStackTrace();
         }
