@@ -40,10 +40,14 @@
         <paper-input id="merId" label="门店代码" name="merId" value="{{cond.merId::input}}"></paper-input>
         <paper-input label="订单号" name="orderNum" value="{{cond.orderNum::input}}"></paper-input>
         <paper-input label="关联订单号" name="origOrderNum" value="{{cond.origOrderNum::input}}"></paper-input>
+        <paper-input label="终端号" name="terminalId" value="{{cond.terminalId::input}}"></paper-input>
         <paper-input label="卡券号" name="couponsNo" value="{{cond.couponNum::input}}"></paper-input>
+        <paper-input label="卡券名称" name="prodname" value="{{cond.prodname::input}}"></paper-input>
         <paper-input label="应答码" name="respcd" value="{{cond.respcd::input}}"></paper-input>
-        <x-select items="[[woStatusMapArray]]" name="writeoffStatus" selected-item="{{woStatus}}" label="核销状态"></x-select>
         <x-select items="[[busicds]]" name="busicd" selected-item="{{busicd}}" label="交易类型"></x-select>
+        <x-select items="[[transStatusMap]]" name="transStatus" selected-item="{{transStatus}}" label="交易状态"></x-select>
+        <x-select items="[[voucherTypeMap]]" name="voucherType" selected-item="{{voucherType}}" label="卡券类型"></x-select>
+        <x-select items="[[couponPayStatusMap]]" name="couponPayStatus" selected-item="{{couponPayStatus}}" label="支付状态"></x-select>
         <paper-input id="payType" name="pay" value="coupon" hidden></paper-input>
         <paper-button class="colorful" raised on-tap="queryAction">查询</paper-button>
       </div>
@@ -55,11 +59,13 @@
             <div class="th left">门店代码</div>
             <div class="th left">门店名称</div>
             <div class="th left">订单号</div>
+            <div class="th left">终端</div>
             <div class="th left">交易类型</div>
             <div class="th left">卡券号</div>
             <div class="th left">卡券名称</div>
-            <div class="th left">终端</div>
-            <div class="th left">核销状态</div>
+            <div class="th left">卡券类型</div>
+            <div class="th left">交易状态</div>
+            <div class="th left">支付状态</div>
             <div class="th">交易时间</div>
             <div class="th">报文</div>
           </div>
@@ -82,11 +88,13 @@
               <div class="td left">
                 <a on-tap="showTradeViewHandler">{{item.orderNum}}</a>
               </div>
+               <div class="td">{{item.terminalid}}</div>
               <div class="td left">{{busicdFilter(item.busicd)}}</div>
               <div class="td left">{{item.couponsNo}}</div>
               <div class="td left">{{item.prodname}}</div>
-              <div class="td">{{item.terminalid}}</div>
-              <div class="td">{{woStatusFilter(item.writeoffStatus)}}</div>
+              <div class="td left">{{voucherTypeFilter(item.voucherType)}}</div>
+              <div class="td">{{transStatusFilter(item.transStatus)}}</div>
+              <div class="td">{{couponPayStatusFilter(item)}}</div>
               <div class="td center">{{item.transTime}}</div>
               <div class="td center">
                 <iron-icon icon="receipt" on-tap="showTradeMessageEvent"></iron-icon>
@@ -111,14 +119,7 @@
       'use strict';
       var TRANS_TYPE_MAP = {
         'VERI': '卡券核销',
-        // 'CRVE': '刷卡核销',
-        // 'QUVE': '验券查询',
         'CAVE': '卡券撤销',
-      };
-      var WO_STATUS_MAP = {
-        'SUCCESS': '成功',
-        'ERROR': '失败',
-        // 'PROCESS': '处理中',
       };
       Polymer({
         is: 'coupon-wo-list',
@@ -154,20 +155,6 @@
             }
           },
           user: Object,
-          woStatusMapArray: {
-            type: Array,
-            value: function() {
-              var arr = [];
-
-              arr = Object.keys(WO_STATUS_MAP).map(function(item) {
-                return {
-                  key: item,
-                  value: WO_STATUS_MAP[item]
-                };
-              })
-              return arr;
-            }
-          },
           busicd: {
             type: Object
           },
@@ -187,6 +174,81 @@
               }
               return busicds;
             })()
+          },
+          transStatus: {
+            type: Object
+          },
+          transStatusMap: {
+            type: Array,
+            value: [{
+              key: '30',
+              value: '成功'
+            }, {
+              key: '20',
+              value: '失败'
+            }, {
+              key: '40',
+              value: '已关闭'
+            }, ]
+          },
+          couponPayStatusMap: {
+            type: Array,
+            value: [{
+              key: '30',
+              value: '成功'
+            }, {
+              key: '20',
+              value: '失败'
+            }, {
+              key: '40',
+              value: '已关闭'
+            }, {
+              key: '10',
+              value: '处理中'
+            }, {
+              key: '100',
+              value: '未支付'
+            }, ]
+          },
+          voucherTypeMap: {
+            type: Array,
+            value: [{
+              key: '1',
+              value: '普通满减券'
+            }, {
+              key: '2',
+              value: '提货券'
+            }, {
+              key: '3',
+              value: '普通满折券'
+            }, {
+              key: '21',
+              value: '刷银行卡满减券'
+            }, {
+              key: '22',
+              value: '刷银行卡固定金额券'
+            }, {
+              key: '23',
+              value: '刷银行卡满折券'
+            }, {
+              key: '41',
+              value: '微信支付满减券'
+            }, {
+              key: '42',
+              value: '微信支付固定金额券'
+            }, {
+              key: '43',
+              value: '微信支付满折券'
+            }, {
+              key: '51',
+              value: '支付宝支付满减券'
+            }, {
+              key: '52',
+              value: '支付宝支付固定金额券'
+            }, {
+              key: '53',
+              value: '支付宝支付满折券'
+            }, ]
           },
         },
         ready: function() {
@@ -266,10 +328,6 @@
         busicdFilter: function(busicd) {
           return TRANS_TYPE_MAP[busicd] || busicd;
         },
-        // 核销状态
-        woStatusFilter: function(status) {
-          return WO_STATUS_MAP[status] || status;
-        },
         // 应答码着色
         getRespCodeColor: function(value) {
           if (!value) {
@@ -310,6 +368,51 @@
           }
 
           this.set('user', response.data);
+        },
+        transStatusFilter: function(status) {
+          var map = {
+            '10': '处理中',
+            '20': '失败',
+            '30': '成功',
+            '40': '已关闭',
+          };
+          return map[status];
+        },
+        voucherTypeFilter: function(voucherType) {
+          if (!voucherType || voucherType === '' || voucherType === '0') {
+            return '';
+          }
+          var map = {
+            '1': '普通满减券',
+            '2': '提货券',
+            '3': '普通满折券',
+            '21': '刷银行卡满减券',
+            '22': '刷银行卡固定金额券',
+            '23': '刷银行卡满折券',
+            '31': '礼包券',
+            '41': '微信支付满减券',
+            '42': '微信支付固定金额券',
+            '43': '微信支付满折券',
+            '51': '支付宝支付满减券',
+            '52': '支付宝支付固定金额券',
+            '53': '支付宝支付满折券',
+          };
+          return map[voucherType];
+        },
+        couponPayStatusFilter: function(item) {
+          if (item.busicd != 'VERI') {
+            return '';
+        } else if (!item.scanPayCoupon) {
+            return '未支付';
+          }
+          var map = {
+            '10': '处理中',
+            '20': '失败',
+            '30': '成功',
+            '40': '已关闭',
+            '': '未支付',
+          };
+          return map[item.scanPayCoupon.transStatus];
         },
       });
     })();
