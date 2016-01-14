@@ -295,9 +295,8 @@ func checkLimitAmt(req *model.ScanPayRequest, merInfo *model.Merchant) *model.Sc
 			}
 
 			totalAmt, err := mongo.SpTransColl.FindTotalAmtByMerId(req.Mchntid, time.Now().Format("2006-01-02"))
-			if err != nil {
-				log.Errorf("compute the total amt error merId=%s, orderNum=%s", req.Mchntid, req.OrderNum)
-				return nil
+			if err != nil { //not found
+				totalAmt = 0
 			}
 			if (int(totalAmt) + amt) > merInfo.LimitAmt { //当天
 				if merInfo.EnhanceType == model.NoEnhance {
