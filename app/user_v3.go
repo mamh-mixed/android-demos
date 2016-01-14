@@ -160,6 +160,58 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 	return result
 }
 
+// findOrderHandle 查找订单处理器
+func (u *userV3) findOrderHandle(req *reqParams) (result model.AppResult) {
+	// 用户名不为空
+	if req.UserName == "" || req.Transtime == "" || req.Password == "" || req.Index == "" {
+		return model.PARAMS_EMPTY
+	}
+
+	// 校验index是不是非数字的
+	if !regexDigit.MatchString(req.Index) {
+		return model.InvalidIndexParams
+	}
+
+	user, errResult := checkPWD(req)
+	if errResult != nil {
+		return *errResult
+	}
+
+	index, size := pagingParams(req)
+	q := &model.QueryCondition{
+		OrderNum:  req.OrderNum,
+		TransType: model.PayTrans, // 只是支付交易
+		MerId:     user.MerId,
+		Skip:      index,
+		Size:      size,
+		Page:      1,
+	}
+
+	// 初始化查询参数
+	findOrderParams(req, q)
+	trans, total, err := mongo.SpTransColl.Find(q)
+
+	if err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	var txns []*model.AppTxn
+	for i, t := range trans {
+		log.Debugf("%d: trans is %+v", i, t)
+		txns = append(txns, transToTxn(t))
+	}
+	log.Debugf("txns's length is %d", len(txns))
+
+	if len(txns) == 0 {
+		txns = make([]*model.AppTxn, 0)
+	}
+	result = model.SUCCESS1
+	result.Txn = txns
+	result.TotalRecord = total
+	result.Size = len(txns)
+	return
+}
+
 // getDaySummary 获取单日汇总的处理
 func (u *userV3) getDaySummary(req *reqParams) (result model.AppResult) {
 	// req.BusinessType 表示 报表类型。"1":收款账单；"2":卡券账单

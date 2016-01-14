@@ -49,7 +49,8 @@ var (
 	USER_DATA_ERROR          = NewAppResult(FAIL, "user_data_error")
 	NOT_SUPPORT              = NewAppResult(FAIL, "请联系您的服务商为您修改清算信息。")
 	INVALID_REPORT_TYPE      = NewAppResult(FAIL, "INVALID_REPORT_TYPE")
-	InvalidSizeParams        = NewAppResult(FAIL, "INVALID_SIZE_PARAMS") // 请求参数的size不为数字
+	InvalidSizeParams        = NewAppResult(FAIL, "INVALID_SIZE_PARAMS")  // 请求参数的size不为数字
+	InvalidIndexParams       = NewAppResult(FAIL, "INVALID_INDEX_PARAMS") // 请求参数的index不为数字
 	COMPANY_LOGIN_NAME_ERROR = NewAppResult(FAIL, "company_login_name_error")
 )
 

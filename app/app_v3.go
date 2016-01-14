@@ -215,7 +215,7 @@ func totalSummaryHandler(w http.ResponseWriter, r *http.Request) {
 
 // ordersHandler 查询订单
 func ordersHandler(w http.ResponseWriter, r *http.Request) {
-	result := User.findOrderHandle(&reqParams{
+	result := UserV3.findOrderHandle(&reqParams{
 		UserName:  r.FormValue("username"),
 		Password:  r.FormValue("password"),
 		Transtime: r.FormValue("transtime"),
