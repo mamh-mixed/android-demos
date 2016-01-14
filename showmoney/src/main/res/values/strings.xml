@@ -211,8 +211,8 @@
     <string name="alert_error_other">其他错误</string>
 
     <string name="refd_activity_refd_message">当前可退款金额（元）</string>
-    <string name="refd_activity_refd_message1">需退款金额（元）"</string>
-    <string name="refd_activity_refd_password">请输入登录密码</string>
+    <string name="refd_activity_refd_message1">需退款金额(元) </string>
+    <string name="refd_activity_refd_password">请输入登录密码 </string>
     <string name="refd_activity_refd">退款</string>
 
     <string name="refd_dialog_refd_max">本次可退款额度：¥</string>

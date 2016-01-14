@@ -42,11 +42,45 @@
             android:layout_marginTop="40dp"
             cardinfolink:title="@string/refd_activity_refd_message1" />
 
-        <com.cardinfolink.yunshouyin.ui.SettingPasswordItem
-            android:id="@+id/refd_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            cardinfolink:title="@string/refd_activity_refd_password" />
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"
+            android:background="@color/background_layout">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="10dp"
+                android:text="@string/refd_activity_refd_password"
+                android:textColor="@color/textview_textcolor_setting_password_item"
+                android:textSize="14sp" />
+
+            <com.cardinfolink.yunshouyin.ui.EditTextClear
+                android:id="@+id/refd_password"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="40dp"
+                android:layout_toRightOf="@+id/tv_title"
+                android:background="@null"
+                android:hint="请输入密码"
+                android:inputType="textPassword"
+                android:textColor="@color/textview_textcolor_setting_password_item"
+                android:textSize="12sp" />
+
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="0.1dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@color/horizontal_view_background" />
+
+        </RelativeLayout>
 
         <Button
             android:id="@+id/btnrefd"
