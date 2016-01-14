@@ -96,7 +96,9 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
         //需要输入内容的
         mShopName = (SettingInputItem) findViewById(R.id.merchant_name);//商铺名称
+        mShopName.setImageViewDrawable(null);//去掉组件右边的问号
         mShopAddress = (SettingInputItem) findViewById(R.id.merchant_address);//商铺地址
+        mShopAddress.setImageViewDrawable(null);
 
         //上传图片
         mCardPositive = (SettingClikcItem) findViewById(R.id.id_card_positive);//身份证 正面
