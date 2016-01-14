@@ -18,39 +18,48 @@
             cardinfolink:title="@string/setting_my_web_yunshouyin" />
 
 
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/ticket_edittext_bg"
-            android:orientation="vertical">
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="100">
 
-            <TextView
-                android:id="@+id/merchant_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="@string/my_web_activity_merchant_name" />
 
-            <ImageView
-                android:id="@+id/iv_qrcode"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:layout_below="@+id/merchant_name"
-                android:layout_centerInParent="true"
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp" />
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="90"
+                android:background="@drawable/ticket_edittext_bg"
+                android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/iv_qrcode"
-                android:layout_centerHorizontal="true"
-                android:text="@string/my_web_activity_message" />
+                <TextView
+                    android:id="@+id/merchant_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/my_web_activity_merchant_name"
+                    android:textSize="16sp" />
 
-        </RelativeLayout>
+                <ImageView
+                    android:id="@+id/iv_qrcode"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    android:layout_below="@+id/merchant_name"
+                    android:layout_centerInParent="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginTop="10dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/iv_qrcode"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/my_web_activity_message"
+                    android:textSize="14sp" />
+
+            </RelativeLayout>
+        </LinearLayout>
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -74,7 +83,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/btnsave"
                 android:layout_centerHorizontal="true"
-                android:text="@string/my_web_activity_message1" />
+                android:text="@string/my_web_activity_message1"
+                android:textSize="12sp" />
         </RelativeLayout>
 
 
