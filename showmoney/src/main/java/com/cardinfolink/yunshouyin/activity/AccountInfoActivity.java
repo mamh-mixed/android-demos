@@ -40,30 +40,12 @@ public class AccountInfoActivity extends BaseActivity {
         mMerchantName = (SettingDetailItem) findViewById(R.id.merchant_name);
         mPhoneNumber = (SettingDetailItem) findViewById(R.id.phone_number);
 
+        mMerchantName.setDetail(SessonData.loginUser.getMerName());
+
         initUserInfo();//初始化用户的信息
 
     }
 
-    /**
-     * 初始化用户的信息，例如显示用户手机号，银行，所在城市等。。。。
-     * <p/>
-     * {
-     * "state": "success",
-     * "count": 0,
-     * "size": 0,
-     * "refdcount": 0,
-     * "info": {
-     * "bank_open": "中国工商银行",
-     * "payee": "马明辉",//收款人
-     * "payee_card": "6222021001114863340",
-     * "phone_num": "13014625286",
-     * "province": "上海市",
-     * "city": "上海市",
-     * "branch_bank": "中国工商银行股份有限公司上海市漕宝路支行",
-     * "bankNo": "102290004911|102100099996"
-     * }
-     * }
-     */
 
     private void initUserInfo() {
         quickPayService.getBankInfoAsync(SessonData.loginUser, new QuickPayCallbackListener<BankInfo>() {
@@ -74,6 +56,7 @@ public class AccountInfoActivity extends BaseActivity {
                 mBankName.setDetail(bankInfo.getBankOpen());
                 mPhoneNumber.setDetail(bankInfo.getPhoneNum());
                 //这里商户名没有获得到！！！！！！！！
+                mMerchantName.setDetail(SessonData.loginUser.getMerName());
             }
 
             @Override
