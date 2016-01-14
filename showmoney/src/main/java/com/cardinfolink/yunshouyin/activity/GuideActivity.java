@@ -7,8 +7,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -29,13 +32,23 @@ public class GuideActivity extends Activity {
     private ArrayList<ImageView> imageViewList;
     private Button mStart;
     private SharedPreferences sp;
+    private int mFirsDownX = 0;
+    private int mCurrentUpX = 0;
+    private Context mContext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sp = getSharedPreferences("savedata", Context.MODE_PRIVATE);
         setContentView(R.layout.activity_guide);
+        mContext = this;
         mViewPager = (ViewPager) findViewById(R.id.vp_guide);
+        mViewPager.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });
         mStart = (Button) findViewById(R.id.btn_start);
         initView();
 
@@ -53,16 +66,6 @@ public class GuideActivity extends Activity {
             imageViewList.add(imageView);
         }
 
-        mStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putBoolean("is_user_guide_show", false).commit();
-                Intent intent = new Intent(GuideActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
 
     }
 
@@ -100,16 +103,18 @@ public class GuideActivity extends Activity {
 
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+            if (position == mImageIds.length - 1) {
+                     SharedPreferences.Editor editor = sp.edit();
+                    editor.putBoolean("is_user_guide_show", false).commit();
+                    Intent intent = new Intent(GuideActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+            }
         }
 
         @Override
         public void onPageSelected(int position) {
-            if (position == mImageIds.length - 1) {//最后一个界面
-                mStart.setVisibility(View.VISIBLE);
-            } else {
-                mStart.setVisibility(View.INVISIBLE);
-            }
+
         }
 
         @Override
