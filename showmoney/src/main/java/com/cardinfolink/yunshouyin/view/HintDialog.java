@@ -107,6 +107,7 @@ public class HintDialog {
     /**
      * 右边 一般显示 “确认”按钮
      * 设置对话框中间显示的文本
+     *
      * @param title
      */
     public void setTitle(String title) {
@@ -115,6 +116,7 @@ public class HintDialog {
 
     /**
      * 设置对话框右边按钮显示的文本
+     *
      * @param ok
      */
     public void setOkText(String ok) {
@@ -124,6 +126,7 @@ public class HintDialog {
     /**
      * zuo边一般显示 “取消” 按钮
      * 设置对话框左边按钮显示的文本
+     *
      * @param cancelText
      */
     public void setCancelText(String cancelText) {
@@ -139,5 +142,23 @@ public class HintDialog {
     public void setCancelOnClickListener(OnClickListener l) {
         mCancelOnClickListener = l;
         mCancel.setOnClickListener(l);
+    }
+
+    /**
+     * ok是右边按钮
+     *
+     * @param v
+     */
+    public void setOkVisibility(int v) {
+        mCancel.setVisibility(v);
+    }
+
+    /**
+     * cancel是左边按钮
+     *
+     * @param v
+     */
+    public void setCancelVisibility(int v) {
+        mCancel.setVisibility(v);
     }
 }
