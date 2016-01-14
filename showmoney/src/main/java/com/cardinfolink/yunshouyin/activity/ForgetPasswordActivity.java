@@ -16,6 +16,7 @@ import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
+import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.HintDialog;
 
@@ -43,6 +44,7 @@ public class ForgetPasswordActivity extends BaseActivity {
         mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Utility.hideInput(mContext);
                 finish();
             }
         });
@@ -51,10 +53,11 @@ public class ForgetPasswordActivity extends BaseActivity {
         mEmail.setImageViewOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Utility.hideInput(mContext);
                 String title = getResources().getString(R.string.forget_account_message);
                 String ok = getResources().getString(R.string.forget_i_known);
-                String cancel = getResources().getString(R.string.forget_cancel);
-                mHintDialog.show(title, ok, cancel);
+                mHintDialog.setCancelVisibility(View.GONE);
+                mHintDialog.show(title, ok, "");
             }
         });
 
@@ -63,6 +66,7 @@ public class ForgetPasswordActivity extends BaseActivity {
         mCnfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Utility.hideInput(mContext);
                 forgetPassowd(); //忘记密码了
             }
         });
@@ -72,6 +76,7 @@ public class ForgetPasswordActivity extends BaseActivity {
      * 点击 按钮 调用这里， 提交忘记密码的请求
      */
     private void forgetPassowd() {
+
         final String emailStr = mEmail.getText();
         if (!validate(emailStr)) {
             return;
@@ -82,8 +87,9 @@ public class ForgetPasswordActivity extends BaseActivity {
                 //重置密码将发送到此邮箱
                 String title = getResources().getString(R.string.forget_account_message1);
                 title += "\n" + emailStr;
-                String ok = getResources().getString(R.string.forget_i_known);
+                String ok = getResources().getString(R.string.txt_confirm);
                 String cancel = getResources().getString(R.string.forget_cancel);
+                mHintDialog.setCancelVisibility(View.VISIBLE);
                 mHintDialog.setOkOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -99,6 +105,7 @@ public class ForgetPasswordActivity extends BaseActivity {
                 String title = ex.getErrorMsg();
                 String ok = getResources().getString(R.string.forget_i_known);
                 String cancel = getResources().getString(R.string.forget_cancel);
+                mHintDialog.setCancelVisibility(View.GONE);
                 mHintDialog.show(title, ok, cancel);
 
             }
