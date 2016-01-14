@@ -993,6 +993,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     public void getResult() {
         mOriginalTotal = 0;
         String x = output.getText().toString();//上边的文本框
+
+
         String t = "";
         int i = 0;
         double tempInputResult;//优惠后的金额，
@@ -1017,6 +1019,21 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             input.setText(String.format("%.2f", tempInputResult));//下面的文本框
         }
 
+        //添加浏览判断小数点后最多输入两位小数
+        String[] nums = x.split("\\+");
+        if (nums.length > 0) {
+            String lastNum = nums[nums.length - 1];//按照加号分割后，取出最后一个数字
+            if (lastNum != null && lastNum.contains(".")) {
+                String[] floatsNum = lastNum.split("\\.");//分割字符串
+                if (floatsNum.length > 0) {
+                    String last = floatsNum[floatsNum.length - 1];
+                    if (last != null && last.length() >= 2) {
+                        numFlag = false;
+                        return;
+                    }
+                }
+            }
+        }
 
         if (mOriginalTotal > MAX_MONEY) {
             // "金额过大!"
@@ -1143,15 +1160,18 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     output.append(q);
                     addFlag = false;
                     pointFlag = true;
+                    numFlag = true;
                 } else {
                     output.append(q);
                     addFlag = false;
                     pointFlag = true;
+                    numFlag = true;
                 }
             } else {
                 output.append(q);
                 addFlag = false;
                 pointFlag = true;
+                numFlag = true;
             }
         } else {
             return;
