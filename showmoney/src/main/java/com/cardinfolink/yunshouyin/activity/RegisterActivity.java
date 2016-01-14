@@ -19,6 +19,7 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
+import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
 
@@ -28,7 +29,6 @@ public class RegisterActivity extends BaseActivity {
     private SettingActionBarItem mActionBar;//注册页面的标题栏
     private SettingInputItem mEmailEdit;
     private SettingPasswordItem mPasswordEdit;
-    private SettingPasswordItem mQrPasswordEdit;
     private SettingInputItem mInviteCode;//邀请码
     private Button mRegisterNext;
     private TextView mAgreement;
@@ -44,12 +44,13 @@ public class RegisterActivity extends BaseActivity {
     private void initLayout() {
         mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);//注册页面标题栏
         mEmailEdit = (SettingInputItem) findViewById(R.id.register_email);
+        mEmailEdit.setImageViewDrawable(null);
 
         mPasswordEdit = (SettingPasswordItem) findViewById(R.id.register_password);
 
-        mQrPasswordEdit = (SettingPasswordItem) findViewById(R.id.register_qr_password);
 
         mInviteCode = (SettingInputItem) findViewById(R.id.register_invite_code);//邀请码
+        mInviteCode.setImageViewDrawable(null);
 
         mAgreement = (TextView) findViewById(R.id.tv_agreement);
 
@@ -57,6 +58,7 @@ public class RegisterActivity extends BaseActivity {
         mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Utility.hideInput(mContext);
                 finish();
             }
         });
@@ -65,6 +67,7 @@ public class RegisterActivity extends BaseActivity {
         mRegisterNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Utility.hideInput(mContext);
                 btnRegisterNextOnClick(v);
             }
         });
@@ -72,6 +75,7 @@ public class RegisterActivity extends BaseActivity {
         mAgreement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Utility.hideInput(mContext);
                 Intent intent = new Intent(RegisterActivity.this, AgreementActivity.class);
                 startActivity(intent);
             }
@@ -81,10 +85,9 @@ public class RegisterActivity extends BaseActivity {
     public void btnRegisterNextOnClick(View view) {
         final String username = mEmailEdit.getText(); //用户名
         final String password = mPasswordEdit.getPassword(); //密码，第一次输入的
-        final String qrPassword = mQrPasswordEdit.getPassword(); //确认密码，第二次输入的
         final String invite = mInviteCode.getText();//邀请码
 
-        if (!validate(username, password, qrPassword)) {
+        if (!validate(username, password)) {
             return;
         }
 
@@ -136,7 +139,7 @@ public class RegisterActivity extends BaseActivity {
         });
     }
 
-    private boolean validate(String email, String password, String qrPassword) {
+    private boolean validate(String email, String password) {
         String alertMsg = "";
         Bitmap alertBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
         if (TextUtils.isEmpty(email)) {
@@ -156,11 +159,6 @@ public class RegisterActivity extends BaseActivity {
         }
         if (password.length() < 6) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_password_short_six);
-            mAlertDialog.show(alertMsg, alertBitmap);
-            return false;
-        }
-        if (!password.equals(qrPassword)) {
-            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_qrpassword_error);
             mAlertDialog.show(alertMsg, alertBitmap);
             return false;
         }
