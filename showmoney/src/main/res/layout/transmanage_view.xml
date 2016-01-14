@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background_layout">
@@ -9,14 +10,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tv_title"
+        <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+            android:id="@+id/action_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:padding="10dp"
-            android:text="@string/bill_title1"
-            android:textSize="22dp" />
+            cardinfolink:left_text="@string/setting_return"
+            cardinfolink:title="@string/bill_title1" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -191,17 +191,6 @@
                     android:textColor="@drawable/radio_button1_color_selector"
                     android:textSize="15sp" />
 
-                <CheckBox
-                    android:id="@+id/cb_rec_type4"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="@string/bill_rec_type4"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -245,11 +234,17 @@
                     android:layout_weight="1"
                     android:gravity="center" />
 
-                <TextView
+                <CheckBox
+                    android:id="@+id/cb_rec_type4"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center" />
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_rec_type4"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
             </LinearLayout>
         </LinearLayout>
 
