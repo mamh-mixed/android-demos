@@ -57,3 +57,4 @@ It's time to use Gulp tasks:
 
 * [angular-toastr](https://github.com/Foxandxss/angular-toastr)
 * [ui-router](https://github.com/angular-ui/ui-router)
+* [crypto-js](https://github.com/brix/crypto-js)

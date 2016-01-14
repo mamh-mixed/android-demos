@@ -58,7 +58,7 @@ func RouteV3() (mux *AppV3ServeMux) {
 	mux.HandleFunc("/app/v3/password/update", updatePasswordHandler)
 	mux.HandleFunc("/app/v3/account/activate", activateAccountHandler)
 	mux.HandleFunc("/app/v3/account/improve", improveAccountHandler)
-	mux.HandleFunc("/app/v3/account/certificate", improveAccountHandler)
+	mux.HandleFunc("/app/v3/account/certificate", certificateAccountHandler)
 	mux.HandleFunc("/app/v3/account/info/settle", settleInfoHandler)
 
 	mux.HandleFunc("/app/v3/token/qiniu", qiniuTokenHandler)
