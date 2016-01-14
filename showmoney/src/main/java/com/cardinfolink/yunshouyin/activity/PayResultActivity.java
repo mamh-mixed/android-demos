@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -251,6 +252,23 @@ public class PayResultActivity extends Activity {
 
         });
         mHintDialog.show();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
+                    showPayFailPref();
+                } else {
+                    Coupon.getInstance().clear();//清空卡券信息
+                    finish();
+                }
+            }
+        }
+
+        return false;
+
     }
 
 }
