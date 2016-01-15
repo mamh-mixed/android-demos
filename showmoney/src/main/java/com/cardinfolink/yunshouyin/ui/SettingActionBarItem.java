@@ -2,6 +2,7 @@ package com.cardinfolink.yunshouyin.ui;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -33,9 +34,13 @@ public class SettingActionBarItem extends RelativeLayout {
         String title = typeArray.getString(R.styleable.SettingItemView_title);
         String left = typeArray.getString(R.styleable.SettingItemView_left_text);
         String right = typeArray.getString(R.styleable.SettingItemView_right_text);
+        String leftTextColor = typeArray.getString(R.styleable.SettingItemView_left_text_color);
         typeArray.recycle();
         mTitle.setText(title);
         mLeftText.setText(left);
+        if (leftTextColor != null) {
+            mLeftText.setTextColor(Color.parseColor(leftTextColor));
+        }
         mRightText.setText(right);
     }
 
