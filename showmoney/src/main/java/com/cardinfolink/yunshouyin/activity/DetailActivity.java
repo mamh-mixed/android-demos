@@ -254,6 +254,7 @@ public class DetailActivity extends BaseActivity {
 
     private void initBillData() {
         //这里是设置支付渠道
+
         if (!TextUtils.isEmpty(mTradeBill.chcd)) {
             if ("WXP".equals(mTradeBill.chcd)) {
                 mPayChcd.setRightText(getString(R.string.detail_activity_chcd_type1));
@@ -290,19 +291,23 @@ public class DetailActivity extends BaseActivity {
 
         //支付方式
         if (!TextUtils.isEmpty(mTradeBill.tradeFrom)) {
-            if ("android".equals(mTradeBill.tradeFrom) || "ios".equals(mTradeBill.tradeFrom)) {
+            if ("android".equals(mTradeBill.tradeFrom)) {
                 //app收款
-                mPayType.setRightText(getString(R.string.detail_activity_pay_type1));
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type2));
+
+            } else if ("ios".equals(mTradeBill.tradeFrom)) {
+                //app收款
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type3));
             } else if ("wap".equals(mTradeBill.tradeFrom)) {
                 //web 收款
-                mPayType.setRightText(getString(R.string.detail_activity_pay_type2));
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type4));
             } else {
                 //其他收款
-                mPayType.setRightText(getString(R.string.detail_activity_pay_type3));
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type1));
             }
         } else {
             //tradeFrom 是 null 清空
-            mPayType.setRightText(getString(R.string.detail_activity_pay_type4));
+            mPayType.setRightText(getString(R.string.detail_activity_pay_type5));
         }
 
         //设置订单号

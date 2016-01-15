@@ -128,11 +128,12 @@
     <string name="detail_activity_small_ticket_number">小票号：</string>
     <string name="detail_activity_pay_datetime">交易时间</string>
     <string name="detail_activity_order_number">订单编号</string>
-    <string name="detail_activity_pay_type">收款方式</string>
-    <string name="detail_activity_pay_type1">App收款</string>
-    <string name="detail_activity_pay_type2">网页收款</string>
-    <string name="detail_activity_pay_type3">PC收款</string>
-    <string name="detail_activity_pay_type4">其他收款</string>
+    <string name="detail_activity_pay_type">收款工具</string>
+    <string name="detail_activity_pay_type1">云收银桌面版</string>
+    <string name="detail_activity_pay_type2">云收银安卓版</string>
+    <string name="detail_activity_pay_type3">云收银iOS版</string>
+    <string name="detail_activity_pay_type4">云收银收款码</string>
+    <string name="detail_activity_pay_type5">云收银开放接口</string>
     <string name="detail_activity_close">关闭</string>
     <string name="detail_activity_veri_order_number">核销订单号</string>
     <string name="detail_activity_order_number1">支付订单号</string>
