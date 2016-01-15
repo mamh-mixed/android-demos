@@ -47,14 +47,14 @@ func PurchaseCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
-		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+		return LogicCouponErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+		return LogicCouponErrorHandler(t, "NO_CHANMER")
 	}
 
 	// 记录交易
@@ -123,7 +123,7 @@ func PurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	// 判断是否存在该订单
 	orig, err := mongo.CouTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return adaptor.LogicErrorHandler(t, "TRADE_NOT_EXIST")
+		return LogicCouponErrorHandler(t, "TRADE_NOT_EXIST")
 	}
 
 	//从原始交易中获取订单号，赋值给该请求的原始订单号字段。
@@ -132,14 +132,14 @@ func PurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
-		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+		return LogicCouponErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+		return LogicCouponErrorHandler(t, "NO_CHANMER")
 	}
 
 	// 记录交易
@@ -208,7 +208,7 @@ func QueryPurchaseCouponsResult(req *model.ScanPayRequest) (ret *model.ScanPayRe
 	// 判断是否存在该订单
 	orig, err := mongo.CouTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return adaptor.LogicErrorHandler(t, "TRADE_NOT_EXIST")
+		return LogicCouponErrorHandler(t, "TRADE_NOT_EXIST")
 	}
 
 	//从原始交易中获取订单号，赋值给该请求的原始订单号字段。
@@ -217,14 +217,14 @@ func QueryPurchaseCouponsResult(req *model.ScanPayRequest) (ret *model.ScanPayRe
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
-		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+		return LogicCouponErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+		return LogicCouponErrorHandler(t, "NO_CHANMER")
 	}
 
 	// 记录交易
@@ -303,7 +303,7 @@ func UndoPurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespon
 	// 判断是否存在该订单
 	orig, err := mongo.CouTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return adaptor.LogicErrorHandler(t, "TRADE_NOT_EXIST")
+		return LogicCouponErrorHandler(t, "TRADE_NOT_EXIST")
 	}
 
 	//从原始交易中获取订单号，赋值给该请求的原始订单号字段。
@@ -312,14 +312,14 @@ func UndoPurchaseActCoupons(req *model.ScanPayRequest) (ret *model.ScanPayRespon
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
-		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+		return LogicCouponErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+		return LogicCouponErrorHandler(t, "NO_CHANMER")
 	}
 
 	// 记录交易
@@ -486,14 +486,14 @@ func PurchaseCouponsSingle(req *model.ScanPayRequest) (ret *model.ScanPayRespons
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
-		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+		return LogicCouponErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+		return LogicCouponErrorHandler(t, "NO_CHANMER")
 	}
 
 	// 记录交易
@@ -554,7 +554,7 @@ func RecoverCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 判断是否存在该订单
 	orig, err := mongo.CouTransColl.FindOne(req.Mchntid, req.OrigOrderNum)
 	if err != nil {
-		return adaptor.LogicErrorHandler(t, "TRADE_NOT_EXIST")
+		return LogicCouponErrorHandler(t, "TRADE_NOT_EXIST")
 	}
 
 	//从原始交易中获取订单号，赋值给该请求的原始订单号字段。
@@ -564,14 +564,14 @@ func RecoverCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	// 通过路由策略找到渠道和渠道商户
 	rp := mongo.RouterPolicyColl.Find(req.Mchntid, req.Chcd)
 	if rp == nil {
-		return adaptor.LogicErrorHandler(t, "NO_ROUTERPOLICY")
+		return LogicCouponErrorHandler(t, "NO_ROUTERPOLICY")
 	}
 	t.ChanMerId = rp.ChanMerId
 
 	// 获取渠道商户
 	c, err := mongo.ChanMerColl.Find(t.ChanCode, t.ChanMerId)
 	if err != nil {
-		return adaptor.LogicErrorHandler(t, "NO_CHANMER")
+		return LogicCouponErrorHandler(t, "NO_CHANMER")
 	}
 
 	// 记录交易
@@ -633,4 +633,23 @@ func RecoverCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	updateCouponTrans(t, ret)
 
 	return ret
+}
+
+// LogicCouponErrorHandler 逻辑卡券错误处理
+func LogicCouponErrorHandler(t *model.Trans, errorCode string) *model.ScanPayResponse {
+	spResp := mongo.ScanPayRespCol.Get(errorCode)
+	// 8583应答
+	code, msg := spResp.ISO8583Code, spResp.ISO8583Msg
+
+	// 交易保存
+	t.RespCode = code
+	t.ErrorDetail = msg
+	t.LockFlag = 0
+	mongo.CouTransColl.Add(t)
+
+	return &model.ScanPayResponse{
+		Respcd:      code,
+		ErrorDetail: msg,
+		ErrorCode:   errorCode,
+	}
 }

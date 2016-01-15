@@ -88,10 +88,6 @@ func dispatch(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ret = doScanPay(validatePublicPay, core.PublicPay, req)
 	case model.Veri:
 		ret = doScanPay(validatePurchaseCouponsSingle, core.PurchaseCouponsSingle, req)
-	case model.Crve:
-		ret = doScanPay(validatePurchaseActCoupons, core.PurchaseActCoupons, req)
-	case model.Quve:
-		ret = doScanPay(validateQueryPurchaseCoupons, core.QueryPurchaseCouponsResult, req)
 	case model.Cave:
 		ret = doScanPay(validateRecoverCoupons, core.RecoverCoupons, req)
 	case model.List:
