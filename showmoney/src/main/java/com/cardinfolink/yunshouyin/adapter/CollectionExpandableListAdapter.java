@@ -211,7 +211,7 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
                 childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             } else {
                 //全额退款
-                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_partrefd);
+                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_allrefd);
                 childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             }
         } else {
