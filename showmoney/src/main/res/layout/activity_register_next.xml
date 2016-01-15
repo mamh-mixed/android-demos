@@ -5,124 +5,130 @@
     android:layout_height="match_parent"
     android:background="@color/background_layout">
 
-
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
-            android:id="@+id/action_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cardinfolink:left_text="@string/setting_return" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="@string/register_message1"
-            android:textSize="20sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="@string/register_message2"
-            android:textColor="@color/textview_textcolor_gray3"
-            android:textSize="15sp" />
-
-        <com.cardinfolink.yunshouyin.ui.SettingClikcItem
-            android:id="@+id/province_city"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:src="@drawable/setting_details"
-            cardinfolink:title="@string/register_province_city" />
-
-        <com.cardinfolink.yunshouyin.ui.SettingClikcItem
-            android:id="@+id/bank"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/setting_details"
-            cardinfolink:title="@string/register_bank_branch_bank" />
-
-        <com.cardinfolink.yunshouyin.ui.SettingInputItem
-            android:id="@+id/name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cardinfolink:hint="@string/register_hint_name"
-            cardinfolink:title="@string/register_name" />
-
-        <com.cardinfolink.yunshouyin.ui.SettingInputItem
-            android:id="@+id/bank_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cardinfolink:hint="@string/register_hint_bank_number"
-            cardinfolink:title="@string/register_bank_number" />
-
-        <com.cardinfolink.yunshouyin.ui.SettingInputItem
-            android:id="@+id/phone_number"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cardinfolink:hint="@string/register_hint_phone_number"
-            cardinfolink:title="@string/register_phone_number" />
-
-        <Button
-            android:id="@+id/btnregister"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/blue_selector"
-            android:text="@string/register_next_finished"
-            android:textColor="@color/button_textcolor"
-            android:textSize="16sp" />
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="15dp"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:gravity="center"
-                android:text="@string/register_check"
-                android:textColor="@color/textview_textcolor_copyright1" />
-
-            <TextView
-                android:id="@+id/tv_agreement"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="@string/register_cloud_version"
-                android:textColor="@color/textview_textcolor_copyright" />
-
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp">
-
-            <ImageView
+            <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+                android:id="@+id/action_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="50dp"
-                android:src="@drawable/logo" />
+                cardinfolink:left_text="@string/setting_return" />
 
-        </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:paddingLeft="10dp"
+                android:text="@string/register_message1"
+                android:textSize="20sp" />
 
-    </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:paddingLeft="10dp"
+                android:text="@string/register_message2"
+                android:textColor="@color/textview_textcolor_gray3"
+                android:textSize="15sp" />
+
+            <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+                android:id="@+id/province_city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                android:src="@drawable/setting_details"
+                cardinfolink:title="@string/register_province_city" />
+
+            <com.cardinfolink.yunshouyin.ui.SettingClikcItem
+                android:id="@+id/bank"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/setting_details"
+                cardinfolink:title="@string/register_bank_branch_bank" />
+
+            <com.cardinfolink.yunshouyin.ui.SettingInputItem
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                cardinfolink:hint="@string/register_hint_name"
+                cardinfolink:title="@string/register_name" />
+
+            <com.cardinfolink.yunshouyin.ui.SettingInputItem
+                android:id="@+id/bank_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                cardinfolink:hint="@string/register_hint_bank_number"
+                cardinfolink:title="@string/register_bank_number" />
+
+            <com.cardinfolink.yunshouyin.ui.SettingInputItem
+                android:id="@+id/phone_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                cardinfolink:hint="@string/register_hint_phone_number"
+                cardinfolink:title="@string/register_phone_number" />
+
+            <Button
+                android:id="@+id/btnregister"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/blue_selector"
+                android:text="@string/register_next_finished"
+                android:textColor="@color/button_textcolor"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/register_check"
+                    android:textColor="@color/textview_textcolor_copyright1"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tv_agreement"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingLeft="3dp"
+                    android:text="@string/register_cloud_version"
+                    android:textColor="@color/textview_textcolor_copyright"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="50dp"
+                    android:src="@drawable/logo" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
     <include layout="@layout/select_dialog" />
 

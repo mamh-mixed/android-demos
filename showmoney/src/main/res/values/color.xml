@@ -126,7 +126,7 @@
     <!--======================================================================== -->
 
     <!-- 一个横线的颜色，水平分割线的颜色 -->
-    <color name="horizontal_view_background">#88000000</color>
+    <color name="horizontal_view_background">@color/gray3</color>
     <color name="vertical_view_background">@color/white1</color>
 
 </resources>
