@@ -3,7 +3,9 @@ package com.cardinfolink.yunshouyin.ui;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.View;
@@ -49,6 +51,8 @@ public class SettingInputItem extends RelativeLayout {
         mTitle = (TextView) this.findViewById(R.id.tv_title);
         mText = (EditTextClear) this.findViewById(R.id.et_input);
         mImageView = (ImageView) this.findViewById(R.id.iv_help);
+
+        mText.addTextChangedListener(new EmailWatcher(mText));
     }
 
 
@@ -103,5 +107,34 @@ public class SettingInputItem extends RelativeLayout {
 
     public EditTextClear getmText() {
         return mText;
+    }
+
+    private class EmailWatcher implements TextWatcher {
+        private View view;
+
+        public EmailWatcher(View view) {
+            this.view = view;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            switch (view.getId()) {
+                case R.id.et_input:
+                    if (TextUtils.isEmpty(mText.getText())) {
+                        mImageView.setVisibility(View.VISIBLE);
+                    } else {
+                        mImageView.setVisibility(View.INVISIBLE);
+                    }
+                    break;
+            }
+        }
     }
 }
