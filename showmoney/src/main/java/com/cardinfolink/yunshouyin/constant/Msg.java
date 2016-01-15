@@ -1,6 +1,14 @@
 package com.cardinfolink.yunshouyin.constant;
 
 public class Msg {
+    /**
+     * 发送这个四个不同的消息 会跳转到
+     */
+    public static final int MSG_GO_SCAN_CODE_VIEW = 91;
+    public static final int MSG_GO_TICKET_VIEW = 92;
+    public static final int MSG_GO_BILL_VIEW = 93;
+    public static final int MSG_GO_MY_SETTING_VIEW = 94;
+
     public static final int MSG_SCAN_CODE_VIEW_CLEAR_INPUT_OUTPUT = 120;
 
     public static final int MSG_FROM_SCANCODE_SUCCESS = 131;

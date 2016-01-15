@@ -650,6 +650,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                 //TODO 去账单
                 mHintDialog.hide();//关闭对话框
                 finish();
+                MainActivity.getHandler().sendEmptyMessage(Msg.MSG_GO_BILL_VIEW);
             }
         });
 
