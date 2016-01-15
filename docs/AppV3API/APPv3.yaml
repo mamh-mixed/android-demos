@@ -437,7 +437,7 @@ paths:
           type: string
         - in: formData
           name: index
-          description: 分页起始位置
+          description: 分页起始位置，从0开始
           required: true
           type: string
         - in: formData
@@ -486,7 +486,7 @@ paths:
           type: string
         - in: formData
           name: index
-          description: 分页起始位置
+          description: 分页起始位置，从0开始
           required: true
           type: string
         - in: formData
@@ -554,7 +554,7 @@ paths:
           type: string
         - in: formData
           name: index
-          description: 分页起始位置
+          description: 分页起始位置，从0开始
           required: true
           type: string
         - in: formData
