@@ -439,11 +439,11 @@ public class DetailActivity extends BaseActivity {
 
             //"当没有退款和折扣时，收款金额需要显示为原金额；当有退款或者折扣时，收款金额需要显示为金额"
             if (discountBD.compareTo(bg0) <= 0 && refdBD.compareTo(bg0) <= 0) {
-                mPayMoneyText.setText(R.string.detail_activity_pay_money1);//原金额
+                mPayMoneyText.setText(R.string.detail_activity_pay_money);//金额
                 mPayInfo.setVisibility(View.GONE);
                 mDoFold.setVisibility(View.GONE);
             } else {
-                mPayMoneyText.setText(R.string.detail_activity_pay_money);//金额
+                mPayMoneyText.setText(R.string.detail_activity_pay_money1);//原金额
                 mPayInfo.setVisibility(View.VISIBLE);
                 mDoFold.setVisibility(View.VISIBLE);
             }
