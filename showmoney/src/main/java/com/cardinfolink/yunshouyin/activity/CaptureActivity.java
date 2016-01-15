@@ -397,7 +397,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
                 if (isFastClick()) {
                     return;
                 }
-                mHintDialog.setTitle(String.format("手动查询：%s 次\n订单号：%s", pressCount, mOrderNum));
+                String title = String.format(getString(R.string.capture_activity_wait_user_input_password), pollingCount);
+                mHintDialog.setTitle(title);
                 pressCount++;
                 stopPolling();//结束轮询
                 searchBill();//手动查询,手动查询把 轮询关闭然后每次按一下按钮查询一下
