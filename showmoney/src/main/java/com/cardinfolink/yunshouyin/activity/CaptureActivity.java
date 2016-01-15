@@ -663,7 +663,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         mTradingLoadDialog.hide();
 
         mHintDialog.setTitle(getString(R.string.capture_activity_this_order_had_cancel));
-        mHintDialog.setCancelText(getString(R.string.capture_activity_i_know));
+        mHintDialog.setCancelVisibility(View.GONE);
         mHintDialog.setCancelOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
