@@ -84,6 +84,13 @@ public class PayResultActivity extends Activity {
         mConfirm = (Button) findViewById(R.id.btnconfirm);
         mPayAccess = (ImageView) findViewById(R.id.pay_chcd);
 
+        mPersonAccount.setTextColor(R.color.gray3);
+        mMakeDealTime.setTextColor(R.color.gray3);
+        mBillOrderNum.setTextColor(R.color.gray3);
+        mCouponContent.setTextColor(R.color.gray3);
+        mActualTotalMoney.setTextColor(R.color.gray3);
+        mActualDiscount.setTextColor(R.color.gray3);
+
         //判断是否有卡券优惠
         boolean hasCouponDiscount = Coupon.getInstance().getSaleDiscount() != null && !"0".equals(Coupon.getInstance().getSaleDiscount());
         if (hasCouponDiscount) {
@@ -268,7 +275,6 @@ public class PayResultActivity extends Activity {
         }
 
         return false;
-
     }
 
 }
