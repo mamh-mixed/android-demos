@@ -122,6 +122,11 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 			return err
 		}
 	}
+	if req.DiscountAmt != "" {
+		if matched, err := validateDiscountAmt(req); !matched {
+			return err
+		}
+	}
 
 	return
 }
