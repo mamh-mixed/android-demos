@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.ParseException;
@@ -219,7 +220,20 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
             childViewHolder.billTradeStatus.setTextColor(Color.RED);
         }
         childViewHolder.billTradeStatus.setText(tradeStatus);
-        childViewHolder.billTradeAmount.setText("￥" + bill.amount);
+
+        try {
+            BigDecimal amoutnBg;
+            if (TextUtils.isEmpty(bill.amount)) {
+                amoutnBg = new BigDecimal("0.00");
+            } else {
+                amoutnBg = new BigDecimal(bill.amount);
+            }
+
+            String amountStr = amoutnBg.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+            childViewHolder.billTradeAmount.setText("￥" + amountStr);
+        } catch (Exception e) {
+            childViewHolder.billTradeAmount.setText("￥" + "0.00");
+        }
 
         childViewHolder.billNickName.setText(bill.nickName);
         childViewHolder.billCheckCode.setText(bill.checkCode);
