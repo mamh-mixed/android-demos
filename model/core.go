@@ -325,7 +325,7 @@ type Trans struct {
 	ChanRespCode string        `bson:"chanRespCode,omitempty" json:"-"`                      // 渠道应答码
 	CreateTime   string        `bson:"createTime,omitempty" json:"transTime,omitempty"`      // 交易创建时间 yyyy-mm-dd hh:mm:ss
 	UpdateTime   string        `bson:"updateTime,omitempty" json:"updateTime,omitempty"`     // 交易更新时间 yyyy-mm-dd hh:mm:ss
-	RefundStatus int8          `bson:"refundStatus,omitempty" json:"refundStatus"`           // 退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
+	RefundStatus int8          `bson:"refundStatus" json:"refundStatus"`                     // 退款状态 当交易类型为支付时 0-正常 1-已退款/已撤销 2-部分退款
 	RefundAmt    int64         `bson:"refundAmt,omitempty" json:"-"`                         // 已退款金额
 	Remark       string        `bson:"remark,omitempty" json:"-"`                            // 备注
 	Fee          int64         `bson:"fee" json:"-"`                                         // 手续费
