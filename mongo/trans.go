@@ -561,7 +561,9 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 		find["merName"] = bson.RegEx{q.MerName, "."}
 	}
 	find["transType"] = q.TransType
-	find["$or"] = []bson.M{bson.M{"transStatus": bson.M{"$in": q.TransStatus}}, bson.M{"refundStatus": q.RefundStatus}}
+
+	// 处理交易状态
+	handleTransStatus(q, find)
 
 	// 计算total
 	var total = struct {
