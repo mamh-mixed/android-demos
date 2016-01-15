@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.net.http.LoggingEventHandler;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -46,8 +44,6 @@ import com.google.zxing.WriterException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Hashtable;
-import java.util.Map;
 
 public class ScanCodeView extends LinearLayout implements View.OnClickListener, View.OnTouchListener {
     private static final String TAG = "ScanCodeView";
@@ -418,12 +414,10 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         boolean hasDiscount = (Coupon.getInstance().getSaleDiscount() != null)
                 && (!"0".equals(Coupon.getInstance().getSaleDiscount()));
-        if (!hasDiscount && !validate(total) && !validate(originaiTotal)) {
+        if (!validate(total)) {
             return;
         }
-        if (hasDiscount && !validate(originaiTotal) && total >= 0) {
-            return;
-        }
+
         if (mCHCD.equals(CHCD_TYPE[0])) {
             setLeft();//微信
         } else {
