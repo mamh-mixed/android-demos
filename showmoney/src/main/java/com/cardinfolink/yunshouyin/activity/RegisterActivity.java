@@ -22,6 +22,7 @@ import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
+import com.cardinfolink.yunshouyin.view.YellowTips;
 
 public class RegisterActivity extends BaseActivity {
     private static final String TAG = "RegisterActivity";
@@ -33,6 +34,8 @@ public class RegisterActivity extends BaseActivity {
     private Button mRegisterNext;
     private TextView mAgreement;
 
+    private YellowTips mYellowTips;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +45,8 @@ public class RegisterActivity extends BaseActivity {
     }
 
     private void initLayout() {
+
+        mYellowTips = new YellowTips(this, findViewById(R.id.yellow_tips));
         mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);//注册页面标题栏
         mEmailEdit = (SettingInputItem) findViewById(R.id.register_email);
         mEmailEdit.setImageViewDrawable(null);
@@ -133,33 +138,32 @@ public class RegisterActivity extends BaseActivity {
                 String errorMsg = ex.getErrorMsg();
                 //更新UI
                 mLoadingDialog.endLoading();
-                Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
-                mAlertDialog.show(errorMsg, alertBitmap);
+                // Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
+                mYellowTips.show(errorMsg);
             }
         });
     }
 
     private boolean validate(String email, String password) {
         String alertMsg = "";
-        Bitmap alertBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
         if (TextUtils.isEmpty(email)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_email_cannot_empty);
-            mAlertDialog.show(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
         if (!VerifyUtil.checkEmail(email)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_email_format_error);
-            mAlertDialog.show(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
         if (TextUtils.isEmpty(password)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_password_cannot_empty);
-            mAlertDialog.show(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
         if (password.length() < 6) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_password_short_six);
-            mAlertDialog.show(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 

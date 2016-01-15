@@ -13,6 +13,7 @@ import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
+import com.cardinfolink.yunshouyin.view.YellowTips;
 
 
 public class RegisterActivateActivity extends BaseActivity {
@@ -20,6 +21,7 @@ public class RegisterActivateActivity extends BaseActivity {
     private Button mNext;
     private TextView mActivateMessage;//显示账号是否激活的一些提示信息的
     private TextView mAccount;//显示账号
+    private YellowTips mYellowTips;
 
     private boolean isActivate = false;
 
@@ -35,7 +37,7 @@ public class RegisterActivateActivity extends BaseActivity {
                 finish();
             }
         });
-
+        mYellowTips = new YellowTips(this, findViewById(R.id.yellow_tips));
 
         mAccount = (TextView) findViewById(R.id.account);
         //这里得到上一个activity中（register acitvity）设置的账号
@@ -90,7 +92,7 @@ public class RegisterActivateActivity extends BaseActivity {
             public void onFailure(QuickPayException ex) {
                 String errorCode = ex.getErrorCode();
                 String errorMsg = ex.getErrorMsg();
-                Toast.makeText(getApplicationContext(), errorMsg, Toast.LENGTH_SHORT).show();
+                mYellowTips.show(errorMsg);
                 //其他出错的状态怎么设置这个？？？
                 isActivate = false;
             }
