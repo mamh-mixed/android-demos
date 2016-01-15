@@ -87,7 +87,7 @@ public class CouponResultActivity extends Activity {
                     mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_man) + mSaleMinAccount + getString(R.string.coupon_yuan) + getString(R.string.coupon_jian) + mDiscount + getString(R.string.coupon_yuan));
 
                 } else {
-                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_jian) + mDiscount+getString(R.string.coupon_yuan));
+                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_jian) + mDiscount + getString(R.string.coupon_yuan));
                     //返回销券
                 }
 
@@ -109,25 +109,26 @@ public class CouponResultActivity extends Activity {
             }
         });
 
+        if (Coupon.getInstance().getVoucherType() != null) {
+            if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
+                mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showPayFailPref();
+                    }
+                });
 
-        if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
-            mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showPayFailPref();
-                }
-            });
 
-
-        } else {
-            //返回销券
-            mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Coupon.getInstance().clear();//清空卡券信息
-                    finish();
-                }
-            });
+            } else {
+                //返回销券
+                mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Coupon.getInstance().clear();//清空卡券信息
+                        finish();
+                    }
+                });
+            }
         }
 
     }
