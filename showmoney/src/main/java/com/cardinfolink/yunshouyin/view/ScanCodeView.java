@@ -463,10 +463,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private void startCapturePay(final double total, final double originaltotal) {
         boolean hasDiscount = (Coupon.getInstance().getSaleDiscount() != null)
                 && (!"0".equals(Coupon.getInstance().getSaleDiscount()));
-        if (!hasDiscount && !validate(total) && !validate(originaltotal)) {
-            return;
-        }
-        if (hasDiscount && !validate(originaltotal) && total >= 0) {
+        if (!validate(total)) {
             return;
         }
 
