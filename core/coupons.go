@@ -504,7 +504,7 @@ func PurchaseCouponsSingle(req *model.ScanPayRequest) (ret *model.ScanPayRespons
 	submitTime, err := time.ParseInLocation("2006-01-02 15:04:05", t.CreateTime, time.Local)
 	if err != nil {
 		log.Errorf("format submitTime err,%s", err)
-		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+		return returnWithErrorCodeAndUpdate(t, "SYSTEM_ERROR")
 	}
 	req.CreateTime = submitTime.Format("20060102150405")
 	req.SysOrderNum = t.SysOrderNum
@@ -514,11 +514,7 @@ func PurchaseCouponsSingle(req *model.ScanPayRequest) (ret *model.ScanPayRespons
 
 	// 获得渠道实例，请求
 	client := unionlive.DefaultClient
-	ret, err = client.ProcessPurchaseCouponsSingle(req)
-	if err != nil {
-		log.Errorf("process PurchaseCouponsSingle error:%s", err)
-		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
-	}
+	ret = client.ProcessPurchaseCouponsSingle(req)
 
 	// 更新交易信息
 	updateCouponTrans(t, ret)
@@ -583,18 +579,18 @@ func RecoverCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 	submitTime, err := time.ParseInLocation("2006-01-02 15:04:05", t.CreateTime, time.Local)
 	if err != nil {
 		log.Errorf("format submitTime err,%s", err)
-		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+		return returnWithErrorCodeAndUpdate(t, "SYSTEM_ERROR")
 	}
 	origSubmitTime, err := time.ParseInLocation("2006-01-02 15:04:05", orig.CreateTime, time.Local)
 	if err != nil {
 		log.Errorf("format origSubmitTime err,%s", err)
-		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+		return returnWithErrorCodeAndUpdate(t, "SYSTEM_ERROR")
 	}
 
 	origVeriTime, err := strconv.Atoi(orig.VeriTime)
 	if err != nil {
 		log.Errorf("format veriTime to int err,%s", err)
-		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+		return returnWithErrorCodeAndUpdate(t, "SYSTEM_ERROR")
 	}
 
 	req.CreateTime = submitTime.Format("20060102150405")
@@ -612,18 +608,14 @@ func RecoverCoupons(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		intPayType, err = strconv.Atoi(orig.PayType)
 		if err != nil {
 			log.Errorf("format payType to int err,%s", err)
-			return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
+			return returnWithErrorCodeAndUpdate(t, "SYSTEM_ERROR")
 		}
 	}
 	req.IntPayType = intPayType
 
 	// 获得渠道实例，请求
 	client := unionlive.DefaultClient
-	ret, err = client.ProcessRecoverCoupons(req)
-	if err != nil {
-		log.Errorf("process RecoverCoupons error:%s", err)
-		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
-	}
+	ret = client.ProcessRecoverCoupons(req)
 	// 更新原交易信息，如果撤销成功，则将原订单关闭掉
 	if ret.Respcd == "00" {
 		orig.TransStatus = model.TransClosed
@@ -650,6 +642,24 @@ func LogicCouponErrorHandler(t *model.Trans, errorCode string) *model.ScanPayRes
 	return &model.ScanPayResponse{
 		Respcd:      code,
 		ErrorDetail: msg,
+		ErrorCode:   errorCode,
+	}
+}
+
+// returnWithErrorCodeAndUpdate 使用错误码直接返回并更新交易
+func returnWithErrorCodeAndUpdate(t *model.Trans, errorCode string) *model.ScanPayResponse {
+	spResp := mongo.ScanPayRespCol.Get(errorCode)
+	// 8583应答
+	code, msg := spResp.ISO8583Code, spResp.ISO8583Msg
+	// 交易保存
+	t.RespCode = code
+	t.ErrorDetail = msg
+	t.LockFlag = 0
+	mongo.CouTransColl.UpdateAndUnlock(t)
+
+	return &model.ScanPayResponse{
+		Respcd:      spResp.ISO8583Code,
+		ErrorDetail: spResp.ISO8583Msg,
 		ErrorCode:   errorCode,
 	}
 }
