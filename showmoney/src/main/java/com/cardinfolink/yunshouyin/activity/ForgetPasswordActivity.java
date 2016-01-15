@@ -1,11 +1,7 @@
 package com.cardinfolink.yunshouyin.activity;
 
-import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -19,6 +15,7 @@ import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.HintDialog;
+import com.cardinfolink.yunshouyin.view.YellowTips;
 
 /**
  * 这个是忘记密码的界面
@@ -30,6 +27,7 @@ public class ForgetPasswordActivity extends BaseActivity {
     private SettingInputItem mEmail;
 
     private HintDialog mHintDialog;
+    private YellowTips mYellowTips;
 
     private Button mCnfirm;
 
@@ -39,6 +37,7 @@ public class ForgetPasswordActivity extends BaseActivity {
         setContentView(R.layout.activity_forget_password);
 
         mHintDialog = new HintDialog(this, findViewById(R.id.hint_dialog));
+        mYellowTips = new YellowTips(this, findViewById(R.id.yellow_tips));
 
         mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
         mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
@@ -76,7 +75,6 @@ public class ForgetPasswordActivity extends BaseActivity {
      * 点击 按钮 调用这里， 提交忘记密码的请求
      */
     private void forgetPassowd() {
-
         final String emailStr = mEmail.getText();
         if (!validate(emailStr)) {
             return;
@@ -114,15 +112,14 @@ public class ForgetPasswordActivity extends BaseActivity {
 
     private boolean validate(String email) {
         String alertMsg = "";
-        Bitmap alertBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
         if (TextUtils.isEmpty(email)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_email_cannot_empty);
-            mAlertDialog.show(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
         if (!VerifyUtil.checkEmail(email)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_email_format_error);
-            mAlertDialog.show(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
