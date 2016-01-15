@@ -106,7 +106,7 @@
     <string name="detail_activity_busicd_pay">支付</string>
     <string name="detail_activity_busicd_refd">退款</string>
     <string name="detail_activity_trade_status_nopay">处理中</string>
-    <string name="detail_activity_trade_status_success">成功</string>
+    <string name="detail_activity_trade_status_success">支付成功</string>
     <string name="detail_activity_trade_status_partrefd">部分退款</string>
     <string name="detail_activity_trade_status_closed">已关闭</string>
     <string name="detail_activity_trade_status_allrefd">全额退款</string>
