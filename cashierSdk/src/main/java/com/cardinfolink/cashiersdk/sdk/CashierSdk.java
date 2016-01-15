@@ -197,6 +197,27 @@ public class CashierSdk {
         });
     }
 
+    public static ResultData startQy(OrderData orderData) {
+        String result = CommunicationUtil.sendDataToServer(ParamsUtil.getQy(mInitData, orderData));
+        if (result == null || result.length() == 0) {
+            return null;
+        }
+        Map<String, Object> map = MapUtil.getMapForJson(result);
+        String sign = (String) map.get("sign");
+        if (sign != null) {
+            map.remove("sign");
+            String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
+            Log.i(TAG, "verisign: " + veriSign);
+            if (sign.equals(veriSign)) {
+                ResultData resultData = MapUtil.getResultData(map);
+                return resultData;
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * * 3.4. 撤销

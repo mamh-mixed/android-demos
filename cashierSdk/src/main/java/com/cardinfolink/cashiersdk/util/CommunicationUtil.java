@@ -48,4 +48,24 @@ public class CommunicationUtil {
         }).start();
     }
 
+    /**
+     * 这里 不在子线程里执行了
+     *
+     * @param json
+     */
+    public static String sendDataToServer(JSONObject json) {
+        SocketClient socketClient = new SocketClient(mHost, mPort, 15000);
+        String result = socketClient.reqToServer(json.toString());
+        if (!TextUtils.isEmpty(result)) {
+            if (result.contains("}")) {
+                result = result.substring(4, result.lastIndexOf("}") + 1);
+                return result;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
 }
