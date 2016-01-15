@@ -182,11 +182,16 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                         coupon.setExpDate(resultData.expDate);
                         coupon.setSaleMinAmount(resultData.saleMinAmount);
                         coupon.setOrderNum(resultData.orderNum);
-                        if ("00".equals(mResultData.respcd)) {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
+                        if (mResultData != null) {
+                            if ("00".equals(mResultData.respcd)) {
+                                mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
+                            } else {
+                                //核销失败
+                                mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_FAIL);
+                            }
                         } else {
-                            //核销失败
                             mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_FAIL);
+
                         }
                     }
 
