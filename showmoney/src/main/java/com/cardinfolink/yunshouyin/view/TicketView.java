@@ -52,7 +52,7 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
     private ResultData mResultData;
 
     private Handler mHandler;//这个是本类里面自有的handler
-
+    private HintDialog mHintDialog;
 
     public TicketView(Context context) {
         this(context, null);
@@ -103,6 +103,18 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                 }
             }
         });
+
+
+        mHintDialog = new HintDialog(mContext, findViewById(R.id.hint_dialog));
+    }
+
+    public void showCouponHintDialog() {
+        String title = mContext.getString(R.string.coupon_first_suggest_info);
+        String ok = mContext.getString(R.string.coupon_confirm_ok);
+        String cancel = mContext.getString(R.string.coupon_abandom);
+        mHintDialog.setText(title, ok, cancel);
+        mHintDialog.setOkVisibility(View.GONE);
+        mHintDialog.show();
     }
 
     public void initHandler() {
