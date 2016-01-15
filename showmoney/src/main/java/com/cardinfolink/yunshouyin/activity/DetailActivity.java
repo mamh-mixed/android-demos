@@ -342,7 +342,7 @@ public class DetailActivity extends BaseActivity {
                 mPayResult.setText(getString(R.string.detail_activity_trade_status_closed));
             } else {
                 //全额退款
-                mPayResult.setText(getString(R.string.detail_activity_trade_status_partrefd));
+                mPayResult.setText(getString(R.string.detail_activity_trade_status_allrefd));
             }
         } else {
             //失败的
