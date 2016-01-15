@@ -59,6 +59,8 @@ func (t *transFlow) GenerateTransFlow(date string, agentCode string) {
 
 	generateFile(transSettsALP, dateStr, agent.AlpCost, &strBuffer) //支付宝
 
+	fmt.Println(strBuffer)
+
 	var authMethods []ssh.AuthMethod
 	// add password
 	authMethods = append(authMethods, ssh.Password(sftpPassword))
@@ -108,16 +110,20 @@ func generateFile(data []model.TransSett, dateStr string, agentFee float64, sBuf
 		amt := float64(v.Trans.TransAmt) / 100
 		*sBuffer += dateStr
 		*sBuffer += ","
+		isReverse := false
 		if v.Trans.Busicd == "PURC" { //下单支付
 			*sBuffer += "下单支付"
 		} else if v.Trans.Busicd == "PAUT" {
 			*sBuffer += "预下单"
 		} else if v.Trans.Busicd == "VOID" {
 			*sBuffer += "撤销"
+			isReverse = true
 		} else if v.Trans.Busicd == "REFD" {
 			*sBuffer += "退款"
+			isReverse = true
 		} else if v.Trans.Busicd == "CANC" {
 			*sBuffer += "取消"
+			isReverse = true
 		}
 		*sBuffer += ","
 		*sBuffer += v.Trans.CreateTime
@@ -133,8 +139,14 @@ func generateFile(data []model.TransSett, dateStr string, agentFee float64, sBuf
 		*sBuffer += v.Trans.OrderNum
 		*sBuffer += ","
 		*sBuffer += v.Trans.ChanOrderNum
-		*sBuffer += fmt.Sprintf(",CNY,%0.2f,%0.2f,CNY,%0.2f,%0.2f,%0.2f,", amt, amt*agentFee+float64(v.AcqFee/100), //收单币种,收单交易金额,收单手续费,商户币种,
-			amt, float64(v.MerFee)/100, float64(v.Trans.TransAmt-v.MerFee)/100) //商户交易金额,商户手续费,商户清算金额
+		if isReverse {
+			*sBuffer += fmt.Sprintf(",CNY,-%0.2f,-%0.2f,CNY,-%0.2f,-%0.2f,-%0.2f,", amt, amt*agentFee+float64(v.AcqFee/100), //收单币种,收单交易金额,收单手续费,商户币种,
+				amt, float64(v.MerFee)/100, float64(v.Trans.TransAmt-v.MerFee)/100) //商户交易金额,商户手续费,商户清算金额
+		} else {
+			*sBuffer += fmt.Sprintf(",CNY,%0.2f,%0.2f,CNY,%0.2f,%0.2f,%0.2f,", amt, amt*agentFee+float64(v.AcqFee/100), //收单币种,收单交易金额,收单手续费,商户币种,
+				amt, float64(v.MerFee)/100, float64(v.Trans.TransAmt-v.MerFee)/100) //商户交易金额,商户手续费,商户清算金额
+		}
+
 		if v.Trans.ChanCode == "WXP" {
 			*sBuffer += "微信"
 		} else if v.Trans.ChanCode == "ALP" {
