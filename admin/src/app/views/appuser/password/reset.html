@@ -1,25 +1,21 @@
 <div class="login-content">
-	<div class="lc-block" id="login">
-		<div class="input-group m-b-20">
-			<span class="input-group-addon"><i class="fa fa-user fa-fw fa-2x"></i></span>
-			<div class="fg-line">
-				<input type="text" class="form-control" placeholder="用户名" data-ng-model="prc.request.username">
+	<div class="form">
+		<h2 class="header">忘记密码</h2>
+		<div class="pwd-input-group">
+			<div>重设密码</div>
+			<div class="input-wrap">
+				<input type="text" class="form-control" placeholder="请填写登录密码">
 			</div>
+			<div class="show-pwd"></div>
 		</div>
 
-		<div class="input-group m-b-20">
-			<span class="input-group-addon"><i class="fa fa-key fa-fw fa-2x"></i></span>
-			<div class="fg-line">
-				<input type="password" class="form-control" placeholder="密码" data-ng-model="prc.request.password">
-			</div>
-		</div>
-		<div class="input-group m-b-20">
-			<span class="input-group-addon"><i class="fa fa-key fa-fw fa-2x"></i></span>
-			<div class="fg-line">
-				<input type="password" class="form-control" placeholder="重复密码" data-ng-model="prc.request.passwordRepeat">
-			</div>
+		<div class="pwd-button-group">
+			<button type="button" class="btn btn-info" name="button">确认</button>
 		</div>
 
-		<a data-ng-click="prc.sendRequest()" href="" class="btn btn-login btn-danger btn-float waves-effect waves-circle"><i class="fa fa-arrow-right fa-2x"></i></a>
+		<div class="logo">
+			<img src="assets/images/logo-lg.png" alt="" />
+		</div>
+
 	</div>
 </div>
