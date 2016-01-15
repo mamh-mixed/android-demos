@@ -223,4 +223,6 @@
 
     <include layout="@layout/hint_dialog" />
 
+    <include layout="@layout/yellow_tips_layout" />
+
 </RelativeLayout>
