@@ -46,4 +46,9 @@ public class ResultInfoItem extends RelativeLayout {
     public void setRightText(String str2) {
         mRightText.setText(str2);
     }
+
+    public void setTextColor(int id) {
+        mLeftText.setTextColor(id);
+        mRightText.setTextColor(id);
+    }
 }
