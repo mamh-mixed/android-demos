@@ -129,6 +129,14 @@ public class CouponResultActivity extends Activity {
                     }
                 });
             }
+        } else {
+            mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Coupon.getInstance().clear();//清空卡券信息
+                    finish();
+                }
+            });
         }
 
     }
@@ -192,8 +200,13 @@ public class CouponResultActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
-                showPayFailPref();
+            if (Coupon.getInstance().getVoucherType() != null) {
+                if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
+                    showPayFailPref();
+                } else {
+                    Coupon.getInstance().clear();//清空卡券信息
+                    finish();
+                }
             } else {
                 Coupon.getInstance().clear();//清空卡券信息
                 finish();
