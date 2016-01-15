@@ -6,13 +6,13 @@ import (
 
 func TestGetAuthToken(t *testing.T) {
 
-	resp, err := GetAuthToken(&AuthTokenReq{
-		CommonParams: CommonParams{
-			AppID:      "2014122500021754",
-			PrivateKey: LoadPrivateKey([]byte(privateKeyPem)),
-		},
-		GrantType: "authorization_code",
-		Code:      "",
-	})
+	resp, err := GetAuthToken("2016010501065650", "wadawdawdad", []byte(privateKeyPem))
+
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Logf("%+v", resp)
 
 }

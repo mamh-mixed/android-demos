@@ -5,6 +5,7 @@ import (
 	"runtime"
 
 	"github.com/CardInfoLink/quickpay/app"
+	"github.com/CardInfoLink/quickpay/auth"
 	"github.com/CardInfoLink/quickpay/bindingpay"
 	"github.com/CardInfoLink/quickpay/check"
 	"github.com/CardInfoLink/quickpay/core"
@@ -34,6 +35,7 @@ func main() {
 	startMaster()     // 管理平台
 	startApp()        // App接口
 	startContab()     // 定时任务
+	startAlipayAuth() // 支付宝授权
 
 	log.Infof("Quickpay HTTP is listening, addr=%s", goconf.Config.App.HTTPAddr)
 	log.Error(http.ListenAndServe(goconf.Config.App.HTTPAddr, nil))
@@ -81,4 +83,8 @@ func startApp() {
 
 func startContab() {
 	crontab.Start()
+}
+
+func startAlipayAuth() {
+	http.HandleFunc("/alipay/auth", auth.AuthHandle)
 }
