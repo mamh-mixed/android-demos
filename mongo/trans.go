@@ -467,10 +467,24 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		match["chanCode"] = q.ChanCode
 	}
 	if q.CouponsNo != "" {
-		match["couponsNo"] = q.CouponsNo
+		match["couponsNo"] = bson.RegEx{q.CouponsNo, "."}
+	}
+	if q.Prodname != "" {
+		match["prodname"] = bson.RegEx{q.Prodname, "."}
 	}
 	if q.WriteoffStatus != "" {
 		match["writeoffStatus"] = q.WriteoffStatus
+	}
+	if q.VoucherType != "" {
+		match["voucherType"] = q.VoucherType
+	}
+	if q.CouponPayStatus != "" {
+		if q.CouponPayStatus == "100" {
+			match["scanPayCoupon"] = nil
+		} else {
+			match["scanPayCoupon.transStatus"] = q.CouponPayStatus
+		}
+
 	}
 	if q.SettRole != "" {
 		match["settRole"] = q.SettRole

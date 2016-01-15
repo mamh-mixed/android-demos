@@ -7,8 +7,8 @@
     :host {
       display: block;
       --paper-dialog-scrollable: {
-        width: 600px;
-        height: 340px;
+        width: 700px;
+        height: 500px;
       }
     }
 
@@ -16,7 +16,7 @@
       min-height: auto;
     }
   </style>
-  <template>
+  <template>∫
     <paper-dialog with-backdrop id="dialogView">
       <h2>交易明细</h2>
       <paper-dialog-scrollable>
@@ -60,22 +60,16 @@
               <div class="td">{{busicdFilter(item.busicd)}}</div>
             </div>
             <div class="tr">
-              <div class="td key">渠道商户:</div>
-              <div class="td">{{item.chanMerId}}</div>
-              <div class="td key">渠道订单:</div>
-              <div class="td">{{item.chanOrderNum}}</div>
-            </div>
-            <div class="tr">
               <div class="td key">应答码:</div>
               <div class="td">{{item.respcd}}</div>
-              <div class="td key">核销状态:</div>
-              <div class="td">{{writeoffStatusFilter(item.writeoffStatus)}}</div>
+              <div class="td key">交易状态:</div>
+              <div class="td">{{transStatusFilter(item.transStatus)}}</div>
             </div>
             <div class="tr">
-              <div class="td key">创建时间:</div>
-              <div class="td">{{item.transTime}}</div>
-              <div class="td key">修改时间:</div>
-              <div class="td">{{item.updateTime}}</div>
+              <div class="td key">交易类型:</div>
+              <div class="td">{{voucherTypeFilter(item.voucherType)}}</div>
+              <div class="td key">支付状态:</div>
+              <div class="td">{{couponPayStatusFilter(item)}}</div>
             </div>
             <div class="tr">
               <div class="td key">卡券名称:</div>
@@ -102,26 +96,22 @@
               <div class="td">{{item.cardbin}}</div>
             </div>
             <div class="tr">
-              <div class="td key">交易类型:</div>
-              <div class="td">{{payTypeFilter(item.payType)}}</div>
-              <div class="td key">券类型:</div>
-              <div class="td">{{voucherTypeFilter(item.voucherType)}}</div>
-            </div>
-            <div class="tr">
-              <div class="td key">原始交易金额:</div>
-              <div class="td">{{moneyFilter(item.transAmt)}}</div>
-              <div class="td key">实际支付金额:</div>
-              <div class="td">{{moneyFilter(item.actualPayAmount)}}</div>
-            </div>
-            <div class="tr">
-              <div class="td key">最小金额:</div>
+              <div class="td key">最小金额(元):</div>
               <div class="td">{{moneyFilter(item.saleMinAmount)}}</div>
-              <div class="td key">抵扣值:</div>
+              <div class="td key">抵扣值(元/折):</div>
               <div class="td">{{moneyFilter(item.saleDiscount)}}</div>
             </div>
             <div class="tr">
-              <div class="td key">原应答码:</div>
-              <div class="td">{{item.origRespcd}}</div>
+              <div class="td key">渠道商户:</div>
+              <div class="td">{{item.chanMerId}}</div>
+              <div class="td key">渠道订单:</div>
+              <div class="td">{{item.chanOrderNum}}</div>
+            </div>
+            <div class="tr">
+              <div class="td key">创建时间:</div>
+              <div class="td">{{item.transTime}}</div>
+              <div class="td key">修改时间:</div>
+              <div class="td">{{item.updateTime}}</div>
             </div>
           </div>
       </paper-dialog-scrollable>
@@ -139,27 +129,16 @@
       },
       open: function() {
         this.$.dialogView.open();
-        debugger;
       },
       ready: function() {
         this.transTypeMap = {
           'VERI': '卡券核销',
-          'CRVE': '刷卡核销',
-          'QUVE': '验券查询',
           'CAVE': '卡券撤销',
         };
       },
       // 关闭事件
       handleClose: function() {
         this.$.dialogView.close();
-      },
-      writeoffStatusFilter: function(status) {
-        var map = {
-          'ERROR': '失败',
-          'SUCCESS': '成功',
-          'PROCESS': '处理中',
-        };
-        return (status + '—' + map[status]);
       },
       busicdFilter: function(busicd) {
         return (busicd + '—' + this.transTypeMap[busicd]) || busicd;
@@ -180,7 +159,7 @@
         return Util.beautifyAmount(amount);
       },
       voucherTypeFilter: function(voucherType) {
-        if (!voucherType || voucherType === '') {
+        if (!voucherType || voucherType === '' || voucherType === '0') {
           return '';
         }
         var map = {
@@ -192,24 +171,37 @@
           '23': '刷银行卡满折券',
           '31': '礼包券',
           '41': '微信支付满减券',
-          '42': '微信支付 固定金额券',
+          '42': '微信支付固定金额券',
           '43': '微信支付满折券',
           '51': '支付宝支付满减券',
           '52': '支付宝支付固定金额券',
-          '53': '支付宝支付满 折券',
+          '53': '支付宝支付满折券',
         };
         return (voucherType + '—' + map[voucherType]);
       },
-      payTypeFilter: function(payType) {
-        if (!payType || payType === '') {
+      transStatusFilter: function(status) {
+        var map = {
+          '10': '处理中',
+          '20': '失败',
+          '30': '成功',
+          '40': '已关闭',
+        };
+        return status + '-' + map[status];
+      },
+      couponPayStatusFilter: function(item) {
+        if (item.busicd != 'VERI') {
           return '';
+        } else if (!item.scanPayCoupon) {
+          return '未支付';
         }
         var map = {
-          '2': '银行卡支付',
-          '4': '微信支付',
-          '5': '支付宝支付',
-        }
-        return (payType + '—' + map[payType]);
+          '10': '处理中',
+          '20': '失败',
+          '30': '成功',
+          '40': '已关闭',
+          '': '未支付',
+        };
+        return item.scanPayCoupon.transStatus + '-' + map[item.scanPayCoupon.transStatus];
       },
     });
   </script>
