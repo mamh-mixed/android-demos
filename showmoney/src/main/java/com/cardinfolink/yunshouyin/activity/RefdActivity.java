@@ -1,8 +1,6 @@
 package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -20,9 +18,9 @@ import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.ui.EditTextClear;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
-import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.Utility;
+import com.cardinfolink.yunshouyin.view.YellowTips;
 
 import java.math.BigDecimal;
 
@@ -37,6 +35,7 @@ public class RefdActivity extends BaseActivity {
     private SettingInputItem mRefdMoney;
     private EditTextClear mPassword;
     private Button mRefdButton;
+    private YellowTips mYellowTips;
 
     private double maxRefd = 0;
 
@@ -52,6 +51,7 @@ public class RefdActivity extends BaseActivity {
     }
 
     private void initLayout() {
+        mYellowTips = new YellowTips(this, findViewById(R.id.yellow_tips));
         mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
         mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
@@ -188,13 +188,12 @@ public class RefdActivity extends BaseActivity {
     }
 
     private boolean validate() {
-        Bitmap bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
         String alertMsg = "";
 
         String refdStr = mRefdMoney.getText();
         if (TextUtils.isEmpty(refdStr)) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_cannot_empty);
-            mAlertDialog.show(alertMsg, bitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
@@ -203,24 +202,24 @@ public class RefdActivity extends BaseActivity {
             refd = Double.parseDouble(refdStr);
         } catch (Exception e) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_foramt_error);
-            mAlertDialog.show(alertMsg, bitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (refd < 0.01) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_enough);
-            mAlertDialog.show(alertMsg, bitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (refd > maxRefd) {
             alertMsg = String.format(ShowMoneyApp.getResString(R.string.refd_dialog_amount_not_exceeds_max), maxRefd);
-            mAlertDialog.show(alertMsg, bitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
         if (!mPassword.getText().toString().equals(SessonData.loginUser.getPassword())) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog__password_error);
-            mAlertDialog.show(alertMsg, bitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
