@@ -1,6 +1,8 @@
 package com.cardinfolink.yunshouyin.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -58,12 +60,14 @@ public class MainActivity extends BaseActivity {
     private ArrayList<View> mViews;
 
     private static Handler mMainActivityHandler;//main activity里面的handler，用来切换界面的
+    private SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
-
+        sp = getSharedPreferences("savedata", Context.MODE_PRIVATE);
+        mFirsInTicketView= sp.getBoolean("mFirsInTicketView", true);
         initHandler();
         initLayout();
         initUmeng();
@@ -269,6 +273,8 @@ public class MainActivity extends BaseActivity {
                     if (mFirsInTicketView) {
                         mTicketView.showCouponHintDialog();
                     }
+                    SharedPreferences.Editor editor=sp.edit();
+                    editor.putBoolean("mFirsInTicketView",false).commit();
                     mFirsInTicketView = false;
                     break;
                 case 2:
