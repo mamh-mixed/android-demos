@@ -116,4 +116,5 @@
     <include layout="@layout/showmoney_dialog" />
 
     <include layout="@layout/select_picture_dialog" />
+    <include layout="@layout/yellow_tips_layout" />
 </RelativeLayout>

@@ -29,6 +29,7 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.view.SelectPicDialog;
+import com.cardinfolink.yunshouyin.view.YellowTips;
 import com.qiniu.android.http.ResponseInfo;
 
 import org.json.JSONObject;
@@ -67,6 +68,8 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
     private SettingActionBarItem mActionBar;
 
+    private YellowTips mYellowTips;
+
     private SelectPicDialog selectPic;
     private static final int PICK_ID_P_REQUEST = 1;//身份证 正面
     private static final int PICK_ID_N_REQUEST = 2;//身份证 反面
@@ -85,7 +88,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_limit_increase);
-
+        mYellowTips = new YellowTips(this, findViewById(R.id.yellow_tips));
         mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
         mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
             @Override
@@ -240,34 +243,34 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
         if (TextUtils.isEmpty(shopName)) {
             alertMsg = getResources().getString(R.string.alert_error__shop_name_cannot_empty);//店铺名称不能为空
-            mAlertDialog.show(alertMsg, wrongBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (TextUtils.isEmpty(shopAddress)) {
             alertMsg = getResources().getString(R.string.alert_error__shop_address_cannot_empty);//店铺地址不能为空
-            mAlertDialog.show(alertMsg, wrongBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (imageMap.get(PICK_ID_P_REQUEST) == null) {
             // 身份证 正面
             alertMsg = mCardPositive.getTitle() + unselected;
-            mAlertDialog.show(alertMsg, wrongBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (imageMap.get(PICK_ID_N_REQUEST) == null) {
             // 身份证 反面
             alertMsg = mCardNegative.getTitle() + unselected;
-            mAlertDialog.show(alertMsg, wrongBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (imageMap.get(PICK_B_REQUEST) == null) {
             // 营业执照
             alertMsg = mBusiness.getTitle() + unselected;
-            mAlertDialog.show(alertMsg, wrongBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
@@ -275,13 +278,13 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             if (imageMap.get(PICK_TAX_REQUEST) == null) {
                 ////税务
                 alertMsg = mTax.getTitle() + unselected;
-                mAlertDialog.show(alertMsg, wrongBitmap);
+                mYellowTips.show(alertMsg);
                 return false;
             }
             if (imageMap.get(PICK_O_REQUEST) == null) {
                 //组织机构
                 alertMsg = mOrganization.getTitle() + unselected;
-                mAlertDialog.show(alertMsg, wrongBitmap);
+                mYellowTips.show(alertMsg);
                 return false;
             }
         }
