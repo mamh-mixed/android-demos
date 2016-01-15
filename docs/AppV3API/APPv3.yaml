@@ -437,7 +437,7 @@ paths:
           type: string
         - in: formData
           name: index
-          description: 分页起始位置
+          description: 分页起始位置，从0开始
           required: true
           type: string
         - in: formData
@@ -486,7 +486,7 @@ paths:
           type: string
         - in: formData
           name: index
-          description: 分页起始位置
+          description: 分页起始位置，从0开始
           required: true
           type: string
         - in: formData
@@ -554,7 +554,7 @@ paths:
           type: string
         - in: formData
           name: index
-          description: 分页起始位置
+          description: 分页起始位置，从0开始
           required: true
           type: string
         - in: formData
@@ -767,6 +767,9 @@ definitions:
       error:
         type: string
         description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      size:
+        type: integer
+        description: 当前返回的messages数组的长度
       messages:
         type: array
         description: 卡券数组。每个卡券需包含：卡券类型：（减、兑、折）、卡券名称、卡券渠道等等
@@ -873,6 +876,12 @@ definitions:
       error:
         type: string
         description: 如果state是fail，一定返回，建议统一使用英文返回码，多语言化在客户端完成，接口返回错误也需要放入文档
+      totalRecord:
+        type: integer
+        description: 总计录数
+      size:
+        type: integer
+        description: 当前返回的txn的长度
       txn:
         type: array
         items:
