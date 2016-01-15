@@ -41,7 +41,7 @@ export class PasswordResetService {
 			.then((response) => {
 				let body = response.data;
 				if (body.status === 0) {
-					this.toastr.success('保存成功');
+					this.state.go('appPwdRstSucc');
 					return body;
 				}
 
@@ -99,7 +99,7 @@ export class PasswordResetService {
 
 		if (!/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z\d#\$@\.\_]{8,50}$/.test(params.password)) {
 			this.log.warn('the password must be more complex');
-			this.toastr.warning('新密码必须包含大小写字母和数字', 'WARNING');
+			this.toastr.warning('密码必须包含大小写字母和数字，并且长度不小于8位', 'WARNING');
 			return false;
 		}
 

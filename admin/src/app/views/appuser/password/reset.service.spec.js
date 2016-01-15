@@ -51,7 +51,7 @@ describe('service resetPassword', () => {
 			expect(passwordResetService.sendRequest).not.toEqual(null);
 		}));
 
-		it('should success when send request', inject((passwordResetService, toastr, $httpBackend) => {
+		it('should success when send request', inject((passwordResetService, $state, $httpBackend) => {
 			let response = {
 				status: 0,
 				message: 'SUCCESS'
@@ -72,7 +72,7 @@ describe('service resetPassword', () => {
 			expect(data).toEqual(jasmine.any(Object));
 			expect(data.status).toEqual(0);
 			expect(data.message).toEqual('SUCCESS');
-			expect(toastr.success).toHaveBeenCalled();
+			expect($state.go).toHaveBeenCalled();
 		}));
 
 		it('should error when send request', inject((passwordResetService, toastr, $httpBackend) => {
