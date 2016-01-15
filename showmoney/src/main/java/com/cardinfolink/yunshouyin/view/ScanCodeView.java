@@ -121,6 +121,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
 
     private HintDialog mHintDialog;
+    private YellowTips mYellowTips;
 
 
     private double mOriginalTotal;//原始金额
@@ -155,6 +156,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     // 初始化各个组件
     private void initLayout() {
         mHintDialog = new HintDialog(mContext, findViewById(R.id.hint_dialog));
+        mYellowTips = new YellowTips(mContext, findViewById(R.id.yellow_tips));
 
         mAccount = (TextView) findViewById(R.id.tv_account);//显示账号的
         mAccount.setText(SessonData.loginUser.getUsername());
@@ -398,13 +400,13 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         if (sum <= 0) {
             //"金额不能为零!"
             String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_cannot_zero);
-            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+            mYellowTips.show(toastMsg);
             return false;
         }
         if (sum > MAX_MONEY) {
             //金额太大了
             String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
-            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+            mYellowTips.show(toastMsg);
             return false;
         }
         return true;
