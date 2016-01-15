@@ -34,6 +34,7 @@ import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.SelectDialog;
+import com.cardinfolink.yunshouyin.view.YellowTips;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -80,6 +81,8 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
     //这个maps的可以是 mCityCode + SEPARATOR + currentBank.getBankName()
     private Map<String, List<SubBank>> bankSubBankMap = new Hashtable<>();
 
+    private YellowTips mYellowTips;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,6 +121,8 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         mAgreement.setOnClickListener(this);
 
         selectDialog = new SelectDialog(this, findViewById(R.id.select_dialog));
+
+        mYellowTips = new YellowTips(this, findViewById(R.id.yellow_tips));
     }
 
 
@@ -207,52 +212,51 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         //注意这里 subbank没有检查，因为支行可能是空的
 
         String alertMsg = "";
-        Bitmap alertBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
         if (TextUtils.isEmpty(province)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_province_cannot_empty);
-            alertShow(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (TextUtils.isEmpty(city)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_city_cannot_empty);
-            alertShow(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (TextUtils.isEmpty(bank)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_bank_cannot_empty);
-            alertShow(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (TextUtils.isEmpty(name)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_name_cannot_empty);
-            alertShow(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (TextUtils.isEmpty(banknum)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_banknum_cannot_empty);
-            alertShow(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (!VerifyUtil.checkBankCard(banknum)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_banknum_format_error);
-            alertShow(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (TextUtils.isEmpty(phonenum)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_phonenum_cannot_empty);
-            alertShow(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (!VerifyUtil.isMobileNO(phonenum)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_phonenum_format_error);
-            alertShow(alertMsg, alertBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
@@ -266,12 +270,12 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
     private void showBankSubBank() {
         if (TextUtils.isEmpty(mProvinceName)) {
             String msg = getResources().getString(R.string.alert_error_province_cannot_empty);
-            Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+            mYellowTips.show(msg);
             return;
         }
         if (TextUtils.isEmpty(mCityCode)) {
             String msg = getResources().getString(R.string.alert_error_city_cannot_empty);
-            Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+            mYellowTips.show(msg);
             return;
         }
 
