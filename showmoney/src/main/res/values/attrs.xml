@@ -5,6 +5,7 @@
         <attr name="detail" format="string" />
         <attr name="hint" format="string" />
         <attr name="left_text" format="string" />
+        <attr name="left_text_color" format="string" />
         <attr name="right_text" format="string" />
         <attr name="password_hint" format="string" />
         <attr name="username_hint" format="string" />
