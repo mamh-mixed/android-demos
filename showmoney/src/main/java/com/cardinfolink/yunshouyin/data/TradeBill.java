@@ -64,6 +64,11 @@ public class TradeBill implements Serializable {
      */
     public String checkCode;
 
+    /**
+     * 小票号
+     */
+    public String smallTicketNumber;
+
     @Override
     public String toString() {
         return "TradeBill{" +
@@ -91,6 +96,7 @@ public class TradeBill implements Serializable {
                 ", nickName='" + nickName + '\'' +
                 ", avatarUrl='" + avatarUrl + '\'' +
                 ", checkCode='" + checkCode + '\'' +
+                ", smallTicketNumber='" + smallTicketNumber + '\'' +
                 '}';
     }
 }
