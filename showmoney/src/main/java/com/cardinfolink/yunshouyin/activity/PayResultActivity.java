@@ -27,6 +27,7 @@ import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.view.HintDialog;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
 
 /**
@@ -50,13 +51,13 @@ public class PayResultActivity extends Activity {
     private ResultInfoItem mActualDiscount;
     private HintDialog mHintDialog;
     private TradeBill tradeBill;
+    private DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay_result);
-
         mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
         mHintDialog = new HintDialog(PayResultActivity.this, findViewById(R.id.hint_dialog));
 
@@ -99,8 +100,8 @@ public class PayResultActivity extends Activity {
             mActualDiscount.setVisibility(View.VISIBLE);
 
             mCouponContent.setRightText(Coupon.getInstance().getCardId());//卡券内容
-            mActualTotalMoney.setRightText(tradeBill.originalTotal);//消费金额
-            mActualDiscount.setRightText(String.valueOf(new BigDecimal(tradeBill.originalTotal).subtract(new BigDecimal(tradeBill.total)).doubleValue()));//优惠金额
+            mActualTotalMoney.setRightText(decimalFormat.format(Double.valueOf(tradeBill.originalTotal)) + getString(R.string.coupon_yuan));//消费金额
+            mActualDiscount.setRightText(decimalFormat.format(new BigDecimal(tradeBill.originalTotal).subtract(new BigDecimal(tradeBill.total)).doubleValue()));//优惠金额
         } else {
             mCouponContent.setVisibility(View.GONE);
             mActualTotalMoney.setVisibility(View.GONE);
@@ -163,7 +164,7 @@ public class PayResultActivity extends Activity {
         mPersonAccount.setRightText(SessonData.loginUser.getUsername());
         mMakeDealTime.setRightText(tradeBill.tandeDate);
         mBillOrderNum.setRightText(tradeBill.orderNum);
-        mReceiveMoney.setText(tradeBill.total);
+        mReceiveMoney.setText(decimalFormat.format(Double.valueOf(tradeBill.total)) + getString(R.string.coupon_yuan));
 
         if ("ALP".equals(tradeBill.chcd)) {
             mPayAccess.setImageResource(R.drawable.scan_alipay);
