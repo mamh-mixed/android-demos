@@ -404,6 +404,7 @@ public class SearchBillActivity extends Activity {
                     tradeBill.orderNum = req.getOrderNum();
                     tradeBill.amount = TxamtUtil.getNormal(req.getTxamt());//对于人民币的金额都需要除以100
                     tradeBill.busicd = req.getBusicd();
+                    tradeBill.terminalid = req.getTerminalid();
 
                     //使用/v3/bill接口 退款的好像也没有拉取到
                     if (tradeBill.busicd.equals("REFD")) {
