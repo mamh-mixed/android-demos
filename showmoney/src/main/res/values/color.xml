@@ -133,4 +133,14 @@
     <color name="horizontal_view_background">@color/gray3</color>
     <color name="vertical_view_background">@color/white1</color>
 
+
+    <!-- 激活界面用的几个颜色 -->
+    <color name="textcolor_black_activate">#555555</color>
+    <color name="textcolor_grey_activate">#999999</color>
+
+    <!-- 提示黄条的颜色 -->
+    <color name="yellow_tips_bg_color">#f0b320</color>
+    <color name="yellow_tips_text_color">#ffffff</color>
+
+
 </resources>
