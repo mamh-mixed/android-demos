@@ -573,6 +573,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         public RegisterWheelAdapter(Context context, List<T> items) {
             super(context);
             this.items = items;
+            setTextSize(8);
         }
 
         @Override
