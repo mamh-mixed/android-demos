@@ -1595,6 +1595,10 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 		// ignore
 	}
 
+	// TransNoRefunded 可能会包含失败的交易，所以简单的方法
+	// 是加上respCode="00"，如果用的transStatus可能会有问题
+	// 一开始设计的时候有缺陷，导致transStatus和refundStatus会有叠加
+	// 后期看如何优化
 	switch transStatus {
 	case 1:
 		// 交易成功
@@ -1608,12 +1612,15 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 		q.RefundStatus = []int{model.TransRefunded}
 	case 5:
 		// 交易成功、全额退款
+		q.Respcd = "00" // TODO 暂时先这样，后期看看怎么设计
 		q.RefundStatus = []int{model.TransNoRefunded, model.TransRefunded}
 	case 6:
 		// 部分、全额退款
 		q.RefundStatus = []int{model.TransRefunded, model.TransPartRefunded}
 	case 7:
 		// 交易成功、部分、全额退
+		// q.TransStatus = []string{model.tran}
+		q.Respcd = "00" // TODO 暂时先这样，后期看看怎么设计
 		q.RefundStatus = []int{model.TransNoRefunded, model.TransPartRefunded, model.TransRefunded}
 	}
 }
