@@ -3,6 +3,7 @@ package unionlive
 import (
 	"strconv"
 
+	"github.com/CardInfoLink/quickpay/adaptor"
 	"github.com/CardInfoLink/quickpay/channel/unionlive/coupon"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/omigo/log"
@@ -299,7 +300,7 @@ func transChanToSysCode(chanReturnCode, chanErrMessage string) (returnCode, errD
 }
 
 // ProcessPurchaseCouponsSingle 电子券验证
-func (u *unionliveScanPay) ProcessPurchaseCouponsSingle(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
+func (u *unionliveScanPay) ProcessPurchaseCouponsSingle(req *model.ScanPayRequest) *model.ScanPayResponse {
 	unionLiveReq := &coupon.PurchaseCouponsSingleReq{
 		Header: coupon.PurchaseCouponsSingleReqHeader{
 			Version:       Version,
@@ -326,7 +327,7 @@ func (u *unionliveScanPay) ProcessPurchaseCouponsSingle(req *model.ScanPayReques
 	err := Execute(unionLiveReq, unionLiveResp)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=PurchaseCouponsSingle, channel=ULIVE", req.OrderNum)
-		return nil, err
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 将渠道的错误应答码转为为系统应答码
@@ -367,11 +368,11 @@ func (u *unionliveScanPay) ProcessPurchaseCouponsSingle(req *model.ScanPayReques
 		Cardbin:         req.Cardbin,
 	}
 
-	return scanPayResponse, nil
+	return scanPayResponse
 }
 
 // ProcessRecoverCoupons 电子券验证冲正
-func (u *unionliveScanPay) ProcessRecoverCoupons(req *model.ScanPayRequest) (*model.ScanPayResponse, error) {
+func (u *unionliveScanPay) ProcessRecoverCoupons(req *model.ScanPayRequest) *model.ScanPayResponse {
 	unionLiveReq := &coupon.RecoverCouponsReq{
 		Header: coupon.RecoverCouponsReqHeader{
 			Version:       Version,
@@ -400,7 +401,7 @@ func (u *unionliveScanPay) ProcessRecoverCoupons(req *model.ScanPayRequest) (*mo
 	err := Execute(unionLiveReq, unionLiveResp)
 	if err != nil {
 		log.Errorf("sendRequest fail, orderNum=%s, service=RecoverCoupons, channel=ULIVE", req.OrderNum)
-		return nil, err
+		return adaptor.ReturnWithErrorCode("SYSTEM_ERROR")
 	}
 
 	// 将渠道的错误应答码转为为系统应答码
@@ -424,5 +425,5 @@ func (u *unionliveScanPay) ProcessRecoverCoupons(req *model.ScanPayRequest) (*mo
 		OrigOrderNum: req.OrigOrderNum,
 	}
 
-	return scanPayResponse, nil
+	return scanPayResponse
 }
