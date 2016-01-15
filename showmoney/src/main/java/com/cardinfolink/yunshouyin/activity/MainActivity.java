@@ -104,12 +104,24 @@ public class MainActivity extends BaseActivity {
             @Override
             public void handleMessage(Message msg) {
                 super.handleMessage(msg);
-                //// TODO: mamh  这里要进行切换界面的操作
                 switch (msg.what) {
                     case Msg.MSG_FROM_SERVER_COUPON_SUCCESS:
                         mTabPager.setCurrentItem(0);
-                        //mScanCodeView.showKeyBoard();
                         break;
+                    case Msg.MSG_GO_SCAN_CODE_VIEW:
+                        mTabPager.setCurrentItem(0);
+                        break;
+                    case Msg.MSG_GO_TICKET_VIEW:
+                        mTabPager.setCurrentItem(1);
+                        break;
+                    case Msg.MSG_GO_BILL_VIEW:
+                        //去账单界面
+                        mTabPager.setCurrentItem(2);
+                        break;
+                    case Msg.MSG_GO_MY_SETTING_VIEW:
+                        mTabPager.setCurrentItem(3);
+                        break;
+
                 }
             }
         };
