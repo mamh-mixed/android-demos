@@ -174,11 +174,13 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 		TransStatus  string
 		ChanMerId    string
 		AgentCode    string
+		CompanyName  string
+		GroupName    string
 		TerminalId   string
 		Busicd       string
 		OrigOrderNum string
 		Remark       string
-	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.TransCurr, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.ChanMerId, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark}
+	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.TransCurr, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.ChanMerId, m.AgentCode, locale.Role.Company, locale.Role.Group, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -305,6 +307,12 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 			// 机构号
 			cell = row.AddCell()
 			cell.Value = v.AgentCode
+			// 公司号
+			cell = row.AddCell()
+			cell.Value = v.SubAgentCode
+			// 商户号
+			cell = row.AddCell()
+			cell.Value = v.GroupCode
 			// 终端号
 			cell = row.AddCell()
 			cell.Value = v.Terminalid
@@ -400,11 +408,13 @@ func genReport2(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.Fil
 		TransStatus  string
 		ChanMerId    string
 		AgentCode    string
+		CompanyName  string
+		GroupName    string
 		TerminalId   string
 		Busicd       string
 		OrigOrderNum string
 		Remark       string
-	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.TransCurr, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.ChanMerId, m.AgentCode, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark}
+	}{m.MerId, m.MerName, m.OrderNum, m.TransAmt, m.TransCurr, m.MerFee, m.ChanCode, m.TransTime, m.PayTime, m.TransStatus, m.ChanMerId, m.AgentCode, locale.Role.Company, locale.Role.Group, m.TerminalId, m.Busicd, m.OrigOrderNum, m.Remark}
 	row.WriteStruct(headRow, -1)
 
 	// 设置列宽
@@ -505,6 +515,12 @@ func genReport2(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.Fil
 			// 机构号
 			cell = row.AddCell()
 			cell.Value = v.AgentCode
+			// 公司号
+			cell = row.AddCell()
+			cell.Value = v.SubAgentCode
+			// 商户号
+			cell = row.AddCell()
+			cell.Value = v.GroupCode
 			// 终端号
 			cell = row.AddCell()
 			cell.Value = v.Terminalid
