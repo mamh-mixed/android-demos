@@ -138,12 +138,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
             @Override
             public void onClick(View v) {
                 if (CameraManager.get().isFlashlight()) {
-                    GradientDrawable myGrad = (GradientDrawable) v.getBackground();
-                    myGrad.setColor(Color.parseColor("#222222"));
                     CameraManager.get().closeFlashlight();
                 } else {
-                    GradientDrawable myGrad = (GradientDrawable) v.getBackground();
-                    myGrad.setColor(Color.parseColor("#444444"));
                     CameraManager.get().openFlashlight();
                 }
             }
