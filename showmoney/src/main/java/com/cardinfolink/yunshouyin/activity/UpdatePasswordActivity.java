@@ -21,7 +21,6 @@ public class UpdatePasswordActivity extends BaseActivity {
 
     private SettingPasswordItem mOriginPassword;//原始密码
     private SettingPasswordItem mNewPassword;//新密码
-    private SettingPasswordItem mConfirmPassword;//确认密码
 
     private Button mUpdate;
 
@@ -43,7 +42,6 @@ public class UpdatePasswordActivity extends BaseActivity {
 
         mOriginPassword = (SettingPasswordItem) findViewById(R.id.orgin_password);
         mNewPassword = (SettingPasswordItem) findViewById(R.id.new_password);
-        mConfirmPassword = (SettingPasswordItem) findViewById(R.id.confirm_password);
 
         mUpdate = (Button) findViewById(R.id.btn_update_password);
         mUpdate.setOnClickListener(new View.OnClickListener() {
@@ -62,9 +60,8 @@ public class UpdatePasswordActivity extends BaseActivity {
     private void updatePasswordOnClick(View v) {
         final String originPwd = mOriginPassword.getPassword().replace(" ", "");//注意这里把所有的空格都删除了
         final String newPwd = mNewPassword.getPassword().replace(" ", "");
-        final String confirmPwd = mConfirmPassword.getPassword().replace(" ", "");
 
-        if (!validate(originPwd, newPwd, confirmPwd)) {
+        if (!validate(originPwd, newPwd)) {
             return;
         }
         startLoading();
@@ -78,7 +75,6 @@ public class UpdatePasswordActivity extends BaseActivity {
                 alertShow(alertMsg, mRightBitmap);//调用父类的方法了
                 mOriginPassword.setPassword("");
                 mNewPassword.setPassword("");
-                mConfirmPassword.setPassword("");
             }
 
             @Override
@@ -91,7 +87,7 @@ public class UpdatePasswordActivity extends BaseActivity {
     }
 
 
-    private boolean validate(String originPwd, String newPwd, String confirmPwd) {
+    private boolean validate(String originPwd, String newPwd) {
         String alertMsg = "";
         if (TextUtils.isEmpty(originPwd)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_old_password_cannot_empty);
@@ -113,12 +109,6 @@ public class UpdatePasswordActivity extends BaseActivity {
 
         if (newPwd.length() < 6) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_new_password_short_six);
-            alertShow(alertMsg, mWrongBitmap);
-            return false;
-        }
-
-        if (!newPwd.equals(confirmPwd)) {
-            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_qrpassword_error);
             alertShow(alertMsg, mWrongBitmap);
             return false;
         }

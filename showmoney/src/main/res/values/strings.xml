@@ -164,10 +164,6 @@
     <string name="main_activity_menu_webbill">网页账单</string>
     <string name="main_activity_menu_safeexit">安全退出</string>
 
-    <string name="spinner_select_province">开户行所在省份</string>
-    <string name="spinner_select_city">开户行所在城市</string>
-    <string name="spinner_select_bank">请选择开户银行</string>
-    <string name="spinner_select_bankbranch">请选择开户支行</string>
 
     <string name="alert_error_username_cannot_empty">用户名不能为空!</string>
     <string name="alert_error_password_cannot_empty">密码不能为空!</string>
@@ -243,15 +239,6 @@
     <string name="toast_money_too_large">金额过大!</string>
 
     <!-- 新信息-->
-    <string name="qr_amount_exceed">金额过大!</string>
-    <string name="qr_amount_nonzero">金额不能为零!</string>
-    <string name="txn_all">全部交易</string>
-    <string name="txn_success">交易成功</string>
-    <string name="txn_failed">交易失败</string>
-    <string name="txn_amount">交易金额</string>
-    <string name="custom_account">客户账户:</string>
-    <string name="txn_time">交易时间:</string>
-    <string name="txn_status">交易状态:</string>
     <string name="txn_status_success">交易成功</string>
     <string name="txn_order_num">商户订单:</string>
     <string name="txn_status_refresh">刷新</string>
