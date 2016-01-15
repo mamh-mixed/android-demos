@@ -122,10 +122,20 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private void initListener() {
         mActionBar = (SettingActionBarItem) findViewById(R.id.sabi_back);
         mActionBar.setLeftTextOnclickListner(new OnClickListener() {
-
             @Override
             public void onClick(View v) {
-                finish();
+
+                if (Coupon.getInstance().getVoucherType() != null) {
+                    if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
+                        showPayFailPref();
+                    } else {
+                        Coupon.getInstance().clear();//清空卡券信息
+                        finish();
+                    }
+                } else {
+                    Coupon.getInstance().clear();//清空卡券信息
+                    finish();
+                }
             }
         });
         //这里需要设置一下颜色
@@ -829,5 +839,57 @@ public class CaptureActivity extends BaseActivity implements Callback {
             vibrator.vibrate(VIBRATE_DURATION);
         }
     }
+    public void showPayFailPref() {
+        mHintDialog.setText(getString(R.string.coupon_abandom_verial_or_not), getString(R.string.coupon_pay_again), getString(R.string.coupon_abandom));
+        mHintDialog.setCancelOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //卡券冲正
+                OrderData orderData = new OrderData();
+                orderData.orderNum = Utility.geneOrderNumber();//订单号
+                orderData.origOrderNum = Coupon.getInstance().getOrderNum();//设置原始订单号
+                CashierSdk.startReversal(orderData, new CashierListener() {
+                    @Override
+                    public void onResult(ResultData resultData) {
+                        if ("00".equals(resultData.respcd)) {
+                            //冲正成功
+                            Coupon.getInstance().clear();
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(CaptureActivity.this, getString(R.string.coupon_verial_success), Toast.LENGTH_SHORT).show();
+                                    finish();
+                                }
+                            });
+                        } else {
+                            //冲正失败
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(CaptureActivity.this, getString(R.string.coupon_verial_fail), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
 
+                    @Override
+                    public void onError(int errorCode) {
+
+                    }
+                });
+                mHintDialog.hide();
+            }
+        });
+        mHintDialog.setOkOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //重新支付
+                MainActivity.getHandler().sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
+                mHintDialog.hide();
+                finish();
+            }
+
+        });
+        mHintDialog.show();
+    }
 }
