@@ -160,6 +160,7 @@
             android:launchMode="singleTask" />
         <activity
             android:name=".activity.SearchBillActivity"
+            android:windowSoftInputMode="stateHidden"
             android:label="@string/app_name"/>
         <!-- UMENG appkey start -->
         <meta-data
