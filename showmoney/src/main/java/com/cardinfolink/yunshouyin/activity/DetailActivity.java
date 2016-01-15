@@ -130,24 +130,40 @@ public class DetailActivity extends BaseActivity {
         String discount = "";//卡券金额
         try {
             BigDecimal bg0 = new BigDecimal("0");//这个是数字0
-
-            BigDecimal txamtBD = new BigDecimal(mTradeBill.amount);//这个是txamt传来的，就是交易时给的金额
+            BigDecimal txamtBD;
+            if (TextUtils.isEmpty(mTradeBill.amount)) {
+                txamtBD = new BigDecimal("0");//这个是txamt传来的，就是交易时给的金额
+            } else {
+                txamtBD = new BigDecimal(mTradeBill.amount);//这个是txamt传来的，就是交易时给的金额
+            }
             arriavl = txamtBD.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
 
             //卡券优惠金额
-            BigDecimal discountBD = new BigDecimal(mTradeBill.couponDiscountAmt);
+            BigDecimal discountBD;
+            if (TextUtils.isEmpty(mTradeBill.couponDiscountAmt)) {
+                //卡券优惠是空的时候
+                discountBD = new BigDecimal("0.00");
+            } else {
+                discountBD = new BigDecimal(mTradeBill.couponDiscountAmt);
+            }
             discount = discountBD.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
 
             amount = txamtBD.add(discountBD).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
-            if (discountBD.compareTo(bg0) > 0) {
+            if (discountBD.compareTo(bg0) <= 0) {
                 //大于零说明有优惠金额
+                mCardDiscount.setVisibility(View.GONE);
+            }
+            if (txamtBD.compareTo(bg0) <= 0) {
+                mPayMoneyText.setVisibility(View.GONE);
+                mPayMoney.setVisibility(View.GONE);
+                mDoFold.setVisibility(View.GONE);
+                mPayInfo.setVisibility(View.GONE);
             }
         } catch (Exception e) {
-
         }
 
         mPayMoney.setText(amount);
-        mCardDiscount.setRightText(discount);
+        mCardDiscount.setRightText("-" + discount);
         mArriavlMoney.setRightText(arriavl);
     }
 
