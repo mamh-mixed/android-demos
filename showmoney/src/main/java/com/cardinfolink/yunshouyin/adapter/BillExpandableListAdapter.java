@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.DetailActivity;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
@@ -314,7 +315,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
                         mHintDialog.setBillCount(countStr);
 
                         //收入
-                        String totalStr = data.getTotal();
+                        String totalStr = TxamtUtil.getNormal(data.getTotal());
                         if (TextUtils.isEmpty(totalStr)) {
                             totalStr = "0.00";
                         }
