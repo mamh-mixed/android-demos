@@ -259,7 +259,13 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         }
         childViewHolder.billTradeStatus.setText(tradeStatus);
 
-        childViewHolder.billTradeAmount.setText("￥" + bill.amount);//实际支付金额
+        try {
+            BigDecimal txAmt = new BigDecimal(bill.amount);
+            String txAmtStr = txAmt.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+            childViewHolder.billTradeAmount.setText("￥" + txAmtStr);//实际支付金额
+        } catch (Exception e) {
+
+        }
 
         try {
             //如果有优惠
@@ -270,7 +276,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
                 //大于0 说明有优惠金额
                 childViewHolder.billOriginTradeAmount.setVisibility(View.VISIBLE);
                 childViewHolder.billDiscount.setVisibility(View.VISIBLE);
-                String origin = discountAmt.add(txAmt).toString();
+                String origin = discountAmt.add(txAmt).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
                 childViewHolder.billOriginTradeAmount.setText("￥" + origin);
                 childViewHolder.billOriginTradeAmount.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
@@ -278,7 +284,6 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
                 childViewHolder.billDiscount.setVisibility(View.INVISIBLE);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             childViewHolder.billOriginTradeAmount.setVisibility(View.INVISIBLE);
             childViewHolder.billDiscount.setVisibility(View.INVISIBLE);
         }
