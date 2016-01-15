@@ -284,6 +284,8 @@
     <string name="txt_wait_user_input_password">用户正在输入密码，正在第%1$s次查询结果。\n45秒后不成功将取消该笔交易。</string>
     <string name="txt_trade">  交易</string>
     <string name="txt_network_error_info">网络似乎有些不给力啊</string>
+    <string name="txt_take_picture">拍照</string>
+    <string name="txt_from_gallary">从相册选择</string>
 
 
     <string name="capture_activity_confirm">确认</string>
