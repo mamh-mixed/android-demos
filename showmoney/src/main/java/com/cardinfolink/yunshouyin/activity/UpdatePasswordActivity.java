@@ -14,6 +14,7 @@ import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
+import com.cardinfolink.yunshouyin.view.YellowTips;
 
 public class UpdatePasswordActivity extends BaseActivity {
 
@@ -26,6 +27,7 @@ public class UpdatePasswordActivity extends BaseActivity {
 
     private Bitmap mWrongBitmap;//图片，错误的叉的图片，alert对话框上用的
     private Bitmap mRightBitmap;
+    private YellowTips mYellowTips;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +56,8 @@ public class UpdatePasswordActivity extends BaseActivity {
 
         mWrongBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
         mRightBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.right);
+
+        mYellowTips = new YellowTips(this, findViewById(R.id.yellow_tips));
 
     }
 
