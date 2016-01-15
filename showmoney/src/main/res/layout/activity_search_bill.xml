@@ -75,20 +75,35 @@
                     android:button="@null"
                     android:clickable="true"
                     android:gravity="center"
-                    android:padding="5dp"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
                     android:text="@string/bill_status_success"
                     android:textColor="@drawable/radio_button1_color_selector"
                     android:textSize="15sp" />
 
                 <CheckBox
-                    android:id="@+id/cb_rec_type0"
+                    android:id="@+id/cb_all_refd"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:button="@null"
                     android:gravity="center"
-                    android:padding="5dp"
-                    android:text="@string/bill_rec_type0"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/bill_status_all_refd"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:id="@+id/cb_part_refd"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/bill_status_part_refd"
                     android:textColor="@drawable/radio_button1_color_selector"
                     android:textSize="15sp" />
 
@@ -99,7 +114,8 @@
                     android:layout_weight="1"
                     android:button="@null"
                     android:gravity="center"
-                    android:padding="5dp"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
                     android:text="@string/bill_rec_type2"
                     android:textColor="@drawable/radio_button1_color_selector"
                     android:textSize="15sp" />
@@ -111,22 +127,12 @@
                     android:layout_weight="1"
                     android:button="@null"
                     android:gravity="center"
-                    android:padding="5dp"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
                     android:text="@string/bill_rec_type1"
                     android:textColor="@drawable/radio_button1_color_selector"
                     android:textSize="15sp" />
 
-                <CheckBox
-                    android:id="@+id/cb_rec_type3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:text="@string/bill_rec_type3"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
 
             </LinearLayout>
 
@@ -141,7 +147,8 @@
                     android:layout_weight="1"
                     android:button="@null"
                     android:gravity="center"
-                    android:padding="5dp"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
                     android:text="@string/bill_pay_type1"
                     android:textColor="@drawable/radio_button1_color_selector"
                     android:textSize="15sp" />
@@ -154,22 +161,12 @@
                     android:layout_weight="1"
                     android:button="@null"
                     android:gravity="center"
-                    android:padding="5dp"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
                     android:text="@string/bill_pay_type2"
                     android:textColor="@drawable/radio_button1_color_selector"
                     android:textSize="15sp" />
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center" />
 
                 <CheckBox
                     android:id="@+id/cb_rec_type4"
@@ -178,10 +175,39 @@
                     android:layout_weight="1"
                     android:button="@null"
                     android:gravity="center"
-                    android:padding="5dp"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
                     android:text="@string/bill_rec_type4"
                     android:textColor="@drawable/radio_button1_color_selector"
                     android:textSize="15sp" />
+
+                <CheckBox
+                    android:id="@+id/cb_rec_type3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/bill_rec_type3"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:id="@+id/cb_rec_type0"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/bill_rec_type0"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+
             </LinearLayout>
         </LinearLayout>
 
