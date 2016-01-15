@@ -2,7 +2,6 @@ package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -24,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import android.graphics.Bitmap.CompressFormat;
 
 /**
  * 我的网页版，这里显示一个二维码图片。通过payUrl来显示二维码图片。
@@ -39,6 +39,7 @@ public class MyWebActivity extends BaseActivity {
     private ImageView mQRCodeImage;
     private Button mSaveQR;
     private Bitmap mQRBitmap;
+    private View mMerchantInfo;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +52,8 @@ public class MyWebActivity extends BaseActivity {
                 finish();
             }
         });
+
+        mMerchantInfo = findViewById(R.id.merchant_info);
 
 
         mQRCodeImage = (ImageView) findViewById(R.id.iv_qrcode);
@@ -73,14 +76,20 @@ public class MyWebActivity extends BaseActivity {
         mSaveQR.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mQRBitmap != null) {
-                    saveImageToExternalStorage(mQRBitmap);
+                Bitmap merchantInfoBitmap = convertViewToBitmap(mMerchantInfo);
+                if (merchantInfoBitmap != null) {
+                    saveImageToExternalStorage(merchantInfoBitmap);
                 }
             }
         });
 
     }
 
+    private Bitmap convertViewToBitmap(View view) {
+        view.buildDrawingCache();
+        Bitmap bitmap = view.getDrawingCache();
+        return bitmap;
+    }
 
     /**
      * 存在外部存储里,图库里是不显示的
@@ -98,16 +107,16 @@ public class MyWebActivity extends BaseActivity {
 
         //generate file name
         String payUrl = SessonData.loginUser.getPayUrl();
-        String filename = "myweb.jpg";
+        String filename = "myweb.png";
         if (!TextUtils.isEmpty(payUrl)) {
             filename = EncoderUtil.Encrypt(payUrl, "MD5");
         }
-        File file = new File(cacheDir, filename + "_myweb.jpg");
+        File file = new File(cacheDir, filename + "_myweb.png");
 
         //bitmap to png
         try {
             FileOutputStream outputStream = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+            bitmap.compress(CompressFormat.PNG, 100, outputStream);
             outputStream.flush();
             outputStream.close();
 
