@@ -207,6 +207,10 @@ public class DetailActivity extends BaseActivity {
         mRefdMoney = (ResultInfoItem) findViewById(R.id.refd_money);
         mArriavlMoney = (ResultInfoItem) findViewById(R.id.pay_arrival_money);
 
+        mCardDiscount.setTextColor(R.color.gray3);
+        mRefdMoney.setTextColor(R.color.gray3);
+        mArriavlMoney.setTextColor(R.color.gray3);
+
         mPayInfo = findViewById(R.id.ll_pay_info);
 
         //核销订单号，这个只在卡券详情的时候显示
@@ -221,6 +225,9 @@ public class DetailActivity extends BaseActivity {
 
         mPayCheckCode = (ResultInfoItem) findViewById(R.id.pay_check_code);
         mPaySmallTicket = (ResultInfoItem) findViewById(R.id.pay_small_ticket_number);
+        mPayCheckCode.setTextColor(R.color.gray3);
+        mPaySmallTicket.setTextColor(R.color.gray3);
+
 
         mPayCommentsLayout = (LinearLayout) findViewById(R.id.ll_pay_comments);
     }
