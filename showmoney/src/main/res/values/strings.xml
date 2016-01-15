@@ -48,7 +48,7 @@
     <string name="qr_update">确认修改</string>
 
     <string name="increase_choose_type">请选择你的商户类型</string>
-    <string name="increase_message">你可能需要准备一些先关材料</string>
+    <string name="increase_message">你可能需要准备一些相关材料</string>
     <string name="increase_company">我是企业</string>
     <string name="increase_personal">我是个体</string>
     <string name="increase_limit">提升限额</string>
