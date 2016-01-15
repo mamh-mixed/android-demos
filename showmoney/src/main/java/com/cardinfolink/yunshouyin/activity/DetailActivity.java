@@ -91,6 +91,7 @@ public class DetailActivity extends BaseActivity {
         }
     }
 
+
     private void initCouponData() {
 
         SimpleDateFormat spf1 = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -296,13 +297,31 @@ public class DetailActivity extends BaseActivity {
         }
 
         //支付终端
-        mPayTerminator.setRightText(mTradeBill.terminalid);
+        if (TextUtils.isEmpty(mTradeBill.terminalid)) {
+            mPayTerminator.setVisibility(View.GONE);
+        } else {
+            mPayTerminator.setVisibility(View.VISIBLE);
+            mPayTerminator.setRightText(mTradeBill.terminalid);
+        }
 
+        //检验码
         if (TextUtils.isEmpty(mTradeBill.checkCode)) {
             mPayCheckCode.setVisibility(View.GONE);
         } else {
             mPayCheckCode.setVisibility(View.VISIBLE);
             mPayCheckCode.setRightText(mTradeBill.checkCode);
+        }
+        //小票号
+        if (TextUtils.isEmpty(mTradeBill.smallTicketNumber)) {
+            mPaySmallTicket.setVisibility(View.GONE);
+        } else {
+            mPaySmallTicket.setVisibility(View.VISIBLE);
+            mPaySmallTicket.setRightText(mTradeBill.smallTicketNumber);
+        }
+        //如果都为空，就都隐藏了
+        if (TextUtils.isEmpty(mTradeBill.checkCode) && TextUtils.isEmpty(mTradeBill.smallTicketNumber)) {
+            mPayCommentsLayout.setVisibility(View.GONE);
+            mPayComments.setVisibility(View.GONE);
         }
 
         //支付方式
@@ -338,7 +357,7 @@ public class DetailActivity extends BaseActivity {
             mPayResultImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    refreshOnclick(v);
+                    refreshOnclick();
                 }
             });
         } else if ("30".equals(mTradeBill.transStatus)) {
@@ -434,7 +453,7 @@ public class DetailActivity extends BaseActivity {
 
 
     //刷新按钮点击事件处理方法
-    public void refreshOnclick(View view) {
+    public void refreshOnclick() {
         OrderData orderData = new OrderData();
         orderData.origOrderNum = mTradeBill.orderNum;
         startLoading(mPayResultImage);
