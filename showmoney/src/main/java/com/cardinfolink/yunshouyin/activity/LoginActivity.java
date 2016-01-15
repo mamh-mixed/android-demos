@@ -29,6 +29,7 @@ import com.cardinfolink.yunshouyin.ui.EditTextClear;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
 import com.cardinfolink.yunshouyin.view.HintDialog;
+import com.cardinfolink.yunshouyin.view.YellowTips;
 import com.umeng.message.PushAgent;
 
 public class LoginActivity extends BaseActivity {
@@ -45,6 +46,8 @@ public class LoginActivity extends BaseActivity {
     private Button mLoginButton;//登录按钮
     private HintDialog mHintDialog;
     private PushAgent mPushAgent;
+
+    private YellowTips mYellowTips;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +102,8 @@ public class LoginActivity extends BaseActivity {
 
         mLoad = (ImageView) findViewById(R.id.iv_loading);
 
+        mYellowTips = new YellowTips(this, findViewById(R.id.yellow_tips));
+
     }
 
     /**
@@ -122,17 +127,15 @@ public class LoginActivity extends BaseActivity {
         username = mUsernameEdit.getText().toString();
         password = mPasswordEdit.getText().toString();
 
-        Bitmap wrongBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
-
         if (TextUtils.isEmpty(username)) {
             String alertMsg = getResources().getString(R.string.alert_error_username_cannot_empty);
-            mAlertDialog.show(alertMsg, wrongBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (TextUtils.isEmpty(password)) {
             String alertMsg = getResources().getString(R.string.alert_error_password_cannot_empty);
-            mAlertDialog.show(alertMsg, wrongBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
         return true;
@@ -150,7 +153,6 @@ public class LoginActivity extends BaseActivity {
         final String username = mUsernameEdit.getText().toString();
         final String password = mPasswordEdit.getText().toString();
         final String deviceToken = mPushAgent.getRegistrationId();
-
         quickPayService.loginAsync(username, password, deviceToken, new QuickPayCallbackListener<User>() {
             @Override
             public void onSuccess(User data) {
@@ -209,7 +211,7 @@ public class LoginActivity extends BaseActivity {
                     ActivateDialog activateDialog = new ActivateDialog(mContext, view, eMail);
                     activateDialog.show();
                 } else {
-                    mAlertDialog.show(errorMsg, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                    mYellowTips.show(errorMsg);
                     if (errorCode.equals("username_password_error")) {
                         mPasswordEdit.setText("");
                     }
