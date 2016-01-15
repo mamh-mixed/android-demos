@@ -19,19 +19,24 @@
 
 
         <LinearLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
+
             android:weightSum="100">
 
 
             <RelativeLayout
+                android:id="@+id/merchant_info"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="90"
                 android:background="@drawable/ticket_edittext_bg"
                 android:orientation="vertical">
+
+
 
                 <TextView
                     android:id="@+id/merchant_name"
