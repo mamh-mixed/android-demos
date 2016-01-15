@@ -1,29 +1,23 @@
-package com.cardinfolink.yunshouyin.view;
+package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Handler;
+import android.os.Bundle;
+import android.app.Activity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.activity.SearchBillActivity;
 import com.cardinfolink.yunshouyin.adapter.BillExpandableListAdapter;
-import com.cardinfolink.yunshouyin.adapter.CollectionExpandableListAdapter;
-import com.cardinfolink.yunshouyin.adapter.TicketExpandableListAdapter;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
@@ -37,12 +31,12 @@ import com.cardinfolink.yunshouyin.model.Txn;
 import com.cardinfolink.yunshouyin.ui.EditTextClear;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
+import com.cardinfolink.yunshouyin.view.LoadingDialog;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -51,10 +45,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class TransManageView extends LinearLayout {
-    private static final String TAG = "TransManageView";
+public class SearchBillActivity extends Activity {
+    private static final String TAG = "SearchBillActivity";
     private Context mContext;
-
     private QuickPayService quickPayService;
 
     //***普通的收款账单*************************************************************************************
@@ -75,81 +68,51 @@ public class TransManageView extends LinearLayout {
     private View mEmptyViewBill;
     private TextView mEmptyTextviewBill;
 
-    //***卡券账单*************************************************************************************
-    private PullToRefreshExpandableListView mTicketPullRefreshListView;//第2个第2个卡券账单的listview
-    private TicketExpandableListAdapter mTicketAdapter;
 
-    private Map<String, MonthBill> mMonthTicketBillMap;
-    private List<MonthBill> mMonthTicketBilltList;
-
-    private List<List<TradeBill>> mTicketBillList;
-    private Map<String, List<TradeBill>> mTicketBillMap;
-
-    private int ticketIndex;
-    private int mMonthTicketAgo;
-    private String mTicketCurrentYearMonth;
-
-    private View mEmptyViewTicket;
-    private TextView mEmptyTextviewTicket;
-
-    //**收款码账单**************************************************************************************
-    private PullToRefreshExpandableListView mCollectionPullRefreshListView;//第3个第3个收款码账单的listview
-    private CollectionExpandableListAdapter mCollectionAdapter;
-
-    private Map<String, MonthBill> mMonthCollectionBillMap;
-    private List<MonthBill> mMonthCollectionBillList;//收款码的月账单
-
-    private List<List<TradeBill>> mCollectionBillList;//收款码的日账单，这个条目会很多的
-    private Map<String, List<TradeBill>> mCollectionBillMap;
-
-    private int collectionIndex;//收款码账单 使用到的 index索引值
-
-    private View mEmptyViewCollection;
-    private TextView mEmptyTextviewCollection;
-
-    //****************************************************************************************
-
-
-    private RadioButton mRaidoBill;//收款账单
-    private RadioButton mRadioTicket;//卡券账单
-    private RadioButton mRadioCollection;//收款码账单
+    private SettingActionBarItem mActionBar;
 
 
     private TextView mSearch;//搜索的按钮
+    private EditTextClear mSearchEditText;
+    private LinearLayout mSearchLinearLayout;
+    private LinearLayout mSearchConditionLinearLayout;
 
+    //定义几个搜索条件 的checkbpx组件
+    private CheckBox mPaySuccessCheckBox;//支付成功的 1
 
-    private TextView mTitle;
+    private CheckBox mRecAppCheckBox;//app 收款的 1
+    private CheckBox mRecPCCheckBox;//pc 收款的   2
+    private CheckBox mRecWebCheckBox;//网页收款的  4
+    private CheckBox mRecOpenCheckBox;//开放接口的 8
+    //这里少折扣券的
+    private CheckBox mPayAliCheckBox;//支付宝支付的 1
+    private CheckBox mPayWxCheckBox;//微信支付的    2
 
     protected LoadingDialog mLoadingDialog;    //显示loading
 
-    private Handler mMainactivityHandler;
 
-    public TransManageView(Context context) {
-        this(context, null);
-    }
-
-    public TransManageView(Context context, Handler handler) {
-        super(context);
-        mContext = context;
-        mMainactivityHandler = handler;
-
-        View contentView = LayoutInflater.from(context).inflate(R.layout.transmanage_view, null);
-        LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        contentView.setLayoutParams(layoutParams);
-        addView(contentView);
-
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_search_bill);
+        mContext = this;
         quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
-
         initLayout();
     }
 
     private void initLayout() {
+
         SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
         mCurrentYearMonth = spf.format(new Date());
-        mTicketCurrentYearMonth = mCurrentYearMonth;
-        billIndex = ticketIndex = 0;
+        billIndex = 0;
 
-        mTitle = (TextView) findViewById(R.id.tv_title);
+        mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
+        mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         mLoadingDialog = new LoadingDialog(mContext, findViewById(R.id.loading_dialog));
 
@@ -169,12 +132,14 @@ public class TransManageView extends LinearLayout {
                 SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
                 mCurrentYearMonth = spf.format(new Date());
 
-                getBill();
+                //通过判断 radio group是否是隐藏的状态，隐藏的状态就是按条件查找的情况
+                searchBill();
+
             }
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
-                getBill();
+                searchBill();
             }
         });
 
@@ -190,186 +155,188 @@ public class TransManageView extends LinearLayout {
         billActualView.setAdapter(mBillAdapter);
         billActualView.setGroupIndicator(null);
 
-        //***卡券账单***************************************************************************************
-        mTicketPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.ticket_list_view);
-        mTicketPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
-        mTicketPullRefreshListView.setVisibility(GONE);
-        mTicketPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ExpandableListView>() {
-            @Override
-            public void onPullDownToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
-                ticketIndex = 0;
-                mMonthTicketAgo = 0;
-                mMonthTicketBillMap.clear();
-                mMonthTicketBilltList.clear();
-                mTicketBillList.clear();
-                mTicketBillMap.clear();
-
-                mTicketAdapter.notifyDataSetChanged();
-                SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-                mTicketCurrentYearMonth = spf.format(new Date());
-                getTicketBill();
-            }
-
-            @Override
-            public void onPullUpToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
-                getTicketBill();
-            }
-        });
-
-        mMonthTicketBillMap = new HashMap<>();
-        mMonthTicketBilltList = new ArrayList<>();
-        mTicketBillList = new ArrayList<>();
-        mTicketBillMap = new HashMap<>();
-
-        mTicketAdapter = new TicketExpandableListAdapter(mContext, mMonthTicketBilltList, mTicketBillList);
-        mTicketAdapter.setHintDialog(findViewById(R.id.hint_dialog));
-
-        ExpandableListView ticketActualView = mTicketPullRefreshListView.getRefreshableView();
-        ticketActualView.setAdapter(mTicketAdapter);
-        ticketActualView.setGroupIndicator(null);
-
-        //***收款码账单***************************************************************************************
-        mCollectionPullRefreshListView = (PullToRefreshExpandableListView) findViewById(R.id.colloction_list_view);
-        mCollectionPullRefreshListView.setMode(PullToRefreshBase.Mode.BOTH);
-        mCollectionPullRefreshListView.setVisibility(GONE);
-        mCollectionPullRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ExpandableListView>() {
-            @Override
-            public void onPullDownToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
-                collectionIndex = 0;
-                mMonthCollectionBillList.clear();
-                mCollectionBillList.clear();
-                mMonthCollectionBillMap.clear();
-                mCollectionBillMap.clear();
-                mCollectionAdapter.notifyDataSetChanged();
-                getCollectionBill();
-            }
-
-            @Override
-            public void onPullUpToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
-                getCollectionBill();
-            }
-        });
-
-        mMonthCollectionBillList = new ArrayList<>();
-        mCollectionBillList = new ArrayList<>();
-        mMonthCollectionBillMap = new HashMap<>();
-        mCollectionBillMap = new HashMap<>();
-
-        mCollectionAdapter = new CollectionExpandableListAdapter(mContext, mMonthCollectionBillList, mCollectionBillList);
-        ExpandableListView collectionActualView = mCollectionPullRefreshListView.getRefreshableView();
-        collectionActualView.setAdapter(mCollectionAdapter);
-        collectionActualView.setGroupIndicator(null);
-
-        //******************************************************************************************
-
 
         mSearch = (TextView) findViewById(R.id.tv_search);
-        mSearch.setOnClickListener(new OnClickListener() {
+        mSearchEditText = (EditTextClear) findViewById(R.id.et_search);
+
+        mSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, SearchBillActivity.class);
-                mContext.startActivity(intent);
+                //订单号大于等于17位才触发查询操作
+                String orderNum = mSearchEditText.getText().toString();
+                if (!TextUtils.isEmpty(orderNum)) {
+                    //这里精确查找
+                    billIndex = 0;
+                    mMonthBillAgo = 0;//注意这里要清零
+                    mTradeBillList.clear();
+                    mMonthBilList.clear();
+                    mMonthBillMap.clear();
+                    mTradeBillMap.clear();
+                    SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
+                    mCurrentYearMonth = spf.format(new Date());
+
+                    findBill(orderNum);
+                }
+            }
+        });
+
+        mSearchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //订单号大于等于17位才触发查询操作
+                String orderNum = mSearchEditText.getText().toString();
+                if (!TextUtils.isEmpty(orderNum) && orderNum.length() == 17) {
+                    Log.e(TAG, " search order: " + orderNum);
+                    //这里精确查找
+                    billIndex = 0;
+                    mMonthBillAgo = 0;//注意这里要清零
+                    mTradeBillList.clear();
+                    mMonthBilList.clear();
+                    mMonthBillMap.clear();
+                    mTradeBillMap.clear();
+                    SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
+                    mCurrentYearMonth = spf.format(new Date());
+
+                    findBill(orderNum);
+                }
             }
         });
 
 
-        //账单
-        mRaidoBill = (RadioButton) findViewById(R.id.radio_bill);
-        mRaidoBill.setOnClickListener(new OnClickListener() {
+        //定义几个搜索条件 的checkbpx组件
+        mPaySuccessCheckBox = (CheckBox) findViewById(R.id.cb_success);//支付成功的 1
+        mPaySuccessCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
 
-            @Override
-            public void onClick(View v) {
-                mBillPullRefreshListView.setVisibility(VISIBLE);
-                mTicketPullRefreshListView.setVisibility(GONE);
-                mCollectionPullRefreshListView.setVisibility(GONE);
-                mTitle.setText(mRaidoBill.getText().toString());//设置标题
-            }
-        });
+        mRecAppCheckBox = (CheckBox) findViewById(R.id.cb_rec_type1);//app 收款的 1
+        mRecAppCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        mRecPCCheckBox = (CheckBox) findViewById(R.id.cb_rec_type2);//pc 收款的   2
+        mRecPCCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        mRecWebCheckBox = (CheckBox) findViewById(R.id.cb_rec_type3);//网页收款的  4
+        mRecWebCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        mRecOpenCheckBox = (CheckBox) findViewById(R.id.cb_rec_type4);//其他收款的开放接口的 8
+        mRecOpenCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        //这里少折扣券的
+        mPayAliCheckBox = (CheckBox) findViewById(R.id.cb_pay_type1);//支付宝支付的 1
+        mPayAliCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        mPayWxCheckBox = (CheckBox) findViewById(R.id.cb_pay_type2);//微信支付的    2
+        mPayWxCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
 
-        //卡券
-        mRadioTicket = (RadioButton) findViewById(R.id.radio_ticket);
-        mRadioTicket.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mBillPullRefreshListView.setVisibility(GONE);
-                mTicketPullRefreshListView.setVisibility(VISIBLE);
-                mCollectionPullRefreshListView.setVisibility(GONE);
-                mTitle.setText(mRadioTicket.getText().toString());
-            }
-        });
-
-        //收款码
-        mRadioCollection = (RadioButton) findViewById(R.id.radio_collection);
-        mRadioCollection.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                mBillPullRefreshListView.setVisibility(GONE);
-                mTicketPullRefreshListView.setVisibility(GONE);
-                mCollectionPullRefreshListView.setVisibility(VISIBLE);
-                mTitle.setText(mRadioCollection.getText().toString());
-            }
-        });
-
-
-        //设置一个空的view，当listview为空的时候
-        mEmptyViewBill = View.inflate(mContext, R.layout.expandable_list_view_empty, null);
-        mEmptyTextviewBill = (TextView) mEmptyViewBill.findViewById(R.id.tv_message);
-        mEmptyTextviewBill.setText(mRaidoBill.getText());
-        mBillPullRefreshListView.setEmptyView(mEmptyViewBill);
-
-        mEmptyViewTicket = View.inflate(mContext, R.layout.expandable_list_view_empty, null);
-        mEmptyTextviewTicket = (TextView) mEmptyViewTicket.findViewById(R.id.tv_message);
-        mEmptyTextviewTicket.setText(mRadioTicket.getText());
-        mTicketPullRefreshListView.setEmptyView(mEmptyViewTicket);
-
-        mEmptyViewCollection = View.inflate(mContext, R.layout.expandable_list_view_empty, null);
-        mEmptyTextviewCollection = (TextView) mEmptyViewCollection.findViewById(R.id.tv_message);
-        mEmptyTextviewCollection.setText(mRadioCollection.getText());
-        mCollectionPullRefreshListView.setEmptyView(mEmptyViewCollection);
     }
 
 
-    public void refresh() {
-        billIndex = 0;
-        mMonthBillAgo = 0;//注意这里要清零
-        mTradeBillList.clear();
-        mMonthBilList.clear();
-        mMonthBillMap.clear();
-        mTradeBillMap.clear();
-        mBillAdapter.notifyDataSetChanged();
-        SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-        mCurrentYearMonth = spf.format(new Date());
+    private class SearchCheckBoxOnCheckedChangeListener implements CompoundButton.OnCheckedChangeListener {
 
-        getBill();
-
-        getCollectionBill();
-
-        ticketIndex = 0;
-        mMonthTicketAgo = 0;
-        mMonthTicketBillMap.clear();
-        mMonthTicketBilltList.clear();
-        mTicketBillList.clear();
-        mTicketBillMap.clear();
-        mTicketAdapter.notifyDataSetChanged();
-        mTicketCurrentYearMonth = spf.format(new Date());
-
-        getTicketBill();
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (!TextUtils.isEmpty(mSearchEditText.getText())) {
+                return;
+            }
+            //按条件查找之前先清空一下数据
+            billIndex = 0;
+            mMonthBillAgo = 0;//注意这里要清零
+            mTradeBillList.clear();
+            mMonthBilList.clear();
+            mMonthBillMap.clear();
+            mTradeBillMap.clear();
+            mBillAdapter.notifyDataSetChanged();
+            SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
+            mCurrentYearMonth = spf.format(new Date());
+            searchBill();
+        }
     }
 
-
-    //获取收款的账单账单
-    private void getBill() {
+    //精确查找某个账单
+    private void findBill(String orderNum) {
         mLoadingDialog.startLoading();
-        quickPayService.getHistoryBillsAsync(SessonData.loginUser, mCurrentYearMonth, String.valueOf(billIndex), "100", "success", new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.getOrderAsync(SessonData.loginUser, orderNum, new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
-                //这里可以在ui线程里执行的
-                //这里特殊一些，需要用的size
+                parseServerPacket(data, mMonthBillMap, mTradeBillMap, mMonthBilList, mTradeBillList);
+
+                mBillAdapter.notifyDataSetChanged();
+                mBillPullRefreshListView.onRefreshComplete();
+
+                if (mMonthBilList.size() <= 0) {
+                    String msg = mContext.getString(R.string.bill_search_result_message1);
+                    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                }
+
+                mLoadingDialog.endLoading();
+            }
+
+            @Override
+            public void onFailure(QuickPayException ex) {
+                mBillAdapter.notifyDataSetChanged();
+                mBillPullRefreshListView.onRefreshComplete();
+                String msg = mContext.getString(R.string.bill_search_result_message2) + ex.getErrorMsg();
+                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+                mLoadingDialog.endLoading();
+            }
+        });
+
+    }
+
+    private void searchBill() {
+        int recValue = 0;//收款方式
+        if (mRecAppCheckBox.isChecked()) {
+            recValue += 1;
+        }
+        if (mRecPCCheckBox.isChecked()) {
+            recValue += 2;
+        }
+        if (mRecWebCheckBox.isChecked()) {
+            recValue += 4;
+        }
+        if (mRecOpenCheckBox.isChecked()) {
+            recValue += 8;
+        }
+        if (recValue == 0) {
+            recValue = 15;
+        }
+
+
+        int payValue = 0;//支付方式
+        if (mPayAliCheckBox.isChecked()) {
+            payValue += 1;
+        }
+        if (mPayWxCheckBox.isChecked()) {
+            payValue += 2;
+        }
+        if (payValue == 0) {
+            payValue = 3;
+        }
+
+        int txnStatus = 0;//支付状态
+        if (mPaySuccessCheckBox.isChecked()) {
+            txnStatus += 1;
+        }
+        if (txnStatus == 0) {
+            txnStatus = 7;
+        }
+
+        getBill(String.valueOf(recValue), String.valueOf(payValue), String.valueOf(txnStatus));
+    }
+
+    private void getBill(String recType, String payType, String txnStatus) {
+        mLoadingDialog.startLoading();
+        String sizeStr = "100";
+        String index = String.valueOf(billIndex);
+        quickPayService.findOrderAsync(SessonData.loginUser, index, sizeStr, recType, payType, txnStatus, new QuickPayCallbackListener<ServerPacket>() {
+            @Override
+            public void onSuccess(ServerPacket data) {
+                //这里特殊一些，需要用的size。
                 final int size = data.getSize();
-                //这里还需要这个字段
-                final int totalRecord = data.getTotalRecord();//这个字段表示当月的总条数
 
                 parseServerPacket(data, mMonthBillMap, mTradeBillMap, mMonthBilList, mTradeBillList);
 
@@ -379,18 +346,10 @@ public class TransManageView extends LinearLayout {
                     mBillPullRefreshListView.getRefreshableView().expandGroup(0);
                 }
                 billIndex += size;
-                if (billIndex == totalRecord) {
-                    //之前用的是size来判断的。size等于零 表示 加载到这个月的全部的了，这时候就要加载前一个月的数据了
-                    //现在用totalRecord来判断，相等表明这个月的数据加载完了，这个时候就要加载前一个月的数据了
-                    billIndex = 0;
-                    mMonthBillAgo += 1;
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.MONTH, 0 - mMonthBillAgo);    //得到前一个月
-                    String year = String.format("%4d", calendar.get(Calendar.YEAR));
-                    String month = String.format("%02d", calendar.get(Calendar.MONTH) + 1);
-                    mCurrentYearMonth = year + month;//走到这里说明 下次调用这个 getBill()方法的时候拉取的就是上个月的账单了
+                if (mMonthBilList.size() <= 0) {
+                    String msg = mContext.getString(R.string.bill_search_result_message3);
+                    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 }
-
                 mLoadingDialog.endLoading();
             }
 
@@ -398,121 +357,13 @@ public class TransManageView extends LinearLayout {
             public void onFailure(QuickPayException ex) {
                 mBillAdapter.notifyDataSetChanged();
                 mBillPullRefreshListView.onRefreshComplete();
-                mLoadingDialog.endLoading();
-            }
-        });
-    }
-
-    //获取卡券账单
-    public void getTicketBill() {
-        mLoadingDialog.startLoading();
-        quickPayService.getHistoryCouponsAsync(SessonData.loginUser, mTicketCurrentYearMonth, String.valueOf(ticketIndex), "100", new QuickPayCallbackListener<ServerPacket>() {
-            @Override
-            public void onSuccess(ServerPacket data) {
-                int size = data.getSize();
-                int totalRecord = data.getTotalRecord();
-
-                parseServerPacket(data, mMonthTicketBillMap, mTicketBillMap, mMonthTicketBilltList, mTicketBillList);
-
-                mTicketAdapter.notifyDataSetChanged();
-                mTicketPullRefreshListView.onRefreshComplete();
-
-                if (mTicketAdapter.getGroupCount() >= 1) {
-                    mTicketPullRefreshListView.getRefreshableView().expandGroup(0);
-                }
-                ticketIndex += size;
-                if (ticketIndex == totalRecord) {
-                    //之前用的是size来判断的。size等于零 表示 加载到这个月的全部的了，这时候就要加载前一个月的数据了
-                    //现在用totalRecord来判断，相等表明这个月的数据加载完了，这个时候就要加载前一个月的数据了
-                    ticketIndex = 0;
-                    mMonthTicketAgo += 1;
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.MONTH, 0 - mMonthTicketAgo);    //得到前一个月
-                    String year = String.format("%4d", calendar.get(Calendar.YEAR));
-                    String month = String.format("%02d", calendar.get(Calendar.MONTH) + 1);
-                    mTicketCurrentYearMonth = year + month;//走到这里说明 下次调用这个 getTicketBill()方法的时候拉取的就是上个月的账单了
-                }
-
-                mLoadingDialog.endLoading();
-            }
-
-            @Override
-            public void onFailure(QuickPayException ex) {
-                mTicketAdapter.notifyDataSetChanged();
-                mTicketPullRefreshListView.onRefreshComplete();
+                String msg = mContext.getString(R.string.bill_search_result_message2) + ex.getErrorMsg();
+                Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 mLoadingDialog.endLoading();
             }
         });
 
     }
-
-    //获取 收款码 账单
-    public void getCollectionBill() {
-        mLoadingDialog.startLoading();
-        String sizeStr = "100";
-        String index = String.valueOf(collectionIndex);
-        /**
-         * recType
-         * "收款方式：移动版 桌面版 收款码 开放接口
-         *移动版 1
-         *桌面版 2
-         *收款码 4
-         *开放接口 8
-         *移动版｜桌面版：1 | 2 = 3
-         *移动版 | 收款码:1 | 4 = 5
-         *全部：1 | 2 | 4 | 8 = 15 "
-         */
-        String recType = "4";
-
-        /**
-         * payType
-         *  "支付方式：支付宝 微信
-         *  支付宝 1
-         *  微信 2
-         *  全部：1 | 2 = 3"
-         */
-        String payType = "3";
-
-        /**
-         *txnStatus
-         *"交易状态：交易成功 部分退款 全额退款
-         *  交易成功 1
-         *  部分退款 2
-         *  全额退款 4
-         *  部分退款 ｜ 全额退款：2 | 4 = 6
-         *  全部：1 | 2 | 4 = 7"
-         */
-        String txnStatus = "7";
-
-        quickPayService.findOrderAsync(SessonData.loginUser, index, sizeStr, recType, payType, txnStatus, new QuickPayCallbackListener<ServerPacket>() {
-            @Override
-            public void onSuccess(ServerPacket data) {
-                //这里特殊一些，需要用的size。
-                final int size = data.getSize();
-
-                parseServerPacket(data, mMonthCollectionBillMap, mCollectionBillMap, mMonthCollectionBillList, mCollectionBillList);
-
-                mCollectionAdapter.notifyDataSetChanged();//这一句很重要的
-                mCollectionPullRefreshListView.onRefreshComplete();
-                if (mCollectionAdapter.getGroupCount() >= 1) {
-                    mCollectionPullRefreshListView.getRefreshableView().expandGroup(0);
-                }
-                collectionIndex += size;
-
-                mLoadingDialog.endLoading();
-            }
-
-            @Override
-            public void onFailure(QuickPayException ex) {
-                mCollectionAdapter.notifyDataSetChanged();//这一句很重要的
-                mCollectionPullRefreshListView.onRefreshComplete();
-                mLoadingDialog.endLoading();
-            }
-        });
-
-
-    }
-
 
     private void parseServerPacket(ServerPacket data, Map<String, MonthBill> monthMap, Map<String, List<TradeBill>> tradeBillMap, List<MonthBill> monthList, List<List<TradeBill>> tradeBillList) {
         //处理服务器返回的ServerPacket data的数据，把他们都放在相应的list和map中去
@@ -563,7 +414,6 @@ public class TransManageView extends LinearLayout {
                 }
 
                 if (TextUtils.isEmpty(tradeBill.tandeDate)) {
-                    Log.e(TAG, "[Txn] bill date is empty");
                     continue;
                 }
                 //获取这个账单里面的日期,年月日 的 日
@@ -574,7 +424,6 @@ public class TransManageView extends LinearLayout {
 
                 //渠道为空的 不列入统计，这样totalRecord和实际的list的size可能不一样
                 if (TextUtils.isEmpty(tradeBill.chcd)) {
-                    Log.e(TAG, "[Txn] bill channel is empty");
                     continue;
                 }
 
@@ -633,7 +482,6 @@ public class TransManageView extends LinearLayout {
                 }
                 //获取这个账单里面的日期,年月日 的 日
                 if (TextUtils.isEmpty(tradeBill.tandeDate)) {
-                    Log.e(TAG, "[coupon] coupon date is empty");
                     continue;
                 }
                 String currentDay = tradeBill.tandeDate.substring(6, 8);
