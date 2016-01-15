@@ -239,7 +239,7 @@
     <string name="scancode_view_cancel_order_ing">关闭订单进行中。。。</string>
     <string name="scancode_view_wait_user_input_password">用户正在输入密码，正在第%1$s次查询结果。\n45秒后不成功将取消该笔交易。</string>
 
-    <string name="toast_money_cannot_zero">金额不能为零!</string>
+    <string name="toast_money_cannot_zero">金额不能为零,最少 0.01元!</string>
     <string name="toast_money_too_large">金额过大!</string>
 
     <!-- 新信息-->
