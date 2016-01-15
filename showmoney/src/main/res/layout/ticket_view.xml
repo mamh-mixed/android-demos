@@ -1,159 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_layout"
-    android:orientation="vertical"
-    android:weightSum="1">
+    android:background="@color/background_layout">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.55"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:weightSum="1">
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.20"
-            android:orientation="vertical">
+            android:layout_weight="0.55"
+            android:orientation="vertical"
+            android:weightSum="1">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:orientation="horizontal">
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="0.20"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_margin="10dp"
-                    android:src="@drawable/setting_my1" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/setting_my1" />
+
+                    <TextView
+                        android:id="@+id/tv_coupon_account"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_margin="10dp"
+                        android:text="123456@qq.com"
+                        android:textColor="@color/textview_textcolor_gray3"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="0.35"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_coupon_account"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_margin="10dp"
-                    android:text="123456@qq.com"
-                    android:textColor="@color/textview_textcolor_gray3"
-                    android:textSize="15sp" />
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="40dp"
+                    android:text="@string/coupon_ticket_verification"
+                    android:textColor="@color/textview_textcolor_gray1"
+                    android:textSize="30sp" />
+
             </LinearLayout>
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="0.35"
-            android:orientation="vertical">
-
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="20dp"
-                android:layout_marginTop="40dp"
-                android:text="@string/coupon_ticket_verification"
-                android:textColor="@color/textview_textcolor_gray1"
-                android:textSize="30sp" />
+                android:layout_height="0dp"
+                android:layout_weight="0.37"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginTop="45dp"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
+
+                    <ImageView
+                        android:id="@+id/iv_pencil"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0.07"
+                        android:src="@drawable/ticket_pencilgrey" />
+
+                    <com.cardinfolink.yunshouyin.ui.EditTextClear
+                        android:id="@+id/et_input_coupon_code"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="0.83"
+                        android:background="@null"
+                        android:hint="@string/coupon_reminder"
+                        android:textSize="20sp" />
+
+                    <ImageView
+                        android:id="@+id/iv_scan_code"
+                        android:layout_width="0dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ticket_camera_blue" />
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginLeft="30dp"
+
+                    android:background="@color/horizontal_view_background" />
+            </LinearLayout>
 
         </LinearLayout>
 
+
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.37"
-            android:orientation="vertical">
+            android:layout_weight="0.45"
+            android:orientation="vertical"
+            android:weightSum="1">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="45dp"
-                android:orientation="horizontal"
-                android:weightSum="1">
+                android:layout_height="0dp"
+                android:layout_weight="0.70">
 
-                <ImageView
-                    android:id="@+id/iv_pencil"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                <Button
+                    android:id="@+id/bt_confirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
                     android:layout_gravity="center_vertical"
-                    android:src="@drawable/ticket_pencilgrey"
-                    android:layout_weight="0.07"/>
-
-                <com.cardinfolink.yunshouyin.ui.EditTextClear
-                    android:id="@+id/et_input_coupon_code"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="0.83"
-                    android:background="@null"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="5dp"
-                    android:textSize="20sp"
-                    android:hint="@string/coupon_reminder" />
-
-                <ImageView
-                    android:id="@+id/iv_scan_code"
-                    android:layout_width="0dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="0.1"
-                    android:src="@drawable/ticket_camera_blue" />
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@drawable/blue_selector"
+                    android:text="@string/coupon_confirm"
+                    android:textColor="@color/button_textcolor" />
 
             </LinearLayout>
 
-            <View
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:layout_marginLeft="30dp"
+                android:layout_height="0dp"
+                android:layout_weight="0.26"
+                android:orientation="vertical">
 
-                android:background="@color/horizontal_view_background" />
+                <ImageView
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_gravity="center_horizontal"
+                    android:src="@drawable/ticket_umq" />
+            </LinearLayout>
+
         </LinearLayout>
+
 
     </LinearLayout>
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.45"
-        android:orientation="vertical"
-        android:weightSum="1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.70">
-
-            <Button
-                android:id="@+id/bt_confirm"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:background="@drawable/blue_selector"
-                android:text="@string/coupon_confirm"
-                android:textColor="@color/button_textcolor" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.26"
-            android:orientation="vertical">
-
-            <ImageView
-                android:layout_width="70dp"
-                android:layout_height="70dp"
-                android:src="@drawable/ticket_umq"
-                android:layout_gravity="center_horizontal"/>
-        </LinearLayout>
-
-    </LinearLayout>
-
-
-</LinearLayout>
+    <include layout="@layout/hint_dialog" />
+</RelativeLayout>
