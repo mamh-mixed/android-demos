@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cardinfolink="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_layout">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+            android:id="@+id/action_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            cardinfolink:left_text="@string/setting_return"
+            cardinfolink:title="@string/bill_title1" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+            <LinearLayout
+                android:id="@+id/ll_search"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="3"
+                android:visibility="visible">
+
+                <com.cardinfolink.yunshouyin.ui.EditTextClear
+                    android:id="@+id/et_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bill_textview1_bg"
+                    android:hint="@string/bill_search_hint" />
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_search"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@drawable/white1_selector"
+                android:drawableLeft="@drawable/bill_seek"
+                android:gravity="center"
+                android:padding="5dp"
+                android:text="@string/bill_search"
+                android:textSize="15dp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_search_condition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:id="@+id/cb_success"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_status_success"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:id="@+id/cb_rec_type0"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_rec_type0"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:id="@+id/cb_rec_type1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_rec_type2"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:id="@+id/cb_rec_type2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_rec_type1"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <CheckBox
+                    android:id="@+id/cb_rec_type3"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_rec_type3"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <CheckBox
+                    android:id="@+id/cb_pay_type1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_pay_type1"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+
+                <CheckBox
+                    android:id="@+id/cb_pay_type2"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_pay_type2"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center" />
+
+                <CheckBox
+                    android:id="@+id/cb_rec_type4"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:padding="5dp"
+                    android:text="@string/bill_rec_type4"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="5dp">
+
+            <!-- 账单的listview -->
+            <com.handmark.pulltorefresh.library.PullToRefreshExpandableListView
+                android:id="@+id/bill_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible" />
+
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+    <!-- loading 对话框 -->
+    <RelativeLayout
+        android:id="@+id/loading_dialog"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/background_dialog1"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/load_img"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/loading" />
+
+    </RelativeLayout>
+    <!-- loading 对话框 -->
+
+    <include layout="@layout/hint_bill_dialog" />
+
+</RelativeLayout>
