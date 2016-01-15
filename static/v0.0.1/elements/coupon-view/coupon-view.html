@@ -16,7 +16,7 @@
       min-height: auto;
     }
   </style>
-  <template>
+  <template>∫
     <paper-dialog with-backdrop id="dialogView">
       <h2>交易明细</h2>
       <paper-dialog-scrollable>
@@ -186,12 +186,12 @@
           '30': '成功',
           '40': '已关闭',
         };
-        return status+'-'+map[status];
+        return status + '-' + map[status];
       },
       couponPayStatusFilter: function(item) {
         if (item.busicd != 'VERI') {
           return '';
-      } else if (!item.scanPayCoupon) {
+        } else if (!item.scanPayCoupon) {
           return '未支付';
         }
         var map = {
@@ -201,7 +201,7 @@
           '40': '已关闭',
           '': '未支付',
         };
-        return item.scanPayCoupon.transStatus+'-'+map[item.scanPayCoupon.transStatus];
+        return item.scanPayCoupon.transStatus + '-' + map[item.scanPayCoupon.transStatus];
       },
     });
   </script>

@@ -1,7 +1,7 @@
 iso8583Code,iso8583Msg,errorCode,isUseISO,respCode,respMsg
 00,成功,SUCCESS,true,,
 01,交易失败,FAIL,false,,
-03,商户不存在,NO_MERCHANT,false,,
+03,商户不存在,NO_MERCHANT,true,,
 05,不支持该交易类型,NOT_SUPPORT_TYPE,true,,
 09,处理中,INPROCESS,true,,
 12,签名错误,SIGN_AUTH_ERROR,true,,
@@ -13,6 +13,7 @@ iso8583Code,iso8583Msg,errorCode,isUseISO,respCode,respMsg
 30,报文错误,DATA_ERROR,true,,
 31,权限不足,NO_ROUTERPOLICY,true,,
 51,余额不足,INSUFFICIENT_BALANCE,false,,
+58,未知,UNKNOWN,false,,
 61,退款失败，商家账户余额不足,NOT_ENOUGH_BALANCE,true,,
 64,退款金额超过原订单金额,TRADE_AMT_INCONSISTENT,true,,
 91,外部系统错误,CHAN_UNKNOWN_ERROR,false,,
