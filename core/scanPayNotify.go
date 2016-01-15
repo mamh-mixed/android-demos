@@ -75,7 +75,7 @@ func ProcessAlipay2Notify(params url.Values) error {
 	tradeStatus := params.Get("trade_status")
 	tradeNo := params.Get("trade_no")
 	account := params.Get("buyer_logon_id")
-	openID := params.Get("open_id")
+	// openID := params.Get("open_id")
 	payTime := params.Get("gmt_payment")
 
 	// 交易状态更新
@@ -84,7 +84,7 @@ func ProcessAlipay2Notify(params url.Values) error {
 		ret.ChanRespCode = tradeStatus
 		ret.ChannelOrderNum = tradeNo
 		ret.ConsumerAccount = account
-		ret.ConsumerId = openID
+		// ret.ConsumerId = openID
 		ret.Respcd = adaptor.SuccessCode
 		ret.ErrorDetail = adaptor.SuccessMsg
 		ret.ErrorCode = "SUCCESS"
