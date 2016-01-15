@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.http.LoggingEventHandler;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -45,6 +46,8 @@ import com.google.zxing.WriterException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class ScanCodeView extends LinearLayout implements View.OnClickListener, View.OnTouchListener {
     private static final String TAG = "ScanCodeView";
@@ -200,16 +203,16 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         input = (TextView) findViewById(R.id.input);
         output = (TextView) findViewById(R.id.output);//上边的文本框
 
-        btn0.setOnClickListener(this);
-        btn1.setOnClickListener(this);
-        btn2.setOnClickListener(this);
-        btn3.setOnClickListener(this);
-        btn4.setOnClickListener(this);
-        btn5.setOnClickListener(this);
-        btn6.setOnClickListener(this);
-        btn7.setOnClickListener(this);
-        btn8.setOnClickListener(this);
-        btn9.setOnClickListener(this);
+        btn0.setOnClickListener(new NumberOnClickListener("0"));
+        btn1.setOnClickListener(new NumberOnClickListener("1"));
+        btn2.setOnClickListener(new NumberOnClickListener("2"));
+        btn3.setOnClickListener(new NumberOnClickListener("3"));
+        btn4.setOnClickListener(new NumberOnClickListener("4"));
+        btn5.setOnClickListener(new NumberOnClickListener("5"));
+        btn6.setOnClickListener(new NumberOnClickListener("6"));
+        btn7.setOnClickListener(new NumberOnClickListener("7"));
+        btn8.setOnClickListener(new NumberOnClickListener("8"));
+        btn9.setOnClickListener(new NumberOnClickListener("9"));
         btnadd.setOnClickListener(this);
         btnpoint.setOnClickListener(this);
         btnclear.setOnClickListener(this);
@@ -352,7 +355,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("CHCD", mCHCD);
         editor.commit();
-        scanCodeView.setBackgroundColor(Color.parseColor("#339933"));//设置背景颜色
+        int color = mContext.getResources().getColor(R.color.background_scan_qrcode_layout_wexin);
+        scanCodeView.setBackgroundColor(color);//设置背景颜色
         mLeftText.setVisibility(INVISIBLE);
         mLeftImage.setImageResource(R.drawable.scan_left_disable);
         mRightText.setVisibility(VISIBLE);
@@ -364,7 +368,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         SharedPreferences.Editor editor = sp.edit();
         editor.putString("CHCD", mCHCD);
         editor.commit();
-        scanCodeView.setBackgroundColor(Color.parseColor("#0099ff"));//设置背景颜色
+        int color = mContext.getResources().getColor(R.color.background_scan_qrcode_layout_ali);
+        scanCodeView.setBackgroundColor(color);//设置背景颜色
         mLeftText.setVisibility(VISIBLE);
         mLeftImage.setImageResource(R.drawable.scan_left_able);
         mRightText.setVisibility(INVISIBLE);
@@ -488,6 +493,23 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         });
     }
 
+    private class NumberOnClickListener implements OnClickListener {
+        private String number = "";
+
+        public NumberOnClickListener(String number) {
+            this.number = number;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (numFlag) {
+                clearZero();
+                output.append(this.number);
+                getResult();
+                addFlag = true;
+            }
+        }
+    }
 
     @Override
     public void onClick(View v) {
@@ -521,86 +543,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             case R.id.iv_keyboard:
                 cancelBill(mOrderNum);
                 showKeyBoard();//显示键盘界面
-                break;
-            case R.id.tv_zero:
-                if (numFlag) {
-                    clearZero();
-                    output.append("0");
-                    addFlag = true;
-                    getResult();
-                }
-                break;
-            case R.id.tv_one:
-                if (numFlag) {
-                    clearZero();
-                    output.append("1");
-                    getResult();
-                    addFlag = true;
-                }
-                break;
-            case R.id.tv_two:
-                if (numFlag) {
-                    clearZero();
-                    output.append("2");
-                    getResult();
-                    addFlag = true;
-                }
-                break;
-            case R.id.tv_three:
-                if (numFlag) {
-                    clearZero();
-                    output.append("3");
-                    getResult();
-                    addFlag = true;
-                }
-                break;
-            case R.id.tv_four:
-                if (numFlag) {
-                    clearZero();
-                    output.append("4");
-                    getResult();
-                    addFlag = true;
-                }
-                break;
-            case R.id.tv_five:
-                if (numFlag) {
-                    clearZero();
-                    output.append("5");
-                    getResult();
-                    addFlag = true;
-                }
-                break;
-            case R.id.tv_six:
-                if (numFlag) {
-                    clearZero();
-                    output.append("6");
-                    getResult();
-                    addFlag = true;
-                }
-                break;
-            case R.id.tv_seven:
-                if (numFlag) {
-                    clearZero();
-                    output.append("7");
-                    getResult();
-                    addFlag = true;
-                }
-                break;
-            case R.id.tv_eight:
-                if (numFlag) {
-                    clearZero();
-                    output.append("8");
-                    addFlag = true;
-                    getResult();
-                }
-                break;
-            case R.id.tv_nine:
-                if (numFlag) {
-                    clearZero();
-                    output.append("9");
-                    getResult();
-                    addFlag = true;
-                }
                 break;
             case R.id.tv_point:
                 String s1 = outputText.substring(outputText.lastIndexOf("+") + 1);
@@ -751,19 +693,20 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
     /**
-     * 查询订单
+     * 查询订单 这个暂时没有用了
      */
-    public void searchBill(String orderNum) {
-        OrderData orderData = new OrderData();
-        orderData.origOrderNum = mOrderNum;
+    public void searchBill(final String orderNum) {
+        final OrderData orderData = new OrderData();
+        orderData.origOrderNum = orderNum;
         CashierSdk.startQy(orderData, new CashierListener() {
 
             @Override
             public void onResult(ResultData resultData) {
+
                 mResultData = resultData;
-                if (resultData.respcd.equals("00")) {
+                if ("00".equals(resultData.respcd)) {
                     mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
-                } else if (resultData.respcd.equals("09")) {
+                } else if ("09".equals(resultData.respcd)) {
                     //09 状态
                 } else {
                     mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
@@ -842,12 +785,16 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         pollingThread.start();
     }
 
+
     private class PollingThread extends Thread {
         private int pollingCount = 0;
         private String orderNumInThread;
+        private OrderData orderDataInThread = new OrderData();
+
 
         public PollingThread(String orderNum) {
             this.orderNumInThread = orderNum;
+            this.orderDataInThread.origOrderNum = orderNum;
         }
 
         @Override
@@ -860,9 +807,23 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                         cancelBill(orderNumInThread);
                         break;
                     }
-                    //子线程内部的 订单号 和外面的 订单号
+                    //子线程内部的 订单号 和外面的 订单号,这里我们自己创建线程，自己来控制查询结果
                     if (orderNumInThread.equals(mOrderNum)) {
-                        searchBill(orderNumInThread);
+                        ResultData resultData = CashierSdk.startQy(this.orderDataInThread);
+                        if (resultData != null) {
+                            if ("00".equals(resultData.respcd)) {
+                                mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
+                                break;
+                            } else if ("09".equals(resultData.respcd)) {
+                                //09 状态
+                            } else {
+                                mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
+                                break;
+                            }
+                        } else {
+                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
+                            break;
+                        }
                     } else {
                         cancelBill(orderNumInThread);
                         break;
