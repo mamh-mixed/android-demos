@@ -37,3 +37,17 @@ func (col *emailCollection) FindOne(userName string) (e *model.Email, err error)
 	}
 	return e, nil
 }
+
+// FindOneByCode 根据code查找对应的发送邮箱纪录
+func (col *emailCollection) FindOneByCode(code string) (e *model.Email, err error) {
+	bo := bson.M{
+		"code": code,
+	}
+	e = new(model.Email)
+	err = database.C(col.name).Find(bo).Sort("-timestamp").One(e)
+	if err != nil {
+		log.Errorf("find email by userName err,userName=%s", err)
+		return nil, err
+	}
+	return e, nil
+}
