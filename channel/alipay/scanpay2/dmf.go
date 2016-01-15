@@ -51,7 +51,7 @@ func (d *dmf2) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespo
 	ret.ChannelOrderNum = q.TradeNo
 	ret.PayTime = q.GmtPayment
 	ret.ConsumerAccount = q.BuyerLogonID
-	ret.ConsumerId = q.OpenID
+	// ret.ConsumerId = q.OpenID
 	// TODO...金额如何处理
 
 	return ret, err
@@ -102,7 +102,7 @@ func (d *dmf2) ProcessRefund(req *model.ScanPayRequest) (*model.ScanPayResponse,
 	ret.Respcd, ret.ErrorDetail = transform("refund", q.Code, q.Msg, q.SubCode, q.SubMsg)
 	ret.PayTime = q.GmtRefundPay
 	ret.ConsumerAccount = q.BuyerLogonID
-	ret.ConsumerId = q.OpenID
+	// ret.ConsumerId = q.OpenID
 
 	// TradeNo              string `json:"trade_no,omitempty"`       // 支付宝交易号
 	// OutTradeNo           string `json:"out_trade_no,omitempty"`   // 商户订单号
@@ -140,7 +140,7 @@ func (d *dmf2) ProcessEnquiry(req *model.ScanPayRequest) (*model.ScanPayResponse
 		ret.ChannelOrderNum = q.TradeNo
 		// ret.PayTime = q.GmtPayment
 		ret.ConsumerAccount = q.BuyerLogonID
-		ret.ConsumerId = q.OpenID
+		// ret.ConsumerId = q.OpenID
 		ret.PayTime = q.SendPayDate
 	case "WAIT_BUYER_PAY":
 		ret.Respcd, ret.ErrorDetail = inprocessCode, inprocessMsg

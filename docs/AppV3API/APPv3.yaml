@@ -548,11 +548,6 @@ paths:
           required: true
           type: string
         - in: formData
-          name: clientId
-          description: 用户ID
-          required: true
-          type: string
-        - in: formData
           name: month
           description: 如果传送，返回该月账单情况，见返回字段. YYYYMM
           required: false
@@ -671,12 +666,31 @@ paths:
       description: |
         提供给APP消息更新的接口,已读、已删
       parameters:
-        - in: body
-          name: body
-          description: 更新消息接口对象体。请使用JSON字符串格式发送请求
+        - in: formData
+          name: username
+          description: 用户名
           required: true
-          schema:
-            $ref: '#/definitions/MessageUpdateRequest'
+          type: string
+        - in: formData
+          name: password
+          description: 密码
+          required: true
+          type: string
+        - in: formData
+          name: transtime
+          description: 请求发起时间
+          required: true
+          type: string
+        - in: formData
+          name: sign
+          description: 签名
+          required: true
+          type: string
+        - in: formData
+          name: message
+          description: '更新消息接口对象转换成JSON字符串。{"msgId":	string, "status":	number}'
+          required: true
+          type: string
       tags:
         - Message
       responses:
@@ -743,45 +757,6 @@ definitions:
         type: string
         example: wonsikin
         description: 开户银行代码
-  MessageUpdateRequest:
-    type: object
-    required:
-      - username
-      - password
-      - transtime
-      - sign
-      - message
-    properties:
-      username:
-        type: string
-        example: wonsikin
-        description: 用户名
-      password:
-        type: string
-        example: wonsikin
-        description: 密码
-      transtime:
-        type: string
-        example: wonsikin
-        description: 交易时间
-      sign:
-        type: string
-        example: 20160101121314
-        description: 签名
-      message:
-        type: array
-        description: 待更新消息数组
-        items:
-          $ref: '#/definitions/UpdateMessage'
-  UpdateMessage:
-    type: object
-    properties:
-      msgId:
-        type: string
-        example: 56793eb1dc1ee7f0a906e140
-      status:
-        type: number
-        example: 1
   MessagePullResponse:
     type: object
     required:
