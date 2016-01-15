@@ -1,3 +1,5 @@
+const PASSWORD_INPUT = 'password';
+const TEXT_INPUT = 'text';
 export class PasswordResetController {
   constructor($stateParams, passwordResetService) {
     'ngInject';
@@ -6,10 +8,9 @@ export class PasswordResetController {
     prc.passwordResetService = passwordResetService;
     prc.activate();
     prc.request = {
-      username: '',
-      password: '',
-      passwordRepeat: ''
+      password: ''
     };
+    prc.inputType = PASSWORD_INPUT;
   }
 
   activate() {
@@ -19,5 +20,13 @@ export class PasswordResetController {
   sendRequest() {
     this.request.checkCode = this.params.code;
     this.passwordResetService.sendRequest(this.request);
+  }
+
+  togglePasswordShow() {
+    if (this.inputType === PASSWORD_INPUT) {
+      this.inputType = TEXT_INPUT;
+    } else {
+      this.inputType = PASSWORD_INPUT;
+    }
   }
 }

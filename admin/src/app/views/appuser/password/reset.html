@@ -4,13 +4,13 @@
 		<div class="pwd-input-group">
 			<div>重设密码</div>
 			<div class="input-wrap">
-				<input type="text" class="form-control" placeholder="请填写登录密码">
+				<input type="{{prc.inputType}}" class="form-control" placeholder="请填写登录密码" data-ng-model="prc.request.password">
 			</div>
-			<div class="show-pwd"></div>
+			<div class="show-pwd" data-ng-click="prc.togglePasswordShow()"></div>
 		</div>
 
 		<div class="pwd-button-group">
-			<button type="button" class="btn btn-info" name="button">确认</button>
+			<button type="button" class="btn btn-info" name="button" data-ng-click="prc.sendRequest()">确认</button>
 		</div>
 
 		<div class="logo">
