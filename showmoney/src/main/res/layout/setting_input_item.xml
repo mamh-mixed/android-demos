@@ -26,7 +26,7 @@
         android:hint="请输入登录邮箱"
         android:inputType="text"
         android:textColor="@color/textview_textcolor_setting_input_item"
-        android:textSize="12sp" />
+        android:textSize="14sp" />
 
     <ImageView
         android:id="@+id/iv_help"
