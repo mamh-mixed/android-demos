@@ -31,6 +31,9 @@ public class ErrorUtil {
         if ("old_password_error".equals(error)) {
             return ShowMoneyApp.getResString(R.string.alert_error_old_password_error);
         }
+        if ("user_lock".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_user_lock);
+        }
         if ("user_has_three_times".equals(error)) {
             return ShowMoneyApp.getResString(R.string.alert_error_user_has_three_times);
         }
@@ -50,6 +53,39 @@ public class ErrorUtil {
 
         if ("NO_CHANNEL".equals(error)) {
             return ShowMoneyApp.getResString(R.string.alert_error_no_channel);
+        }
+
+        if ("success".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_success);
+        }
+
+        if ("params_empty".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_params_empty);
+        }
+
+        if ("params_format_error".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_params_format_error);
+        }
+
+        if ("user_already_improved".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_user_already_improved);
+        }
+
+        if ("merId_no_exist".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_merId_no_exist);
+        }
+
+        if ("company_login_name_error".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_company_login_name_error);
+        }
+        if ("user_data_error".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_user_data_error);
+        }
+        if ("accessToken_error".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_accessToken_error);
+        }
+        if ("INVALID_REPORT_TYPE".equals(error)) {
+            return ShowMoneyApp.getResString(R.string.alert_error_INVALID_REPORT_TYPE);
         }
         return error;
 

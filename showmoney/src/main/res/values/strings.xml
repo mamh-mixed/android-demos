@@ -206,6 +206,16 @@
     <string name="alert_error_qrcode_invalid">非法的二维码</string>
     <string name="alert_error_no_channel">未知支付渠道</string>
     <string name="alert_error_other">其他错误</string>
+    <string name="alert_error_success">成功</string>
+    <string name="alert_error_params_empty">参数为空</string>
+    <string name="alert_error_params_format_error">参数格式错误</string>
+    <string name="alert_error_user_already_improved">用户已经提升限额了</string>
+    <string name="alert_error_merId_no_exist">商户不存在</string>
+    <string name="alert_error_user_lock">用户暂时被禁用</string>
+    <string name="alert_error_company_login_name_error">邀请码错误</string>
+    <string name="alert_error_user_data_error">用户数据错误</string>
+    <string name="alert_error_accessToken_error">访问码错误</string>
+    <string name="alert_error_INVALID_REPORT_TYPE">非法的报告类型</string>
 
     <string name="refd_activity_refd_message">当前可退款金额（元）</string>
     <string name="refd_activity_refd_message1">需退款金额(元) </string>
@@ -240,25 +250,10 @@
 
     <!-- 新信息-->
     <string name="txn_status_success">交易成功</string>
-    <string name="txn_order_num">商户订单:</string>
-    <string name="txn_status_refresh">刷新</string>
-    <string name="txn_bill_info">账单信息</string>
-    <string name="txn_description">交易摘要:</string>
     <string name="year">年</string>
     <string name="month">月</string>
-    <string name="txn_total_times">交易笔数</string>
-    <string name="txn_total_amount">交易总金额:</string>
-    <string name="txn_currency">元</string>
-    <string name="txn_refund">退款</string>
-    <string name="txn_unit">笔</string>
-    <string name="txn_tips_format">%1$s 交易笔数%2$s 交易总金额:%3$s元\n退款笔数%4$s 退款金额:%5$s元</string>
-    <string name="clear">清空</string>
-    <string name="delete">删除</string>
-    <string name="begin_scan">开始扫描</string>
-    <string name="my_bill">我的账单</string>
-    <string name="txt_txn_detail">详情</string>
-    <string name="txt_input_refund_amount">请输入退款金额：</string>
-    <string name="txt_input_login_pwd">请输入登录密码：</string>
+    <string name="txt_clear">清空</string>
+    <string name="txt_delete">删除</string>
     <string name="txt_confirm">确认</string>
     <string name="txt_txn_pending_msg">正在处理您的交易，请稍后</string>
     <string name="txt_please_activate">请激活帐号</string>
@@ -268,7 +263,6 @@
     <string name="txt_reset">重置密码</string>
     <string name="txt_search">搜索</string>
     <string name="txt_hint_search">请输入搜索的内容</string>
-    <string name="txt_wait_user_input_password">用户正在输入密码，正在第%1$s次查询结果。\n45秒后不成功将取消该笔交易。</string>
     <string name="txt_trade">  交易</string>
     <string name="txt_network_error_info">网络似乎有些不给力啊</string>
     <string name="txt_take_picture">拍照</string>
