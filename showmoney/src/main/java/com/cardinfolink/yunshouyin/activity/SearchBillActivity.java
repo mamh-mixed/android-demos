@@ -74,17 +74,22 @@ public class SearchBillActivity extends Activity {
 
     private TextView mSearch;//搜索的按钮
     private EditTextClear mSearchEditText;
-    private LinearLayout mSearchLinearLayout;
-    private LinearLayout mSearchConditionLinearLayout;
 
     //定义几个搜索条件 的checkbpx组件
+
+    //'交易状态：交易成功 部分退款 全额退款。交易成功 1，部分退款 2，全额退款 4。
+    // 部分退款 ｜ 全额退款：2 | 4 = 6，全部：1 | 2 | 4 = 7'
     private CheckBox mPaySuccessCheckBox;//支付成功的 1
+    private CheckBox mPayPartRefdCheckBox;//部分退款 2
+    private CheckBox mPayAllRefdCheckBox;//全额退款 4
 
     private CheckBox mRecAppCheckBox;//app 收款的 1
     private CheckBox mRecPCCheckBox;//pc 收款的   2
     private CheckBox mRecWebCheckBox;//网页收款的  4
     private CheckBox mRecOpenCheckBox;//开放接口的 8
+
     //这里少折扣券的
+
     private CheckBox mPayAliCheckBox;//支付宝支付的 1
     private CheckBox mPayWxCheckBox;//微信支付的    2
 
@@ -218,6 +223,10 @@ public class SearchBillActivity extends Activity {
         //定义几个搜索条件 的checkbpx组件
         mPaySuccessCheckBox = (CheckBox) findViewById(R.id.cb_success);//支付成功的 1
         mPaySuccessCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        mPayPartRefdCheckBox = (CheckBox) findViewById(R.id.cb_part_refd);//部分退款 2
+        mPayPartRefdCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
+        mPayAllRefdCheckBox = (CheckBox) findViewById(R.id.cb_all_refd);//全额退款 4。
+        mPayAllRefdCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
 
         mRecAppCheckBox = (CheckBox) findViewById(R.id.cb_rec_type1);//app 收款的 1
         mRecAppCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
@@ -321,6 +330,12 @@ public class SearchBillActivity extends Activity {
         int txnStatus = 0;//支付状态
         if (mPaySuccessCheckBox.isChecked()) {
             txnStatus += 1;
+        }
+        if (mPayPartRefdCheckBox.isChecked()) {
+            txnStatus += 2;
+        }
+        if (mPayAllRefdCheckBox.isChecked()) {
+            txnStatus += 4;
         }
         if (txnStatus == 0) {
             txnStatus = 7;
@@ -458,69 +473,6 @@ public class SearchBillActivity extends Activity {
             }//end for()
         }
         //**********************************************************************************
-
-        //***这里是获取卡券账单数组**这个和上面的不可能同时有数据的*********************************
-        if (data.getCoupons() != null) {
-            for (CouponInfo couponInfo : data.getCoupons()) {
-                TradeBill tradeBill = new TradeBill();
-                tradeBill.response = couponInfo.getResponse();
-                tradeBill.tandeDate = couponInfo.getSystemDate();
-                tradeBill.tradeFrom = couponInfo.getTradeFrom();
-                tradeBill.couponType = couponInfo.getType();
-                tradeBill.couponName = couponInfo.getName();
-                tradeBill.couponChannel = couponInfo.getChannel();
-                tradeBill.terminalid = couponInfo.getTerminalid();
-                tradeBill.couponOrderNum = couponInfo.getOrderNum();
-
-                //Qrequest里面的都是交易相关的信息，外面的是和卡券相关的信息
-                QRequest req = couponInfo.getmRequest();
-                if (req != null) {
-                    tradeBill.orderNum = req.getOrderNum();
-                    tradeBill.amount = TxamtUtil.getNormal(req.getTxamt());//对于人民币的金额都需要除以100
-                    tradeBill.busicd = req.getBusicd();
-                    tradeBill.couponDiscountAmt = TxamtUtil.getNormal(req.getCouponDiscountAmt());
-
-                    tradeBill.chcd = req.getChcd();
-                }
-                //获取这个账单里面的日期,年月日 的 日
-                if (TextUtils.isEmpty(tradeBill.tandeDate)) {
-                    continue;
-                }
-                String currentDay = tradeBill.tandeDate.substring(6, 8);
-                String currentYear = tradeBill.tandeDate.substring(0, 4);
-                String currentMonth = tradeBill.tandeDate.substring(4, 6);
-                String currentYearMonth = tradeBill.tandeDate.substring(0, 6);
-
-
-                //添加到相应的map中，最后再转换到list中，按照月份的先后排序转换到list中
-                if (monthMap.containsKey(currentYearMonth)) {
-                    monthMap.get(currentYearMonth).setCount(count);
-                    monthMap.get(currentYearMonth).setTotal(total);
-                    monthMap.get(currentYearMonth).setRefdcount(refdcount);
-                    monthMap.get(currentYearMonth).setRefdtotal(refdtotal);
-                    monthMap.get(currentYearMonth).setSize(size);
-                    monthMap.get(currentYearMonth).setTotalRecord(totalRecord);
-                } else {
-                    MonthBill monthBill = new MonthBill(currentYear, currentMonth);
-                    monthBill.setCount(count);
-                    monthBill.setTotal(total);
-                    monthBill.setRefdcount(refdcount);
-                    monthBill.setRefdtotal(refdtotal);
-                    monthBill.setSize(size);
-                    monthBill.setTotalRecord(totalRecord);
-                    monthMap.put(currentYearMonth, monthBill);
-                }
-
-                if (tradeBillMap.containsKey(currentYearMonth)) {
-                    tradeBillMap.get(currentYearMonth).add(tradeBill);
-                } else {
-                    List<TradeBill> list = new ArrayList<TradeBill>();
-                    list.add(tradeBill);
-                    tradeBillMap.put(currentYearMonth, list);
-                }
-
-            }
-        }
 
 
         //这是里把相应的map类型转换成list类型，因为expandablelistview里面group和child的数据需要是list类型的

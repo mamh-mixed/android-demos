@@ -420,11 +420,13 @@
     <string name="bill_title3">收款码账单</string>
     <string name="bill_search">搜索</string>
     <string name="bill_search_hint">精确查找请输入订单号</string>
-    <string name="bill_status_success">成功</string>
+    <string name="bill_status_success">交易成功</string>
+    <string name="bill_status_all_refd">全额退款</string>
+    <string name="bill_status_part_refd">部分退款</string>
     <string name="bill_rec_type0">折扣券</string>
     <string name="bill_rec_type1">PC收款</string>
     <string name="bill_rec_type2">APP收款</string>
-    <string name="bill_rec_type3">网页收款</string>
+    <string name="bill_rec_type3">收款码收款</string>
     <string name="bill_rec_type4">其他收款</string>
     <string name="bill_pay_type1">支付宝</string>
     <string name="bill_pay_type2">微信支付</string>
