@@ -353,9 +353,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         editor.putString("CHCD", mCHCD);
         editor.commit();
         scanCodeView.setBackgroundColor(Color.parseColor("#339933"));//设置背景颜色
-        mLeftText.setVisibility(VISIBLE);//左边显示
+        mLeftText.setVisibility(INVISIBLE);
         mLeftImage.setImageResource(R.drawable.scan_left_disable);
-        mRightText.setVisibility(INVISIBLE);//右边不显示
+        mRightText.setVisibility(VISIBLE);
         mRightImage.setImageResource(R.drawable.scan_right_able);
         mScanTitle.setText(getResources().getString(R.string.create_qrcode_activity_open_wx));
     }
@@ -365,9 +365,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         editor.putString("CHCD", mCHCD);
         editor.commit();
         scanCodeView.setBackgroundColor(Color.parseColor("#0099ff"));//设置背景颜色
-        mLeftText.setVisibility(INVISIBLE);//左边显示
+        mLeftText.setVisibility(VISIBLE);
         mLeftImage.setImageResource(R.drawable.scan_left_able);
-        mRightText.setVisibility(VISIBLE);//右边不显示
+        mRightText.setVisibility(INVISIBLE);
         mRightImage.setImageResource(R.drawable.scan_right_disable);
         mScanTitle.setText(getResources().getString(R.string.create_qrcode_activity_open_ali));
     }
@@ -854,7 +854,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         public void run() {
             while (true) {
                 try {
-                    Log.e(TAG, "==" + Thread.currentThread().getId() + " ==" + pollingCount + "==" + mOrderNum + "==" + orderNumInThread);
                     pollingCount++;
                     if (pollingCount >= 10) {
                         //取消订单
