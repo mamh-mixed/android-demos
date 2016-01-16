@@ -63,10 +63,9 @@
                 android:layout_height="match_parent"
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="40dp"
+                android:layout_marginRight="15dp"
                 android:layout_toRightOf="@+id/tv_title"
                 android:background="@null"
-                android:hint="请输入密码"
                 android:inputType="textPassword"
                 android:textColor="@color/textview_textcolor_setting_password_item"
                 android:textSize="12sp" />
