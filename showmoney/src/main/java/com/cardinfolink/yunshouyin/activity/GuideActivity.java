@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -35,6 +36,8 @@ public class GuideActivity extends Activity {
     private int mFirsDownX = 0;
     private int mCurrentUpX = 0;
     private Context mContext;
+    private String original;
+    private static final int GUIDE_DISPLAY_LENGHT = 1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +57,9 @@ public class GuideActivity extends Activity {
 
         mViewPager.setAdapter(new GuideAdapter());
         mViewPager.setOnPageChangeListener(new GuidePageListener());
+        Intent intent=getIntent();
+        Bundle bundle=intent.getExtras();
+        original = bundle.getString("original");
 
     }
 
@@ -104,11 +110,21 @@ public class GuideActivity extends Activity {
         @Override
         public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
             if (position == mImageIds.length - 1) {
-                     SharedPreferences.Editor editor = sp.edit();
-                    editor.putBoolean("is_user_guide_show", false).commit();
-                    Intent intent = new Intent(GuideActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                    finish();
+                    if("AboutActivity".equals(original)) {
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                finish();
+                            }
+                        },GUIDE_DISPLAY_LENGHT);
+
+                    }else {
+                        SharedPreferences.Editor editor = sp.edit();
+                        editor.putBoolean("is_user_guide_show", false).commit();
+                        Intent intent = new Intent(GuideActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
             }
         }
 

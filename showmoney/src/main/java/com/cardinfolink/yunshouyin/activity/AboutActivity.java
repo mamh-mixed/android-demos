@@ -86,7 +86,7 @@ public class AboutActivity extends Activity implements View.OnClickListener {
                 }
                 break;
             case R.id.welcome:
-                intent = new Intent(AboutActivity.this, SplashActivity.class);
+                intent = new Intent(AboutActivity.this, GuideActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("original", "AboutActivity");
                 intent.putExtras(bundle);
