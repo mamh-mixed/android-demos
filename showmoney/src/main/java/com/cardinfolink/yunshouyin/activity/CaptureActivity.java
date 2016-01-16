@@ -224,7 +224,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                 orderData.payType = Coupon.getInstance().getPayType();
 
                                 orderData.discountMoney = String.valueOf(new BigDecimal(originaltotal).subtract(new BigDecimal(total)).doubleValue());
-                                orderData.couponOrderNum = Coupon.getInstance().getScanCodeId();
+                                orderData.couponOrderNum = Coupon.getInstance().getOrderNum();
                             }
                             // /orderData.scanCodeId="13241252555";
                             CashierSdk.startPay(orderData, new CashierListener() {
@@ -260,7 +260,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                 @Override
                                 public void onResult(ResultData resultData) {
                                     mResultData = resultData;
-                                    Coupon.getInstance().setPayType(resultData.payType);
                                     Coupon.getInstance().setAvailCount(resultData.availCount);
                                     Coupon.getInstance().setCardId(resultData.cardId);
                                     Coupon.getInstance().setVoucherType(resultData.voucherType);
@@ -269,6 +268,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                     Coupon.getInstance().setExpDate(resultData.expDate);
                                     Coupon.getInstance().setSaleMinAmount(resultData.saleMinAmount);//保存卡券核销返回信息
                                     Coupon.getInstance().setOrderNum(resultData.orderNum);
+                                    Coupon.getInstance().setScanCodeId(resultData.scanCodeId);
                                     if ("00".equals(mResultData.respcd)) {
                                         Intent intent = new Intent(mContext, CouponResultActivity.class);
                                         Bundle bundle = new Bundle();
@@ -839,6 +839,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
             vibrator.vibrate(VIBRATE_DURATION);
         }
     }
+
     public void showPayFailPref() {
         mHintDialog.setText(getString(R.string.coupon_abandom_verial_or_not), getString(R.string.coupon_pay_again), getString(R.string.coupon_abandom));
         mHintDialog.setCancelOnClickListener(new View.OnClickListener() {
