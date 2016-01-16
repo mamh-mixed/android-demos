@@ -155,7 +155,6 @@ public class SearchBillActivity extends Activity {
 
         mBillAdapter = new BillExpandableListAdapter(mContext, mMonthBilList, mTradeBillList);
         mBillAdapter.setHintDialog(findViewById(R.id.hint_dialog));
-        mBillAdapter.setIsSearch(true);
 
         ExpandableListView billActualView = mBillPullRefreshListView.getRefreshableView();
         billActualView.setAdapter(mBillAdapter);

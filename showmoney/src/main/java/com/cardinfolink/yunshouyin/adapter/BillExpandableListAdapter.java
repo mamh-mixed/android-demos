@@ -46,7 +46,6 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
     private HintBillDialog mHintDialog;
 
-    private boolean isSearch = false;
 
     public BillExpandableListAdapter(Context context, List<MonthBill> groupData, List<List<TradeBill>> childrenData) {
         this.mContext = context;
@@ -58,9 +57,6 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         this.mHintDialog = new HintBillDialog(mContext, view);
     }
 
-    public void setIsSearch(boolean isSearch) {
-        this.isSearch = isSearch;
-    }
 
     @Override
     public int getGroupCount() {
@@ -121,12 +117,6 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             groupViewHolder = (GroupViewHolder) convertView.getTag();
         }
 
-        //如果是搜索 出来的账单 不显示 总收入
-        if (isSearch) {
-            groupViewHolder.leftLinearLayout.setVisibility(View.INVISIBLE);
-        } else {
-            groupViewHolder.leftLinearLayout.setVisibility(View.VISIBLE);
-        }
 
         //设置一下月份
         groupViewHolder.month.setText(groupData.get(groupPosition).getCurrentMonth());
@@ -136,18 +126,24 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         String totalStr = groupData.get(groupPosition).getTotal();
         if (TextUtils.isEmpty(totalStr)) {
             totalStr = "0.00";
+        } else {
+            try {
+                BigDecimal totalBg = new BigDecimal(totalStr);
+                totalStr = totalBg.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+            } catch (Exception e) {
+                totalStr = "0.0";
+            }
         }
         groupViewHolder.total.setText(totalStr);
 
         //如果是搜索 出来的账单 使用childrenData list的size来
-        if (isSearch) {
-            String countStr = String.valueOf(childrenData.get(groupPosition).size());
-            groupViewHolder.count.setText(countStr);
-        } else {
-            String countStr = String.valueOf(groupData.get(groupPosition).getTotalRecord());
-            groupViewHolder.count.setText(countStr);
+        int count = 0;
+        try {
+            count = childrenData.get(groupPosition).size();
+        } catch (Exception e) {
+            count = 0;
         }
-
+        groupViewHolder.count.setText(String.valueOf(count));
 
         if (isExpanded) {
             groupViewHolder.folder.setBackgroundResource(R.drawable.bill_pack);
