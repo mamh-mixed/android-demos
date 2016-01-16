@@ -85,7 +85,8 @@ public class ShowMoneyApp extends Application {
         //default is pro
         SystemConfig.IS_PRODUCE = true;
         SystemConfig.SERVER = SystemConfig.PRO_SERVER;
-        Log.LOG = SystemConfig.DEBUG;
+        SystemConfig.DEBUG = BuildConfig.DEBUG;
+        Log.LOG = BuildConfig.DEBUG;
         switch (ENVIRONMENT) {
             case "pro":
                 SystemConfig.IS_PRODUCE = true;
