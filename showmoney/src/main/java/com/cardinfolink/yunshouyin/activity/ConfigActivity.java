@@ -3,12 +3,15 @@ package com.cardinfolink.yunshouyin.activity;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.ui.ResultInfoItem;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
+import com.cardinfolink.yunshouyin.util.Log;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 
 public class ConfigActivity extends Activity {
@@ -19,6 +22,7 @@ public class ConfigActivity extends Activity {
     private ResultInfoItem mServer;
     private ResultInfoItem mDebug;
     private TextView mGitCommit;
+    private CheckBox mDebugCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,19 @@ public class ConfigActivity extends Activity {
         mServer.setRightText(SystemConfig.SERVER);
 
         mDebug.setRightText(String.valueOf(SystemConfig.DEBUG));
+
+        mDebugCheckBox = (CheckBox) findViewById(R.id.cb_debug);
+        mDebugCheckBox.setChecked(SystemConfig.DEBUG);
+        mDebugCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                SystemConfig.DEBUG = isChecked;
+                Log.LOG = isChecked;
+                mDebug.setRightText(String.valueOf(SystemConfig.DEBUG));
+            }
+        });
+
+
     }
 
 }

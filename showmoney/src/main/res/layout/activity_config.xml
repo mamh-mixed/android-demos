@@ -17,30 +17,52 @@
             cardinfolink:left_text="@string/setting_return"
             cardinfolink:title="@string/config_activity_title" />
 
-
-        <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-            android:id="@+id/git"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            cardinfolink:left_text="@string/config_activity_git" />
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/git_commit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="20sp" />
+            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                android:id="@+id/git"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                cardinfolink:left_text="@string/config_activity_git" />
 
-        <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-            android:id="@+id/server"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            cardinfolink:left_text="@string/config_activity_server" />
+            <TextView
+                android:id="@+id/git_commit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp" />
 
-        <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-            android:id="@+id/debug"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            cardinfolink:left_text="@string/config_activity_debug" />
+            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                android:id="@+id/server"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                cardinfolink:left_text="@string/config_activity_server" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                    android:id="@+id/debug"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    cardinfolink:left_text="@string/config_activity_debug" />
+
+                <CheckBox
+                    android:id="@+id/cb_debug"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/debug" />
+
+            </RelativeLayout>
+
+        </LinearLayout>
     </LinearLayout>
 
 </RelativeLayout>
