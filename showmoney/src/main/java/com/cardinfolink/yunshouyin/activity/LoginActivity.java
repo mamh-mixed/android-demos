@@ -60,10 +60,6 @@ public class LoginActivity extends BaseActivity {
         mAutoLogin.setChecked(user.isAutoLogin());
         mUsernameEdit.setText(user.getUsername());
         mPasswordEdit.setText(user.getPassword());
-        if (user.isAutoLogin()) {
-            startLoading();
-            login();
-        }
     }
 
 
