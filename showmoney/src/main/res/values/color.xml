@@ -35,6 +35,7 @@
     <color name="message_unread">#323232</color>
 
     <color name="red">#ff0000</color>
+    <color name="red1">#F1A48A</color>
 
     <color name="white">#ffffff</color>
     <color name="white1">#EEEEEE</color>
@@ -105,6 +106,7 @@
     <!-- 账单列表使用到的几个颜色 -->
     <color name="textview_textcolor_bill_datetime">@color/gray2</color>
     <color name="textview_textcolor_bill_status">@color/gray2</color>
+    <color name="textview_textcolor_bill_status1">@color/red1</color>
     <color name="textview_textcolor_bill_total">@color/red</color>
     <color name="textview_background_bill_checkcode">@color/blue1</color>
 

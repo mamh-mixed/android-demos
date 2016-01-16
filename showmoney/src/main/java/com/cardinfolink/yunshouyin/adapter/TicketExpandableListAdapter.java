@@ -198,11 +198,9 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
         String tradeStatus;
         if ("00".equals(bill.response)) {
             tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_success);
-            childViewHolder.couponTradeStatus.setTextColor(Color.parseColor("#888888"));
         } else {
             //失败的,这里估计不会有失败的吧
             tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_fail);
-            childViewHolder.couponTradeStatus.setTextColor(Color.RED);
         }
         childViewHolder.couponTradeStatus.setText(tradeStatus);
 
