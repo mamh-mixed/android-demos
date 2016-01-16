@@ -7,7 +7,7 @@
     <string name="register_register">注册</string>
     <string name="register_next">提交</string>
     <string name="register_email">登录邮箱</string>
-    <string name="register_invite_code">邀&#x0020;&#x0020;请&#x0020;&#x0020;码</string>
+    <string name="register_invite_code">邀&#160;&#160;请&#160;&#160;码</string>
     <string name="register_optional">可选填</string>
     <string name="register_password">登录密码</string>
     <string name="register_hint_password">请填写登录密码</string>
@@ -157,13 +157,6 @@
     <string name="expandable_listview_pay_type3">PC</string>
     <string name="expandable_listview_pay_type4">其他</string>
 
-    <string name="main_activity_menu_scancode">扫码支付</string>
-    <string name="main_activity_menu_transmange">交易管理</string>
-    <string name="main_activity_menu_passwordupdate">密码修改</string>
-    <string name="main_activity_menu_accountupdate">账户修改</string>
-    <string name="main_activity_menu_webbill">网页账单</string>
-    <string name="main_activity_menu_safeexit">安全退出</string>
-
 
     <string name="alert_error_username_cannot_empty">用户名不能为空!</string>
     <string name="alert_error_password_cannot_empty">密码不能为空!</string>
@@ -218,8 +211,8 @@
     <string name="alert_error_INVALID_REPORT_TYPE">非法的报告类型</string>
 
     <string name="refd_activity_refd_message">当前可退款金额（元）</string>
-    <string name="refd_activity_refd_message1">需退款金额(元)&#x0020;</string>
-    <string name="refd_activity_refd_password">请输入登录密码&#x0020;</string>
+    <string name="refd_activity_refd_message1">需退款金额(元)&#160;</string>
+    <string name="refd_activity_refd_password">请输入登录密码</string>
     <string name="refd_activity_refd">退款</string>
 
     <string name="refd_dialog_refd_max">本次可退款额度：¥</string>
