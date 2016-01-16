@@ -387,7 +387,7 @@
     <string name="coupon_time_receive_money">收款时间</string>
     <string name="coupon_pay_money_again">重新支付</string>
     <string name="coupon_ticket_verification">券码核销</string>
-    <string name="coupon_ver_fail">对不起核销失败了，网络似乎有些不给力啊</string>
+    <string name="coupon_ver_fail">对不起核销失败了</string>
     <string name="coupon_ver_close">关闭</string>
     <string name="coupon_ver_try_again">重试</string>
     <string name="coupon_content">卡券内容</string>
