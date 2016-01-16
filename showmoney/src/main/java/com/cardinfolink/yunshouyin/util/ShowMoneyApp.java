@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.content.Context;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -86,7 +85,7 @@ public class ShowMoneyApp extends Application {
         //default is pro
         SystemConfig.IS_PRODUCE = true;
         SystemConfig.SERVER = SystemConfig.PRO_SERVER;
-        SystemConfig.DEBUG = BuildConfig.DEBUG;
+        Log.LOG = SystemConfig.DEBUG;
         switch (ENVIRONMENT) {
             case "pro":
                 SystemConfig.IS_PRODUCE = true;
