@@ -163,6 +163,27 @@ public class SearchBillActivity extends Activity {
 
         mSearch = (TextView) findViewById(R.id.tv_search);
         mSearchEditText = (EditTextClear) findViewById(R.id.et_search);
+        mSearchEditText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //订单号大于等于17位才触发查询操作
+                String orderNum = mSearchEditText.getText().toString();
+                if (!TextUtils.isEmpty(orderNum)) {
+                    Log.e(TAG, " search order: " + orderNum);
+                    //这里精确查找
+                    billIndex = 0;
+                    mMonthBillAgo = 0;//注意这里要清零
+                    mTradeBillList.clear();
+                    mMonthBilList.clear();
+                    mMonthBillMap.clear();
+                    mTradeBillMap.clear();
+                    SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
+                    mCurrentYearMonth = spf.format(new Date());
+
+                    findBill(orderNum);
+                }
+            }
+        });
 
         mSearch.setOnClickListener(new View.OnClickListener() {
             @Override
