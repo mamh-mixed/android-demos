@@ -71,9 +71,11 @@ public class CashierSdk {
     public static void startPay(OrderData orderData, final CashierListener listener) {
 
         String str = orderData.txamt;
+        String discount = orderData.discountMoney;
         if (str != null && orderData.currency != null) {
             if (SDK_CURRENCY.equals(orderData.currency)) {
                 orderData.txamt = TxamtUtil.getTxamtUtil(str);
+                orderData.discountMoney = TxamtUtil.getTxamtUtil(discount);
                 if (orderData.txamt == null) {
                     listener.onError(SDK_ERROR_TXAMT_NULL);
                     return;
