@@ -319,7 +319,7 @@
     <string name="setting_increase_limit">免费提额</string>
     <string name="setting_cloud_use">云收银服务使用协议</string>
     <string name="setting_cloud_version">上海讯联数据服务有限公司  版权所有</string>
-    <string name="setting_limit_message">当前账户收款限额 %1$s/天</string>
+    <string name="setting_limit_message">当前账户收款限额 %1$s/日</string>
     <string name="setting_limit_message_updated">你已经成为正式商户，已经没有人能阻碍你使用微信、支付宝来收款了</string>
     <string name="setting_no_update">没有更新</string>
     <string name="setting_no_wifi_no_update">没有wifi连接， 只在wifi下更新</string>
