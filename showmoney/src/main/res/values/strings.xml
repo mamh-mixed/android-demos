@@ -17,7 +17,7 @@
     <string name="register_message1">还差一步，你就可以正常使用了</string>
     <string name="register_message2">你还需要完善一下你的收款账户信息。</string>
     <string name="register_welcome_message">欢迎进入 互联网 + 收款时代</string>
-    <string name="register_limit_message">恭喜，你已经可以收款了。目前限额500元/日，\n提升限额马上免费体验收款无上限！</string>
+    <string name="register_limit_message">恭喜，你已经可以收款了。目前限额500元/日，提升限额马上免费体验收款无上限！</string>
     <string name="register_use_now">立即使用</string>
     <string name="register_check">查看</string>
     <string name="register_cloud_version">云收银服务使用协议</string>
@@ -278,6 +278,7 @@
     <string name="setting_my_web_yunshouyin">我的收款码</string>
     <string name="setting_about_yunshouyin">关于云收银</string>
     <string name="setting_return">返回</string>
+    <string name="setting_exit">退出</string>
     <string name="setting_version_number">版本号</string>
     <string name="setting_product_website">产品网站</string>
     <string name="setting_welcome_page">欢迎页</string>

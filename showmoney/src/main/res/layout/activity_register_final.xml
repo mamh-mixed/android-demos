@@ -15,7 +15,7 @@
             android:id="@+id/action_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            cardinfolink:left_text="@string/setting_return" />
+            cardinfolink:left_text="@string/setting_exit" />
 
         <TextView
             android:id="@+id/account"
@@ -43,32 +43,9 @@
             android:layout_marginRight="30dp"
             android:layout_marginTop="10dp"
             android:text="@string/register_limit_message"
+            android:textColor="@color/gray3"
             android:textSize="15sp" />
 
-
-        <Button
-            android:id="@+id/btnnow"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/blue_selector"
-            android:text="@string/register_use_now"
-            android:textColor="@color/button_textcolor"
-            android:textSize="16sp" />
-
-        <Button
-            android:id="@+id/btnlimit"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/blue_selector"
-            android:text="@string/setting_increase_limit"
-            android:textColor="@color/button_textcolor"
-            android:textSize="16sp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -76,6 +53,37 @@
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             android:layout_marginTop="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnnow"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@drawable/blue_selector"
+                    android:text="@string/register_use_now"
+                    android:textColor="@color/button_textcolor"
+                    android:textSize="16sp" />
+
+                <Button
+                    android:id="@+id/btnlimit"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/blue_selector"
+                    android:text="@string/setting_increase_limit"
+                    android:textColor="@color/button_textcolor"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
 
             <ImageView
                 android:layout_width="wrap_content"
