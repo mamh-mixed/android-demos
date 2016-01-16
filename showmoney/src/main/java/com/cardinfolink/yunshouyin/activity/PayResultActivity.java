@@ -92,6 +92,15 @@ public class PayResultActivity extends Activity {
         mActualTotalMoney.setTextColor(R.color.gray3);
         mActualDiscount.setTextColor(R.color.gray3);
 
+
+        mPersonAccount.setTextSize(18);
+        mMakeDealTime.setTextSize(18);
+        mBillOrderNum.setTextSize(18);
+        mCouponContent.setTextSize(18);
+        mActualTotalMoney.setTextSize(18);
+        mActualDiscount.setTextSize(18);
+
+
         //判断是否有卡券优惠
         boolean hasCouponDiscount = Coupon.getInstance().getSaleDiscount() != null && !"0".equals(Coupon.getInstance().getSaleDiscount());
         if (hasCouponDiscount) {
@@ -266,8 +275,13 @@ public class PayResultActivity extends Activity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
-                    showPayFailPref();
+                if (Coupon.getInstance().getVoucherType() != null) {
+                    if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
+                        showPayFailPref();
+                    } else {
+                        Coupon.getInstance().clear();//清空卡券信息
+                        finish();
+                    }
                 } else {
                     Coupon.getInstance().clear();//清空卡券信息
                     finish();
