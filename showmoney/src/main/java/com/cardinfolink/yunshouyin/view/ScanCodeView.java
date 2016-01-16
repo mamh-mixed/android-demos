@@ -159,7 +159,11 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         mYellowTips = new YellowTips(mContext, findViewById(R.id.yellow_tips));
 
         mAccount = (TextView) findViewById(R.id.tv_account);//显示账号的
-        mAccount.setText(SessonData.loginUser.getUsername());
+        if (!TextUtils.isEmpty(SessonData.loginUser.getMerName())) {
+            mAccount.setText(SessonData.loginUser.getMerName());
+        } else {
+            mAccount.setText(SessonData.loginUser.getUsername());
+        }
 
         scanCodeView = findViewById(R.id.ll_qrcode);
         keyboardView = findViewById(R.id.ll_keyboard);
