@@ -80,6 +80,7 @@ public class CouponResultActivity extends Activity {
                 String mDiscount = new BigDecimal(Coupon.getInstance().getSaleDiscount()).divide(new BigDecimal(100)).toString();
                 if (Coupon.getInstance().getVoucherType().endsWith("3")) {
                     //满折券
+                    mDiscount = new BigDecimal(mDiscount).multiply(new BigDecimal("10")).toString();
                     mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_man) + mSaleMinAccount + getString(R.string.coupon_yuan) + getString(R.string.coupon_da) + mDiscount + getString(R.string.coupon_zhe));
 
                 } else if (Coupon.getInstance().getVoucherType().endsWith("1")) {
