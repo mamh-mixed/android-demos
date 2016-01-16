@@ -223,20 +223,27 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type4));
         }
 
-        String tradeStatus;
+        String tradeStatus = "";
         int colorStatus = mContext.getResources().getColor(R.color.textview_textcolor_bill_status1);
         if ("10".equals(bill.transStatus)) {
             //处理中
             tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_nopay);
         } else if ("30".equals(bill.transStatus)) {
-            double amt = Double.parseDouble(bill.refundAmt);
-            if (amt == 0) {
-                //成功的
-                colorStatus = mContext.getResources().getColor(R.color.textview_textcolor_bill_status);
-                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_success);
-            } else {
-                //部分退款的
-                tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_partrefd);
+            BigDecimal refBg;
+            BigDecimal bg0 = new BigDecimal("0");
+            try {
+                refBg = new BigDecimal(bill.refundAmt);
+                if (refBg.compareTo(bg0) == 0) {
+                    //成功的
+                    colorStatus = mContext.getResources().getColor(R.color.textview_textcolor_bill_status);
+                    tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_success);
+                } else if (refBg.compareTo(bg0) > 0) {
+                    //部分退款的
+                    tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_partrefd);
+                    tradeStatus += ": " + refBg.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+                }
+            } catch (Exception e) {
+
             }
         } else if ("40".equals(bill.transStatus)) {
             if ("09".equals(bill.response)) {
