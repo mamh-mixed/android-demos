@@ -28,6 +28,7 @@ import com.cardinfolink.yunshouyin.model.MerchantPhoto;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
+import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.view.SelectPicDialog;
 import com.cardinfolink.yunshouyin.view.YellowTips;
 import com.qiniu.android.http.ResponseInfo;
@@ -157,6 +158,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
+        Utility.hideInput(mContext, v);
         switch (v.getId()) {
             case R.id.id_card_positive:
                 //身份证 正面
