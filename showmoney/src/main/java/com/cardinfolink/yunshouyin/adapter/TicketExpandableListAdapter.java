@@ -24,6 +24,7 @@ import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.view.HintBillDialog;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -104,6 +105,7 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
             groupViewHolder.month = (TextView) convertView.findViewById(R.id.tv_month);
             groupViewHolder.year = (TextView) convertView.findViewById(R.id.tv_year);
             groupViewHolder.count = (TextView) convertView.findViewById(R.id.tv_count);
+            groupViewHolder.total = (TextView) convertView.findViewById(R.id.tv_total);
             groupViewHolder.folder = (ImageView) convertView.findViewById(R.id.iv_fold);
 
             convertView.setTag(groupViewHolder);
@@ -113,7 +115,31 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
         //设置一下月份
         groupViewHolder.month.setText(groupData.get(groupPosition).getCurrentMonth());
         groupViewHolder.year.setText(groupData.get(groupPosition).getCurrentYear());
-        groupViewHolder.count.setText("" + groupData.get(groupPosition).getTotalRecord());
+
+
+        int count = 0;
+        try {
+            count = childrenData.get(groupPosition).size();
+        } catch (Exception e) {
+            count = 0;
+        }
+        groupViewHolder.count.setText(String.valueOf(count));
+
+
+
+        String totalStr = groupData.get(groupPosition).getTotal();
+        if (TextUtils.isEmpty(totalStr)) {
+            totalStr = "0.00";
+        } else {
+            try {
+                BigDecimal totalBg = new BigDecimal(totalStr);
+                totalStr = totalBg.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+            } catch (Exception e) {
+                totalStr = "0.0";
+            }
+        }
+        groupViewHolder.total.setText(totalStr);
+
 
         if (isExpanded) {
             groupViewHolder.folder.setBackgroundResource(R.drawable.bill_pack);
