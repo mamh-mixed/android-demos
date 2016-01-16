@@ -364,6 +364,9 @@
     <string name="pay_order_number">订单编号</string>
     <string name="pay_total_state_success">成功收款</string>
     <string name="pay_total_state_fail">失败收款</string>
+    <string name="pay_money">消费金额</string>优惠金额
+    <string name="pay_youhui_money">优惠金额</string>
+    <string name="pay_coupon_content">卡券内容</string>
 
     <!--  卡卷要用到的文本 -->
     <string name="coupon_title_first">券码核销</string>

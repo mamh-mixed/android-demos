@@ -28,8 +28,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.11"
             android:layout_marginLeft="10dp"
+            android:layout_weight="0.11"
             android:orientation="vertical">
 
             <LinearLayout
@@ -51,8 +51,8 @@
                     android:id="@+id/iv_pay_result"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginLeft="10dp"
                     android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
                     android:src="@drawable/pay_result_succeed" />
 
             </LinearLayout>
@@ -63,8 +63,9 @@
             android:layout_height="0dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:orientation="vertical"
-            android:layout_weight="0.08">
+            android:layout_weight="0.08"
+
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tv_result_explain"
@@ -82,8 +83,8 @@
             android:layout_height="0dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:orientation="vertical"
             android:layout_weight="0.68"
+            android:orientation="vertical"
             android:weightSum="1">
 
             <RelativeLayout
@@ -96,18 +97,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:text="@string/pay_channel"
-                    android:textSize="18sp"
                     android:layout_marginLeft="5dp"
-                    android:textColor="@color/gray1"/>
+                    android:text="@string/pay_channel"
+                    android:textColor="@color/gray1"
+                    android:textSize="18sp" />
 
                 <ImageView
                     android:id="@+id/pay_chcd"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_alignParentRight="true"
-                    android:src="@drawable/setting_wechat"
-                    android:layout_marginRight="10dp"/>
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/setting_wechat" />
 
             </RelativeLayout>
 
@@ -141,8 +142,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
-                cardinfolink:left_text="卡券内容"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                cardinfolink:left_text="@string/pay_coupon_content" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/rif_coupon_total"
@@ -150,8 +151,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
-                cardinfolink:left_text="消费金额"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                cardinfolink:left_text="@string/pay_money" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/rif_coupon_discount"
@@ -159,8 +160,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
-                cardinfolink:left_text="优惠金额"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                cardinfolink:left_text="@string/pay_youhui_money" />
 
 
             <RelativeLayout
@@ -189,17 +190,22 @@
 
             </RelativeLayout>
 
-            <Button
-                android:id="@+id/btnconfirm"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="25dp"
-                android:background="@drawable/blue_selector"
-                android:text="@string/txt_confirm"
-                android:textColor="@color/button_textcolor" />
+                android:layout_height="match_parent">
 
+                <Button
+                    android:id="@+id/btnconfirm"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginTop="25dp"
+                    android:background="@drawable/blue_selector"
+                    android:text="@string/txt_confirm"
+                    android:textColor="@color/button_textcolor" />
+            </RelativeLayout>
 
         </LinearLayout>
 
