@@ -401,8 +401,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
     private boolean validate(double sum) {
-        if (sum <= 0) {
-            //"金额不能为零!"
+        if (sum < 0.01) {
+            //"金额不能少于 0.01元!"
             String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_cannot_zero);
             mYellowTips.show(toastMsg);
             return false;
@@ -1064,7 +1064,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         //满减券
         if (Coupon.getInstance().getVoucherType().endsWith("1")) {
-            if (limit > 0 && result > limit) {
+            if (limit > 0 && result >= limit) {
                 mHasDiscount.setVisibility(View.VISIBLE);
                 tempResult -= discount;
                 Log.e(TAG, tempResult + "满减");
@@ -1080,7 +1080,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             Log.e(TAG, tempResult + "固定金额");
         } else if (Coupon.getInstance().getVoucherType().endsWith("3")) {
             //满折券
-            if (limit > 0 && result > limit) {
+            if (limit > 0 && result >= limit) {
                 mHasDiscount.setVisibility(View.VISIBLE);
                 tempResult = new BigDecimal(tempResult).multiply(new BigDecimal(discount)).doubleValue();
                 //判断优惠金额是否大于最大优惠金额
