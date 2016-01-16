@@ -170,7 +170,7 @@ public class PayResultActivity extends Activity {
                 });
             }
         }
-        mPersonAccount.setRightText(SessonData.loginUser.getUsername());
+        mPersonAccount.setRightText(SessonData.loginUser.getMerName());
         mMakeDealTime.setRightText(tradeBill.tandeDate);
         mBillOrderNum.setRightText(tradeBill.orderNum);
         mReceiveMoney.setText(decimalFormat.format(Double.valueOf(tradeBill.total)) + getString(R.string.coupon_yuan));
