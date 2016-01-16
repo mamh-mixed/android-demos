@@ -605,6 +605,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     mHasDiscount.setVisibility(View.INVISIBLE);
                 }
                 addCheck();
+                numFlag = true;
                 break;
         }
     }
