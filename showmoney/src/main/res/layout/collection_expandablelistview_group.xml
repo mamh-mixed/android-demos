@@ -32,6 +32,27 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_left"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:gravity="center"
+        android:visibility="invisible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/expandable_listview_group_imcome"
+            android:textColor="@color/textview_textcolor_bill_total" />
+
+        <TextView
+            android:id="@+id/tv_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textview_textcolor_bill_total" />
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="0dp"
