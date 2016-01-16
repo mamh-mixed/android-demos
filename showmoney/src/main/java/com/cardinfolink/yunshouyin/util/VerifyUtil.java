@@ -16,7 +16,7 @@ public class VerifyUtil {
      * @return
      */
     public static boolean checkBankCard(String cardId) {
-        if (!(cardId.length() == 16 || cardId.length() == 19)) {
+        if ((cardId.length() < 13 || cardId.length() > 19)) {
             return false;
         }
         char bit = getBankCardCheckCode(cardId
