@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.ui;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -39,6 +40,11 @@ public class ResultInfoItem extends RelativeLayout {
 
     }
 
+    public void setTextSize(int textSize) {
+        mLeftText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+        mRightText.setTextSize(TypedValue.COMPLEX_UNIT_SP, textSize);
+    }
+
     public void setLeftText(String str1) {
         mLeftText.setText(str1);
     }
@@ -51,4 +57,5 @@ public class ResultInfoItem extends RelativeLayout {
         mLeftText.setTextColor(id);
         mRightText.setTextColor(id);
     }
+
 }
