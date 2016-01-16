@@ -228,37 +228,34 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         }
 
         String tradeStatus;
+        int colorStatus = mContext.getResources().getColor(R.color.textview_textcolor_bill_status1);
         if ("10".equals(bill.transStatus)) {
             //处理中
             tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_nopay);
-            childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
         } else if ("30".equals(bill.transStatus)) {
             double amt = Double.parseDouble(bill.refundAmt);
             if (amt == 0) {
                 //成功的
+                colorStatus = mContext.getResources().getColor(R.color.textview_textcolor_bill_status);
                 tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_success);
-                childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             } else {
                 //部分退款的
                 tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_partrefd);
-                childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             }
         } else if ("40".equals(bill.transStatus)) {
             if ("09".equals(bill.response)) {
                 //已关闭
                 tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_closed);
-                childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             } else {
                 //全额退款
                 tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_allrefd);
-                childViewHolder.billTradeStatus.setTextColor(Color.parseColor("#888888"));
             }
         } else {
             //失败的
             tradeStatus = mContext.getString(R.string.expandable_listview_trade_status_fail);
-            childViewHolder.billTradeStatus.setTextColor(Color.RED);
         }
         childViewHolder.billTradeStatus.setText(tradeStatus);
+        childViewHolder.billTradeStatus.setTextColor(colorStatus);
 
         try {
             BigDecimal txAmt = new BigDecimal(bill.amount);
