@@ -82,7 +82,11 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
         mConfirm.setOnClickListener(this);
         mCamera.setOnClickListener(this);
 
-        mAccount.setText(SessonData.loginUser.getUsername());
+        if (!TextUtils.isEmpty(SessonData.loginUser.getMerName())) {
+            mAccount.setText(SessonData.loginUser.getMerName());
+        } else {
+            mAccount.setText(SessonData.loginUser.getUsername());
+        }
         mCouponCode.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
