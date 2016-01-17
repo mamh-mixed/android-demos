@@ -133,28 +133,10 @@ public class RefdActivity extends BaseActivity {
                             mAlertDialog.show();
                         } else if (resultData.respcd.equals("R6")) {
                             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_nextday_not_refd);
-                            mAlertDialog.setTitle(alertMsg);
-                            mAlertDialog.setImageViewResource(R.drawable.wrong);
-                            mAlertDialog.setOkOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mAlertDialog.hide();
-                                    finish();
-                                }
-                            });
-                            mAlertDialog.show();
+                            mYellowTips.show(alertMsg);
                         } else {
                             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail);
-                            mAlertDialog.setTitle(alertMsg);
-                            mAlertDialog.setImageViewResource(R.drawable.wrong);
-                            mAlertDialog.setOkOnClickListener(new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mAlertDialog.hide();
-                                    finish();
-                                }
-                            });
-                            mAlertDialog.show();
+                            mYellowTips.show(alertMsg);
                         }
                     }
 
@@ -169,16 +151,7 @@ public class RefdActivity extends BaseActivity {
                     public void run() {
                         endLoading();
                         String alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_fail);
-                        mAlertDialog.setTitle(alertMsg);
-                        mAlertDialog.setImageViewResource(R.drawable.wrong);
-                        mAlertDialog.setOkOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                mAlertDialog.hide();
-                                finish();
-                            }
-                        });
-                        mAlertDialog.show();
+                        mYellowTips.show(alertMsg);
                     }
                 });
             }
