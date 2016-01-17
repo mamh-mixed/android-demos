@@ -33,7 +33,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="90"
-                android:background="@drawable/ticket_edittext_bg"
+                android:background="@drawable/my_web_qrcode_bg"
                 android:orientation="vertical">
 
 
