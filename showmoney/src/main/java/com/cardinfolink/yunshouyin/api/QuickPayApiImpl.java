@@ -450,7 +450,7 @@ public class QuickPayApiImpl implements QuickPayApi {
     //两个参数的用来精确查找某个订单的
     @Override
     public ServerPacket findOrder(User user, String orderNum) {
-        return findOrder(user, orderNum, null, null, null, null, null);
+        return findOrder(user, orderNum, "0", null, null, null, null);
     }
 
     //这是多个参数的用来根据条件查找的
@@ -492,6 +492,7 @@ public class QuickPayApiImpl implements QuickPayApi {
         } else {
             //如果提供了账单号，这里是精确查询，其他的参数不要传人
             params.put("orderNum", orderNum);//订单号，用于订单精准搜索
+            params.put("index", index);//分页起始位置
         }
 
         params.put("transtime", getTransTime());
