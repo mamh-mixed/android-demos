@@ -328,10 +328,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     if (limitValue >= MAX_LIMIT_MONEY) {
                         //"当日交易已超过限额,请申请提升限额!";
                         String alertMsg = ShowMoneyApp.getResString(R.string.alert_error_limit_error);
-                        View alertView = ((Activity) mContext).findViewById(R.id.alert_dialog);
-                        Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
-                        AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, alertMsg, alertBitmap);
-                        alertDialog.show();
+                        mYellowTips.show(alertMsg);
                     } else {
                         captureOrCreate.start();//这里调用扫码还是生成二维码
                     }
@@ -339,13 +336,10 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
                 @Override
                 public void onFailure(QuickPayException ex) {
-                    String errorMsg = ex.getErrorMsg();
-                    View alertView = ((Activity) mContext).findViewById(R.id.alert_dialog);
-                    Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
-                    AlertDialog alertDialog = new AlertDialog(mContext, null, alertView, errorMsg, alertBitmap);
-                    alertDialog.show();
                     endLoading();
+                    String errorMsg = ex.getErrorMsg();
                     mScanTitle.setText(errorMsg);
+                    mYellowTips.show(errorMsg);
                 }
             });
         } else {
