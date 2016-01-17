@@ -215,10 +215,10 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         btn7.setOnClickListener(new NumberOnClickListener("7"));
         btn8.setOnClickListener(new NumberOnClickListener("8"));
         btn9.setOnClickListener(new NumberOnClickListener("9"));
-        btnadd.setOnClickListener(this);
-        btnpoint.setOnClickListener(this);
-        btnclear.setOnClickListener(this);
-        btndelete.setOnClickListener(this);
+        btnadd.setOnClickListener(new AddOnClickListener());
+        btnpoint.setOnClickListener(new PointOnClickListener());
+        btnclear.setOnClickListener(new ClearOnClickListener());
+        btndelete.setOnClickListener(new DelOnClickListener());
 
         mKeyBoard.setOnClickListener(this);
         mScanCodePay.setOnClickListener(this);
@@ -511,9 +511,97 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         }
     }
 
+    private class PointOnClickListener implements OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            String outputText = output.getText().toString();
+            String s1 = outputText.substring(outputText.lastIndexOf("+") + 1);
+            if (s1.contains(".")) {
+                return;
+            }
+
+            if (outputText.contains(".")) {
+                String k = outputText.substring(outputText.lastIndexOf("."));
+                if (k.equals(".")) {
+                    return;
+                } else {
+                    clearZero(".");
+                    pointFlag(".");
+                }
+            } else {
+                clearZero(".");
+                pointFlag(".");
+            }
+        }
+    }
+
+    private class AddOnClickListener implements OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            String outputText = output.getText().toString();
+            if (outputText.contains("+")) {
+                String k = outputText.substring(outputText.lastIndexOf("+"));
+                if (k.equals("+")) {
+                    return;
+                } else {
+                    clearZero("+");
+                    addFlag("+");
+                }
+            } else {
+                clearZero("+");
+                addFlag("+");
+            }
+        }
+    }
+
+    private class DelOnClickListener implements OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            String outputText = output.getText().toString();
+            String r = input.getText().toString();
+            addFlag = true;
+            if (outputText.contains(".")) {
+                String k = outputText.substring(outputText.lastIndexOf("."));
+                if (k.equals(".")) {
+                    pointFlag = true;
+                }
+            }
+            if (!TextUtils.isEmpty(outputText)) {
+                String k = outputText.substring(outputText.lastIndexOf("+") + 1);
+                output.setText(outputText.substring(0, outputText.length() - 1));
+                if (outputText.contains("+")) {
+                    if (k.equals("+")) {
+                        addFlag = false;
+                    } else {
+                        addFlag = true;
+                    }
+                } else {
+                    addFlag = true;
+                }
+                if ("0".equals(outputText.toString())) {
+                    mHasDiscount.setVisibility(View.INVISIBLE);
+                }
+            } else {
+                mHasDiscount.setVisibility(View.INVISIBLE);
+            }
+            addCheck();
+            numFlag = true;
+        }
+    }
+
+    private class ClearOnClickListener implements OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            clearValue();
+        }
+    }
+
     @Override
     public void onClick(View v) {
-        String outputText = output.getText().toString();
         mTotal = Double.parseDouble(input.getText().toString());
         switch (v.getId()) {
             case R.id.scancodepay:
@@ -543,72 +631,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             case R.id.iv_keyboard:
                 cancelBill(mOrderNum);
                 showKeyBoard();//显示键盘界面
-                break;
-            case R.id.tv_point:
-                String s1 = outputText.substring(outputText.lastIndexOf("+") + 1);
-                if (s1.contains(".")) {
-                    break;
-                }
-
-                if (outputText.contains(".")) {
-                    String k = outputText.substring(outputText.lastIndexOf("."));
-                    if (k.equals(".")) {
-                        return;
-                    } else {
-                        clearZero(".");
-                        pointFlag(".");
-                    }
-                } else {
-                    clearZero(".");
-                    pointFlag(".");
-                }
-                break;
-            case R.id.tv_add:
-                if (outputText.contains("+")) {
-                    String k = outputText.substring(outputText.lastIndexOf("+"));
-                    if (k.equals("+")) {
-                        return;
-                    } else {
-                        clearZero("+");
-                        addFlag("+");
-                    }
-                } else {
-                    clearZero("+");
-                    addFlag("+");
-                }
-                break;
-            case R.id.tv_clear:
-                clearValue();
-                break;
-            case R.id.iv_del:
-                String r = input.getText().toString();
-                addFlag = true;
-                if (outputText.contains(".")) {
-                    String k = outputText.substring(outputText.lastIndexOf("."));
-                    if (k.equals(".")) {
-                        pointFlag = true;
-                    }
-                }
-                if (!TextUtils.isEmpty(outputText)) {
-                    String k = outputText.substring(outputText.lastIndexOf("+") + 1);
-                    output.setText(outputText.substring(0, outputText.length() - 1));
-                    if (outputText.contains("+")) {
-                        if (k.equals("+")) {
-                            addFlag = false;
-                        } else {
-                            addFlag = true;
-                        }
-                    } else {
-                        addFlag = true;
-                    }
-                    if ("0".equals(outputText.toString())) {
-                        mHasDiscount.setVisibility(View.INVISIBLE);
-                    }
-                } else {
-                    mHasDiscount.setVisibility(View.INVISIBLE);
-                }
-                addCheck();
-                numFlag = true;
                 break;
         }
     }
@@ -978,7 +1000,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         if (mOriginalTotal > MAX_MONEY) {
             // "金额过大!"
             String toastMsg = mContext.getString(R.string.toast_money_too_large);
-            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+            mYellowTips.show(toastMsg);
             numFlag = false;
         } else {
             numFlag = true;
@@ -1010,7 +1032,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         if (mOriginalTotal > MAX_MONEY) {
             String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
-            Toast.makeText(mContext, toastMsg, Toast.LENGTH_SHORT).show();
+            mYellowTips.show(toastMsg);
             numFlag = false;
         } else {
             numFlag = true;
