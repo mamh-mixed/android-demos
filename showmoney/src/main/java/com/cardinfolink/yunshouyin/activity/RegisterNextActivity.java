@@ -2,8 +2,6 @@ package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -14,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cardinfolink.cashiersdk.model.InitData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
@@ -199,9 +196,8 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
             @Override
             public void onFailure(QuickPayException ex) {
                 String errorMsg = ex.getErrorMsg();
-                Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
                 mLoadingDialog.endLoading();
-                mAlertDialog.show(errorMsg, alertBitmap);
+                mYellowTips.show(errorMsg);
             }
         });
 
