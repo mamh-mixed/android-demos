@@ -371,6 +371,40 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * 模糊搜索城市
+     */
+    private void searchCity() {
+        try {
+            String searchText = selectDialog.getSearchText();
+            try {
+                for (int i = 0; i <= provinceList.size(); i++) {
+                    String provinceName = provinceList.get(i).getProvinceName();
+                    if (provinceName.contains(searchText)) {
+                        selectDialog.setWheelLeftCurrentItem(i);
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+
+            }
+
+            try {
+                for (int i = 0; i <= cityList.size(); i++) {
+                    String cityName = cityList.get(i).getCityName();
+                    if (cityName.contains(searchText)) {
+                        selectDialog.setWheelRightCurrentItem(i);
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 这里调用显示选择 省份城市 滚轮 的界面
@@ -416,6 +450,23 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
             @Override
             public void onClick(View v) {
                 selectDialog.hide();
+            }
+        });
+
+        selectDialog.addSearchTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                searchCity();
             }
         });
 
