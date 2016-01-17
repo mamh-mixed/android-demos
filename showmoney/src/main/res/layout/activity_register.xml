@@ -24,15 +24,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="50dp"
-            cardinfolink:title="@string/register_email"
-            cardinfolink:username_hint="@string/register_hint_email" />
+            cardinfolink:hint="@string/register_hint_email"
+            cardinfolink:title="@string/register_email" />
 
         <com.cardinfolink.yunshouyin.ui.SettingPasswordItem
             android:id="@+id/register_password"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            cardinfolink:password_hint="@string/register_hint_password"
+            cardinfolink:hint="@string/register_hint_password"
             cardinfolink:title="@string/register_password" />
 
         <com.cardinfolink.yunshouyin.ui.SettingInputItem
@@ -40,8 +40,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            cardinfolink:title="@string/register_invite_code"
-            cardinfolink:username_hint="@string/register_optional" />
+            cardinfolink:hint="@string/register_optional"
+            cardinfolink:title="@string/register_invite_code" />
 
         <LinearLayout
             android:layout_width="match_parent"
