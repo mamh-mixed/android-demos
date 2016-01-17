@@ -31,10 +31,10 @@ public class CommunicationUtil {
             public void run() {
                 SocketClient socketClient = new SocketClient(mHost, mPort, 15000);
                 String result = socketClient.reqToServer(json.toString());
-                if (DEBUG) Log.e(TAG, "socekt result ==" + result);
                 if (!TextUtils.isEmpty(result)) {
                     if (result.contains("}")) {
                         result = result.substring(4, result.lastIndexOf("}") + 1);
+                        if (DEBUG) Log.e(TAG, "socekt result ==" + result);
                         listener.onResult(result);
                     } else {
                         //返回的 格式有误
@@ -59,6 +59,7 @@ public class CommunicationUtil {
         if (!TextUtils.isEmpty(result)) {
             if (result.contains("}")) {
                 result = result.substring(4, result.lastIndexOf("}") + 1);
+                if (DEBUG) Log.e(TAG, "socekt result ==" + result);
                 return result;
             } else {
                 return null;
