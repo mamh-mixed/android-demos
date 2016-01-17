@@ -700,34 +700,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
     }
 
-    /**
-     * 查询订单 这个暂时没有用了
-     */
-    public void searchBill(final String orderNum) {
-        final OrderData orderData = new OrderData();
-        orderData.origOrderNum = orderNum;
-        CashierSdk.startQy(orderData, new CashierListener() {
-
-            @Override
-            public void onResult(ResultData resultData) {
-
-                mResultData = resultData;
-                if ("00".equals(resultData.respcd)) {
-                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
-                } else if ("09".equals(resultData.respcd)) {
-                    //09 状态
-                } else {
-                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
-                }
-            }
-
-            @Override
-            public void onError(int errorCode) {
-
-            }
-        });
-    }
-
 
     /**
      * 跳转到交易成功的界面
@@ -819,17 +791,20 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                     if (orderNumInThread.equals(mOrderNum)) {
                         ResultData resultData = CashierSdk.startQy(this.orderDataInThread);
                         if (resultData != null) {
+                            mResultData = resultData;
                             if ("00".equals(resultData.respcd)) {
                                 mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
                                 break;
                             } else if ("09".equals(resultData.respcd)) {
                                 //09 状态
+                            } else if ("H3".equals(resultData.respcd)) {
+                                //订单已经关闭
+                                break;
                             } else {
                                 mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
                                 break;
                             }
                         } else {
-                            mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
                             break;
                         }
                     } else {
