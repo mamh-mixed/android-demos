@@ -146,13 +146,14 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.total.setText(totalStr);
 
         //如果是搜索 出来的账单 使用childrenData list的size来
-        int count = 0;
-        try {
-            count = childrenData.get(groupPosition).size();
-        } catch (Exception e) {
-            count = 0;
+        if (hideTotal) {
+            String countStr = String.valueOf(childrenData.get(groupPosition).size());
+            groupViewHolder.count.setText(countStr);
+        } else {
+            String countStr = String.valueOf(groupData.get(groupPosition).getTotalRecord());
+            groupViewHolder.count.setText(countStr);
         }
-        groupViewHolder.count.setText(String.valueOf(count));
+
 
         if (isExpanded) {
             groupViewHolder.folder.setBackgroundResource(R.drawable.bill_pack);
