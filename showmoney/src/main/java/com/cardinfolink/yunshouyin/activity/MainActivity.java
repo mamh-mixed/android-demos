@@ -329,7 +329,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        String ticketcode = data.getStringExtra("ticketcode");
-        mTicketView.setTicketCode(ticketcode);
+       if(data!=null) {
+           String ticketcode = data.getStringExtra("ticketcode");
+           mTicketView.setTicketCode(ticketcode);
+       }
     }
 }
