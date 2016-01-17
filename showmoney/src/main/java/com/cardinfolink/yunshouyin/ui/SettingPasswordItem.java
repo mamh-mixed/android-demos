@@ -37,7 +37,7 @@ public class SettingPasswordItem extends RelativeLayout implements View.OnClickL
         initView(context);
         TypedArray typeArray = context.obtainStyledAttributes(attrs, R.styleable.SettingItemView);
         String title = typeArray.getString(R.styleable.SettingItemView_title);
-        String hint = typeArray.getString(R.styleable.SettingItemView_password_hint);
+        String hint = typeArray.getString(R.styleable.SettingItemView_hint);
         typeArray.recycle();
         mPassword.setHint(hint);
         mTitle.setText(title);
