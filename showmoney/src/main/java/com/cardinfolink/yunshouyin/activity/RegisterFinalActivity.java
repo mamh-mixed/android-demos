@@ -1,7 +1,6 @@
 package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,11 +16,13 @@ import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
+import com.cardinfolink.yunshouyin.view.YellowTips;
 
 public class RegisterFinalActivity extends BaseActivity implements View.OnClickListener {
     private SettingActionBarItem mActionBar;
     private Button mUseNow;//立即使用
     private Button mIncreaseLimit;//提升限额
+    private YellowTips mYellowTips;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +41,8 @@ public class RegisterFinalActivity extends BaseActivity implements View.OnClickL
 
         mUseNow.setOnClickListener(this);
         mIncreaseLimit.setOnClickListener(this);
+
+        mYellowTips = new YellowTips(this, findViewById(R.id.yellow_tips));
     }
 
     @Override
@@ -107,7 +110,7 @@ public class RegisterFinalActivity extends BaseActivity implements View.OnClickL
                     ActivateDialog activateDialog = new ActivateDialog(mContext, view, eMail);
                     activateDialog.show();
                 } else {
-                    mAlertDialog.show(errorMsg, BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong));
+                    mYellowTips.show(errorMsg);
                 }
             }
         });
