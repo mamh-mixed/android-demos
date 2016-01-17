@@ -640,6 +640,10 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         mOrderNum = orderData.orderNum;//保存为原始订单
 
 
+        if (Coupon.getInstance().getSaleDiscount() != null && !"0".equals(Coupon.getInstance().getSaleDiscount())) {
+            orderData.discountMoney = String.valueOf(new BigDecimal(originalTotal).subtract(new BigDecimal(total)).doubleValue());
+            orderData.couponOrderNum = Coupon.getInstance().getOrderNum();
+        }
         startLoading();
 
         CashierSdk.startPrePay(orderData, new CashierListener() {
