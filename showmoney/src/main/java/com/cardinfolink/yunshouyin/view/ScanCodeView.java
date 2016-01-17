@@ -880,6 +880,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                                 updateQR();//更新二维码
                             } else {
                                 //这里返回其他，说明出错了
+                                mScanTitle.setText(mResultData.errorDetail);
                                 endLoading();
                             }
                         }
