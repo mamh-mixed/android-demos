@@ -419,7 +419,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onFailure(QuickPayException ex) {
                 Log.e(TAG, "improveCertInfoAsync onFailure");
-                alertShow(ex.getErrorMsg(), wrongBitmap);
+                mYellowTips.show(ex.getErrorMsg());
             }
         });
 
@@ -441,7 +441,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             @Override
             public void onFailure(QuickPayException ex) {
                 Log.e(TAG, " activateAsync  onFailure");
-                alertShow(ex.getErrorMsg(), wrongBitmap);
+                mYellowTips.show(ex.getErrorMsg());
             }
         });
     }
@@ -476,7 +476,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
                 ex.getErrorMsg();
                 String alertMsg = ex.getErrorMsg();
-                mAlertDialog.show(alertMsg, wrongBitmap);
+                mYellowTips.show(alertMsg);
                 break;
         }
     }
