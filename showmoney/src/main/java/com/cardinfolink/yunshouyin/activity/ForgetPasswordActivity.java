@@ -101,11 +101,7 @@ public class ForgetPasswordActivity extends BaseActivity {
             @Override
             public void onFailure(QuickPayException ex) {
                 String title = ex.getErrorMsg();
-                String ok = getResources().getString(R.string.forget_i_known);
-                String cancel = getResources().getString(R.string.forget_cancel);
-                mHintDialog.setCancelVisibility(View.GONE);
-                mHintDialog.show(title, ok, cancel);
-
+                mYellowTips.show(title);
             }
         });
     }
