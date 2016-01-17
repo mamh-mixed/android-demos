@@ -263,12 +263,14 @@ public class DetailActivity extends BaseActivity {
             public void onClick(View v) {
                 //退款按钮
                 if ("REFD".equals(mTradeBill.busicd) || "CANC".equals(mTradeBill.busicd) || !"00".equals(mTradeBill.response)) {
+
                 } else {
                     Intent intent = new Intent(DetailActivity.this, RefdActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putSerializable("TradeBill", mTradeBill);
                     intent.putExtra("BillBundle", bundle);
                     startActivity(intent);
+                    finish();
                 }
             }
         });
