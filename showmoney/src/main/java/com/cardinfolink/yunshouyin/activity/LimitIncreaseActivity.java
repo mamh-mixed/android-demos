@@ -82,7 +82,6 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
     private Map<Integer, MerchantPhoto> imageMap = new Hashtable<Integer, MerchantPhoto>(5);
     private boolean isAllUploadSuccess = false;
 
-    Bitmap wrongBitmap;
 
     private File mExternalCacheDir;
 
@@ -137,7 +136,6 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
         selectPic = new SelectPicDialog(this, findViewById(R.id.select_pic_dialog));
 
-        wrongBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
 
         //初始化一个存放图片的目录
         initCacheDir();
