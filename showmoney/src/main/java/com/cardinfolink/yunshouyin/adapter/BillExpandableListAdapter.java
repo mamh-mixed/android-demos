@@ -45,6 +45,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
     private QuickPayService quickPayService;
 
     private HintBillDialog mHintDialog;
+    private boolean hideTotal;
 
 
     public BillExpandableListAdapter(Context context, List<MonthBill> groupData, List<List<TradeBill>> childrenData) {
@@ -57,6 +58,9 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         this.mHintDialog = new HintBillDialog(mContext, view);
     }
 
+    public void setHideTotal(boolean hideTotal) {
+        this.hideTotal = hideTotal;
+    }
 
     @Override
     public int getGroupCount() {
@@ -117,6 +121,11 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             groupViewHolder = (GroupViewHolder) convertView.getTag();
         }
 
+        if (hideTotal) {
+            groupViewHolder.leftLinearLayout.setVisibility(View.INVISIBLE);
+        } else {
+            groupViewHolder.leftLinearLayout.setVisibility(View.VISIBLE);
+        }
 
         //设置一下月份
         groupViewHolder.month.setText(groupData.get(groupPosition).getCurrentMonth());

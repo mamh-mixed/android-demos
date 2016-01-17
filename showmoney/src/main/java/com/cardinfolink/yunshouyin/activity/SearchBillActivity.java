@@ -167,6 +167,7 @@ public class SearchBillActivity extends Activity {
 
         mBillAdapter = new BillExpandableListAdapter(mContext, mMonthBilList, mTradeBillList);
         mBillAdapter.setHintDialog(findViewById(R.id.hint_dialog));
+        mBillAdapter.setHideTotal(true);//搜索的时候 隐藏 月份金额统计
 
         ExpandableListView billActualView = mBillPullRefreshListView.getRefreshableView();
         billActualView.setAdapter(mBillAdapter);
