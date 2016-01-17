@@ -126,7 +126,6 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
         groupViewHolder.count.setText(String.valueOf(count));
 
 
-
         String totalStr = groupData.get(groupPosition).getTotal();
         if (TextUtils.isEmpty(totalStr)) {
             totalStr = "0.00";
@@ -262,6 +261,13 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
                         String totalStr = TxamtUtil.getNormal(data.getTotal());
                         if (TextUtils.isEmpty(totalStr)) {
                             totalStr = "0.00";
+                        } else {
+                            try {
+                                BigDecimal totalBg = new BigDecimal(totalStr);
+                                totalStr = totalBg.setScale(2, BigDecimal.ROUND_HALF_UP).toString();
+                            } catch (Exception e) {
+                                totalStr = "0.0";
+                            }
                         }
                         mHintDialog.setBillTotal(totalStr);
 
