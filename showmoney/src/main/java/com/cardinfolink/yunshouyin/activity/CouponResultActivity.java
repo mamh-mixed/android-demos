@@ -72,7 +72,8 @@ public class CouponResultActivity extends Activity {
                 mPayByScanCode.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        MainActivity.getHandler().sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
+                        Intent intent = new Intent(CouponResultActivity.this, ScanCodeActivity.class);
+                        startActivity(intent);
                         finish();
                     }
                 });
