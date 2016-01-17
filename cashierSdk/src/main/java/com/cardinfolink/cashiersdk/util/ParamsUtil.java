@@ -129,6 +129,8 @@ public class ParamsUtil {
             json.put("chcd", orderData.chcd);
             json.put("terminalid", initData.terminalid);
             json.put("tradeFrom", CashierSdk.SDK_TRADE_FROM);
+            json.put("discountAmt", orderData.discountMoney);//优惠金额
+            json.put("couponOrderNum", orderData.couponOrderNum);//卡券订单号
             if (orderData.goodsInfo != null) {
                 json.put("goodsInfo", orderData.goodsInfo);
             }
