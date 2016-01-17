@@ -407,8 +407,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
                 if (isFastClick()) {
                     return;
                 }
-                String title = String.format(getString(R.string.capture_activity_wait_user_input_password), pollingCount);
-                mHintDialog.setTitle(title);
+                mHintDialog.setTitle(String.format("手动查询：%s 次", pressCount));
+
                 pressCount++;
                 stopPolling();//结束轮询
                 searchBill();//手动查询,手动查询把 轮询关闭然后每次按一下按钮查询一下
@@ -458,7 +458,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
                             cancelBill();
                         }
                         if (isPolling) {
-                            Log.e(TAG, "[Thread] is polling = mHandler.sendEmptyMessage(Msg.MSG_FROM_SEARCHING_POLLING) = " + pollingCount);
                             mHandler.sendEmptyMessage(Msg.MSG_FROM_SEARCHING_POLLING);
                         }
                         Thread.sleep(5000);
@@ -466,7 +465,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         e.printStackTrace();
                     }
                 }
-                Log.e(TAG, "[Thread] end while() = " + pollingCount);
             }
         }).start();
     }
