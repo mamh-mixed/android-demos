@@ -219,8 +219,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
                             orderData.scanCodeId = (String) msg.obj;
                             //有优惠金额的时候
                             if (Coupon.getInstance().getSaleDiscount() != null && !"0".equals(Coupon.getInstance().getSaleDiscount())) {
-                                orderData.payType = Coupon.getInstance().getPayType();
-
                                 orderData.discountMoney = String.valueOf(new BigDecimal(originaltotal).subtract(new BigDecimal(total)).doubleValue());
                                 orderData.couponOrderNum = Coupon.getInstance().getOrderNum();
                             }
