@@ -1,5 +1,6 @@
 package com.cardinfolink.yunshouyin.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,10 +28,6 @@ import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.util.Utility;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
 
 /**
  * 销券的界面
@@ -161,7 +158,8 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                 Bundle bundle = new Bundle();
                 bundle.putString("original", "ticketview");
                 intent.putExtras(bundle);
-                mContext.startActivity(intent);
+
+                ((Activity) mContext).startActivityForResult(intent, 0);
 
                 break;
             case R.id.bt_confirm:
@@ -207,6 +205,10 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                 break;
         }
 
+    }
+
+    public void setTicketCode(String num) {
+        mCouponCode.setText(num);
     }
 
 }

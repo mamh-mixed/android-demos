@@ -8,14 +8,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -23,14 +19,11 @@ import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
-import com.cardinfolink.yunshouyin.view.HintDialog;
 import com.cardinfolink.yunshouyin.view.MySettingView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TicketView;
 import com.cardinfolink.yunshouyin.view.TransManageView;
-import com.umeng.common.message.UmengMessageDeviceConfig;
 import com.umeng.message.IUmengRegisterCallback;
-import com.umeng.message.MsgConstant;
 import com.umeng.message.PushAgent;
 import com.umeng.update.UmengUpdateAgent;
 
@@ -74,7 +67,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
         sp = getSharedPreferences("savedata", Context.MODE_PRIVATE);
-        mFirsInTicketView= sp.getBoolean("mFirsInTicketView", true);
+        mFirsInTicketView = sp.getBoolean("mFirsInTicketView", true);
         initHandler();
         initLayout();
         initUmeng();
@@ -280,8 +273,8 @@ public class MainActivity extends BaseActivity {
                     if (mFirsInTicketView) {
                         mTicketView.showCouponHintDialog();
                     }
-                    SharedPreferences.Editor editor=sp.edit();
-                    editor.putBoolean("mFirsInTicketView",false).commit();
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putBoolean("mFirsInTicketView", false).commit();
                     mFirsInTicketView = false;
                     break;
                 case 2:
@@ -334,4 +327,9 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        String ticketcode = data.getStringExtra("ticketcode");
+        mTicketView.setTicketCode(ticketcode);
+    }
 }

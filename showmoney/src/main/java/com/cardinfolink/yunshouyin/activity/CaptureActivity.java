@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -45,7 +44,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Random;
 import java.util.Vector;
 
 public class CaptureActivity extends BaseActivity implements Callback {
@@ -252,6 +250,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         } else if ("ticketview".equals(originalFromFlag)) {
                             //这里是卡券核销
                             String scancode = (String) msg.obj;
+                            Intent intentForTicketView = new Intent();
+                            intentForTicketView.putExtra("ticketcode", scancode);
+                            setResult(0, intentForTicketView);
+
                             final OrderData orderData = new OrderData();
                             orderData.orderNum = Utility.geneOrderNumber();
                             orderData.scanCodeId = scancode;
