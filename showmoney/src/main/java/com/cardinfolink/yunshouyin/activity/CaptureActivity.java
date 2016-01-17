@@ -322,6 +322,12 @@ public class CaptureActivity extends BaseActivity implements Callback {
                             });
                             break;
 
+                        } else if ("searchbill".equals(originalFromFlag)) {
+                            String qrCode = (String) msg.obj;
+                            Intent mIntent = new Intent();
+                            mIntent.putExtra("qrcode", qrCode);
+                            setResult(RESULT_OK, mIntent);
+                            finish();
                         }
                         break;
                     }
@@ -710,6 +716,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
         } else if ("ticketview".equals(originalFromFlag)) {
             //扫卡券
             mActionBar.setTitle(getResources().getString(R.string.coupon_title_first));
+        } else if ("searchbill".equals(originalFromFlag)) {
+            mActionBar.setTitle(getString(R.string.bill_search));
         }
 
         SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);

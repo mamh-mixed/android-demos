@@ -1,6 +1,7 @@
 package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
 import android.text.Editable;
@@ -11,6 +12,7 @@ import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -95,6 +97,7 @@ public class SearchBillActivity extends Activity {
 
     protected LoadingDialog mLoadingDialog;    //显示loading
 
+    private ImageView mCaptureImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +107,15 @@ public class SearchBillActivity extends Activity {
         quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
         initLayout();
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            String qrcode = data.getStringExtra("qrcode");
+            mSearchEditText.setText(qrcode);
+        }
+    }
+
 
     private void initLayout() {
 
@@ -160,6 +172,17 @@ public class SearchBillActivity extends Activity {
         billActualView.setAdapter(mBillAdapter);
         billActualView.setGroupIndicator(null);
 
+        mCaptureImage = (ImageView) findViewById(R.id.iv_capture);
+        mCaptureImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SearchBillActivity.this, CaptureActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("original", "searchbill");
+                intent.putExtras(bundle);
+                startActivityForResult(intent, 1);
+            }
+        });
 
         mSearch = (TextView) findViewById(R.id.tv_search);
         mSearchEditText = (EditTextClear) findViewById(R.id.et_search);
@@ -220,9 +243,15 @@ public class SearchBillActivity extends Activity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                //订单号大于等于17位才触发查询操作
                 String orderNum = mSearchEditText.getText().toString();
-                if (!TextUtils.isEmpty(orderNum) && orderNum.length() == 17) {
+                if (TextUtils.isEmpty(orderNum)) {
+                    mCaptureImage.setVisibility(View.VISIBLE);
+                } else {
+                    mCaptureImage.setVisibility(View.INVISIBLE);
+                }
+
+                //订单号大于等于17位才触发查询操作
+                if (!TextUtils.isEmpty(orderNum) && orderNum.length() >= 17) {
                     Log.e(TAG, " search order: " + orderNum);
                     //这里精确查找
                     billIndex = 0;
@@ -400,6 +429,7 @@ public class SearchBillActivity extends Activity {
         });
 
     }
+
 
     private void parseServerPacket(ServerPacket data, Map<String, MonthBill> monthMap, Map<String, List<TradeBill>> tradeBillMap, List<MonthBill> monthList, List<List<TradeBill>> tradeBillList) {
         //处理服务器返回的ServerPacket data的数据，把他们都放在相应的list和map中去
