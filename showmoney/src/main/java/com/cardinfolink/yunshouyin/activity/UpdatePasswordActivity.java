@@ -1,7 +1,5 @@
 package com.cardinfolink.yunshouyin.activity;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -25,8 +23,6 @@ public class UpdatePasswordActivity extends BaseActivity {
 
     private Button mUpdate;
 
-    private Bitmap mWrongBitmap;//图片，错误的叉的图片，alert对话框上用的
-    private Bitmap mRightBitmap;
     private YellowTips mYellowTips;
 
     @Override
@@ -54,11 +50,8 @@ public class UpdatePasswordActivity extends BaseActivity {
             }
         });
 
-        mWrongBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.wrong);
-        mRightBitmap = BitmapFactory.decodeResource(this.getResources(), R.drawable.right);
 
         mYellowTips = new YellowTips(this, findViewById(R.id.yellow_tips));
-
     }
 
     private void updatePasswordOnClick(View v) {
@@ -76,7 +69,7 @@ public class UpdatePasswordActivity extends BaseActivity {
                 //更新一下UI
                 endLoading();
                 String alertMsg = getResources().getString(R.string.alert_update_success);
-                alertShow(alertMsg, mRightBitmap);//调用父类的方法了
+                mYellowTips.show(alertMsg);
                 mOriginPassword.setPassword("");
                 mNewPassword.setPassword("");
             }
@@ -85,7 +78,7 @@ public class UpdatePasswordActivity extends BaseActivity {
             public void onFailure(QuickPayException ex) {
                 endLoading();
                 String error = ex.getErrorMsg();
-                alertShow(error, mWrongBitmap);//调用父类的方法了
+                mYellowTips.show(error);
             }
         });
     }
@@ -95,25 +88,25 @@ public class UpdatePasswordActivity extends BaseActivity {
         String alertMsg = "";
         if (TextUtils.isEmpty(originPwd)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_old_password_cannot_empty);
-            alertShow(alertMsg, mWrongBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (originPwd.length() < 6) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_old_password_short_six);
-            alertShow(alertMsg, mWrongBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (TextUtils.isEmpty(newPwd)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_new_password_cannot_empty);
-            alertShow(alertMsg, mWrongBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
         if (newPwd.length() < 6) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_new_password_short_six);
-            alertShow(alertMsg, mWrongBitmap);
+            mYellowTips.show(alertMsg);
             return false;
         }
 
