@@ -60,6 +60,9 @@ public class MainActivity extends BaseActivity {
         super.onResume();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
+        if (mTransManageView != null)
+            if (mTabPager.getCurrentItem() == 2)
+                mTransManageView.refresh();
     }
 
     @Override
@@ -329,9 +332,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-       if(data!=null) {
-           String ticketcode = data.getStringExtra("ticketcode");
-           mTicketView.setTicketCode(ticketcode);
-       }
+        if (data != null) {
+            String ticketcode = data.getStringExtra("ticketcode");
+            mTicketView.setTicketCode(ticketcode);
+        }
     }
 }
