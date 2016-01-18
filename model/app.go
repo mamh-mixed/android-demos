@@ -157,6 +157,8 @@ type AppUser struct {
 	DeviceType     string `json:"deviceType,omitempty" bson:"deviceType,omitempty"`   //设备类型
 	DeviceToken    string `json:"deviceToken,omitempty" bson:"deviceToken,omitempty"` //app唯一标识
 
+	PromoteLimitRecord []string `json:"-" bson:"promoteLimitRecord,omitempty"`
+
 	// 清算相关信息不存
 	BankOpen  string `json:"bank_open,omitempty" bson:"-"`
 	Payee     string `json:"payee,omitempty" bson:"-"`

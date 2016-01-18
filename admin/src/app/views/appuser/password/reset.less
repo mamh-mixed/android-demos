@@ -1,38 +1,72 @@
 .login-content {
   text-align: center;
   overflow: hidden;
-  height: 100%;
+  min-height: 100%;
   width: 100%;
   position: absolute;
   top: 0;
   left: 0;
-  background: #00bcd4;
+  right: 0;
+  background: #FFFFFF;
   content: "";
   z-index: 0;
   font-weight: 400;
-  padding-top: 65px;
-  padding-bottom: 110px;
-  .lc-block {
-    background: #fff;
-    box-shadow: 0 1px 11px rgba(0,0,0,0.27);
-    border-radius: 2px;
-    width: 500px;
-    display: inline-block;
-    margin-top: 42px;
-    vertical-align: middle;
-    position: relative;
-    padding: 35px 55px;
-    z-index: 10;
-  }
-}
-.lc-block:not(.lcb-alt) .btn-login {
-  top: 50%;
-  margin-top: -25px;
-  right: -25px;
-}
-@media screen and (max-width: 767px) {
-  .lc-block {
-    padding: 25px 35px 25px 20px !important;
-    width: calc(~"100% - 60px")!important;
+  padding: 0 18px;
+  .form {
+    max-width: 400px;
+    margin: 0 auto;
+    .header {
+      margin-top: 9rem;
+      text-align: left;
+      font-weight: lighter;
+    }
+    .pwd-input-group {
+      font-size: 1.5rem;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      align-items: center;
+      border-bottom: 2px solid #F0F0F0;
+      margin-top: 10rem;
+      .input-wrap {
+        flex: 1;
+        margin: 0 0.5rem 0 2rem;
+        input {
+          border-bottom: none;
+        }
+      }
+      .show-pwd {
+        background: url(../assets/images/show.png) no-repeat center;
+        background-size: 2rem 2rem;
+        width: 3rem;
+        height: 3rem;
+        cursor: pointer;
+      }
+    }
+    .pwd-button-group {
+      margin-top: 13rem;
+      .btn {
+        width: 93%;
+        height: 4.5rem;
+        font-size: 1.8rem;
+        background: #16C0D5;
+        color: #FFFFFF;
+        &:hover,
+        &:active,
+        &:focus {
+          background: #228E9C;
+        }
+      }
+    }
+    .logo {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 0 0 4rem;
+      img {
+        width: 15rem;
+      }
+    }
   }
 }
