@@ -82,3 +82,27 @@ func TestTotalSummaryHandler(t *testing.T) {
 	bs, _ := json.Marshal(result)
 	t.Logf("%s", string(bs))
 }
+
+func TestCertificateUpdate(t *testing.T) {
+	values := url.Values{}
+	values.Add("username", "330961193@qq.com")
+	values.Add("password", "670b14728ad9902aecba32e22fa4f6bd")
+	values.Add("transtime", time.Now().Format("20060102150405"))
+
+	result, err := postV3(values, certificateAccountHandler)
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	bs, _ := json.Marshal(result)
+	t.Logf("%s", string(bs))
+}
+
+func TestPromoteLimitSummary(t *testing.T) {
+	PromoteLimitSummary("2016-01-17")
+}
+
+func TestInvitationSummary(t *testing.T) {
+	InvitationSummary("2016-01-16")
+}
