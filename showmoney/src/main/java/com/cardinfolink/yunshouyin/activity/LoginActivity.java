@@ -87,7 +87,6 @@ public class LoginActivity extends BaseActivity {
         VerifyUtil.addEmailLimit(mUsernameEdit);
 
         mPasswordEdit = (EditTextClear) findViewById(R.id.login_password);
-        VerifyUtil.addEmailLimit(mPasswordEdit);
 
 
         mAutoLogin = (CheckBox) findViewById(R.id.login_auto);
