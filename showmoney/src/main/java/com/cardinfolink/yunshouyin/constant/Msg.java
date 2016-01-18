@@ -35,4 +35,5 @@ public class Msg {
     public static final int MSG_FROM_SERVER_COUPON_FAIL = 603;
     public static final int MSG_COUPON_CANCEL = 604;
 
+    public static final int MSG_FINISH_BIG_SCANCODEVIEW=605;
 }
