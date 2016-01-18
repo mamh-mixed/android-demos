@@ -70,7 +70,10 @@ func TestAgentFindByCode(t *testing.T) {
 }
 
 func TestAgentFindByCondition(t *testing.T) {
-	cms, err := AgentColl.FindByCondition(nil)
+	agent := &model.Agent{
+		IsGenerateFlow: model.GenerateFlow,
+	}
+	cms, err := AgentColl.FindByCondition(agent)
 	if err != nil {
 		t.Error("出错啦")
 	}
