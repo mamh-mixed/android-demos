@@ -474,6 +474,8 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 		}
 	}
 
+	var merName = "云收银"
+	var commodityName = "讯联云收银在线注册商户"
 	// 创建商户
 	permission := []string{model.Paut, model.Purc, model.Canc, model.Void, model.Inqy, model.Refd, model.Jszf, model.Qyzf}
 	merchant := &model.Merchant{
@@ -489,8 +491,8 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 		IsNeedSign:   true,
 		SignKey:      fmt.Sprintf("%x", randBytes(16)),
 		Detail: model.MerDetail{
-			MerName:       "云收银",
-			CommodityName: "讯联云收银在线注册商户",
+			MerName:       merName,
+			CommodityName: commodityName,
 			Province:      req.Province,
 			City:          req.City,
 			OpenBankName:  req.BranchBank,
@@ -499,6 +501,7 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 			AcctName:      req.Payee,
 			AcctNum:       req.PayeeCard,
 			ContactTel:    req.PhoneNum,
+			TitleTwo:      merName,
 		},
 	}
 
@@ -1242,7 +1245,7 @@ func (u *user) improveCertInfo(req *reqParams) (result model.AppResult) {
 	}
 
 	if req.CertName != "" {
-		m.Detail.CertName = req.CertName
+		m.Detail.MerName = req.CertName // 修改商户名称
 	}
 	if req.CertAddr != "" {
 		m.Detail.CertAddr = req.CertAddr
@@ -1609,7 +1612,7 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 	case 14:
 		q.TradeFrom = []string{model.Wap, model.Pc, model.OpenAPI}
 	case 15:
-		// ignore
+		q.TradeFrom = []string{model.Wap, model.IOS, model.Android, model.OpenAPI, model.Pc}
 	}
 
 	switch payType {
