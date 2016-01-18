@@ -143,6 +143,9 @@ public class MessageDB {
      * 查询未读消息数量
      */
     public int countUnreadedMessages(String username) {
+        if (TextUtils.isEmpty(username)) {
+            return 0;
+        }
         SQLiteDatabase database = helper.getReadableDatabase();
         Cursor cursor = database.rawQuery("select count(*) from message where username=? and status='0'", new String[]{username});
         int count = 0;
