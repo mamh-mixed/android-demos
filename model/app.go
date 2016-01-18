@@ -191,11 +191,13 @@ type PushMessageReq struct {
 	DeviceToken string
 	MsgType     string
 	To          string
+	OrderNum    string
 }
 
 // 推送消息体
 type PushMessage struct {
 	MsgId       string `json:"msgId" bson:"msgId"`
+	OrderNum    string `json:"orderNum" bson:"orderNum"`
 	UserName    string `json:"username,omitempty" bson:"username,omitempty"`
 	Title       string `json:"title,omitempty" bson:"title,omitempty"`
 	Message     string `json:"message,omitempty" bson:"message,omitempty"`
