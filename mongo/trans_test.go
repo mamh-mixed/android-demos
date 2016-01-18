@@ -14,6 +14,16 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+func TestFindLastRecord(t *testing.T) {
+	lt, err := SpTransColl.FindLastRecord(&model.QueryCondition{MerId: "999118880000003", StartTime: "2016-01-01 00:00:00"})
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	t.Logf("%+v", lt)
+}
+
 func TestFindToSett(t *testing.T) {
 	SpTransColl.FindToSett("2015-12-07")
 }

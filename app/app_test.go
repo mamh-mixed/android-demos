@@ -455,7 +455,7 @@ func TestDownload(t *testing.T) {
 }
 
 func TestSendEmail(t *testing.T) {
-	NotifySalesman()
+	NotifySalesman("2016-01-17")
 }
 
 func TestRandBytes(t *testing.T) {

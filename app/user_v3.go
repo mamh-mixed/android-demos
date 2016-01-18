@@ -1,6 +1,7 @@
 package app
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
@@ -31,8 +32,37 @@ func (u *userV3) messagePullHandler(req *reqParams) (result model.AppResult) {
 		req.MaxTime = ""
 	}
 
-	result = User.findPushMessage(req)
+	result = u.findPushMessage(req)
 
+	return result
+}
+
+// findPushMessage 查询某个用户下的推送消息
+func (u *userV3) findPushMessage(req *reqParams) (result model.AppResult) {
+
+	if _, errResult := checkPWD(req); errResult != nil {
+		return *errResult
+	}
+
+	size, _ := strconv.Atoi(req.Size)
+	messages, err := mongo.PushMessageColl.Find(&model.PushMessage{
+		UserName: req.UserName,
+		LastTime: req.LastTime,
+		MaxTime:  req.MaxTime,
+		MsgType:  "MSG_TYPE_C", // 只返回MSG_TYPE_C类型消息
+		Size:     size,
+	})
+	if err != nil {
+		return model.SYSTEM_ERROR
+	}
+
+	if len(messages) == 0 {
+		messages = make([]model.PushMessage, 0)
+	}
+
+	result = model.SUCCESS1
+	result.Size = len(messages)
+	result.Message = messages
 	return result
 }
 
@@ -111,8 +141,18 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 	}
 
 	// 承载返回结果的数组
-
 	result = model.NewAppResult(model.SUCCESS, "")
+	// 如果刚好刷新到最后一条
+	if index+len(trans) == total {
+		// 查找接下来哪个月有数据
+		lt, err := mongo.SpTransColl.FindLastRecord(q)
+		if err == nil {
+			if len(lt.CreateTime) > 7 {
+				result.NextMonth = lt.CreateTime[0:4] + lt.CreateTime[5:7] // 200601
+			}
+		}
+	}
+
 	var txns []*model.AppTxn
 	for _, t := range trans {
 		// 遍历查询结果

@@ -527,16 +527,17 @@ func (u *userController) PasswordReset(data []byte) (ret *model.ResultBody) {
 		return model.NewResultBody(6, "JSON_ERROR")
 	}
 
-	if resetUser.UserName == "" || resetUser.PassWord == "" || resetUser.CheckCode == "" {
+	if resetUser.PassWord == "" || resetUser.CheckCode == "" {
 		return model.NewResultBody(1, "MISS_REQUIRED_PARAMETER")
 	}
 
 	// 查找发送邮件的纪录
-	emailInfo, err := mongo.EmailCol.FindOne(resetUser.UserName)
+	emailInfo, err := mongo.EmailCol.FindOneByCode(resetUser.CheckCode)
 	if err != nil {
-		log.Errorf("find user error, user:%s, error:%s", resetUser.UserName, err)
-		return model.NewResultBody(2, "SYSTEM_ERROR")
+		log.Errorf("find email sending record error, checkcode:%s, error:%s", resetUser.CheckCode, err)
+		return model.NewResultBody(2, "INVALID_CHECK_CODE")
 	}
+	resetUser.UserName = emailInfo.UserName
 
 	// 是否已经激活过
 	if emailInfo.IsOperated {
@@ -547,10 +548,6 @@ func (u *userController) PasswordReset(data []byte) (ret *model.ResultBody) {
 	timestamp, _ := time.ParseInLocation("2006-01-02 15:04:05", emailInfo.Timestamp, time.Local)
 	if time.Now().Sub(timestamp) > 12*time.Hour {
 		return model.NewResultBody(5, "OPERATION_OUT_OF_DATE")
-	}
-
-	if resetUser.CheckCode != emailInfo.Code {
-		return model.NewResultBody(4, "INVALID_CHECK_CODE")
 	}
 
 	appUser, err := mongo.AppUserCol.FindOne(resetUser.UserName)
