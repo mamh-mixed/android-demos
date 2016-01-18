@@ -153,6 +153,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         initLayout();//初始各个改组件
     }
 
+
     // 初始化各个组件
     private void initLayout() {
         mHintDialog = new HintDialog(mContext, findViewById(R.id.hint_dialog));
@@ -262,6 +263,11 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 1.0f);
         mShowAnimation.setDuration(500);
         mHideAnimation.setDuration(500);
+    }
+
+    //获取 mhintdialog 实例，为了ScanCodeActivity里面用的，真他妈的瞎搞！
+    public HintDialog getmHintDialog() {
+        return mHintDialog;
     }
 
     public void showKeyBoard() {
