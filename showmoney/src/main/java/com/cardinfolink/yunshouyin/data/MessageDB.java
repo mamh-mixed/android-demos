@@ -38,7 +38,7 @@ public class MessageDB {
             statement.bindString(3, message.getTitle());
             statement.bindString(4, message.getMessage());
             statement.bindString(5, message.getPushtime());
-            statement.bindString(6, message.getUpdateTime());
+            statement.bindString(6, "");
             statement.bindString(7, message.getStatus());
             statement.execute();
             statement.clearBindings();
@@ -70,11 +70,7 @@ public class MessageDB {
         }
         cursor.close();
         database.close();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        final String currentTime = format.format(new Date());
-        if (TextUtils.isEmpty(lastTime)) {
-            lastTime = currentTime;
-        }
+
         return lastTime;
     }
 
@@ -85,10 +81,16 @@ public class MessageDB {
         List<Message> messageList = new ArrayList<>();
         SQLiteDatabase database = helper.getReadableDatabase();
         Cursor cursor;
-        if (message.getStatus() == null) { //查询全部消息（包括删除的）
+        if ("all_msg_pull_down_or_open".equals(message.getType()) && message.getStatus() == null) { //从服务器没有查询到消息，从本地查询全部消息
             cursor = database.rawQuery("select * from message where username=? and pushtime<=? order by pushtime desc limit ?",
                     new String[]{message.getUsername(), message.getPushtime(), size});
-        } else {
+        } else if (message.getType() == null && message.getStatus() == null) { //下拉刷新查询全部消息
+            cursor = database.rawQuery("select * from message where username=? and pushtime<? order by pushtime desc limit ?",
+                    new String[]{message.getUsername(), message.getPushtime(), size});
+        } else if ("unread_msg_pull_down_or_open".equals(message.getType())) { //从服务器没有查询到消息，从本地查询未读消息
+            cursor = database.rawQuery("select * from message where username=? and pushtime<=? order by pushtime desc limit ?",
+                    new String[]{message.getUsername(), message.getPushtime(), size});
+        } else { //下拉刷新查询未读消息
             cursor = database.rawQuery("select * from message where username=? and pushtime<? and status=? order by pushtime desc limit ?",
                     new String[]{message.getUsername(), message.getPushtime(), message.getStatus(), size});
         }
