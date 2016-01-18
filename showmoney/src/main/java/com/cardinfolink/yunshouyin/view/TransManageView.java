@@ -141,6 +141,9 @@ public class TransManageView extends LinearLayout {
         quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
 
         initLayout();
+
+
+
     }
 
     private void initLayout() {
@@ -362,6 +365,10 @@ public class TransManageView extends LinearLayout {
     //获取收款的账单账单
     private void getBill() {
         mLoadingDialog.startLoading();
+        List<MonthBill> groupDate = mBillAdapter.getGroupData();
+        if(groupDate!=null && groupDate.size()>0) {
+            mCurrentYearMonth = groupDate.get(groupDate.size()-1).getNextMonth();
+        }
         quickPayService.getHistoryBillsAsync(SessonData.loginUser, mCurrentYearMonth, String.valueOf(billIndex), "100", "success", new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
@@ -406,6 +413,12 @@ public class TransManageView extends LinearLayout {
     //获取卡券账单
     public void getTicketBill() {
         mLoadingDialog.startLoading();
+
+        //这里了使用 了 新的 接口俩确定 月份
+        List<MonthBill> groupDate = mBillAdapter.getGroupData();
+        if(groupDate!=null && groupDate.size()>0) {
+            mTicketCurrentYearMonth = groupDate.get(groupDate.size()-1).getNextMonth();
+        }
         quickPayService.getHistoryCouponsAsync(SessonData.loginUser, mTicketCurrentYearMonth, String.valueOf(ticketIndex), "100", new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
@@ -420,6 +433,9 @@ public class TransManageView extends LinearLayout {
                 if (mTicketAdapter.getGroupCount() >= 1) {
                     mTicketPullRefreshListView.getRefreshableView().expandGroup(0);
                 }
+
+
+                //这里了使用 了 新的 接口俩确定 月份, 这里 应该不用了！！！！
                 ticketIndex += size;
                 if (ticketIndex == totalRecord) {
                     //之前用的是size来判断的。size等于零 表示 加载到这个月的全部的了，这时候就要加载前一个月的数据了
@@ -530,6 +546,7 @@ public class TransManageView extends LinearLayout {
         final int refdcount = data.getRefdcount();
         final String refdtotal = data.getRefdtotal();
         final int size = data.getSize();
+        final String nextMonth = data.getNextMonth();
 
         //这里开始遍历这个账单的数组************************************************************
         if (data.getTxn() != null) {
@@ -595,6 +612,7 @@ public class TransManageView extends LinearLayout {
                     monthBill.setRefdtotal(refdtotal);
                     monthBill.setSize(size);
                     monthBill.setTotalRecord(totalRecord);
+                    monthBill.setNextMonth(nextMonth);
                     monthMap.put(currentYearMonth, monthBill);
                 }
 

@@ -34,6 +34,8 @@ public class MonthBill {
     private int refdcount;//这个是和退款相关的
     private String refdtotal;
 
+    private String nextMonth;//新的接口，返回下个月份，拉取账单的时候下次拉取的时候就会用到这个字段
+
 
     public MonthBill(String currentYear, String currentMonth) {
         this.currentYear = currentYear;
@@ -106,5 +108,13 @@ public class MonthBill {
 
     public void setTotalRecord(int totalRecord) {
         this.totalRecord = totalRecord;
+    }
+
+    public String getNextMonth() {
+        return nextMonth;
+    }
+
+    public void setNextMonth(String nextMonth) {
+        this.nextMonth = nextMonth;
     }
 }
