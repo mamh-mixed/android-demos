@@ -18,13 +18,13 @@ func AuthHandle(w http.ResponseWriter, r *http.Request) {
 
 	log.Infof("user authorization, appID=%s, code=%s", appID, code)
 
-	cm, err := mongo.ChanMerColl.Find(channel.ChanCodeAlipay, appID) // TODO 待确定
+	agentCm, err := mongo.ChanMerColl.Find(channel.ChanCodeAlipay, appID) // TODO 待确定
 	if err != nil {
 		w.Write([]byte("invalid appID"))
 		return
 	}
 
-	resp, err := alipay.GetAppAuthToken(appID, code, []byte(cm.PrivateKey))
+	resp, err := alipay.GetAppAuthToken(appID, code, []byte(agentCm.PrivateKey))
 	if err != nil {
 		w.Write([]byte("get app_auth_token error: " + err.Error()))
 		return
@@ -38,22 +38,39 @@ func AuthHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 如果找到，修改
-	if err = mongo.ChanMerColl.Upsert(&model.ChanMer{
-		ChanMerId:    resp.AuthAppID,
-		ChanCode:     channel.ChanCodeAlipay,
-		WxpAppId:     resp.AuthAppID,
-		AuthToken:    resp.AppAuthToken,
-		RefreshToken: resp.AppRefreshToken,
-		AuthTime:     time.Now().Format("2006-01-02 15:04:05"),
-		IsAgentMode:  true,
-		Version:      channel.ALP2_0,
-		AgentMer:     cm,
-	}); err != nil {
-		log.Errorf("alipay auth, upsert chanMer err: %s", err)
-		w.Write([]byte("system error, please retry."))
+	cm, err := mongo.ChanMerColl.Find(channel.ChanCodeAlipay, resp.UserID)
+	if err != nil {
+		// 没找到，保存个新的，直接走2.0接口
+		if err = mongo.ChanMerColl.Add(&model.ChanMer{
+			ChanMerId:    resp.UserID,
+			ChanCode:     channel.ChanCodeAlipay,
+			WxpAppId:     resp.AuthAppID,
+			AuthToken:    resp.AppAuthToken,
+			RefreshToken: resp.AppRefreshToken,
+			AuthTime:     time.Now().Format("2006-01-02 15:04:05"),
+			IsAgentMode:  true,
+			Version:      channel.ALP2_0,
+			AgentMer:     agentCm,
+		}); err != nil {
+			w.Write([]byte("系统错误，请重新授权。"))
+			return
+		}
+
+		w.Write([]byte("授权成功"))
 		return
 	}
 
-	w.Write([]byte("success"))
+	// 找到
+	cm.WxpAppId = resp.AuthAppID
+	cm.RefreshToken = resp.AppRefreshToken
+	cm.AuthToken = resp.AppAuthToken
+	cm.AuthTime = time.Now().Format("2006-01-02 15:04:05")
+	cm.AgentMer = agentCm // 先关联上授权支付宝商户，等确认走2.0时，IsAgentMode=true，并且version=ALP2_0即可切换
+	if err = mongo.ChanMerColl.Update(cm); err != nil {
+		w.Write([]byte("系统错误，请重新授权。"))
+		return
+	}
+
+	w.Write([]byte("授权成功"))
 
 }
