@@ -339,7 +339,7 @@ public class SearchBillActivity extends Activity {
             public void onFailure(QuickPayException ex) {
                 mBillAdapter.notifyDataSetChanged();
                 mBillPullRefreshListView.onRefreshComplete();
-                String msg = mContext.getString(R.string.bill_search_result_message2) + ex.getErrorMsg();
+                String msg = mContext.getString(R.string.bill_search_result_message2);
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 mLoadingDialog.endLoading();
             }
@@ -423,7 +423,7 @@ public class SearchBillActivity extends Activity {
             public void onFailure(QuickPayException ex) {
                 mBillAdapter.notifyDataSetChanged();
                 mBillPullRefreshListView.onRefreshComplete();
-                String msg = mContext.getString(R.string.bill_search_result_message2) + ex.getErrorMsg();
+                String msg = mContext.getString(R.string.bill_search_result_message2);
                 Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
                 mLoadingDialog.endLoading();
             }
