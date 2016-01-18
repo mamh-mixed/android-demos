@@ -145,12 +145,16 @@ public class UnReadMessageActivity extends BaseActivity {
             mUnreadMessageListView.setAdapter(mAdapter);
         } else if (PULL_DOWN.equals(type)) {
             messageList = mAdapter.getMessageList();
-            messageList.addAll(0, messageListTemp);
-            mAdapter.notifyDataSetChanged();
+            if (messageListTemp.size() > 0) {
+                messageList.addAll(0, messageListTemp);
+                mAdapter.notifyDataSetChanged();
+            }
         } else {
             messageList = mAdapter.getMessageList();
-            messageList.addAll(messageList.size(), messageListTemp);
-            mAdapter.notifyDataSetChanged();
+            if (messageListTemp.size() > 0) {
+                messageList.addAll(messageList.size(), messageListTemp);
+                mAdapter.notifyDataSetChanged();
+            }
         }
         if (messageList.size() > 0) {
             lastTime = messageList.get(messageList.size() - 1).getPushtime();
@@ -228,6 +232,10 @@ public class UnReadMessageActivity extends BaseActivity {
     protected List<Message> getLocalMessages(String pushTime, String status, String type) {
         Message message = new Message();
         message.setUsername(SessonData.loginUser.getUsername());
+        if (TextUtils.isEmpty(pushTime)) {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            pushTime = format.format(new Date());
+        }
         message.setPushtime(pushTime);
         message.setStatus(status);
         message.setType(type);

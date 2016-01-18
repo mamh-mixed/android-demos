@@ -47,6 +47,7 @@ public class MessageActivity extends BaseActivity {
     private static final String UNREAD_OR_DELETED = "2";
     private static final String READ_OR_DELETE = "3";
 
+
     private Button mSetMessageRead;
 
 
@@ -158,12 +159,16 @@ public class MessageActivity extends BaseActivity {
             mUnreadMessageListView.setAdapter(mAdapter);
         } else if (PULL_DOWN.equals(type)) {
             messageList = mAdapter.getMessageList();
-            messageList.addAll(0, messageListTemp);
-            mAdapter.notifyDataSetChanged();
+            if (messageListTemp.size() > 0) {
+                messageList.addAll(0, messageListTemp);
+                mAdapter.notifyDataSetChanged();
+            }
         } else {
             messageList = mAdapter.getMessageList();
-            messageList.addAll(messageList.size(), messageListTemp);
-            mAdapter.notifyDataSetChanged();
+            if (messageListTemp.size() > 0) {
+                messageList.addAll(messageList.size(), messageListTemp);
+                mAdapter.notifyDataSetChanged();
+            }
         }
         if (messageList.size() > 0) {
             lastTime = messageList.get(messageList.size() - 1).getPushtime();
@@ -247,6 +252,10 @@ public class MessageActivity extends BaseActivity {
     private List<Message> getLocalMessages(String pushTime, String status, String type) {
         Message message = new Message();
         message.setUsername(SessonData.loginUser.getUsername());
+        if (TextUtils.isEmpty(pushTime)) {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            pushTime = format.format(new Date());
+        }
         message.setPushtime(pushTime);
         message.setStatus(status);
         message.setType(type);
