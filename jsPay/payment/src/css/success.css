@@ -2,7 +2,7 @@
 
 /*body*/
 body {
-  background: #00bcd4;
+  background: #DDDDDD;
 }
 
 /*container*/
@@ -10,7 +10,7 @@ body {
   margin-top: 80px;
   position: relative;
   font-size: 34px;
-  color: #FFF;
+  color: #000;
   text-align: center;
   line-height: 40px;
 }
@@ -20,7 +20,7 @@ body {
   position: relative;
   position: relative;
   font-size: 16px;
-  color: #FFF;
+  color: #000;
   text-align: center;
   line-height: 30px;
 }
@@ -28,7 +28,7 @@ body {
 .container .three {
   position: relative;
   font-size: 16px;
-  color: #FFF;
+  color: #000;
   text-align: center;
   line-height: 30px;
 }
@@ -36,21 +36,21 @@ body {
 .container .four {
   width: 200px;
   height: 60px;
-  border: 2px solid #FFF;
+  border: 2px solid #000;
   position: relative;
   font-size: 36px;
-  color: #FFF;
+  color: #000;
   text-align: center;
   line-height: 60px;
   margin: 50px auto;
 }
 
 input:-moz-placeholder {
-  color: #fff
+  color: #000;
 }
 
 ::-webkit-input-placeholder {
-  color: #fff
+  color: #000;
 }
 
 .container .anniu {

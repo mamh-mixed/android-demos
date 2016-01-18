@@ -2,14 +2,14 @@
 
 /*body*/
 body {
-  background: #00bcd4;
+  background: #dddddd;
 }
 
 /*container*/
 .container .one {
   margin-top: 80px;
   font-size: 34px;
-  color: #FFF;
+  color: #000;
   text-align: center;
   line-height: 40px;
 }
@@ -17,31 +17,31 @@ body {
 .container .two {
   margin-top: 50px;
   font-size: 16px;
-  color: #FFF;
+  color: #000;
   text-align: center;
   line-height: 30px;
 }
 
 .container .three {
   font-size: 16px;
-  color: #FFF;
+  color: #000;
   text-align: center;
   line-height: 30px;
 }
 
 input:-moz-placeholder {
-  color: #fff
+  color: #000;
 }
 
 ::-webkit-input-placeholder {
-  color: #fff
+  color: #000;
 }
 
 .container .anniu {
   width: 302px;
   height: 42px;
   border-radius: 20px;
-  background: #81deeb;
+  background: #EA181E;
   line-height: 42px;
   text-align: center;
   margin: 100px auto;

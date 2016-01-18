@@ -179,7 +179,7 @@ body {
 /*header*/
 .header {
   height: 180px;
-  background: #00bcd4;
+  background: #DDDDDD;
   padding-top: 50px;
 }
 
@@ -196,7 +196,7 @@ body {
   height: 40px;
   border: solid 2px #fff;
   border-radius: 10px;
-  background: #00bcd4;
+  background: #DDDDDD;
   margin: 0 auto;
   overflow: hidden;
 }
@@ -212,7 +212,7 @@ body {
 }
 
 .header ul li a:hover {
-  color: #00bcd4;
+  color: #DDDDDD;
   background: #FFF;
   text-decoration: none;
 }
@@ -306,10 +306,10 @@ body {
 }
 
 .captha > span {
-  border: 2px solid #00bcd4;
+  border: 2px solid #DDDDDD;
   padding: 5px;
   border-radius: 8px;
-  color: #00bcd4;
+  color: #DDDDDD;
 }
 
 .right > .amount {
@@ -395,10 +395,10 @@ body {
 }
 
 .captha > span {
-  border: 2px solid #00bcd4;
+  border: 2px solid #DDDDDD;
   padding: 5px;
   border-radius: 8px;
-  color: #00bcd4;
+  color: #DDDDDD;
 }
 
 .right > .amount {
@@ -483,10 +483,10 @@ body {
 }
 
 .captha > span {
-  border: 2px solid #00bcd4;
+  border: 2px solid #DDDDDD;
   padding: 5px;
   border-radius: 8px;
-  color: #00bcd4;
+  color: #DDDDDD;
 }
 
 .right > .amount {
