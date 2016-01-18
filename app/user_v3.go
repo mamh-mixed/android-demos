@@ -216,7 +216,7 @@ func (u *userV3) findOrderHandle(req *reqParams) (result model.AppResult) {
 		Size:      size,
 		Page:      1,
 	}
-	//match["transStatus"] = bson.M{"$ne": model.TransFail}
+
 	// 初始化查询参数
 	findOrderParams(req, q)
 	trans, total, err := mongo.SpTransColl.Find(q)
