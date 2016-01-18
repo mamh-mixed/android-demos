@@ -1804,7 +1804,9 @@ func InvitationSummary(day string) {
 		}
 
 		log.Debugf("k=%s,eds=%d,fds=%d,email=%s", k, len(eds), len(fds), user.Mail)
-		sendEmail(&emailData{es: eds, fs: fds, to: user.Mail, cc: "", day: day, key: k, body: invitationBody, title: invitationTitle, excelTemplate: toolsExcel})
+		if len(eds) > 0 {
+			sendEmail(&emailData{es: eds, fs: fds, to: user.Mail, cc: "", day: day, key: k, body: invitationBody, title: invitationTitle, excelTemplate: toolsExcel})
+		}
 
 		if user.RelatedEmail != "" {
 			// 将数据整合到同个代理邮箱
@@ -1830,7 +1832,9 @@ func InvitationSummary(day string) {
 	// 代理
 	for k, a := range agents {
 		log.Debugf("ak=%s,eds=%d,fds=%d", k, len(a.es), len(a.fs))
-		sendEmail(a)
+		if a.es > 0 {
+			sendEmail(a)
+		}
 	}
 }
 
@@ -1886,16 +1890,17 @@ func PromoteLimitSummary(date string) {
 	}
 
 	log.Debugf("summary: eds=%d,fds=%d", len(eds), len(fds))
-
-	sendEmail(&emailData{es: eds,
-		fs:            fds,
-		to:            riskEmail,
-		cc:            andyLi,
-		day:           date,
-		key:           riskEmail,
-		body:          promoteBody,
-		title:         promoteTitle,
-		excelTemplate: promoteExcel})
+	if len(eds) > 0 {
+		sendEmail(&emailData{es: eds,
+			fs:            fds,
+			to:            riskEmail,
+			cc:            andyLi,
+			day:           date,
+			key:           riskEmail,
+			body:          promoteBody,
+			title:         promoteTitle,
+			excelTemplate: promoteExcel})
+	}
 }
 
 func promoteExcel(eds []excelData) *xlsx.File {
