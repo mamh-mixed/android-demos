@@ -343,6 +343,9 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
     private void searchBank() {
         try {
             String bank = selectDialog.getSearchText();
+            if(TextUtils.isEmpty(bank)) {
+                return;
+            }
             try {
                 for (int i = 0; i <= bankList.size(); i++) {
                     String bankName = bankList.get(i).getBankName();
@@ -379,6 +382,9 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
     private void searchProvince() {
         try {
             String provice = selectDialog.getSearchText();
+            if(TextUtils.isEmpty(provice)) {
+                return;
+            }
             try {
                 for (int i = 0; i <= provinceList.size(); i++) {
                     String proviceName = provinceList.get(i).getProvinceName();
@@ -394,7 +400,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
             }
 
             try {
-                for (int i = 0; i <= subbankList.size(); i++) {
+                for (int i = 0; i <= cityList.size(); i++) {
                     String cityName = cityList.get(i).getCityName();
                     if (cityName.contains(provice)) {
                         selectDialog.setWheelRightCurrentItem(i);
