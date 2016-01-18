@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,16 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.MessageDetailActivity;
 import com.cardinfolink.yunshouyin.model.Message;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class MessageAdapter extends BaseAdapter {
     public final static String SER_KEY = "com.cardinfolink.yunshouyin.adapter.ser";
     private List<Message> messageList;
     private Context mContext;
+    private SimpleDateFormat formatBefore = new SimpleDateFormat("yyyyMMddHHmmss");
+    private SimpleDateFormat formatAfter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public MessageAdapter(Context context, List<Message> messageList) {
         this.messageList = messageList;
@@ -62,7 +67,14 @@ public class MessageAdapter extends BaseAdapter {
         final Message message = messageList.get(position);
 
         holder.messageContent.setText(message.getTitle());
-        holder.messageTime.setText(message.getPushtime());
+        String pushTime = message.getPushtime();
+        try {
+            pushTime = formatAfter.format(formatBefore.parse(pushTime));
+        } catch (ParseException e) {
+            pushTime = message.getPushtime();
+            Log.e(this.getClass().getName(), e.getMessage());
+        }
+        holder.messageTime.setText(pushTime);
 
         if (!"0".equals(message.getStatus())) {
             holder.messageContent.setTextColor(mContext.getResources().getColor(R.color.message_read));
@@ -75,15 +87,15 @@ public class MessageAdapter extends BaseAdapter {
         holder.messageLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finalHolder.messageContent.setTextColor(mContext.getResources().getColor(R.color.message_read));
-                finalHolder.messageTime.setTextColor(mContext.getResources().getColor(R.color.message_read));
 
                 Intent intent = new Intent(mContext, MessageDetailActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putSerializable(SER_KEY, message);
                 intent.putExtras(bundle);
-
                 mContext.startActivity(intent);
+
+                finalHolder.messageContent.setTextColor(mContext.getResources().getColor(R.color.message_read));
+                finalHolder.messageTime.setTextColor(mContext.getResources().getColor(R.color.message_read));
             }
         });
 
