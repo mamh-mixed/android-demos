@@ -3,6 +3,7 @@ package com.cardinfolink.yunshouyin.activity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -37,7 +38,7 @@ public class UnReadMessageActivity extends BaseActivity {
     protected static final String PULL_UP = "pull_up";
     protected static final String PULL_DOWN = "pull_down";
 
-    protected static final String PAGE_SIZE = "10";
+    protected static final String PAGE_SIZE = "100";
 
     protected static final String UNREAD_OR_UNDELETED = "0";
     protected static final String READ_OR_UNDELETED = "1";
@@ -175,15 +176,15 @@ public class UnReadMessageActivity extends BaseActivity {
         String password = SessonData.loginUser.getPassword();
         if (type == null || PULL_DOWN.equals(type)) { //查询最新消息
             //获取系统当前时间
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
             String currentTime = format.format(new Date());
             final String lastTime = mMessageDB.getLastTime(username);
             //从服务器端查询最新的消息
-            quickPayService.pullinfoAsync(username, password, "0", lastTime, currentTime, new QuickPayCallbackListener<ServerPacket>() {
+            quickPayService.pullinfoAsync(username, password, "100", lastTime, currentTime, new QuickPayCallbackListener<ServerPacket>() {
                 @Override
                 public void onSuccess(ServerPacket data) {
                     List<Message> messageList = new ArrayList<>();
-                    if (data.getCount() > 0) {
+                    if (data.getSize() > 0) {
                         Message[] messages = data.getMessage();
                         if (messages != null && messages.length > 0) {
                             for (Message message : messages) {
@@ -193,8 +194,8 @@ public class UnReadMessageActivity extends BaseActivity {
                         //数据写入到本地
                         mMessageDB.add(messageList);
                     }
-                    if (data.getCount() == 0 && type == null) { //服务器没有获取数据，重本地读取
-                        messageList = getLocalMessages(lastTime, null);
+                    if (data.getSize() == 0 && type == null && !TextUtils.isEmpty(lastTime)) { //服务器没有获取数据，重本地读取
+                        messageList = getLocalMessages(lastTime, UNREAD_OR_UNDELETED, "unread_msg_pull_down_or_open");
                     }
                     //更新界面内容
                     setMessageToView(messageList, type);
@@ -209,7 +210,7 @@ public class UnReadMessageActivity extends BaseActivity {
                 @Override
                 protected List<Message> doInBackground(Void... params) {
                     try {
-                        return getLocalMessages(lastTime, UNREAD_OR_UNDELETED);
+                        return getLocalMessages(lastTime, UNREAD_OR_UNDELETED, null);
                     } catch (QuickPayException ex) {
                         ex.printStackTrace();
                         return null;
@@ -224,11 +225,12 @@ public class UnReadMessageActivity extends BaseActivity {
         }
     }
 
-    protected List<Message> getLocalMessages(String pushTime, String status) {
+    protected List<Message> getLocalMessages(String pushTime, String status, String type) {
         Message message = new Message();
         message.setUsername(SessonData.loginUser.getUsername());
         message.setPushtime(pushTime);
         message.setStatus(status);
+        message.setType(type);
         return mMessageDB.getLocalMessages(message, PAGE_SIZE);
     }
 }
