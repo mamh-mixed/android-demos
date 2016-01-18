@@ -34,7 +34,7 @@ function wpay() {
 		submit = true;
 		let orderAmount = parseFloat(money);
 		orderAmount = orderAmount.toFixed(2);
-		var currency = 'CNY';
+		var currency = 'TWD';
 		var now = new Date();
 		var orderNum = now.Format('YYMMddHHmmss');
 		var veriCode = ''
@@ -69,12 +69,12 @@ function wpay() {
  */
 function check(v) {
 	if (v.length === 0) {
-		window.alert('金额不能为空');
+		window.alert('金額不能為空');
 		return false;
 	}
 	var a = /^[0-9]*(\.[0-9]{1,2})?$/;
 	if (!a.test(v)) {
-		window.alert('金额不正确');
+		window.alert('金額不正確');
 		return false;
 	}
 	return true;
@@ -104,8 +104,8 @@ function init() {
 				inscd = data.inscd;
 				let titleOne = data['title_one'];
 				let titleTwo = data['title_two'];
-				$('#titleOne').text('欢迎光临' + titleOne);
-				$('#titleTwo').text('本店名称-' + titleTwo);
+				$('#titleOne').text('歡迎光臨' + titleOne);
+				$('#titleTwo').text('本店名稱-' + titleTwo);
 				document.title = titleOne;
 				window.localStorage.setItem('title_one', titleOne);
 				if (data.succBtnTxt && data.succBtnTxt !== '') {
