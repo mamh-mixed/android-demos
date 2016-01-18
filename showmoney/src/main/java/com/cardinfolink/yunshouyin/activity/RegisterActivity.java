@@ -1,8 +1,6 @@
 package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -112,9 +110,28 @@ public class RegisterActivity extends BaseActivity {
 
                 mLoadingDialog.endLoading();
 
+                activate();
+            }
+
+            @Override
+            public void onFailure(QuickPayException ex) {
+                String errorMsg = ex.getErrorMsg();
+                mLoadingDialog.endLoading();
+                mYellowTips.show(errorMsg);
+            }
+        });
+    }
+
+    private void activate() {
+        String username = SessonData.loginUser.getUsername();
+        String password = SessonData.loginUser.getPassword();
+        quickPayService.activateAsync(username, password, new QuickPayCallbackListener<Void>() {
+            @Override
+            public void onSuccess(Void data) {
                 //走到这里是注册成功了 ，就是注册的第一步成功了，之后会进入完善信息的页面。
                 //如果注册成功 点击 了 已激活 按钮 就跳转到 注册的第二个页面。
                 View activateView = findViewById(R.id.activate_dialog);
+                String username = SessonData.loginUser.getUsername();
                 ActivateDialog activateDialog = new ActivateDialog(mContext, activateView, username);
                 activateDialog.setBodyText(getResources().getString(R.string.activate_message) + username);
                 activateDialog.setCancelText(getResources().getString(R.string.activate_after));
@@ -136,9 +153,6 @@ public class RegisterActivity extends BaseActivity {
             @Override
             public void onFailure(QuickPayException ex) {
                 String errorMsg = ex.getErrorMsg();
-                //更新UI
-                mLoadingDialog.endLoading();
-                // Bitmap alertBitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.wrong);
                 mYellowTips.show(errorMsg);
             }
         });
