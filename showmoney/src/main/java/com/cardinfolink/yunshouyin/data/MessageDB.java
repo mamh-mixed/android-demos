@@ -91,8 +91,8 @@ public class MessageDB {
             cursor = database.rawQuery("select * from message where username=? and pushtime<? order by pushtime desc limit ?",
                     new String[]{message.getUsername(), message.getPushtime(), size});
         } else if ("unread_msg_pull_down_or_open".equals(message.getType())) { //从服务器没有查询到消息，从本地查询未读消息
-            cursor = database.rawQuery("select * from message where username=? and pushtime<=? order by pushtime desc limit ?",
-                    new String[]{message.getUsername(), message.getPushtime(), size});
+            cursor = database.rawQuery("select * from message where username=? and pushtime<=? and status=? order by pushtime desc limit ?",
+                    new String[]{message.getUsername(), message.getPushtime(), message.getStatus(), size});
         } else { //下拉刷新查询未读消息
             cursor = database.rawQuery("select * from message where username=? and pushtime<? and status=? order by pushtime desc limit ?",
                     new String[]{message.getUsername(), message.getPushtime(), message.getStatus(), size});
