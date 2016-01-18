@@ -12,7 +12,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
 public class AgreementActivity extends Activity {
-    private static final java.lang.String AGREEMENT_URL = "http://dev.quick.ipay.so/index/#/app/agreement";
+    private static final java.lang.String AGREEMENT_URL = "http://test.quick.ipay.so/index/#/app/agreement";
     private WebView mWebView;
     private SettingActionBarItem mActionBar;
 
