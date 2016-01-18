@@ -61,7 +61,7 @@ func processTransSettle() {
 
 	// app用户每天发邮件
 	appEmail, _ := util.TimeToGiven("23:00:00")
-	afterFunc(appEmail*time.Second, "doAppToolsSendEmail")
+	afterFunc(appEmail*time.Second, "doAppTimingTask")
 
 	// 主线程阻塞
 	select {}
@@ -128,8 +128,8 @@ func do(method string) {
 		doCFCATransCheck()
 	case "doCILTransCheck":
 		doCilTransCheck()
-	case "doAppToolsSendEmail":
-		app.NotifySalesman()
+	case "doAppTimingTask":
+		app.AppTimingTaskProcess()
 	case "doScanpaySettReport":
 		err = SpSettReport(yesterday)
 	case "doSpTransSett":

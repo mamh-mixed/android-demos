@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/tealeg/xlsx"
 	"io"
 	"math/rand"
 	"regexp"
@@ -1268,6 +1269,13 @@ func (u *user) improveCertInfo(req *reqParams) (result model.AppResult) {
 
 	req.m = m
 
+	log.Debugf("promote record=%d", len(user.PromoteLimitRecord))
+	// 记录申请限额
+	user.PromoteLimitRecord = append(user.PromoteLimitRecord, time.Now().Format("2006-01-02 15:04:05"))
+	if err = mongo.AppUserCol.Update(user); err != nil {
+		return model.SYSTEM_ERROR
+	}
+
 	return model.SUCCESS1
 }
 
@@ -1607,6 +1615,9 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 	case 2:
 		// 部分退
 		q.RefundStatus = []int{model.TransPartRefunded}
+	case 3:
+		// 交易成功、部分退
+		q.TransStatus = []string{model.TransSuccess}
 	case 4:
 		// 全额退
 		q.RefundStatus = []int{model.TransRefunded}
@@ -1665,4 +1676,213 @@ func transToCoupon(t *model.Trans) *model.Coupon {
 	}
 	coupon.Type = couponType
 	return coupon
+}
+
+var (
+	invitationBody  = "您好，请查收邀请码注册商户汇总。点击下载商户资料。且请查收附件。"
+	invitationTitle = "当日邀请码注册商户汇总"
+)
+
+// InvitationSummary 邀请码汇总
+func InvitationSummary(day string) {
+	all, err := mongo.AppUserCol.Find(&model.AppUserContiditon{
+		RegisterFrom: model.SelfRegister,
+		StartTime:    day + " 00:00:00",
+		EndTime:      day + " 23:59:59",
+	})
+	if err != nil {
+		log.Errorf("find appUser error:%s", err)
+		return
+	}
+
+	if len(all) == 0 {
+		return
+	}
+
+	// 业务人员
+	c := make(map[string][]*model.AppUser)
+	for _, u := range all {
+		// 没有邀请码的跳过
+		if u.InvitationCode != "" {
+			if users, ok := c[u.InvitationCode]; ok {
+				users = append(users, u)
+				c[u.InvitationCode] = users
+			} else {
+				c[u.InvitationCode] = []*model.AppUser{u}
+			}
+		}
+	}
+
+	for k, au := range c {
+		log.Debugf("k=%s, alength=%d", k, len(au))
+	}
+
+	agents := make(map[string]*emailData)
+
+	// 向公司人员发邮箱
+	for k, v := range c {
+		user, err := mongo.UserColl.FindOne(k)
+		if err != nil {
+			log.Errorf("fail to find login user(%s): %s", k, err)
+			continue
+		}
+
+		var (
+			eds []excelData
+			fds []fileData
+		)
+		for _, u := range v {
+			if u.MerId == "" {
+				continue
+			}
+			m, err := mongo.MerchantColl.Find(u.MerId)
+			if err != nil {
+				log.Errorf("fail to find merchant(%s): %s", u.MerId, err)
+				continue
+			}
+			var images []string
+			if m.Detail.LegalCertPos != "" {
+				images = append(images, m.Detail.LegalCertPos)
+			}
+			if m.Detail.LegalCertOpp != "" {
+				images = append(images, m.Detail.LegalCertOpp)
+			}
+			if m.Detail.BusinessLicense != "" {
+				images = append(images, m.Detail.BusinessLicense)
+			}
+			if m.Detail.TaxRegistCert != "" {
+				images = append(images, m.Detail.TaxRegistCert)
+			}
+			if m.Detail.OrganizeCodeCert != "" {
+				images = append(images, m.Detail.OrganizeCodeCert)
+			}
+
+			eds = append(eds, excelData{m: m, u: u, operator: user.NickName})
+			fds = append(fds, downloadImage(images, m.MerId)...)
+		}
+
+		log.Debugf("k=%s,eds=%d,fds=%d,email=%s", k, len(eds), len(fds), user.Mail)
+		sendEmail(&emailData{es: eds, fs: fds, to: user.Mail, cc: "", day: day, key: k, body: invitationBody, title: invitationTitle, excelTemplate: toolsExcel})
+
+		if user.RelatedEmail != "" {
+			// 将数据整合到同个代理邮箱
+			if ad, ok := agents[user.RelatedEmail]; ok {
+				ad.es = append(ad.es, eds...)
+				ad.fs = append(ad.fs, fds...)
+			} else {
+				agents[user.RelatedEmail] = &emailData{
+					es:            eds,
+					fs:            fds,
+					to:            user.RelatedEmail,
+					cc:            andyLi,
+					day:           day,
+					key:           user.RelatedEmail,
+					body:          invitationBody,
+					title:         invitationTitle,
+					excelTemplate: toolsExcel,
+				}
+			}
+		}
+	}
+
+	// 代理
+	for k, a := range agents {
+		log.Debugf("ak=%s,eds=%d,fds=%d", k, len(a.es), len(a.fs))
+		sendEmail(a)
+	}
+}
+
+var (
+	promoteTitle = "烦请风控同事审核自助注册商户可否提额"
+	promoteBody  = "当日自助注册商户汇总，点击下载证照信息。附件为注册信息汇总表。"
+)
+
+// PromoteLimitSummary 限额汇总
+func PromoteLimitSummary(date string) {
+	users, err := mongo.AppUserCol.FindPromoteLimit(date)
+	if err != nil {
+		log.Errorf("find promote limit user error: %s", err)
+		return
+	}
+
+	if len(users) == 0 {
+		return
+	}
+
+	var (
+		eds []excelData
+		fds []fileData
+	)
+	for _, u := range users {
+		if u.MerId == "" {
+			continue
+		}
+		m, err := mongo.MerchantColl.Find(u.MerId)
+		if err != nil {
+			log.Errorf("fail to find merchant(%s): %s", u.MerId, err)
+			continue
+		}
+		var images []string
+		if m.Detail.LegalCertPos != "" {
+			images = append(images, m.Detail.LegalCertPos)
+		}
+		if m.Detail.LegalCertOpp != "" {
+			images = append(images, m.Detail.LegalCertOpp)
+		}
+		if m.Detail.BusinessLicense != "" {
+			images = append(images, m.Detail.BusinessLicense)
+		}
+		if m.Detail.TaxRegistCert != "" {
+			images = append(images, m.Detail.TaxRegistCert)
+		}
+		if m.Detail.OrganizeCodeCert != "" {
+			images = append(images, m.Detail.OrganizeCodeCert)
+		}
+
+		eds = append(eds, excelData{m: m, u: u})
+		fds = append(fds, downloadImage(images, m.MerId)...)
+	}
+
+	log.Debugf("summary: eds=%d,fds=%d", len(eds), len(fds))
+
+	sendEmail(&emailData{es: eds,
+		fs:            fds,
+		to:            riskEmail,
+		cc:            andyLi,
+		day:           date,
+		key:           riskEmail,
+		body:          promoteBody,
+		title:         promoteTitle,
+		excelTemplate: promoteExcel})
+}
+
+func promoteExcel(eds []excelData) *xlsx.File {
+
+	var sheet *xlsx.Sheet
+	var row *xlsx.Row
+
+	excel := xlsx.NewFile()
+	sheet, _ = excel.AddSheet("原始-商户信息表")
+
+	row = sheet.AddRow()
+
+	type rowType struct {
+		A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z, AA, AB, AC, AD, AE, AF, AG, AH, AI, AJ, AK, AL, AM, AN, AO, AP, AQ, AR, AS, AT, AU, AV string
+	}
+
+	row.WriteStruct(&rowType{"商家营业简称", "公司名称", "注册地址", "营业执照注册号", "经营范围", "营业期限", "注册资本", "预计年收入", "员工人数", "营业场所面积", "证件持有人类型", "证件持有人姓名", "证件类型", "证件号码", "证件有效期限", "组织机构代码", "有效期",
+		"商家简称", "售卖商品具体描述", "客服电话", "账户类型", "开户行代码", "开户银行城市", "开户名称", "开户支行", "银行账号", "主要联系人姓名", "主要联系人手机号码", "主要联系人邮箱", "联系地址", "公司传真", "营业执照影印件（资质）", "运营者证件",
+		"组织机构代码证（扫描件)", "门店照片", "个户工商户营业执照扫描件", "《餐饮服务许可证》/《食品卫生许可证》", "关注公众服务号(APPID)", "支付宝账户", "申请业务范围", "商家设备数量（台）", "商户号", "商户密钥", "app注册邮箱", "app密码md5值", "收款码链接", "业务员", "可否提额"}, -1)
+
+	// 填充数据
+	for _, ed := range eds {
+		row = sheet.AddRow()
+		row.WriteStruct(&rowType{
+			ed.m.Detail.MerName, "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+			ed.m.Detail.MerName, "", "", "个体", ed.m.Detail.BankId, ed.m.Detail.BankName, ed.m.Detail.AcctName, ed.m.Detail.OpenBankName, ed.m.Detail.AcctNum, ed.m.Detail.Contact, ed.m.Detail.ContactTel, ed.u.UserName, "", "", "附件形式提供", "",
+			"附件形式提供", "附件形式提供", "附件形式提供", "附件形式提供", "", "", "", "", ed.m.MerId, ed.m.SignKey, ed.u.UserName, ed.u.Password, ed.m.Detail.PayUrl, ed.operator, "",
+		}, -1)
+	}
+
+	return excel
 }
