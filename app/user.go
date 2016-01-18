@@ -5,13 +5,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/tealeg/xlsx"
 	"io"
 	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/tealeg/xlsx"
 
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/email"
@@ -88,6 +89,7 @@ func (u *user) register(req *reqParams) (result model.AppResult) {
 		SubAgentCode:   req.SubAgentCode,
 		BelongsTo:      req.BelongsTo,
 		InvitationCode: req.InvitationCode,
+		LimitAmt:       fmt.Sprintf("%d", model.LimitAmt),
 	}
 	user.UpdateTime = user.CreateTime
 
@@ -276,6 +278,12 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 		user.MerName = merchant.Detail.MerName
 		user.DeviceType = userInfo.DeviceType //由于更新数据库有延迟，所以查出来的是旧数据，重新赋值返回
 		user.DeviceToken = userInfo.DeviceToken
+		if merchant.EnhanceType != model.Enhanced {
+			user.Limit = "true"
+			user.LimitAmt = fmt.Sprintf("%d", merchant.LimitAmt)
+		} else {
+			user.Limit = "false"
+		}
 	}
 
 	result = model.AppResult{
@@ -500,6 +508,8 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 			AcctNum:       req.PayeeCard,
 			ContactTel:    req.PhoneNum,
 		},
+		EnhanceType: model.NoEnhance,
+		LimitAmt:    model.LimitAmt,
 	}
 
 	// 生成商户号，并保存商户
