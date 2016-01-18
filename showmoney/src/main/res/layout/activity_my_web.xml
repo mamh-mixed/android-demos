@@ -5,95 +5,100 @@
     android:layout_height="match_parent"
     android:background="@color/background_layout">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
-            android:id="@+id/action_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cardinfolink:left_text="@string/setting_return"
-            cardinfolink:title="@string/setting_my_web_yunshouyin" />
-
+        android:layout_height="match_parent">
 
         <LinearLayout
-
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            android:weightSum="100">
-
-
-            <RelativeLayout
-                android:id="@+id/merchant_info"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="90"
-                android:background="@drawable/my_web_qrcode_bg"
-                android:orientation="vertical">
-
-
-
-                <TextView
-                    android:id="@+id/merchant_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:text="@string/my_web_activity_merchant_name"
-                    android:textSize="16sp" />
-
-                <ImageView
-                    android:id="@+id/iv_qrcode"
-                    android:layout_width="match_parent"
-                    android:layout_height="300dp"
-                    android:layout_below="@+id/merchant_name"
-                    android:layout_centerInParent="true"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="10dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/iv_qrcode"
-                    android:layout_centerHorizontal="true"
-                    android:text="@string/my_web_activity_message"
-                    android:textSize="14sp" />
-
-            </RelativeLayout>
-        </LinearLayout>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <Button
-                android:id="@+id/btnsave"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_centerInParent="true"
-                android:layout_marginBottom="10dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/blue_selector"
-                android:text="@string/my_web_activity_save"
-                android:textColor="@color/button_textcolor" />
-
-            <TextView
+            <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+                android:id="@+id/action_bar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/btnsave"
-                android:layout_centerHorizontal="true"
-                android:text="@string/my_web_activity_message1"
-                android:textSize="12sp" />
-        </RelativeLayout>
+                cardinfolink:left_text="@string/setting_return"
+                cardinfolink:title="@string/setting_my_web_yunshouyin" />
 
 
-    </LinearLayout>
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+
+                android:weightSum="100">
+
+
+                <RelativeLayout
+                    android:id="@+id/merchant_info"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="90"
+                    android:background="@drawable/my_web_qrcode_bg"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:id="@+id/merchant_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/my_web_activity_merchant_name"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:id="@+id/iv_qrcode"
+                        android:layout_width="match_parent"
+                        android:layout_height="300dp"
+                        android:layout_below="@+id/merchant_name"
+                        android:layout_centerInParent="true"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginTop="10dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/iv_qrcode"
+                        android:layout_centerHorizontal="true"
+                        android:text="@string/my_web_activity_message"
+                        android:textSize="14sp" />
+
+                </RelativeLayout>
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/btnsave"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/blue_selector"
+                    android:text="@string/my_web_activity_save"
+                    android:textColor="@color/button_textcolor" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/btnsave"
+                    android:layout_centerHorizontal="true"
+                    android:text="@string/my_web_activity_message1"
+                    android:textSize="12sp" />
+            </RelativeLayout>
+
+
+        </LinearLayout>
+    </ScrollView>
 
     <include layout="@layout/showmoney_dialog" />
+
 </RelativeLayout>
