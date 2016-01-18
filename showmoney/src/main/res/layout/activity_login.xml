@@ -154,7 +154,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:button="@drawable/checkbox_selector"
-                android:paddingLeft="5dp"
+                android:paddingLeft="18dp"
                 android:text="@string/login_auto_login"
                 android:textColor="@color/textview_textcolor_login"
                 android:textSize="16sp" />
