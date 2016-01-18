@@ -733,11 +733,9 @@ public class QuickPayApiImpl implements QuickPayApi {
         password = EncoderUtil.Encrypt(password, SIGN_TYPE_MD5);
         params.put("password", password);
         if (!TextUtils.isEmpty(lasttime)) {
-            params.put("lasttime", lasttime);
+            params.put("lastTime", lasttime);
         }
-        if (!TextUtils.isEmpty(maxtime)) {
-            params.put("maxtime", maxtime);
-        }
+
         params.put("size", size);
         params.put("transtime", getTransTime());
         params.put("sign", createSign(params));
