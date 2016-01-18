@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.cardinfolink.cashiersdk.model.InitData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
+import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
@@ -164,7 +165,8 @@ public class LoginActivity extends BaseActivity {
                 SessonData.loginUser.setPassword(password);
                 SessonData.loginUser.setClientid(data.getClientid());
                 SessonData.loginUser.setObjectId(data.getObjectId());
-                SessonData.loginUser.setLimit(data.getLimit());
+                SessonData.loginUser.setLimit(data.getLimit());//限额使用的 true or false
+                SessonData.loginUser.setLimitAmt(TxamtUtil.getNormal(data.getLimitAmt()));//限额使用的 数值
                 SessonData.loginUser.setPayUrl(data.getPayUrl());
                 SessonData.loginUser.setMerName(data.getMerName());
 

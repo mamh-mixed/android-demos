@@ -117,9 +117,13 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
 
     private void checkLimit() {
         User user = SessonData.loginUser;
-        if (user.getLimit().equals("true")) {//这里等于true表示这个用户有限额。
+        if ("true".equals(user.getLimit())) {//这里等于true表示这个用户有限额。
             String limitMsg = getResources().getString(R.string.setting_limit_message);
-            limitMsg = String.format(limitMsg, "500");//当天限额 默认是500元
+            if (TextUtils.isEmpty(SessonData.loginUser.getLimitAmt())) {
+                limitMsg = String.format(limitMsg, "500");
+            } else {
+                limitMsg = String.format(limitMsg, SessonData.loginUser.getLimitAmt());
+            }
             mLimit.setText(limitMsg);//这里设置限额多少的提示文本
             mIncreaseLimit.setVisibility(VISIBLE);//把提升限额的按钮显示出来
         } else {
