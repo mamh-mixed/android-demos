@@ -14,6 +14,7 @@ public class Message implements Serializable {
     private String pushtime;
     private String updateTime;
     private String status;
+    private String type;
 
     public Message() {
     }
@@ -86,5 +87,13 @@ public class Message implements Serializable {
 
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
