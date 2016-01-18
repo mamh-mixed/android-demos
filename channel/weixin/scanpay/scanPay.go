@@ -265,7 +265,6 @@ func (sp *WeixinScanPay) ProcessCancel(m *model.ScanPayRequest) (ret *model.Scan
 
 		TransactionId: "",             // 微信订单号
 		OutTradeNo:    m.OrigOrderNum, // 商户订单号
-		FeeType:       m.M.TransCurr,  // 货币种类
 	}
 
 	p := &ReverseResp{}

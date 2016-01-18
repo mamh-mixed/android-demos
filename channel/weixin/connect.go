@@ -43,6 +43,10 @@ func Execute(req BaseReq, resp BaseResp) error {
 		return fmt.Errorf("%s", "no params spReq found")
 	}
 
+	if req.GetSignType() == "" {
+		req.SetSignType(DefaultWechatSignType)
+	}
+
 	// 记录请求渠道日志
 	logs.SpLogs <- m.GetChanReqLogs(req)
 
@@ -83,18 +87,20 @@ func prepareData(d BaseReq) (xmlBytes []byte, err error) {
 
 	// 根据signType不同执行不同的签名
 	var sign string
-	switch d.GetSignType() {
-	case "HMAC-SHA256":
+	signType := strings.ToUpper(d.GetSignType())
+	switch signType {
+	case "MD5":
+		signByte := md5.Sum(buf.Bytes())
+		sign = hex.EncodeToString(signByte[:])
+		log.Debugf("MD5 sign info is %s", sign)
+	default:
 		// HMAC-SHA256 签名
+		// d.SetSignType("HMAC-SHA256")
 		mac := hmac.New(sha256.New, []byte(d.GetSignKey()))
 		mac.Write(buf.Bytes())
 		signByte := mac.Sum(nil)
 		sign = hex.EncodeToString(signByte[:])
 		log.Debugf("HMAC-SHA256 sign info is %s", sign)
-	default:
-		signByte := md5.Sum(buf.Bytes())
-		sign = hex.EncodeToString(signByte[:])
-		log.Debugf("MD5 sign info is %s", sign)
 	}
 	d.SetSign(strings.ToUpper(sign))
 

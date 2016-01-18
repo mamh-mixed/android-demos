@@ -21,7 +21,6 @@ type ReverseReq struct {
 
 	TransactionId string `xml:"transaction_id,omitempty" url:"transaction_id,omitempty"` // 微信订单号
 	OutTradeNo    string `xml:"out_trade_no" url:"out_trade_no" validate:"nonzero"`      // 商户订单号
-	FeeType       string `xml:"fee_type,omitempty" url:"fee_type,omitempty"`             // 标价币种
 }
 
 // GetURI 取接口地址
