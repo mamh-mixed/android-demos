@@ -12,12 +12,16 @@ import (
 // NotifyURL 微信异步通知
 const NotifyURL = "/scanpay/upNotify/weixin"
 
+// 默认签名算法
+const DefaultWechatSignType = "HMAC-SHA256"
+
 // BaseReq 只是为了注入签名方便
 type BaseReq interface {
-	SetSign(sign string) // 设置签名 setter
-	GetSignKey() string  // 取商户（可能是大商户）签名密钥
-	GetSignType() string // 取签名方式
-	GetURI() string      // GetURI 取接口地址
+	SetSign(sign string)   // 设置签名 setter
+	GetSignKey() string    // 取商户（可能是大商户）签名密钥
+	GetSignType() string   // 取签名方式
+	SetSignType(tp string) // 设置签名方式
+	GetURI() string        // GetURI 取接口地址
 	GetHTTPClient() *http.Client
 	GetSpReq() *model.ScanPayRequest
 }
@@ -50,6 +54,11 @@ func (c *CommonParams) SetSign(sign string) {
 // GetSignKey signKey getter
 func (c *CommonParams) GetSignKey() string {
 	return c.WeixinMD5Key
+}
+
+// SetSignType signType setter
+func (c *CommonParams) SetSignType(tp string) {
+	c.SignType = tp
 }
 
 // GetSignType signType getter
