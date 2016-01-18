@@ -13,6 +13,7 @@ import android.os.Message;
 import android.os.Vibrator;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
@@ -127,8 +128,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                     if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
                         showPayFailPref();
                     } else {
-                        Coupon.getInstance().clear();//清空卡券信息
-                        finish();
+                        cleanAfterPay();
                     }
                 } else {
                     Coupon.getInstance().clear();//清空卡券信息
@@ -181,6 +181,11 @@ public class CaptureActivity extends BaseActivity implements Callback {
         inactivityTimer = new InactivityTimer(this);
     }
 
+    public void cleanAfterPay() {
+        Coupon.getInstance().clear();//清空卡券信息
+        ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
+        finish();
+    }
 
     private void openCamera() {
         SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
@@ -860,6 +865,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
                     }
                 });
+                ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
                 mHintDialog.hide();
             }
         });
@@ -874,5 +880,25 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
         });
         mHintDialog.show();
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (keyCode == KeyEvent.KEYCODE_BACK) {
+                if (Coupon.getInstance().getVoucherType() != null) {
+                    if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
+                        showPayFailPref();
+                    } else {
+                        cleanAfterPay();
+                    }
+                } else {
+                    Coupon.getInstance().clear();//清空卡券信息
+                    finish();
+                }
+            }
+        }
+
+        return false;
     }
 }
