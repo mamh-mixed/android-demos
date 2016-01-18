@@ -33,6 +33,7 @@ const (
 	IOS     = "ios"
 	Android = "android"
 	Pc      = "pc"
+	OpenAPI = "openapi"
 )
 
 // QueryCondition 扫码交易查询字段
