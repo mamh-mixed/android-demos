@@ -1832,7 +1832,7 @@ func InvitationSummary(day string) {
 	// 代理
 	for k, a := range agents {
 		log.Debugf("ak=%s,eds=%d,fds=%d", k, len(a.es), len(a.fs))
-		if a.es > 0 {
+		if len(a.es) > 0 {
 			sendEmail(a)
 		}
 	}
