@@ -6,115 +6,121 @@
     android:background="@color/background_layout">
 
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
-            android:id="@+id/action_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cardinfolink:left_text="@string/setting_return" />
-
-        <TextView
-            android:id="@+id/increase_message"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="30dp"
-            android:layout_marginTop="10dp"
-            android:text="@string/limit_increase_message"
-            android:textSize="25sp" />
-
-
-        <com.cardinfolink.yunshouyin.ui.SettingInputItem
-            android:id="@+id/merchant_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cardinfolink:hint="@string/limit_increase_shop_name_hint"
-            cardinfolink:title="@string/limit_increase_shop_name" />
-
-        <com.cardinfolink.yunshouyin.ui.SettingInputItem
-            android:id="@+id/merchant_address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cardinfolink:hint="@string/limit_increase_shop_address_hint"
-            cardinfolink:title="@string/limit_increase_shop_address" />
-
-        <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
-            android:id="@+id/id_card_positive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/login_increase"
-            cardinfolink:right_text="@string/limit_increase_update_licence"
-            cardinfolink:title="@string/limit_increase_card_positive" />
-
-        <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
-            android:id="@+id/id_card_negaitive"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/login_increase"
-            cardinfolink:right_text="@string/limit_increase_update_licence"
-            cardinfolink:title="@string/limit_increase_card_negaitive" />
-
-        <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
-            android:id="@+id/business"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/login_increase"
-            cardinfolink:right_text="@string/limit_increase_update_licence"
-            cardinfolink:title="@string/limit_increase_business_licence" />
-
-        <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
-            android:id="@+id/tax"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/login_increase"
-            cardinfolink:right_text="@string/limit_increase_update_licence"
-            cardinfolink:title="@string/limit_increase_tax" />
-
-        <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
-            android:id="@+id/organization"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/login_increase"
-            cardinfolink:right_text="@string/limit_increase_update_licence"
-            cardinfolink:title="@string/limit_increase_organization" />
-
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
+            <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+                android:id="@+id/action_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                cardinfolink:left_text="@string/setting_return" />
 
-            <Button
-                android:id="@+id/btnfinish"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_centerInParent="true"
+            <TextView
+                android:id="@+id/increase_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/blue_selector"
-                android:text="@string/limit_increase_finish"
-                android:textColor="@color/button_textcolor"
-                android:textSize="16sp" />
+                android:text="@string/limit_increase_message"
+                android:textSize="25sp" />
 
-            <TextView
-                android:id="@+id/tv_message"
-                android:layout_width="match_parent"
+
+            <com.cardinfolink.yunshouyin.ui.SettingInputItem
+                android:id="@+id/merchant_name"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/btnfinish"
-                android:layout_marginTop="10dp"
-                android:gravity="center"
-                android:text="@string/limit_increase_directions"
-                android:textSize="13sp" />
-        </RelativeLayout>
+                cardinfolink:hint="@string/limit_increase_shop_name_hint"
+                cardinfolink:title="@string/limit_increase_shop_name" />
 
-    </LinearLayout>
+            <com.cardinfolink.yunshouyin.ui.SettingInputItem
+                android:id="@+id/merchant_address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                cardinfolink:hint="@string/limit_increase_shop_address_hint"
+                cardinfolink:title="@string/limit_increase_shop_address" />
+
+            <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
+                android:id="@+id/id_card_positive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/login_increase"
+                cardinfolink:right_text="@string/limit_increase_update_licence"
+                cardinfolink:title="@string/limit_increase_card_positive" />
+
+            <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
+                android:id="@+id/id_card_negaitive"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/login_increase"
+                cardinfolink:right_text="@string/limit_increase_update_licence"
+                cardinfolink:title="@string/limit_increase_card_negaitive" />
+
+            <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
+                android:id="@+id/business"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/login_increase"
+                cardinfolink:right_text="@string/limit_increase_update_licence"
+                cardinfolink:title="@string/limit_increase_business_licence" />
+
+            <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
+                android:id="@+id/tax"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/login_increase"
+                cardinfolink:right_text="@string/limit_increase_update_licence"
+                cardinfolink:title="@string/limit_increase_tax" />
+
+            <com.cardinfolink.yunshouyin.ui.LimitIncreaseItem
+                android:id="@+id/organization"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/login_increase"
+                cardinfolink:right_text="@string/limit_increase_update_licence"
+                cardinfolink:title="@string/limit_increase_organization" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+
+                <Button
+                    android:id="@+id/btnfinish"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/blue_selector"
+                    android:text="@string/limit_increase_finish"
+                    android:textColor="@color/button_textcolor"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tv_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/btnfinish"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/limit_increase_directions"
+                    android:textSize="13sp" />
+            </RelativeLayout>
+
+        </LinearLayout>
+    </ScrollView>
 
     <include layout="@layout/showmoney_dialog" />
 
     <include layout="@layout/select_picture_dialog" />
+
     <include layout="@layout/yellow_tips_layout" />
 </RelativeLayout>
