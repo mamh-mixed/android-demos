@@ -51,7 +51,7 @@ describe('service resetPassword', () => {
 			expect(passwordResetService.sendRequest).not.toEqual(null);
 		}));
 
-		it('should success when send request', inject((passwordResetService, toastr, $httpBackend) => {
+		it('should success when send request', inject((passwordResetService, $state, $httpBackend) => {
 			let response = {
 				status: 0,
 				message: 'SUCCESS'
@@ -59,9 +59,7 @@ describe('service resetPassword', () => {
 			$httpBackend.when('POST', passwordResetService.apiHost).respond(200, response);
 
 			let params = {
-				username: 'fnghwsj@qq.com',
 				password: 'Yun#1016',
-				passwordRepeat: 'Yun#1016',
 				checkCode: 'f3fbe685172f46a768e9aab29cba6134'
 			};
 			let data;
@@ -74,7 +72,7 @@ describe('service resetPassword', () => {
 			expect(data).toEqual(jasmine.any(Object));
 			expect(data.status).toEqual(0);
 			expect(data.message).toEqual('SUCCESS');
-			expect(toastr.success).toHaveBeenCalled();
+			expect($state.go).toHaveBeenCalled();
 		}));
 
 		it('should error when send request', inject((passwordResetService, toastr, $httpBackend) => {
@@ -85,9 +83,7 @@ describe('service resetPassword', () => {
 			$httpBackend.when('POST', passwordResetService.apiHost).respond(200, response);
 
 			let params = {
-				username: 'fnghwsj@qq.com',
 				password: 'Yun#1016',
-				passwordRepeat: 'Yun#1016',
 				checkCode: 'f3fbe685172f46a768e9aab29cba6134'
 			};
 			let data;
@@ -124,17 +120,9 @@ describe('service resetPassword', () => {
 
 		it('should return false when required params is missing', inject((passwordResetService, $log, toastr) => {
 			let [params, result] = [{
-				username: '',
-				password: '',
-				passwordRepeat: ''
+				password: ''
 			}, false];
 
-			result = passwordResetService.validate(params);
-			expect(result).toEqual(false);
-			expect($log.error).toHaveBeenCalled();
-			expect(toastr.error).toHaveBeenCalled();
-
-			params.username = '1234';
 			result = passwordResetService.validate(params);
 			expect(result).toEqual(false);
 			expect($log.error).toHaveBeenCalled();
@@ -150,26 +138,13 @@ describe('service resetPassword', () => {
 
 		it('password checing', inject((passwordResetService, $log, toastr) => {
 			let [params, result] = [{
-				username: 'wonsikin',
-				password: '120943629',
-				passwordRepeat: '123'
+				password: '120943629'
 			}, false];
 
 			result = passwordResetService.validate(params);
 			expect(result).toEqual(false);
-			expect($log.error).toHaveBeenCalled();
-			expect(toastr.error).toHaveBeenCalled();
-
-			params.passwordRepeat = '120943629';
-			result = passwordResetService.validate(params);
-			expect(result).toEqual(false);
 			expect($log.warn).toHaveBeenCalled();
 			expect(toastr.warning).toHaveBeenCalled();
-
-			params.password = '$Wsj123456';
-			params.passwordRepeat = '$Wsj123456';
-			result = passwordResetService.validate(params);
-			expect(result).toBeTruthy();
 		}));
 	});
 });

@@ -44,6 +44,9 @@ func Route() (mux *http.ServeMux) {
 	mux.HandleFunc("/app/tools/activate", UserActivate)
 	mux.HandleFunc("/app/tools/download", GetDownloadUrl)
 
+	// 测试定时
+	mux.HandleFunc("/app/test/mail", TestSendMail)
+
 	return mux
 }
 

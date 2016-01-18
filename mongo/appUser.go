@@ -38,12 +38,8 @@ func (col *appUserCollection) Update(user *model.AppUser) (err error) {
 	bo := bson.M{
 		"username": user.UserName,
 	}
-	update := bson.M{
-		"$set": bson.M{"password": user.Password,
-			"updateTime": time.Now().Format("2006-01-02 15:04:05"),
-		},
-	}
-	err = database.C(col.name).Update(bo, update)
+	user.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
+	err = database.C(col.name).Update(bo, user)
 	return err
 }
 
@@ -98,6 +94,19 @@ func (col *appUserCollection) Find(q *model.AppUserContiditon) ([]*model.AppUser
 
 	var users []*model.AppUser
 	err := database.C(col.name).Find(query).All(&users)
+	return users, err
+}
+
+// FindPromoteLimit 查找申请提升限额的用户
+func (col *appUserCollection) FindPromoteLimit(date string) ([]*model.AppUser, error) {
+
+	q := bson.M{
+		"promoteLimitRecord": bson.M{
+			"$elemMatch": bson.M{"$regex": bson.RegEx{date, "."}},
+		},
+	}
+	var users []*model.AppUser
+	err := database.C(col.name).Find(q).All(&users)
 	return users, err
 }
 

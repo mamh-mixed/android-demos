@@ -467,10 +467,24 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		match["chanCode"] = q.ChanCode
 	}
 	if q.CouponsNo != "" {
-		match["couponsNo"] = q.CouponsNo
+		match["couponsNo"] = bson.RegEx{q.CouponsNo, "."}
+	}
+	if q.Prodname != "" {
+		match["prodname"] = bson.RegEx{q.Prodname, "."}
 	}
 	if q.WriteoffStatus != "" {
 		match["writeoffStatus"] = q.WriteoffStatus
+	}
+	if q.VoucherType != "" {
+		match["voucherType"] = q.VoucherType
+	}
+	if q.CouponPayStatus != "" {
+		if q.CouponPayStatus == "100" {
+			match["scanPayCoupon"] = nil
+		} else {
+			match["scanPayCoupon.transStatus"] = q.CouponPayStatus
+		}
+
 	}
 	if q.SettRole != "" {
 		match["settRole"] = q.SettRole
@@ -547,7 +561,9 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 		find["merName"] = bson.RegEx{q.MerName, "."}
 	}
 	find["transType"] = q.TransType
-	find["$or"] = []bson.M{bson.M{"transStatus": bson.M{"$in": q.TransStatus}}, bson.M{"refundStatus": q.RefundStatus}}
+
+	// 处理交易状态
+	handleTransStatus(q, find)
 
 	// 计算total
 	var total = struct {

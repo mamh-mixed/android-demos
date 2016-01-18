@@ -7,6 +7,6 @@ export function config ($logProvider, toastrConfig) {
   toastrConfig.allowHtml = true;
   toastrConfig.timeOut = 3000;
   toastrConfig.positionClass = 'toast-bottom-left';
-  toastrConfig.preventDuplicates = true;
+  toastrConfig.preventDuplicates = false;
   toastrConfig.progressBar = false;
 }

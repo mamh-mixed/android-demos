@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
-	"strconv"
 	"strings"
 	"time"
 
@@ -88,10 +87,6 @@ func dispatch(req *model.ScanPayRequest) (ret *model.ScanPayResponse) {
 		ret = doScanPay(validatePublicPay, core.PublicPay, req)
 	case model.Veri:
 		ret = doScanPay(validatePurchaseCouponsSingle, core.PurchaseCouponsSingle, req)
-	case model.Crve:
-		ret = doScanPay(validatePurchaseActCoupons, core.PurchaseActCoupons, req)
-	case model.Quve:
-		ret = doScanPay(validateQueryPurchaseCoupons, core.QueryPurchaseCouponsResult, req)
 	case model.Cave:
 		ret = doScanPay(validateRecoverCoupons, core.RecoverCoupons, req)
 	case model.List:
@@ -288,22 +283,17 @@ func checkLimitAmt(req *model.ScanPayRequest, merInfo *model.Merchant) *model.Sc
 		if merInfo.EnhanceType == model.Enhanced { //已提升
 			return nil
 		} else {
-			amt, err := strconv.Atoi(req.Txamt)
-			if err != nil {
-				log.Errorf("convert the amt error, error is %s, amt is %s", err, req.Txamt)
-				return nil
-			}
-
 			totalAmt, err := mongo.SpTransColl.FindTotalAmtByMerId(req.Mchntid, time.Now().Format("2006-01-02"))
 			if err != nil { //not found
 				totalAmt = 0
 			}
-			if (int(totalAmt) + amt) > merInfo.LimitAmt { //当天
+			transAmt := totalAmt + req.IntTxamt
+			if int(transAmt) > merInfo.LimitAmt { //当天
 				if merInfo.EnhanceType == model.NoEnhance {
-					log.Infof("the current day total amt %d is more than the limit amt %d, status is NoEnhance", int(totalAmt)+amt, merInfo.LimitAmt)
+					log.Infof("the current day total amt %d is more than the limit amt %d, status is NoEnhance", transAmt, merInfo.LimitAmt)
 					return adaptor.ReturnWithErrorCode("NO_ENHANCE_LIMIT_AMT")
 				} else if merInfo.EnhanceType == model.Checking {
-					log.Infof("the current day total amt %d is more than the limit amt %d, status is Checking", int(totalAmt)+amt, merInfo.LimitAmt)
+					log.Infof("the current day total amt %d is more than the limit amt %d, status is Checking", transAmt, merInfo.LimitAmt)
 					return adaptor.ReturnWithErrorCode("CHECKING_LIMIT_AMT")
 				} else {
 					return nil
