@@ -64,6 +64,13 @@ const (
 	Enhanced  = 0 //提升
 	NoEnhance = 1 //没提升
 	Checking  = 2 //审核中
+
+	// IsGenerateFlow 是否生成流水
+	NoGenerateFlow = 0 //默认不生成
+	GenerateFlow   = 1 //生成
+
+	//默认限额 500元
+	LimitAmt = 50000
 )
 
 // cache name
@@ -265,12 +272,13 @@ type SftpAccount struct {
 }
 
 type Agent struct {
-	AgentCode  string  `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理代码
-	AgentName  string  `bson:"agentName,omitempty" json:"agentName,omitempty"`   // 代理名称
-	WxpCost    float64 `bson:"wxpCost,omitempty" json:"wxpCost,omitempty"`       // 微信成本
-	AlpCost    float64 `bson:"alpCost,omitempty" json:"alpCost,omitempty"`       // 支付宝成本
-	CreateTime string  `bson:"createTime,omitempty" json:"createTime,omitempty"` // 创建时间
-	UpdateTime string  `bson:"updateTime,omitempty" json:"updateTime,omitempty"` // 更新时间
+	AgentCode      string  `bson:"agentCode,omitempty" json:"agentCode,omitempty"`   // 代理代码
+	AgentName      string  `bson:"agentName,omitempty" json:"agentName,omitempty"`   // 代理名称
+	WxpCost        float64 `bson:"wxpCost,omitempty" json:"wxpCost,omitempty"`       // 微信成本
+	AlpCost        float64 `bson:"alpCost,omitempty" json:"alpCost,omitempty"`       // 支付宝成本
+	CreateTime     string  `bson:"createTime,omitempty" json:"createTime,omitempty"` // 创建时间
+	UpdateTime     string  `bson:"updateTime,omitempty" json:"updateTime,omitempty"` // 更新时间
+	IsGenerateFlow int     `bson:"isGenerateFlow" json:"-"`                          // 生成流水
 }
 
 type SubAgent struct {

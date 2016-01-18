@@ -5,13 +5,14 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/tealeg/xlsx"
 	"io"
 	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/tealeg/xlsx"
 
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/email"
@@ -88,6 +89,7 @@ func (u *user) register(req *reqParams) (result model.AppResult) {
 		SubAgentCode:   req.SubAgentCode,
 		BelongsTo:      req.BelongsTo,
 		InvitationCode: req.InvitationCode,
+		LimitAmt:       fmt.Sprintf("%d", model.LimitAmt),
 	}
 	user.UpdateTime = user.CreateTime
 
@@ -276,6 +278,12 @@ func (u *user) login(req *reqParams) (result model.AppResult) {
 		user.MerName = merchant.Detail.MerName
 		user.DeviceType = userInfo.DeviceType //由于更新数据库有延迟，所以查出来的是旧数据，重新赋值返回
 		user.DeviceToken = userInfo.DeviceToken
+		if merchant.EnhanceType != model.Enhanced {
+			user.Limit = "true"
+			user.LimitAmt = fmt.Sprintf("%d", merchant.LimitAmt)
+		} else {
+			user.Limit = "false"
+		}
 	}
 
 	result = model.AppResult{
@@ -500,6 +508,8 @@ func (u *user) improveInfo(req *reqParams) (result model.AppResult) {
 			AcctNum:       req.PayeeCard,
 			ContactTel:    req.PhoneNum,
 		},
+		EnhanceType: model.NoEnhance,
+		LimitAmt:    model.LimitAmt,
 	}
 
 	// 生成商户号，并保存商户
@@ -1578,18 +1588,36 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 	payType, _ := strconv.Atoi(req.PayType)
 	transStatus, _ := strconv.Atoi(req.Status)
 
+	// 1.移动 2.桌面 4.收款码 8.开放接口
 	switch recType {
 	case 1:
 		q.TradeFrom = []string{model.IOS, model.Android}
-	case 2, 8:
-		// 暂时没有
+	case 2:
 		q.TradeFrom = []string{model.Pc}
+	case 3:
+		q.TradeFrom = []string{model.IOS, model.Android, model.Pc}
 	case 4:
 		q.TradeFrom = []string{model.Wap}
-	case 3:
-		q.TradeFrom = []string{model.IOS, model.Android}
 	case 5:
 		q.TradeFrom = []string{model.IOS, model.Android, model.Wap}
+	case 6:
+		q.TradeFrom = []string{model.Pc, model.Wap}
+	case 7:
+		q.TradeFrom = []string{model.IOS, model.Android, model.Wap, model.Pc}
+	case 8:
+		q.TradeFrom = []string{model.OpenAPI} // 暂时没有
+	case 9:
+		q.TradeFrom = []string{model.IOS, model.Android, model.OpenAPI}
+	case 10:
+		q.TradeFrom = []string{model.Pc, model.OpenAPI}
+	case 11:
+		q.TradeFrom = []string{model.Pc, model.IOS, model.Android, model.OpenAPI}
+	case 12:
+		q.TradeFrom = []string{model.Wap, model.OpenAPI}
+	case 13:
+		q.TradeFrom = []string{model.Wap, model.IOS, model.Android, model.OpenAPI}
+	case 14:
+		q.TradeFrom = []string{model.Wap, model.Pc, model.OpenAPI}
 	case 15:
 		// ignore
 	}

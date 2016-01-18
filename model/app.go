@@ -156,6 +156,7 @@ type AppUser struct {
 	LockTime       string `json:"lockTime,omitempty" bson:"lockTime,omitempty"`       //记录锁定时间
 	DeviceType     string `json:"deviceType,omitempty" bson:"deviceType,omitempty"`   //设备类型
 	DeviceToken    string `json:"deviceToken,omitempty" bson:"deviceToken,omitempty"` //app唯一标识
+	LimitAmt       string `json:"limitAmt,omitempty" bson:"limitAmt,omitempty"`       //限额
 
 	PromoteLimitRecord []string `json:"-" bson:"promoteLimitRecord,omitempty"`
 
