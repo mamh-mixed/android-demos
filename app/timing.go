@@ -1,8 +1,12 @@
 package app
 
-import "time"
+import (
+	"github.com/CardInfoLink/quickpay/goconf"
+	"net/http"
+	"time"
+)
 
-var riskEmail = "Risk_management@cardinfolink.com"
+var riskEmail = goconf.Config.App.RiskMail
 
 func AppTimingTaskProcess() {
 
@@ -15,3 +19,12 @@ func AppTimingTaskProcess() {
 
 // ClearQiniuResource TODO 删除七牛7天之前供外部下载的商户zip
 func ClearQiniuResource() {}
+
+func TestSendMail(w http.ResponseWriter, r *http.Request) {
+	if r.FormValue("key") == "cil123$" {
+		AppTimingTaskProcess()
+		w.Write([]byte("success"))
+	} else {
+		w.Write([]byte("wrong key"))
+	}
+}
