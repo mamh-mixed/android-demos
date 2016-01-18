@@ -110,7 +110,7 @@ public class PayResultActivity extends Activity {
 
             mCouponContent.setRightText(Coupon.getInstance().getCardId());//卡券内容
             mActualTotalMoney.setRightText(decimalFormat.format(Double.valueOf(tradeBill.originalTotal)) + getString(R.string.coupon_yuan));//消费金额
-            mActualDiscount.setRightText(decimalFormat.format(new BigDecimal(tradeBill.originalTotal).subtract(new BigDecimal(tradeBill.total)).doubleValue()));//优惠金额
+            mActualDiscount.setRightText(decimalFormat.format(new BigDecimal(tradeBill.originalTotal).subtract(new BigDecimal(tradeBill.total)).doubleValue())+getString(R.string.coupon_yuan));//优惠金额
         } else {
             mCouponContent.setVisibility(View.GONE);
             mActualTotalMoney.setVisibility(View.GONE);
@@ -126,8 +126,7 @@ public class PayResultActivity extends Activity {
             mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Coupon.getInstance().clear();
-                    finish();
+                    CleanAfterPay();
                 }
             });
         } else if ("fail".equals(tradeBill.response)) {
@@ -170,7 +169,7 @@ public class PayResultActivity extends Activity {
                 });
             }
         }
-        mPersonAccount.setRightText(SessonData.loginUser.getMerName());
+        mPersonAccount.setRightText(SessonData.loginUser.getUsername());
         mMakeDealTime.setRightText(tradeBill.tandeDate);
         mBillOrderNum.setRightText(tradeBill.orderNum);
         mReceiveMoney.setText(decimalFormat.format(Double.valueOf(tradeBill.total)) + getString(R.string.coupon_yuan));
@@ -186,9 +185,15 @@ public class PayResultActivity extends Activity {
         mConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Coupon.getInstance().clear();
-                finish();
-            }
+
+                    if (Coupon.getInstance().getVoucherType() != null) {
+                            CleanAfterPay();
+                    } else {
+                        Coupon.getInstance().clear();
+                        finish();
+                    }
+                }
+
         });
     }
 
@@ -255,6 +260,7 @@ public class PayResultActivity extends Activity {
 
                     }
                 });
+                ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
                 mHintDialog.hide();
             }
         });
@@ -271,20 +277,33 @@ public class PayResultActivity extends Activity {
         mHintDialog.show();
     }
 
+    public void CleanAfterPay(){
+        Coupon.getInstance().clear();//清空卡券信息
+        ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
+        finish();
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                if (Coupon.getInstance().getVoucherType() != null) {
-                    if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
-                        showPayFailPref();
+                if ("success".equals(tradeBill.response)) {
+                    if (Coupon.getInstance().getVoucherType() != null) {
+                            CleanAfterPay();
                     } else {
-                        Coupon.getInstance().clear();//清空卡券信息
+                        Coupon.getInstance().clear();
                         finish();
                     }
                 } else {
-                    Coupon.getInstance().clear();//清空卡券信息
-                    finish();
+                    if (Coupon.getInstance().getVoucherType() != null) {
+                        if (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5")) {
+                            showPayFailPref();
+                        } else {
+                            CleanAfterPay();
+                        }
+                    } else {
+                        Coupon.getInstance().clear();
+                        finish();
+                    }
                 }
             }
         }
