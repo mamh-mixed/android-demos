@@ -348,6 +348,8 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
                     String bankName = bankList.get(i).getBankName();
                     if (bankName.contains(bank)) {
                         selectDialog.setWheelLeftCurrentItem(i);
+                        updateSubBankData(bankList.get(i));
+                        bank = bankName;
                         break;
                     }
                 }
@@ -372,39 +374,40 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
     }
 
     /**
-     * 模糊搜索城市
+     * 模糊搜索省份
      */
-    private void searchCity() {
+    private void searchProvince() {
         try {
-            String searchText = selectDialog.getSearchText();
+            String provice = selectDialog.getSearchText();
             try {
                 for (int i = 0; i <= provinceList.size(); i++) {
-                    String provinceName = provinceList.get(i).getProvinceName();
-                    if (provinceName.contains(searchText)) {
+                    String proviceName = provinceList.get(i).getProvinceName();
+                    if (proviceName.contains(provice)) {
                         selectDialog.setWheelLeftCurrentItem(i);
+                        updateCityData(provinceList.get(i));
+                        provice = proviceName;
                         break;
                     }
                 }
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
 
             try {
-                for (int i = 0; i <= cityList.size(); i++) {
+                for (int i = 0; i <= subbankList.size(); i++) {
                     String cityName = cityList.get(i).getCityName();
-                    if (cityName.contains(searchText)) {
+                    if (cityName.contains(provice)) {
                         selectDialog.setWheelRightCurrentItem(i);
                         break;
                     }
                 }
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
     /**
      * 这里调用显示选择 省份城市 滚轮 的界面
@@ -461,18 +464,18 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
             public void afterTextChanged(Editable s) {
-                searchCity();
+                searchProvince();
             }
         });
 
         //调用显示对话框
         selectDialog.show();
     }
+
 
     private void updateProvinceData() {
         //这里调用 获取省份的信息。成功之后调用获取城市的信息。
