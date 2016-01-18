@@ -28,14 +28,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginLeft="10dp"
             android:layout_weight="0.11"
             android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="40dp"
+                android:layout_marginLeft="35dp"
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
@@ -61,7 +60,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_weight="0.08"
 
@@ -71,7 +69,7 @@
                 android:id="@+id/tv_result_explain"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="40dp"
+                android:layout_marginLeft="35dp"
                 android:text="@string/pay_result_explain"
                 android:textColor="@color/gray1"
                 android:textSize="20sp" />
@@ -90,8 +88,8 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="35dp"
-                android:layout_marginRight="30dp">
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="15dp">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -116,32 +114,32 @@
                 android:id="@+id/pay_account"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 cardinfolink:left_text="@string/pay_account" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/pay_datetime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 cardinfolink:left_text="@string/pay_datetime" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/order_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 cardinfolink:left_text="@string/pay_order_number" />
 
             <com.cardinfolink.yunshouyin.ui.ResultInfoItem
                 android:id="@+id/rif_coupon_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:visibility="gone"
                 cardinfolink:left_text="@string/pay_coupon_content" />
 
@@ -149,8 +147,8 @@
                 android:id="@+id/rif_coupon_total"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:visibility="gone"
                 cardinfolink:left_text="@string/pay_money" />
 
@@ -158,8 +156,8 @@
                 android:id="@+id/rif_coupon_discount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:visibility="gone"
                 cardinfolink:left_text="@string/pay_youhui_money" />
 
@@ -174,7 +172,7 @@
                     android:id="@+id/total_state"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="40dp"
+                    android:layout_marginLeft="25dp"
                     android:text="@string/pay_total_state_success"
                     android:textColor="@color/textview_textcolor_pay_success"
                     android:textSize="18sp" />
@@ -184,7 +182,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_marginRight="40dp"
+                    android:layout_marginRight="25dp"
                     android:textColor="@color/textview_textcolor_pay_success"
                     android:textSize="25sp" />
 
@@ -199,8 +197,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:layout_centerInParent="true"
-                    android:layout_marginLeft="30dp"
-                    android:layout_marginRight="30dp"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
                     android:layout_marginTop="25dp"
                     android:background="@drawable/blue_selector"
                     android:text="@string/txt_confirm"
