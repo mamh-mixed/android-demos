@@ -115,6 +115,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             groupViewHolder.count = (TextView) convertView.findViewById(R.id.tv_count);
             groupViewHolder.folder = (ImageView) convertView.findViewById(R.id.iv_fold);
             groupViewHolder.leftLinearLayout = (LinearLayout) convertView.findViewById(R.id.ll_left);
+            groupViewHolder.rightLinearLayout = (LinearLayout) convertView.findViewById(R.id.ll_right);
 
             convertView.setTag(groupViewHolder);
         } else {
@@ -123,8 +124,10 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
         if (hideTotal) {
             groupViewHolder.leftLinearLayout.setVisibility(View.INVISIBLE);
+            groupViewHolder.rightLinearLayout.setVisibility(View.INVISIBLE);
         } else {
             groupViewHolder.leftLinearLayout.setVisibility(View.VISIBLE);
+            groupViewHolder.rightLinearLayout.setVisibility(View.VISIBLE);
         }
 
         //设置一下月份
@@ -147,8 +150,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
         //如果是搜索 出来的账单 使用childrenData list的size来
         if (hideTotal) {
-            String countStr = String.valueOf(childrenData.get(groupPosition).size());
-            groupViewHolder.count.setText(countStr);
+            //搜索界面 的   listview 不显示 totalRecord 条目数目
         } else {
             String countStr = String.valueOf(groupData.get(groupPosition).getTotalRecord());
             groupViewHolder.count.setText(countStr);
@@ -378,6 +380,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         public TextView total;
         public TextView count;
         public LinearLayout leftLinearLayout;
+        public LinearLayout rightLinearLayout;
     }
 
     public final class ChildViewHolder {
