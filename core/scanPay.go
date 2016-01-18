@@ -1027,6 +1027,12 @@ func refresh(req *model.ScanPayRequest, c *model.ChanMer) {
 			log.Warnf("refresh warn: %s", err)
 			continue
 		}
+
+		// 如果交易已经不是处理中，那么直接返回即可
+		if t.TransStatus != model.TransHandling {
+			return
+		}
+
 		// 查询
 		ret := adaptor.ProcessEnquiry(t, c, &model.ScanPayRequest{
 			ReqId:        req.ReqId, // 关联ReqId，在交易报文里可以看到
