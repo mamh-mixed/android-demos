@@ -29,6 +29,8 @@ public class User {
 
     private String payUrl;
 
+    private String limitAmt;
+
     public ResultData getResultData() {
         return resultData;
     }
@@ -235,6 +237,14 @@ public class User {
         this.payUrl = payUrl;
     }
 
+    public String getLimitAmt() {
+        return limitAmt;
+    }
+
+    public void setLimitAmt(String limitAmt) {
+        this.limitAmt = limitAmt;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -260,8 +270,9 @@ public class User {
                 ", limitName='" + limitName + '\'' +
                 ", limitPhone='" + limitPhone + '\'' +
                 ", payUrl='" + payUrl + '\'' +
+                ", limitAmt='" + limitAmt + '\'' +
                 ", resultData=" + resultData +
-                ", merName=" + merName +
+                ", merName='" + merName + '\'' +
                 '}';
     }
 }

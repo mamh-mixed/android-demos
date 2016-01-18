@@ -48,7 +48,6 @@ import java.util.Date;
 public class ScanCodeView extends LinearLayout implements View.OnClickListener, View.OnTouchListener {
     private static final String TAG = "ScanCodeView";
     private static final double MAX_MONEY = 99999999.99;//能够进行交易的最大金额数
-    private static final int MAX_LIMIT_MONEY = 500;//单日限额的最大金额数
     private TranslateAnimation mShowAnimation;
     private TranslateAnimation mHideAnimation;
     private static final int SPLASH_DISPLAY_LENGHT = 2000;
@@ -316,23 +315,28 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
      * @param captureOrCreate
      */
     private void checkLimit(final CheckLimitInterface captureOrCreate) {
+
         QuickPayService quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
         String date = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
         User user = SessonData.loginUser;
-        if (user.getLimit().equals("true")) {
+        if ("true".equals(user.getLimit())) {
             quickPayService.getTotalAsync(user, date, new QuickPayCallbackListener<String>() {
                 @Override
                 public void onSuccess(String data) {
                     if (TextUtils.isEmpty(data)) {
                         data = "0";
                     }
-                    double limitValue = Double.parseDouble(data);
-                    if (limitValue >= MAX_LIMIT_MONEY) {
-                        //"当日交易已超过限额,请申请提升限额!";
-                        String alertMsg = ShowMoneyApp.getResString(R.string.alert_error_limit_error);
-                        mYellowTips.show(alertMsg);
-                    } else {
-                        captureOrCreate.start();//这里调用扫码还是生成二维码
+                    try {
+                        BigDecimal maxLimitBg = new BigDecimal(SessonData.loginUser.getLimitAmt());
+                        BigDecimal limitValueBg = new BigDecimal(data);
+                        if (limitValueBg.compareTo(maxLimitBg) >= 0) {
+                            //"当日交易已超过限额,请申请提升限额!";
+                            String alertMsg = ShowMoneyApp.getResString(R.string.alert_error_limit_error);
+                            mYellowTips.show(alertMsg);
+                        } else {
+                            captureOrCreate.start();//这里调用扫码还是生成二维码
+                        }
+                    } catch (Exception e) {
                     }
                 }
 
