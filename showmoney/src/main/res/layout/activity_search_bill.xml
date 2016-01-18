@@ -190,6 +190,19 @@
                     android:textColor="@drawable/radio_button1_color_selector"
                     android:textSize="15sp" />
 
+                <CheckBox
+                    android:id="@+id/cb_rec_type0"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:paddingTop="10dp"
+                    android:text="@string/bill_rec_type0"
+                    android:textColor="@drawable/radio_button1_color_selector"
+                    android:textSize="15sp"
+                    android:visibility="invisible" />
 
                 <CheckBox
                     android:id="@+id/cb_rec_type4"
@@ -214,19 +227,6 @@
                     android:paddingBottom="10dp"
                     android:paddingTop="10dp"
                     android:text="@string/bill_rec_type3"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
-
-                <CheckBox
-                    android:id="@+id/cb_rec_type0"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:text="@string/bill_rec_type0"
                     android:textColor="@drawable/radio_button1_color_selector"
                     android:textSize="15sp" />
 
