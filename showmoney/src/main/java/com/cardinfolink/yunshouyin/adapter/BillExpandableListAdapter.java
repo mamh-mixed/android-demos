@@ -62,6 +62,13 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         this.hideTotal = hideTotal;
     }
 
+
+    //获取 group data 的数据，这里保存和月份信息
+    public List<MonthBill> getGroupData() {
+        return groupData;
+    }
+
+
     @Override
     public int getGroupCount() {
         if (groupData != null) {
@@ -400,4 +407,6 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         public View linearLayoutDay;//左边显示日期，周几的一个线性布局
         public View linearLayoutBillItem;//右边显示详情账单信息的一个线性布局
     }
+
+
 }

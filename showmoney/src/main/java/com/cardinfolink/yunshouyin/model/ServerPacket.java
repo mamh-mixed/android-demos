@@ -82,6 +82,8 @@ public class ServerPacket {
      */
     private CouponInfo[] coupons;
 
+    private String nextMonth;
+
 
     public static ServerPacket getServerPacketFrom(String json) {
         try {
@@ -205,6 +207,14 @@ public class ServerPacket {
         this.coupons = coupons;
     }
 
+    public String getNextMonth() {
+        return nextMonth;
+    }
+
+    public void setNextMonth(String nextMonth) {
+        this.nextMonth = nextMonth;
+    }
+
     @Override
     public String toString() {
         return "ServerPacket{" +
@@ -222,6 +232,7 @@ public class ServerPacket {
                 ", txn=" + Arrays.toString(txn) +
                 ", message=" + Arrays.toString(message) +
                 ", coupons=" + Arrays.toString(coupons) +
+                ", nextMonth='" + nextMonth + '\'' +
                 '}';
     }
 }
