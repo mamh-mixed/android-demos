@@ -1387,7 +1387,6 @@ func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
 	}
 
 	index, size := pagingParams(req)
-
 	q := &model.QueryCondition{
 		MerId:       user.MerId,
 		StartTime:   dsDate,
@@ -1405,6 +1404,18 @@ func (u *user) couponsHandler(req *reqParams) (result model.AppResult) {
 		log.Errorf("find user coupon trans error: %s", err)
 		return model.SYSTEM_ERROR
 	}
+
+	// 如果刚好刷新到最后一条
+	if index+len(trans) == total {
+		// 查找接下来哪个月有数据
+		lt, err := mongo.SpTransColl.FindLastRecord(q)
+		if err == nil {
+			if len(lt.CreateTime) > 7 {
+				result.NextMonth = lt.CreateTime[0:4] + lt.CreateTime[5:7] // 200601
+			}
+		}
+	}
+
 	var coupons []*model.Coupon
 	for _, t := range trans {
 		coupons = append(coupons, transToCoupon(t))

@@ -86,6 +86,7 @@ type AppResult struct {
 	AccessToken  string      `json:"accessToken,omitempty"`
 	DownloadUrl  string      `json:"downloadUrl,omitempty"`
 	Coupons      []*Coupon   `json:"coupons,omitempty"`
+	NextMonth    string      `json:"nextMonth,omitempty"`
 }
 
 type SettInfo struct {
