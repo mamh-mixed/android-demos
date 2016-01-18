@@ -42,6 +42,8 @@ public class SelectDialog {
     private OnClickListener mOkOnClickListener;
     private OnClickListener mCancelOnClickListener;
 
+    private TextWatcher mSearchTextChangedListener;
+
     public SelectDialog(Context context, View view) {
         mContext = context;
         dialogView = view;
@@ -227,7 +229,9 @@ public class SelectDialog {
     }
 
     public void addSearchTextChangedListener(TextWatcher l) {
+        mSearch.removeTextChangedListener(mSearchTextChangedListener);
         mSearch.addTextChangedListener(l);
+        mSearchTextChangedListener = l;
     }
 
 }
