@@ -116,9 +116,9 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 	startTimeStr, endTimeStr := startTime.Format("2006-01-02 15:04:05"), endTime.Format("2006-01-02 15:04:05")
 	index, size := pagingParams(req)
 	q := &model.QueryCondition{
-		MerId:     user.MerId,
-		StartTime: startTimeStr,
-		EndTime:   endTimeStr,
+		MerId: user.MerId,
+		// StartTime: startTimeStr,
+		// EndTime:   endTimeStr,
 		Size:      size,
 		Page:      1,
 		Skip:      index,

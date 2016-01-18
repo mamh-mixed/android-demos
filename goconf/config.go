@@ -29,6 +29,7 @@ type configStruct struct {
 		OrderRefreshTime   Duration
 		SessionExpiredTime Duration
 		MonitorMerId       string
+		RiskMail           string
 	}
 
 	Qiniu struct {
