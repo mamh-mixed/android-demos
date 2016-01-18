@@ -495,6 +495,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		}
 		match[q.TimeType] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
+
 	// 处理交易状态查询条件
 	handleTransStatus(q, match)
 

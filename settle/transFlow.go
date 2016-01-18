@@ -23,85 +23,92 @@ var fileName = "IA502-%s.csv"
 type transFlow struct {
 }
 
-func (t *transFlow) GenerateTransFlow(date string, agentCode string) {
+func (t *transFlow) GenerateTransFlow(date string) {
 
-	agent, err := mongo.AgentColl.Find(agentCode)
+	cond := &model.Agent{
+		IsGenerateFlow: model.GenerateFlow,
+	}
+	agentArray, err := mongo.AgentColl.FindByCondition(cond)
 	if err != nil {
-		log.Errorf("cann't find the agent agentCode is %s", agentCode)
-		return
-	}
-	var transSettsWXP []model.TransSett
-	var transSettsALP []model.TransSett
-	transSettsWXP, err = mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date, AgentCode: agentCode, ChanCode: "WXP", BlendType: "0"})
-	if err != nil {
+		log.Errorf("cann't find the agents, error  is %s", err)
 		return
 	}
 
-	if len(transSettsWXP) == 0 {
-		log.Infof("these is no trans flow in date:%s, agentcode:%s, chanCode:%s", date, agentCode, "WXP")
-		return
-	}
+	for _, agent := range agentArray {
+		var transSettsWXP []model.TransSett
+		var transSettsALP []model.TransSett
+		transSettsWXP, err = mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date, AgentCode: agent.AgentCode, ChanCode: "WXP", BlendType: "0"})
+		if err != nil {
+			log.Errorf("find the agent WXP trans error, agentCode:%s,error:%s", agent.AgentCode, err)
+			continue
+		}
 
-	dateStr := strings.Replace(date, "-", "", -1)
-	filePath = fmt.Sprintf(filePath, agentCode, dateStr)
-	fileName = fmt.Sprintf(fileName, dateStr)
+		if len(transSettsWXP) == 0 {
+			log.Infof("these is no trans flow in date:%s, agentcode:%s, chanCode:%s", date, agent.AgentCode, "WXP")
+			continue
+		}
 
-	var strBuffer = ""
-	strBuffer += "清算日期,交易类型,交易时间,支付时间,客户代码,商户编号,终端编号,交易金额,订单号,渠道订单号,收单币种,收单交易金额,收单手续费,商户币种,商户交易金额,商户手续费,商户清算金额,交易渠道\r\n"
+		dateStr := strings.Replace(date, "-", "", -1)
+		filePath = fmt.Sprintf(filePath, agent.AgentCode, dateStr)
+		fileName = fmt.Sprintf(fileName, dateStr)
 
-	generateFile(transSettsWXP, dateStr, agent.WxpCost, &strBuffer) //微信
+		var strBuffer = ""
+		strBuffer += "清算日期,交易类型,交易时间,支付时间,客户代码,商户编号,终端编号,交易金额,订单号,渠道订单号,收单币种,收单交易金额,收单手续费,商户币种,商户交易金额,商户手续费,商户清算金额,交易渠道\r\n"
 
-	transSettsALP, err = mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date, AgentCode: agentCode, ChanCode: "ALP"})
-	if err != nil {
-		log.Infof("these is no trans flow in date:%s, agentcode:%s, chanCode:%s", date, agentCode, "ALP")
-		return
-	}
+		generateFile(transSettsWXP, dateStr, agent.WxpCost, &strBuffer) //微信
 
-	generateFile(transSettsALP, dateStr, agent.AlpCost, &strBuffer) //支付宝
+		transSettsALP, err = mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date, AgentCode: agent.AgentCode, ChanCode: "ALP"})
+		if err != nil {
+			log.Infof("these is no trans flow in date:%s, agentcode:%s, chanCode:%s", date, agent.AgentCode, "ALP")
+			continue
+		}
 
-	fmt.Println(strBuffer)
+		generateFile(transSettsALP, dateStr, agent.AlpCost, &strBuffer) //支付宝
 
-	var authMethods []ssh.AuthMethod
-	// add password
-	authMethods = append(authMethods, ssh.Password(sftpPassword))
-	config := &ssh.ClientConfig{
-		User: sftpUserName,
-		Auth: authMethods,
-	}
+		//fmt.Println(strBuffer)
 
-	// 建立连接
-	conn, err := ssh.Dial("tcp", sftpAddr, config)
-	if err != nil {
-		log.Errorf("fail to connect sftp service, error: %s", err)
-		return
-	}
-	defer conn.Close()
+		var authMethods []ssh.AuthMethod
+		// add password
+		authMethods = append(authMethods, ssh.Password(sftpPassword))
+		config := &ssh.ClientConfig{
+			User: sftpUserName,
+			Auth: authMethods,
+		}
 
-	client, err := sftp.NewClient(conn)
-	if err != nil {
-		log.Errorf("fail to get sftp client, error: %s", err)
-		return
-	}
-	defer client.Close()
+		// 建立连接
+		conn, err := ssh.Dial("tcp", sftpAddr, config)
+		if err != nil {
+			log.Errorf("fail to connect sftp service, error: %s, agenCode: %s", err, agent.AgentCode)
+			continue
+		}
+		defer conn.Close()
 
-	err = client.Mkdir(filePath)
-	if err != nil {
-		log.Errorf("create dir fail , dir is %s, error is %s", filePath, err)
-		return
-	}
+		client, err := sftp.NewClient(conn)
+		if err != nil {
+			log.Errorf("fail to get sftp client, error: %s, agentCode: %s", err, agent.AgentCode)
+			continue
+		}
+		defer client.Close()
 
-	filePath += "/" + fileName
-	sftpFile, err := client.Create(filePath)
-	if err != nil {
-		log.Errorf("create the sftp file fail, error detail :%s, filename:%s", err, filePath)
-		return
-	}
-	defer sftpFile.Close()
+		err = client.Mkdir(filePath)
+		if err != nil {
+			log.Errorf("create dir fail , dir is %s, error is %s, agentCode: %s", filePath, err, agent.AgentCode)
+			continue
+		}
 
-	_, err = sftpFile.Write([]byte(strBuffer))
-	if err != nil {
-		log.Errorf("write the sftp fail, error detail :%s", err)
-		return
+		filePath += "/" + fileName
+		sftpFile, err := client.Create(filePath)
+		if err != nil {
+			log.Errorf("create the sftp file fail, error detail :%s, filename:%s, agentCode: %s", err, filePath, agent.AgentCode)
+			continue
+		}
+		defer sftpFile.Close()
+
+		_, err = sftpFile.Write([]byte(strBuffer))
+		if err != nil {
+			log.Errorf("write the sftp fail, error detail :%s, agentCode: %s", err, agent.AgentCode)
+			continue
+		}
 	}
 }
 

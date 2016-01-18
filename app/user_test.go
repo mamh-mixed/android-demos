@@ -88,3 +88,19 @@ func TestForgetPasswordSendEmail(t *testing.T) {
 
 	t.Logf("result is %+v", result)
 }
+
+func TestUserV3FindOrderHandle(t *testing.T) {
+	result := UserV3.findOrderHandle(&reqParams{
+		UserName:  "453481716@qq.com",
+		Password:  "670b14728ad9902aecba32e22fa4f6bd",
+		Transtime: "20160115154119",
+		OrderNum:  "",
+		PayType:   "3",
+		RecType:   "1",
+		Status:    "7",
+		Index:     "0",
+		Size:      "50",
+	})
+
+	t.Logf("the result is %+v", result)
+}
