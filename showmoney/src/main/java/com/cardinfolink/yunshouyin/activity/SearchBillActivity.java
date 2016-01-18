@@ -1,9 +1,9 @@
 package com.cardinfolink.yunshouyin.activity;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -13,7 +13,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +25,6 @@ import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.MonthBill;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
-import com.cardinfolink.yunshouyin.model.CouponInfo;
 import com.cardinfolink.yunshouyin.model.QRequest;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.Txn;
@@ -63,12 +61,6 @@ public class SearchBillActivity extends Activity {
     private Map<String, List<TradeBill>> mTradeBillMap;
 
     private int billIndex;
-    private int mMonthBillAgo;
-
-    private String mCurrentYearMonth;//当前年份+月份的一个字符串
-
-    private View mEmptyViewBill;
-    private TextView mEmptyTextviewBill;
 
 
     private SettingActionBarItem mActionBar;
@@ -118,9 +110,6 @@ public class SearchBillActivity extends Activity {
 
 
     private void initLayout() {
-
-        SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-        mCurrentYearMonth = spf.format(new Date());
         billIndex = 0;
 
         mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
@@ -140,18 +129,13 @@ public class SearchBillActivity extends Activity {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ExpandableListView> refreshView) {
                 billIndex = 0;
-                mMonthBillAgo = 0;//注意这里要清零
                 mTradeBillList.clear();
                 mMonthBilList.clear();
                 mMonthBillMap.clear();
                 mTradeBillMap.clear();
                 mBillAdapter.notifyDataSetChanged();
-                SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-                mCurrentYearMonth = spf.format(new Date());
-
                 //通过判断 radio group是否是隐藏的状态，隐藏的状态就是按条件查找的情况
                 searchBill();
-
             }
 
             @Override
@@ -196,14 +180,10 @@ public class SearchBillActivity extends Activity {
                     Log.e(TAG, " search order: " + orderNum);
                     //这里精确查找
                     billIndex = 0;
-                    mMonthBillAgo = 0;//注意这里要清零
                     mTradeBillList.clear();
                     mMonthBilList.clear();
                     mMonthBillMap.clear();
                     mTradeBillMap.clear();
-                    SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-                    mCurrentYearMonth = spf.format(new Date());
-
                     findBill(orderNum);
                 }
             }
@@ -217,14 +197,10 @@ public class SearchBillActivity extends Activity {
                 if (!TextUtils.isEmpty(orderNum)) {
                     //这里精确查找
                     billIndex = 0;
-                    mMonthBillAgo = 0;//注意这里要清零
                     mTradeBillList.clear();
                     mMonthBilList.clear();
                     mMonthBillMap.clear();
                     mTradeBillMap.clear();
-                    SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-                    mCurrentYearMonth = spf.format(new Date());
-
                     findBill(orderNum);
                 }
             }
@@ -256,14 +232,10 @@ public class SearchBillActivity extends Activity {
                     Log.e(TAG, " search order: " + orderNum);
                     //这里精确查找
                     billIndex = 0;
-                    mMonthBillAgo = 0;//注意这里要清零
                     mTradeBillList.clear();
                     mMonthBilList.clear();
                     mMonthBillMap.clear();
                     mTradeBillMap.clear();
-                    SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-                    mCurrentYearMonth = spf.format(new Date());
-
                     findBill(orderNum);
                 }
             }
@@ -292,6 +264,7 @@ public class SearchBillActivity extends Activity {
         mPayWxCheckBox = (CheckBox) findViewById(R.id.cb_pay_type2);//微信支付的    2
         mPayWxCheckBox.setOnCheckedChangeListener(new SearchCheckBoxOnCheckedChangeListener());
 
+
     }
 
 
@@ -304,14 +277,11 @@ public class SearchBillActivity extends Activity {
             }
             //按条件查找之前先清空一下数据
             billIndex = 0;
-            mMonthBillAgo = 0;//注意这里要清零
             mTradeBillList.clear();
             mMonthBilList.clear();
             mMonthBillMap.clear();
             mTradeBillMap.clear();
             mBillAdapter.notifyDataSetChanged();
-            SimpleDateFormat spf = new SimpleDateFormat("yyyyMM");
-            mCurrentYearMonth = spf.format(new Date());
             searchBill();
         }
     }

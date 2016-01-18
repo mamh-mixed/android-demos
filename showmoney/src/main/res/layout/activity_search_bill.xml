@@ -77,162 +77,124 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/ll_search_condition"
+        <com.cardinfolink.yunshouyin.ui.AutoFitViewGroup
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <CheckBox
-                    android:id="@+id/cb_success"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:clickable="true"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:text="@string/bill_status_success"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
-
-                <CheckBox
-                    android:id="@+id/cb_all_refd"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:text="@string/bill_status_all_refd"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
-
-                <CheckBox
-                    android:id="@+id/cb_part_refd"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:text="@string/bill_status_part_refd"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
-
-                <CheckBox
-                    android:id="@+id/cb_rec_type1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:text="@string/bill_rec_type2"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
-
-                <CheckBox
-                    android:id="@+id/cb_rec_type2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:text="@string/bill_rec_type1"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
+            android:layout_height="wrap_content">
 
 
-            </LinearLayout>
+            <CheckBox
+                android:id="@+id/cb_success"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:clickable="true"
+                android:gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/bill_status_success"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <CheckBox
+                android:id="@+id/cb_all_refd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/bill_status_all_refd"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
 
-                <CheckBox
-                    android:id="@+id/cb_pay_type1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:text="@string/bill_pay_type1"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
+            <CheckBox
+                android:id="@+id/cb_part_refd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center"
+                android:text="@string/bill_status_part_refd"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
 
+            <CheckBox
+                android:id="@+id/cb_rec_type1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center"
+                android:text="@string/bill_rec_type2"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
 
-                <CheckBox
-                    android:id="@+id/cb_pay_type2"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:text="@string/bill_pay_type2"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
-
-                <CheckBox
-                    android:id="@+id/cb_rec_type0"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:text="@string/bill_rec_type0"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp"
-                    android:visibility="invisible" />
-
-                <CheckBox
-                    android:id="@+id/cb_rec_type4"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:text="@string/bill_rec_type4"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
-
-                <CheckBox
-                    android:id="@+id/cb_rec_type3"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingBottom="10dp"
-                    android:paddingTop="10dp"
-                    android:text="@string/bill_rec_type3"
-                    android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
+            <CheckBox
+                android:id="@+id/cb_rec_type2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center"
+                android:text="@string/bill_rec_type1"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
 
 
-            </LinearLayout>
-        </LinearLayout>
+            <CheckBox
+                android:id="@+id/cb_pay_type1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/bill_pay_type1"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+
+            <CheckBox
+                android:id="@+id/cb_pay_type2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center"
+                android:text="@string/bill_pay_type2"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+
+            <CheckBox
+                android:id="@+id/cb_rec_type4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:gravity="center"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/bill_rec_type4"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+            <CheckBox
+                android:id="@+id/cb_rec_type3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@null"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:gravity="center"
+                android:text="@string/bill_rec_type3"
+                android:textColor="@drawable/radio_button1_color_selector"
+                android:textSize="15sp" />
+
+        </com.cardinfolink.yunshouyin.ui.AutoFitViewGroup>
 
 
         <RelativeLayout
