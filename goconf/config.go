@@ -90,6 +90,12 @@ type configStruct struct {
 		OverseasSettPoint string
 		DomesticSettPoint string
 	}
+
+	Push struct {
+		APNSCertPath string
+		APNSKeyPath  string
+		APNSGw       string
+	}
 }
 
 // postProcess 后续处理

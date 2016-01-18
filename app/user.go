@@ -1578,18 +1578,36 @@ func findOrderParams(req *reqParams, q *model.QueryCondition) {
 	payType, _ := strconv.Atoi(req.PayType)
 	transStatus, _ := strconv.Atoi(req.Status)
 
+	// 1.移动 2.桌面 4.收款码 8.开放接口
 	switch recType {
 	case 1:
 		q.TradeFrom = []string{model.IOS, model.Android}
-	case 2, 8:
-		// 暂时没有
+	case 2:
 		q.TradeFrom = []string{model.Pc}
+	case 3:
+		q.TradeFrom = []string{model.IOS, model.Android, model.Pc}
 	case 4:
 		q.TradeFrom = []string{model.Wap}
-	case 3:
-		q.TradeFrom = []string{model.IOS, model.Android}
 	case 5:
 		q.TradeFrom = []string{model.IOS, model.Android, model.Wap}
+	case 6:
+		q.TradeFrom = []string{model.Pc, model.Wap}
+	case 7:
+		q.TradeFrom = []string{model.IOS, model.Android, model.Wap, model.Pc}
+	case 8:
+		q.TradeFrom = []string{model.OpenAPI} // 暂时没有
+	case 9:
+		q.TradeFrom = []string{model.IOS, model.Android, model.OpenAPI}
+	case 10:
+		q.TradeFrom = []string{model.Pc, model.OpenAPI}
+	case 11:
+		q.TradeFrom = []string{model.Pc, model.IOS, model.Android, model.OpenAPI}
+	case 12:
+		q.TradeFrom = []string{model.Wap, model.OpenAPI}
+	case 13:
+		q.TradeFrom = []string{model.Wap, model.IOS, model.Android, model.OpenAPI}
+	case 14:
+		q.TradeFrom = []string{model.Wap, model.Pc, model.OpenAPI}
 	case 15:
 		// ignore
 	}
