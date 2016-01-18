@@ -432,7 +432,7 @@ paths:
           type: string
         - in: formData
           name: month
-          description: 默认当月。如果传送，返回该月账单情况，见返回字段. YYYYMM
+          description: 默认当月。如果传送，返回该月账单情况，见返回字段. YYYYMM(如果上传，该值不影响具体下拉的交易)
           required: false
           type: string
         - in: formData
