@@ -5,217 +5,223 @@
     android:layout_height="match_parent"
     android:background="@color/background_layout">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
-            android:id="@+id/action_bar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            cardinfolink:left_text="@string/detail_activity_return"
-            cardinfolink:right_text="@string/detail_activity_busicd_refd" />
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_pay_result"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/pay_result_success"
-                android:textColor="@color/textview_textcolor_pay_success"
-                android:textSize="30sp" />
-
-            <ImageView
-                android:id="@+id/iv_pay_result"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginLeft="10dp"
-                android:src="@drawable/pay_result_succeed"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="10dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tv_coupon_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:visibility="gone" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <RelativeLayout
+            <com.cardinfolink.yunshouyin.ui.SettingActionBarItem
+                android:id="@+id/action_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                cardinfolink:left_text="@string/detail_activity_return"
+                cardinfolink:right_text="@string/detail_activity_busicd_refd" />
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/pay_money_text"
+                    android:id="@+id/tv_pay_result"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/detail_activity_pay_money"
-                    android:textSize="22sp" />
+                    android:text="@string/pay_result_success"
+                    android:textColor="@color/textview_textcolor_pay_success"
+                    android:textSize="30sp" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/pay_money"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="10dp"
-                        android:text="2.00"
-                        android:textSize="30sp" />
-
-                    <ImageView
-                        android:id="@+id/iv_dofold"
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:layout_toRightOf="@+id/pay_money"
-                        android:src="@drawable/bill_up" />
-                </LinearLayout>
-            </RelativeLayout>
-
-            <LinearLayout
-                android:id="@+id/ll_pay_info"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bill_detail_bg"
-                android:orientation="vertical">
-
-                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                    android:id="@+id/card_discount"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    cardinfolink:left_text="@string/detail_activity_card_discount" />
-
-
-                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                    android:id="@+id/refd_money"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    cardinfolink:left_text="@string/detail_activity_refd_money" />
-
-                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                    android:id="@+id/pay_arrival_money"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    cardinfolink:left_text="@string/detail_activity_pay_arrival_money" />
+                <ImageView
+                    android:id="@+id/iv_pay_result"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/pay_result_succeed"
+                    android:visibility="gone" />
 
             </LinearLayout>
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginTop="30dp"
-            android:orientation="vertical">
-
-            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/veri_order"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                cardinfolink:left_text="@string/detail_activity_veri_order_number"
-                cardinfolink:right_text="" />
-
-            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/pay_order"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                cardinfolink:left_text="@string/detail_activity_order_number"
-                cardinfolink:right_text="" />
-
-            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/pay_chcd"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                cardinfolink:left_text="@string/detail_activity_chcd" />
-
-            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/pay_type"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                cardinfolink:left_text="@string/detail_activity_pay_type" />
-
-
-            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/pay_datetime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                cardinfolink:left_text="@string/detail_activity_pay_datetime" />
-
-            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/pay_terminator"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                cardinfolink:left_text="@string/detail_activity_terminator" />
-
-            <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                android:id="@+id/pay_comments"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                cardinfolink:left_text="@string/detail_activity_comments" />
 
             <LinearLayout
-                android:id="@+id/ll_pay_comments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/bill_detail_bg"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_coupon_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/pay_money_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/detail_activity_pay_money"
+                        android:textSize="22sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/pay_money"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="10dp"
+                            android:text="2.00"
+                            android:textSize="30sp" />
+
+                        <ImageView
+                            android:id="@+id/iv_dofold"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_toRightOf="@+id/pay_money"
+                            android:src="@drawable/bill_up" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/ll_pay_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bill_detail_bg"
+                    android:orientation="vertical">
+
+                    <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                        android:id="@+id/card_discount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        cardinfolink:left_text="@string/detail_activity_card_discount" />
+
+
+                    <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                        android:id="@+id/refd_money"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        cardinfolink:left_text="@string/detail_activity_refd_money" />
+
+                    <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                        android:id="@+id/pay_arrival_money"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        cardinfolink:left_text="@string/detail_activity_pay_arrival_money" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="30dp"
                 android:orientation="vertical">
 
                 <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                    android:id="@+id/pay_check_code"
+                    android:id="@+id/veri_order"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    cardinfolink:left_text="@string/detail_activity_check_code" />
+                    android:visibility="gone"
+                    cardinfolink:left_text="@string/detail_activity_veri_order_number"
+                    cardinfolink:right_text="" />
 
                 <com.cardinfolink.yunshouyin.ui.ResultInfoItem
-                    android:id="@+id/pay_small_ticket_number"
+                    android:id="@+id/pay_order"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    cardinfolink:left_text="@string/detail_activity_small_ticket_number" />
+                    cardinfolink:left_text="@string/detail_activity_order_number"
+                    cardinfolink:right_text="" />
+
+                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                    android:id="@+id/pay_chcd"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    cardinfolink:left_text="@string/detail_activity_chcd" />
+
+                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                    android:id="@+id/pay_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    cardinfolink:left_text="@string/detail_activity_pay_type" />
+
+
+                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                    android:id="@+id/pay_datetime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    cardinfolink:left_text="@string/detail_activity_pay_datetime" />
+
+                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                    android:id="@+id/pay_terminator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    cardinfolink:left_text="@string/detail_activity_terminator" />
+
+                <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                    android:id="@+id/pay_comments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    cardinfolink:left_text="@string/detail_activity_comments" />
+
+                <LinearLayout
+                    android:id="@+id/ll_pay_comments"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bill_detail_bg"
+                    android:orientation="vertical">
+
+                    <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                        android:id="@+id/pay_check_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        cardinfolink:left_text="@string/detail_activity_check_code" />
+
+                    <com.cardinfolink.yunshouyin.ui.ResultInfoItem
+                        android:id="@+id/pay_small_ticket_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        cardinfolink:left_text="@string/detail_activity_small_ticket_number" />
+                </LinearLayout>
+
             </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
 
     <include layout="@layout/showmoney_dialog" />
 
