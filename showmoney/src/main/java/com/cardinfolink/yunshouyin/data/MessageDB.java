@@ -63,6 +63,9 @@ public class MessageDB {
      */
     public String getLastTime(String username) {
         String lastTime = null;
+        if (TextUtils.isEmpty(username)) {
+            return lastTime;
+        }
         SQLiteDatabase database = helper.getReadableDatabase();
         Cursor cursor = database.rawQuery("select max(pushtime) from message where username=?", new String[]{username});
         if (cursor.moveToNext()) {
