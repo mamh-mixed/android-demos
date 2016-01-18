@@ -17,6 +17,7 @@ import (
 	"image/jpeg"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -421,8 +422,7 @@ func genAccessToken(user *model.User) string {
 var downloadKey = "tools/summary/images/%s/%s"
 
 // NotifySalesman 每天汇总当天用户数据给业务人员
-func NotifySalesman() {
-	day := time.Now().Format("2006-01-02")
+func NotifySalesman(day string) {
 	all, err := mongo.AppUserCol.Find(&model.AppUserContiditon{
 		RegisterFrom: model.SalesToolsRegister,
 		StartTime:    day + " 00:00:00",
@@ -475,7 +475,7 @@ func NotifySalesman() {
 			fds = append(fds, downloadImage(m.Detail.Images, m.MerId)...)
 		}
 
-		sendEmail(&emailData{eds, fds}, user.Mail, "", k, day)
+		sendEmail(&emailData{es: eds, fs: fds, to: user.Mail, cc: "", day: day, key: k, body: toolsBody, excelTemplate: toolsExcel})
 
 		if user.RelatedEmail != "" {
 			// 将数据整合到同个代理邮箱
@@ -483,20 +483,36 @@ func NotifySalesman() {
 				ad.es = append(ad.es, eds...)
 				ad.fs = append(ad.fs, fds...)
 			} else {
-				agents[user.RelatedEmail] = &emailData{eds, fds}
+				agents[user.RelatedEmail] = &emailData{
+					es:            eds,
+					fs:            fds,
+					to:            user.RelatedEmail,
+					cc:            andyLi,
+					day:           day,
+					key:           user.RelatedEmail,
+					body:          toolsBody,
+					excelTemplate: toolsExcel,
+				}
 			}
 		}
 	}
 
 	// 代理
-	for k, a := range agents {
-		sendEmail(a, k, andyLi, k, day)
+	for _, a := range agents {
+		sendEmail(a)
 	}
 }
 
 type emailData struct {
-	es []excelData
-	fs []fileData
+	es            []excelData
+	fs            []fileData
+	body          string
+	to            string
+	cc            string
+	day           string
+	key           string
+	title         string
+	excelTemplate func([]excelData) *xlsx.File
 }
 
 type excelData struct {
@@ -505,7 +521,7 @@ type excelData struct {
 	operator string
 }
 
-func genExcel(eds []excelData) *xlsx.File {
+func toolsExcel(eds []excelData) *xlsx.File {
 
 	var sheet *xlsx.Sheet
 	var row *xlsx.Row
@@ -521,7 +537,7 @@ func genExcel(eds []excelData) *xlsx.File {
 
 	row.WriteStruct(&rowType{"商家营业简称", "公司名称", "注册地址", "营业执照注册号", "经营范围", "营业期限", "注册资本", "预计年收入", "员工人数", "营业场所面积", "证件持有人类型", "证件持有人姓名", "证件类型", "证件号码", "证件有效期限", "组织机构代码", "有效期",
 		"商家简称", "售卖商品具体描述", "客服电话", "账户类型", "开户行代码", "开户银行城市", "开户名称", "开户支行", "银行账号", "主要联系人姓名", "主要联系人手机号码", "主要联系人邮箱", "联系地址", "公司传真", "营业执照影印件（资质）", "运营者证件",
-		"组织机构代码证（扫描件)", "门店照片", "个户工商户营业执照扫描件", "《餐饮服务许可证》/《食品卫生许可证》", "关注公众服务号(APPID)", "支付宝账户", "申请业务范围", "商家设备数量（台）", "商户号", "商户密钥", "app注册邮箱", "app密码md5值", "收款码链接", "业务员邮箱"}, -1)
+		"组织机构代码证（扫描件)", "门店照片", "个户工商户营业执照扫描件", "《餐饮服务许可证》/《食品卫生许可证》", "关注公众服务号(APPID)", "支付宝账户", "申请业务范围", "商家设备数量（台）", "商户号", "商户密钥", "app注册邮箱", "app密码md5值", "收款码链接", "业务员"}, -1)
 
 	// 填充数据
 	for _, ed := range eds {
@@ -600,29 +616,42 @@ func saveToQiniu(key string, fs *bytes.Buffer) {
 }
 
 var (
-	body   = `您好，本次共汇总 %d 商户。`
-	attach = `请在一个星期之内下载<a href="%s">商户.zip</a>。`
+	toolsBody  = `您好，本次共汇总 %d 商户。`
+	toolsTitle = `当日销售工具商户汇总`
+	attach     = `请在一个星期之内下载<a href="%s" target="_parent">商户.zip</a>。`
 )
 
-func sendEmail(ed *emailData, to, cc, name, day string) {
-	var emailBody = fmt.Sprintf(body, len(ed.es))
+func sendEmail(ed *emailData) {
+
+	// 正文
+	var emailBody string
+	if strings.Contains(ed.body, "%") {
+		emailBody = fmt.Sprintf(ed.body, len(ed.es))
+	} else {
+		emailBody = ed.body
+	}
+
+	// 有效期
 	var d = uint32((7 * 24 * time.Hour).Seconds())
 
 	// 保存到七牛
-	key := fmt.Sprintf(downloadKey, day, name+"_商户.zip")
+	key := fmt.Sprintf(downloadKey, ed.day, ed.key+"_商户.zip")
 	if len(ed.fs) > 0 {
 		saveToQiniu(key, zipWrite(ed.fs))
 		emailBody += fmt.Sprintf(attach, qiniu.MakePrivateUrlWithExpiresTime(key, d))
 	}
 
 	// 发邮件
-	e := email.Email{To: to, Title: "当日商户汇总", Body: emailBody, Cc: cc}
-	ebuf := new(bytes.Buffer)
-	err := genExcel(ed.es).Write(ebuf)
-	if err == nil {
-		e.Attach(ebuf, "汇总表.xlsx", "")
-	} else {
-		log.Errorf("fail to gen excel: %s", err)
+	e := email.Email{To: ed.to, Title: ed.title, Body: emailBody, Cc: ed.cc}
+	if len(ed.es) > 0 && ed.excelTemplate != nil {
+		// 生成excel
+		ebuf := new(bytes.Buffer)
+		err := ed.excelTemplate(ed.es).Write(ebuf)
+		if err == nil {
+			e.Attach(ebuf, "汇总表.xlsx", "")
+		} else {
+			log.Errorf("fail to gen excel: %s", err)
+		}
 	}
 	e.Send()
 }

@@ -4,17 +4,18 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/anachronistic/apns"
 	"github.com/omigo/log"
 )
 
-const (
+var (
 	pemDir  = "%s/push/pem/%s"
-	certPem = "APNS_CloudCashier_Dev_Cert.pem"
-	keyFile = "APNS_CloudCashier_Dev_insecure_key.pem"
-	gateWay = "gateway.sandbox.push.apple.com:2195"
+	certPem = goconf.Config.Push.APNSCertPath
+	keyFile = goconf.Config.Push.APNSKeyPath
+	gateWay = goconf.Config.Push.APNSGw
 )
 
 var client *apns.Client
@@ -31,9 +32,6 @@ var ApnsPush apnsPush
 type apnsPush struct{}
 
 func (*apnsPush) APush(req *model.PushMessageReq) error {
-	// dict := apns.NewAlertDictionary()
-	// dict.Title = req.Title
-	// dict.Body = req.Message
 
 	payload := apns.NewPayload()
 	payload.Alert = req.Title

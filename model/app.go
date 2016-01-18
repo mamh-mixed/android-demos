@@ -86,6 +86,7 @@ type AppResult struct {
 	AccessToken  string      `json:"accessToken,omitempty"`
 	DownloadUrl  string      `json:"downloadUrl,omitempty"`
 	Coupons      []*Coupon   `json:"coupons,omitempty"`
+	NextMonth    string      `json:"nextMonth,omitempty"`
 }
 
 type SettInfo struct {
@@ -156,6 +157,9 @@ type AppUser struct {
 	LockTime       string `json:"lockTime,omitempty" bson:"lockTime,omitempty"`       //记录锁定时间
 	DeviceType     string `json:"deviceType,omitempty" bson:"deviceType,omitempty"`   //设备类型
 	DeviceToken    string `json:"deviceToken,omitempty" bson:"deviceToken,omitempty"` //app唯一标识
+	LimitAmt       string `json:"limitAmt,omitempty" bson:"limitAmt,omitempty"`       //限额
+
+	PromoteLimitRecord []string `json:"-" bson:"promoteLimitRecord,omitempty"`
 
 	// 清算相关信息不存
 	BankOpen  string `json:"bank_open,omitempty" bson:"-"`
@@ -188,11 +192,13 @@ type PushMessageReq struct {
 	DeviceToken string
 	MsgType     string
 	To          string
+	OrderNum    string
 }
 
 // 推送消息体
 type PushMessage struct {
 	MsgId       string `json:"msgId" bson:"msgId"`
+	OrderNum    string `json:"orderNum" bson:"orderNum"`
 	UserName    string `json:"username,omitempty" bson:"username,omitempty"`
 	Title       string `json:"title,omitempty" bson:"title,omitempty"`
 	Message     string `json:"message,omitempty" bson:"message,omitempty"`

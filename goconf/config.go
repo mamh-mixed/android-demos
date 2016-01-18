@@ -29,6 +29,7 @@ type configStruct struct {
 		OrderRefreshTime   Duration
 		SessionExpiredTime Duration
 		MonitorMerId       string
+		RiskMail           string
 	}
 
 	Qiniu struct {
@@ -88,6 +89,12 @@ type configStruct struct {
 	Settle struct {
 		OverseasSettPoint string
 		DomesticSettPoint string
+	}
+
+	Push struct {
+		APNSCertPath string
+		APNSKeyPath  string
+		APNSGw       string
 	}
 }
 

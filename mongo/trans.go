@@ -401,6 +401,31 @@ func (col *transCollection) FindByAppID(orderNum, appID string) (t *model.Trans,
 // 	return database.C(col.name).Update(bson.M{"_id": t.Id}, bson.M{"$set": fields})
 // }
 
+// FindLastRecord 查找给定时间点最近一条交易金额
+func (col *transCollection) FindLastRecord(q *model.QueryCondition) (*model.Trans, error) {
+	match := bson.M{
+		"createTime": bson.M{"$lt": q.StartTime},
+		"merId":      q.MerId,
+	}
+
+	if len(q.TransStatus) > 0 {
+		match["transStatus"] = bson.M{"$in": q.TransStatus}
+	}
+	if q.TransType != 0 {
+		match["transType"] = q.TransType
+	}
+	if q.Respcd != "" {
+		match["respCode"] = bson.RegEx{q.Respcd, "."}
+	}
+	if q.RespcdNotIn != "" {
+		match["respCode"] = bson.M{"$ne": q.RespcdNotIn}
+	}
+
+	var result = new(model.Trans)
+	err := database.C(col.name).Find(match).Sort("-createTime").One(result)
+	return result, err
+}
+
 // Find 根据商户Id,清分时间查找交易明细
 // 按照商户订单号降排序
 func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, error) {
@@ -467,10 +492,24 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		match["chanCode"] = q.ChanCode
 	}
 	if q.CouponsNo != "" {
-		match["couponsNo"] = q.CouponsNo
+		match["couponsNo"] = bson.RegEx{q.CouponsNo, "."}
+	}
+	if q.Prodname != "" {
+		match["prodname"] = bson.RegEx{q.Prodname, "."}
 	}
 	if q.WriteoffStatus != "" {
 		match["writeoffStatus"] = q.WriteoffStatus
+	}
+	if q.VoucherType != "" {
+		match["voucherType"] = q.VoucherType
+	}
+	if q.CouponPayStatus != "" {
+		if q.CouponPayStatus == "100" {
+			match["scanPayCoupon"] = nil
+		} else {
+			match["scanPayCoupon.transStatus"] = q.CouponPayStatus
+		}
+
 	}
 	if q.SettRole != "" {
 		match["settRole"] = q.SettRole
@@ -481,6 +520,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		}
 		match[q.TimeType] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
+
 	// 处理交易状态查询条件
 	handleTransStatus(q, match)
 
@@ -547,7 +587,9 @@ func (col *transCollection) FindAndGroupBy(q *model.QueryCondition) ([]model.Tra
 		find["merName"] = bson.RegEx{q.MerName, "."}
 	}
 	find["transType"] = q.TransType
-	find["$or"] = []bson.M{bson.M{"transStatus": bson.M{"$in": q.TransStatus}}, bson.M{"refundStatus": q.RefundStatus}}
+
+	// 处理交易状态
+	handleTransStatus(q, find)
 
 	// 计算total
 	var total = struct {

@@ -29,6 +29,7 @@ func Do(req *model.PushMessageReq) {
 func SavePushMessage(req *model.PushMessageReq) error {
 	rsp := new(model.PushMessage)
 	rsp.UserName = req.UserName
+	rsp.OrderNum = req.OrderNum
 	rsp.Title = req.Title
 	rsp.DeviceToken = req.DeviceToken
 	rsp.Message = req.Message

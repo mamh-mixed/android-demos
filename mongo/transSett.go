@@ -293,7 +293,7 @@ func (col *transSettCollection) FindAndGroupBy(q *model.QueryCondition) ([]model
 	if q.GroupCode != "" {
 		find["trans.groupCode"] = q.GroupCode
 	}
-	find["blendType"] = 0 // match
+	// find["blendType"] = 0 // match
 
 	pipeline := []bson.M{
 		{"$match": find},

@@ -18,7 +18,8 @@
         // 同时，当会话接近失效时间（1/2）时，如果用户有操作，那么延长失效时间，
         // 比如 用户在第 16 分钟有操作，那么失效时间再延长 30m
         "SessionExpiredTime": "30m",
-        "MonitorMerId" : "100001000010110" // 专门做监控的商户，不记日志
+        "MonitorMerId" : "100001000010110", // 专门做监控的商户，不记日志
+        "RiskMail": "Risk_management@cardinfolink.com"
     },
     "Qiniu": {
         "Bucket": "yun-master",
@@ -70,5 +71,10 @@
     "Settle":{
         "OverseasSettPoint":"06:00:00", // 海外接口清算时间点
         "DomesticSettPoint":"10:00:00"
+    },
+    "Push": {
+        "APNSCertPath": "APNS_CloudCashier_Pro_Cert.pem",
+        "APNSKeyPath": "APNS_CloudCashier_Pro_insecure_key.pem",
+        "APNSGw": "gateway.push.apple.com:2195"
     }
 }

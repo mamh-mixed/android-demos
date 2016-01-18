@@ -100,6 +100,7 @@ func pushMsgReq(t *model.Trans) *model.PushMessageReq {
 		req.MsgType = MsgType_C
 		req.Message = MsgType_C
 	}
+	req.OrderNum = t.OrderNum
 	req.MerID = t.MerId
 	req.UserName = t.Terminalid
 	return req
