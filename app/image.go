@@ -4,7 +4,7 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 
 	qr "github.com/skip2/go-qrcode"
 	"image"

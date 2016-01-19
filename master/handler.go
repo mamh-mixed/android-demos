@@ -17,7 +17,7 @@ import (
 	"github.com/CardInfoLink/quickpay/settle"
 	"github.com/CardInfoLink/quickpay/util"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 var maxReportRec = 10000

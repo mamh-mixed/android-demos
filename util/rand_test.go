@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 func TestUUID(t *testing.T) {

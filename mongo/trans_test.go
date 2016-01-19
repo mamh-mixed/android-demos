@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/qiniu"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"github.com/tealeg/xlsx"
 	"gopkg.in/mgo.v2/bson"
 	"strings"

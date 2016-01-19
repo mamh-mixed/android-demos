@@ -14,7 +14,7 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"github.com/omigo/validator"
 )
 

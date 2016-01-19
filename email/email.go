@@ -2,7 +2,7 @@ package email
 
 import (
 	"github.com/jordan-wright/email"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"io"
 	"mime"
 	"net/smtp"

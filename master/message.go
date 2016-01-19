@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"io/ioutil"
 	"os"
 	"path/filepath"

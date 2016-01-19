@@ -15,7 +15,7 @@ import (
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // 专门做监控的商户

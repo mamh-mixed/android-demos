@@ -3,10 +3,9 @@ package domestic
 import (
 	"errors"
 	"fmt"
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
-	// "github.com/omigo/mahonia"
 	"strconv"
 	"strings"
 	"time"
