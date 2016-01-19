@@ -4,7 +4,7 @@ import (
 	"crypto/rsa"
 	"errors"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"github.com/omigo/validator"
 	"net/url"
 	"time"

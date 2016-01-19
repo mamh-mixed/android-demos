@@ -3,7 +3,7 @@ package channel
 import (
 	"testing"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 func TestGetChan(t *testing.T) {

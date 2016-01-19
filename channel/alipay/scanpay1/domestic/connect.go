@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/logs"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	// "github.com/omigo/mahonia"
 	"io"
 	"io/ioutil"

@@ -9,7 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // BindingpayHandle 绑定支付统一入口

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // Route app请求统一入口

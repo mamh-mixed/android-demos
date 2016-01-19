@@ -4,7 +4,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // FindRouter 根据源商户号和卡品牌在数据库中查找路由策略

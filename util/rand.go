@@ -5,7 +5,7 @@ import (
 	"crypto/rand"
 	"fmt"
 	gouuid "github.com/nu7hatch/gouuid"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"time"
 )
 

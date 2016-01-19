@@ -5,7 +5,7 @@ package domestic
 import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	. "github.com/smartystreets/goconvey/convey"
 	"testing"
 )

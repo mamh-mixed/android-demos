@@ -7,7 +7,7 @@ import (
 
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 type TestModel struct {

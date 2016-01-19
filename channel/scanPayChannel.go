@@ -4,7 +4,7 @@ import (
 	"github.com/CardInfoLink/quickpay/channel/alipay"
 	"github.com/CardInfoLink/quickpay/channel/weixin/scanpay"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // 扫码支付渠道

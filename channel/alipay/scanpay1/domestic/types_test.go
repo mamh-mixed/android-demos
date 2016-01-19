@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"testing"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 var data = `

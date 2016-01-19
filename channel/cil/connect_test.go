@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 func TestShortConnect(t *testing.T) {

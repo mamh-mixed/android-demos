@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // 兼容 支付宝/微信 扫码 TCP 接口

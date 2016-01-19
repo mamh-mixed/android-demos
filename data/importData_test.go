@@ -4,7 +4,7 @@ package data
 import (
 	"testing"
 
-	// "github.com/omigo/log"
+	// "github.com/CardInfoLink/log"
 )
 
 func xTestAddUserFromCSV(t *testing.T) {

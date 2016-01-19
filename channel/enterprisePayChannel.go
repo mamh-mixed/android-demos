@@ -3,7 +3,7 @@ package channel
 import (
 	"github.com/CardInfoLink/quickpay/channel/weixin/enterprisepay"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // EnterprisePayChan 企业支付

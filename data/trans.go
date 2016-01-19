@@ -8,7 +8,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"gopkg.in/mgo.v2/bson"
 )
 

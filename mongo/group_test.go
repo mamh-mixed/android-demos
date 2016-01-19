@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 var (

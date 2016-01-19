@@ -6,7 +6,7 @@ import (
 	"github.com/CardInfoLink/quickpay/util"
 	"testing"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	. "github.com/smartystreets/goconvey/convey"
 )
 

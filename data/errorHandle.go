@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"io"
 	"os"
 	"strings"

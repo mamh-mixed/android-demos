@@ -4,7 +4,7 @@ import (
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // ProcessApplyPay 执行apple Pay相关的支付

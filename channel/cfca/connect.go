@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/CardInfoLink/quickpay/goconf"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 var requestURL = goconf.Config.CFCA.URL

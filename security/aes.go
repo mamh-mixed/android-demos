@@ -11,7 +11,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // AESCBCMode 如果key位base64编码过的字符串

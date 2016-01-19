@@ -7,7 +7,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/security"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 var (

@@ -3,7 +3,7 @@ package security
 import (
 	"testing"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 var aesCBF, aesCBC = &AESCFBMode{}, &AESCBCMode{}

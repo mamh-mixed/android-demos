@@ -14,7 +14,7 @@ import (
 	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/scanpay"
 	"github.com/CardInfoLink/quickpay/settle"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 
 	// _ "net/http/pprof"
 )

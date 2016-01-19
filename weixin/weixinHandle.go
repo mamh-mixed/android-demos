@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 const (
