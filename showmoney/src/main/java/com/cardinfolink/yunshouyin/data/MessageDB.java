@@ -5,13 +5,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.cardinfolink.yunshouyin.model.Message;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MessageDB {
@@ -97,7 +94,6 @@ public class MessageDB {
             cursor = database.rawQuery("select * from message where username=? and pushtime<? and status=? order by pushtime desc limit ?",
                     new String[]{message.getUsername(), message.getPushtime(), message.getStatus(), size});
         }
-        Log.e(this.getClass().getName(), String.valueOf("数据条数：" + cursor.getCount()));
         while (cursor.moveToNext()) {
             String msgId = cursor.getString(cursor.getColumnIndex("msgId"));
             String username = cursor.getString(cursor.getColumnIndex("username"));
@@ -122,7 +118,6 @@ public class MessageDB {
         Message message;
         SQLiteDatabase database = helper.getReadableDatabase();
         Cursor cursor = database.rawQuery("select * from message where username=? and status='0'", new String[]{username});
-        Log.e(this.getClass().getName(), String.valueOf("数据条数：" + cursor.getCount()));
         while (cursor.moveToNext()) {
             String msgId = cursor.getString(cursor.getColumnIndex("msgId"));
             username = cursor.getString(cursor.getColumnIndex("username"));

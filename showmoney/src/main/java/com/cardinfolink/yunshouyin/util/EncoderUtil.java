@@ -1,7 +1,6 @@
 package com.cardinfolink.yunshouyin.util;
 
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class EncoderUtil {
     public static String Encrypt(String strSrc, String encName) {

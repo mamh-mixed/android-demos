@@ -2,7 +2,6 @@ package com.cardinfolink.yunshouyin.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -36,7 +35,6 @@ public class AutoFitViewGroup extends ViewGroup {
         int modeWidth = MeasureSpec.getMode(widthMeasureSpec);
         int modeHeight = MeasureSpec.getMode(heightMeasureSpec);
 
-        Log.e(TAG, sizeWidth + "," + sizeHeight);
 
         // 如果是warp_content情况下，记录宽和高
         int width = 0;

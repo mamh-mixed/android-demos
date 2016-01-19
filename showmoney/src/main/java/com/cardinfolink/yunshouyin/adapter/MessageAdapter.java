@@ -3,7 +3,6 @@ package com.cardinfolink.yunshouyin.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,7 +71,6 @@ public class MessageAdapter extends BaseAdapter {
             pushTime = formatAfter.format(formatBefore.parse(pushTime));
         } catch (ParseException e) {
             pushTime = message.getPushtime();
-            Log.e(this.getClass().getName(), e.getMessage());
         }
         holder.messageTime.setText(pushTime);
 
