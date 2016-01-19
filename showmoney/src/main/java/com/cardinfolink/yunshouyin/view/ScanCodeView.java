@@ -965,7 +965,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         String t = "";
         int i = 0;
-        double tempInputResult;//优惠后的金额，
+        String tempInputResult;//优惠后的金额，
         if (x.indexOf("+") == -1) {
             mOriginalTotal = new BigDecimal(x);
             tempInputResult = discountMoneyResult(mOriginalTotal);
@@ -1033,7 +1033,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             mOriginalTotal = mOriginalTotal.add(new BigDecimal(s[c]));
         }
         //优惠后的金额，
-        double tempInputResult = discountMoneyResult(mOriginalTotal);
+        String tempInputResult = discountMoneyResult(mOriginalTotal);
         input.setText(String.valueOf(tempInputResult));//下面的文本框
 
         if (mOriginalTotal.compareTo(new BigDecimal(MAX_MONEY)) > 0) {
@@ -1046,13 +1046,13 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
     //获取打折后的金额
-    public double discountMoneyResult(BigDecimal result) {
+    public String discountMoneyResult(BigDecimal result) {
         BigDecimal tempResult = result;
         boolean hasCoupon = Coupon.getInstance().getSaleDiscount() != null &&
                 !"0".equals(Coupon.getInstance().getSaleDiscount());
         if (!hasCoupon) {
             mHasDiscount.setVisibility(View.INVISIBLE);
-            return tempResult.doubleValue();
+            return tempResult.toString();
         }
         //打折门限值
         BigDecimal limit = new BigDecimal("0");
@@ -1104,7 +1104,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             }
             Log.e(TAG, tempResult + "满折");
         }
-        return tempResult.doubleValue();
+        return tempResult.setScale(2, BigDecimal.ROUND_FLOOR).toString();
     }
 
 
