@@ -1,6 +1,5 @@
 package com.cardinfolink.yunshouyin.view;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -19,7 +18,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cardinfolink.cashiersdk.listener.CashierListener;
 import com.cardinfolink.cashiersdk.model.OrderData;
@@ -654,7 +652,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             orderData.couponOrderNum = Coupon.getInstance().getScanCodeId();
         }
 
-        SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        SimpleDateFormat mspf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         mCurrentTime = mspf.format(new Date());
 
         orderData.orderNum = Utility.geneOrderNumber();
