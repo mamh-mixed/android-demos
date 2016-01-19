@@ -6,7 +6,6 @@ import com.cardinfolink.yunshouyin.model.Province;
 import com.cardinfolink.yunshouyin.model.SubBank;
 
 import java.util.List;
-import java.util.Map;
 
 public interface BankDataService {
     void getProvince(QuickPayCallbackListener<List<Province>> quickPayCallbackListener);
