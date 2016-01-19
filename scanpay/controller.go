@@ -108,16 +108,16 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	// 修复请求失败时，应答签名也失败的 bug
 	var signKey string
 	defer func() {
-		// 7. 补充信息
+		// 9. 补充信息
 		ret.FillWithRequest(req)
 
-		// 8. 如果是 gbk 进来的，兼容老插件和商户，不返回中文，不返回 errorCode
+		// 10. 如果是 gbk 进来的，兼容老插件和商户，不返回中文，不返回 errorCode
 		if req.IsGBK {
 			ret.ErrorDetail = ret.ErrorCode
 			ret.ErrorCode = ""
 		}
 
-		// 9. 对返回报文签名
+		// 11. 对返回报文签名
 		if signKey != "" {
 			log.Debug("sign content to return : " + ret.SignMsg())
 			ret.Sign = security.SHA1WithKey(ret.SignMsg(), signKey)
@@ -181,18 +181,21 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		}
 	}
 
-	// 过滤包含空格字符串
-	req.Chcd = strings.TrimSpace(req.Chcd)
-	var reqAgentCode = req.AgentCode
-	req.AgentCode = mer.AgentCode // 以我们系统的代理代码为准
-
-	//较验限额
+	// 6. 较验限额
 	ret = checkLimitAmt(req, mer)
 	if ret != nil {
 		return ret
 	}
 
-	// 6. 开始业务处理
+	// 7. 参数过滤及处理
+	req.Chcd = strings.TrimSpace(req.Chcd)
+	var reqAgentCode = req.AgentCode
+	req.AgentCode = mer.AgentCode // 以我们系统的代理代码为准
+	if req.TradeFrom == "" {
+		req.TradeFrom = model.OpenAPI // 如果没有上传该字段，统一认为是通过API进来的
+	}
+
+	// 8. 开始业务处理
 	ret = processFunc(req)
 
 	ret.AgentCode = strings.TrimSpace(reqAgentCode) // 返回时送回原代理代码

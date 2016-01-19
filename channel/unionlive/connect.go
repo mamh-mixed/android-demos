@@ -103,6 +103,11 @@ func send(t string, body []byte) (ret []byte, err error) {
 }
 
 func processRespBody(message []byte, resp BaseResp) error {
+	if len(message) < 33 {
+		log.Errorf("get error message: %s", string(message))
+		return fmt.Errorf("message length error, expected > 32, actual=%d", len(message))
+	}
+
 	rbody, err := checkSignAndDecrypt(message)
 	if err != nil {
 		return err

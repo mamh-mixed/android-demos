@@ -401,6 +401,31 @@ func (col *transCollection) FindByAppID(orderNum, appID string) (t *model.Trans,
 // 	return database.C(col.name).Update(bson.M{"_id": t.Id}, bson.M{"$set": fields})
 // }
 
+// FindLastRecord 查找给定时间点最近一条交易金额
+func (col *transCollection) FindLastRecord(q *model.QueryCondition) (*model.Trans, error) {
+	match := bson.M{
+		"createTime": bson.M{"$lt": q.StartTime},
+		"merId":      q.MerId,
+	}
+
+	if len(q.TransStatus) > 0 {
+		match["transStatus"] = bson.M{"$in": q.TransStatus}
+	}
+	if q.TransType != 0 {
+		match["transType"] = q.TransType
+	}
+	if q.Respcd != "" {
+		match["respCode"] = bson.RegEx{q.Respcd, "."}
+	}
+	if q.RespcdNotIn != "" {
+		match["respCode"] = bson.M{"$ne": q.RespcdNotIn}
+	}
+
+	var result = new(model.Trans)
+	err := database.C(col.name).Find(match).Sort("-createTime").One(result)
+	return result, err
+}
+
 // Find 根据商户Id,清分时间查找交易明细
 // 按照商户订单号降排序
 func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, error) {
@@ -495,6 +520,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		}
 		match[q.TimeType] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
+
 	// 处理交易状态查询条件
 	handleTransStatus(q, match)
 

@@ -71,5 +71,10 @@
     "Settle":{
         "OverseasSettPoint":"", // 海外接口清算时间点
         "DomesticSettPoint":""
+    },
+    "Push": {
+        "APNSCertPath": "APNS_CloudCashier_Dev_Cert.pem",
+        "APNSKeyPath": "APNS_CloudCashier_Dev_insecure_key.pem",
+        "APNSGw": "gateway.sandbox.push.apple.com:2195"
     }
 }

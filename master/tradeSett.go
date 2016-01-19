@@ -129,16 +129,12 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 				if v.ChanCode == channel.ChanCodeAlipay {
 					alpTransAmt += v.TransAmt
 					alpFee += ts.MerFee
-					if ts.BlendType == 0 {
-						alpSettAmt += (v.TransAmt - ts.MerFee)
-					}
+					alpSettAmt += (v.TransAmt - ts.MerFee)
 				}
 				if v.ChanCode == channel.ChanCodeWeixin {
 					wxpTransAmt += v.TransAmt
 					wxpFee += ts.MerFee
-					if ts.BlendType == 0 {
-						wxpSettAmt += (v.TransAmt - ts.MerFee)
-					}
+					wxpSettAmt += (v.TransAmt - ts.MerFee)
 				}
 			// 退款、撤销、取消
 			default:
@@ -146,16 +142,12 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 				if v.ChanCode == channel.ChanCodeAlipay {
 					alpRefundAmt += v.TransAmt
 					alpFee -= ts.MerFee
-					if ts.BlendType == 0 {
-						alpSettAmt -= (v.TransAmt - ts.MerFee)
-					}
+					alpSettAmt -= (v.TransAmt - ts.MerFee)
 				}
 				if v.ChanCode == channel.ChanCodeWeixin {
 					wxpRefundAmt += v.TransAmt
 					wxpFee -= ts.MerFee
-					if ts.BlendType == 0 {
-						wxpSettAmt -= (v.TransAmt - ts.MerFee)
-					}
+					wxpSettAmt -= (v.TransAmt - ts.MerFee)
 				}
 			}
 

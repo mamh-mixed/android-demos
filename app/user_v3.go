@@ -116,9 +116,9 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 	startTimeStr, endTimeStr := startTime.Format("2006-01-02 15:04:05"), endTime.Format("2006-01-02 15:04:05")
 	index, size := pagingParams(req)
 	q := &model.QueryCondition{
-		MerId: user.MerId,
-		// StartTime: startTimeStr,
-		// EndTime:   endTimeStr,
+		MerId:     user.MerId,
+		StartTime: startTimeStr,
+		EndTime:   endTimeStr,
 		Size:      size,
 		Page:      1,
 		Skip:      index,
@@ -141,8 +141,18 @@ func (u *userV3) getUserBills(req *reqParams) (result model.AppResult) {
 	}
 
 	// 承载返回结果的数组
-
 	result = model.NewAppResult(model.SUCCESS, "")
+	// 如果刚好刷新到最后一条
+	if index+len(trans) == total {
+		// 查找接下来哪个月有数据
+		lt, err := mongo.SpTransColl.FindLastRecord(q)
+		if err == nil {
+			if len(lt.CreateTime) > 7 {
+				result.NextMonth = lt.CreateTime[0:4] + lt.CreateTime[5:7] // 200601
+			}
+		}
+	}
+
 	var txns []*model.AppTxn
 	for _, t := range trans {
 		// 遍历查询结果
