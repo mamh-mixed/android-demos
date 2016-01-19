@@ -152,10 +152,11 @@
     <string name="expandable_listview_trade_status_closed">已关闭</string>
     <string name="expandable_listview_trade_status_allrefd">全额退款</string>
     <string name="expandable_listview_trade_status_fail">失败</string>
-    <string name="expandable_listview_pay_type1">App</string>
-    <string name="expandable_listview_pay_type2">网页</string>
+    <string name="expandable_listview_pay_type1">Android</string>
+    <string name="expandable_listview_pay_type2">收款码</string>
     <string name="expandable_listview_pay_type3">PC</string>
-    <string name="expandable_listview_pay_type4">其他</string>
+    <string name="expandable_listview_pay_type4">api</string>
+    <string name="expandable_listview_pay_type5">iOS</string>
 
 
     <string name="alert_error_username_cannot_empty">用户名不能为空!</string>
@@ -210,6 +211,7 @@
     <string name="alert_error_accessToken_error">访问码错误</string>
     <string name="alert_error_INVALID_REPORT_TYPE">非法的报告类型</string>
     <string name="alert_error_CODE_PAYTYPE_NOT_MATCH">付款码与卡券指定支付方式不符</string>
+    <string name="alert_error_no_enhance_limit_amt">超出每日限额,请完善信息,提升限额</string>
 
     <string name="refd_activity_refd_message">当前可退款金额(元)</string>
     <string name="refd_activity_refd_message1">需退款金额(元)&#160;&#160;</string>
@@ -425,10 +427,10 @@
     <string name="bill_rec_type1">PC收款</string>
     <string name="bill_rec_type2">APP收款</string>
     <string name="bill_rec_type3">收款码收款</string>
-    <string name="bill_rec_type4">其他收款</string>
+    <string name="bill_rec_type4">开放接口</string>
     <string name="bill_pay_type1">支付宝</string>
     <string name="bill_pay_type2">微信支付</string>
-    <string name="bill_search_result_message1">没有搜索到此账单，请确认订单号是否有误</string>
+    <string name="bill_search_result_message1">没有搜索到此账单，请确认账单号是否有误</string>
     <string name="bill_search_result_message2">搜索账单失败</string>
     <string name="bill_search_result_message3">没有搜索到此类型账单，请尝试更换搜索条件</string>
     <string name="bill_empty_bill_list_view">暂时没有账单</string>
