@@ -428,7 +428,7 @@
     <string name="bill_rec_type4">其他收款</string>
     <string name="bill_pay_type1">支付宝</string>
     <string name="bill_pay_type2">微信支付</string>
-    <string name="bill_search_result_message1">没有搜索到此账单，请确认账单号是否有误</string>
+    <string name="bill_search_result_message1">没有搜索到此账单，请确认订单号是否有误</string>
     <string name="bill_search_result_message2">搜索账单失败</string>
     <string name="bill_search_result_message3">没有搜索到此类型账单，请尝试更换搜索条件</string>
     <string name="bill_empty_bill_list_view">暂时没有账单</string>
