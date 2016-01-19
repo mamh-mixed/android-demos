@@ -90,7 +90,7 @@ func pushMsgReq(t *model.Trans) *model.PushMessageReq {
 	case model.IOS, model.Android:
 		req.MsgType = MsgType_B
 		req.Message = MsgType_B
-		transTime := t.CreateTime[11:15]
+		transTime := t.CreateTime[11:16]
 		req.Title = fmt.Sprintf("您于 %s 分的交易，金额为 %0.2f 元，交易成功，点我查看详情。", transTime, float64(t.TransAmt)/100)
 	case model.Wap:
 		req.MsgType = MsgType_A
