@@ -60,9 +60,12 @@ public class MainActivity extends BaseActivity {
         super.onResume();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        if (mTransManageView != null)
-            if (mTabPager.getCurrentItem() == 2)
-                mTransManageView.refresh();
+        if (mTransManageView != null && mTabPager.getCurrentItem() == 2) {
+            mTransManageView.refresh();
+        }
+        if (mMySettingView != null && mTabPager.getCurrentItem() == 3) {
+            mMySettingView.checkMessageCount();
+        }
     }
 
     @Override

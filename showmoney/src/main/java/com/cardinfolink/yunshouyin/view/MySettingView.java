@@ -92,25 +92,12 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         checkMessageCount();
     }
 
-    private void checkMessageCount() {
-        String lastTime = mMessageDB.getLastTime(SessonData.loginUser.getUsername());
+    public void checkMessageCount() {
         int count = mMessageDB.countUnreadedMessages(SessonData.loginUser.getUsername());
         if (count > 0) {
-            String thisTime = SaveData.getMessageTime(mContext);
-            if (lastTime.compareTo(thisTime) > 0) {
-                SaveData.setMessageTime(mContext, lastTime);
-                SaveData.setMessageClick(mContext, false);
-                mMessage.setImageResource(R.drawable.setting_news_has);
-            } else {
-                if (SaveData.getMessageClick(mContext)) {
-                    mMessage.setImageResource(R.drawable.setting_news);
-                } else {
-                    mMessage.setImageResource(R.drawable.setting_news_has);
-                }
-            }
+            mMessage.setImageResource(R.drawable.setting_news_has);
         } else {
-
-
+            mMessage.setImageResource(R.drawable.setting_news);
         }
     }
 
