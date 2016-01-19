@@ -37,6 +37,7 @@ import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.data.User;
+import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.Utility;
 import com.google.zxing.WriterException;
@@ -890,7 +891,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                                 updateQR();//更新二维码
                             } else {
                                 //这里返回其他，说明出错了
-                                mScanTitle.setText(mResultData.errorDetail);
+                                mScanTitle.setText(ErrorUtil.getErrorString(mResultData.errorDetail));
                                 endLoading();
                             }
                         }
