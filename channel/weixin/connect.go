@@ -15,7 +15,7 @@ import (
 	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/log"
-	"github.com/omigo/validator"
+	"github.com/CardInfoLink/validator"
 )
 
 // DownloadBill 下载对账单

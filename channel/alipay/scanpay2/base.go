@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/log"
-	"github.com/omigo/validator"
+	"github.com/CardInfoLink/validator"
 	"net/url"
 	"time"
 )

@@ -11,7 +11,7 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/log"
-	"github.com/omigo/validator"
+	"github.com/CardInfoLink/validator"
 )
 
 var requestURL = goconf.Config.UnionLive.URL
