@@ -32,7 +32,7 @@ public class AboutActivity extends Activity implements View.OnClickListener {
     private TextView mAgreement;
 
     //存储时间的数组
-    long[] mHits = new long[6];
+    long[] mHits = new long[4];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
