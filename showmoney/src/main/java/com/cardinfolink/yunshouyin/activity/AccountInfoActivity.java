@@ -53,7 +53,7 @@ public class AccountInfoActivity extends BaseActivity {
             public void onSuccess(BankInfo bankInfo) {
                 mName.setDetail(bankInfo.getPayee());
                 mLocalCity.setDetail(bankInfo.getCity());
-                mBankName.setDetail(bankInfo.getBankOpen());
+                mBankName.setDetail(bankInfo.getBranchBank());
                 mPhoneNumber.setDetail(bankInfo.getPhoneNum());
                 //这里商户名没有获得到！！！！！！！！
                 mMerchantName.setDetail(SessonData.loginUser.getMerName());
