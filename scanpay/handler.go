@@ -10,7 +10,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/CardInfoLink/log"
-	// "github.com/omigo/mahonia"
+	// "github.com/CardInfoLink/mahonia"
 	"io/ioutil"
 	"math/rand"
 	"net/http"

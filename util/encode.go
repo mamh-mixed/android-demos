@@ -1,6 +1,6 @@
 package util
 
-import "github.com/omigo/mahonia"
+import "github.com/CardInfoLink/mahonia"
 
 // GBKTranscoder GBK 编码转换器
 var GBKTranscoder = &Transcoder{Encoding: "gbk"}
