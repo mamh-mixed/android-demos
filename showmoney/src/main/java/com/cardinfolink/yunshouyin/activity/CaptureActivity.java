@@ -183,8 +183,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
     public void cleanAfterPay() {
         Coupon.getInstance().clear();//清空卡券信息
-        ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
-        finish();
+        if (ScanCodeActivity.getScanCodehandler() != null) {
+            ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
+            finish();
+        }
     }
 
     private void openCamera() {
