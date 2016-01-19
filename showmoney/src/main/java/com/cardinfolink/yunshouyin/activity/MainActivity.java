@@ -60,9 +60,7 @@ public class MainActivity extends BaseActivity {
         super.onResume();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        if (mTransManageView != null && mTabPager.getCurrentItem() == 2) {
-            mTransManageView.refresh();
-        }
+
         if (mMySettingView != null && mTabPager.getCurrentItem() == 3) {
             mMySettingView.checkMessageCount();
         }
@@ -131,6 +129,10 @@ public class MainActivity extends BaseActivity {
                     case Msg.MSG_GO_MY_SETTING_VIEW:
                         mTabPager.setCurrentItem(3);
                         break;
+                    case Msg.MSG_REFRESH_BILL_LIST_VIEW:
+                        if (mTransManageView != null && mTabPager.getCurrentItem() == 2) {
+                            mTransManageView.refresh();
+                        }
 
                 }
             }
