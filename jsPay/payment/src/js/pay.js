@@ -50,7 +50,7 @@ function wpay() {
 			orderNum: orderNum,
 			txamt: '' + Util.getTxamt(orderAmount),
 			orderCurrency: currency,
-			backUrl: 'http://wx.vtpayment.com/wapdemo/agent/onekeypay/result',
+			backUrl: '',
 			frontUrl: 'payresult.html',
 			mchntid: merID,
 			inscd: inscd,
