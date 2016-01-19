@@ -101,7 +101,11 @@ public class ScanCodeActivity extends Activity {
 
                     }
                 });
-                ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
+                if (ScanCodeActivity.getScanCodehandler() != null) {
+                    ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
+                }
+
+
                 mHintDialog.hide();
             }
         });

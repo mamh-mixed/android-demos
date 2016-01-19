@@ -110,7 +110,7 @@ public class PayResultActivity extends Activity {
 
             mCouponContent.setRightText(Coupon.getInstance().getCardId());//卡券内容
             mActualTotalMoney.setRightText(decimalFormat.format(Double.valueOf(tradeBill.originalTotal)) + getString(R.string.coupon_yuan));//消费金额
-            mActualDiscount.setRightText(decimalFormat.format(new BigDecimal(tradeBill.originalTotal).subtract(new BigDecimal(tradeBill.total)).doubleValue())+getString(R.string.coupon_yuan));//优惠金额
+            mActualDiscount.setRightText(decimalFormat.format(new BigDecimal(tradeBill.originalTotal).subtract(new BigDecimal(tradeBill.total)).doubleValue()) + getString(R.string.coupon_yuan));//优惠金额
         } else {
             mCouponContent.setVisibility(View.GONE);
             mActualTotalMoney.setVisibility(View.GONE);
@@ -186,13 +186,13 @@ public class PayResultActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                    if (Coupon.getInstance().getVoucherType() != null) {
-                            CleanAfterPay();
-                    } else {
-                        Coupon.getInstance().clear();
-                        finish();
-                    }
+                if (Coupon.getInstance().getVoucherType() != null) {
+                    CleanAfterPay();
+                } else {
+                    Coupon.getInstance().clear();
+                    finish();
                 }
+            }
 
         });
     }
@@ -260,7 +260,9 @@ public class PayResultActivity extends Activity {
 
                     }
                 });
-                ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
+                if (ScanCodeActivity.getScanCodehandler() != null) {
+                    ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
+                }
                 mHintDialog.hide();
             }
         });
@@ -277,18 +279,23 @@ public class PayResultActivity extends Activity {
         mHintDialog.show();
     }
 
-    public void CleanAfterPay(){
+    public void CleanAfterPay() {
+
         Coupon.getInstance().clear();//清空卡券信息
-        ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
+        if (ScanCodeActivity.getScanCodehandler() != null) {
+            ScanCodeActivity.getScanCodehandler().sendEmptyMessage(Msg.MSG_FINISH_BIG_SCANCODEVIEW);
+        }
         finish();
+
     }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (keyCode == KeyEvent.KEYCODE_BACK) {
                 if ("success".equals(tradeBill.response)) {
                     if (Coupon.getInstance().getVoucherType() != null) {
-                            CleanAfterPay();
+                        CleanAfterPay();
                     } else {
                         Coupon.getInstance().clear();
                         finish();
