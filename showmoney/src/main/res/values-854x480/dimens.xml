@@ -1,0 +1,7 @@
+<resources>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <!-- 登录界面 checkbox 左边的 padding 值 -->
+    <dimen name="login_checkbox_paddingLeft">5dp</dimen>
+
+</resources>
