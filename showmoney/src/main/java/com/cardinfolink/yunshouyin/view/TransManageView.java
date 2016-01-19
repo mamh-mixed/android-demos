@@ -134,7 +134,6 @@ public class TransManageView extends LinearLayout {
         initLayout();
 
 
-
     }
 
     private void initLayout() {
@@ -356,21 +355,12 @@ public class TransManageView extends LinearLayout {
     //获取收款的账单账单
     private void getBill() {
         mLoadingDialog.startLoading();
-        List<MonthBill> groupDate = mBillAdapter.getGroupData();
-        if(groupDate!=null && groupDate.size()>0) {
-            String currentYearMonthTemp = groupDate.get(groupDate.size()-1).getNextMonth();
-            if(!TextUtils.isEmpty(currentYearMonthTemp)) {
-                mCurrentYearMonth = currentYearMonthTemp;
-            }
-        }
+
         quickPayService.getHistoryBillsAsync(SessonData.loginUser, mCurrentYearMonth, String.valueOf(billIndex), "100", "success", new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 //这里可以在ui线程里执行的
                 //这里特殊一些，需要用的size
-                final int size = data.getSize();
-                //这里还需要这个字段
-                final int totalRecord = data.getTotalRecord();//这个字段表示当月的总条数
 
                 parseServerPacket(data, mMonthBillMap, mTradeBillMap, mMonthBilList, mTradeBillList);
 
@@ -379,18 +369,8 @@ public class TransManageView extends LinearLayout {
                 if (mBillAdapter.getGroupCount() >= 1) {
                     mBillPullRefreshListView.getRefreshableView().expandGroup(0);
                 }
-                billIndex += size;
-                if (billIndex == totalRecord) {
-                    //之前用的是size来判断的。size等于零 表示 加载到这个月的全部的了，这时候就要加载前一个月的数据了
-                    //现在用totalRecord来判断，相等表明这个月的数据加载完了，这个时候就要加载前一个月的数据了
-                    billIndex = 0;
-                    mMonthBillAgo += 1;
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.MONTH, 0 - mMonthBillAgo);    //得到前一个月
-                    String year = String.format("%4d", calendar.get(Calendar.YEAR));
-                    String month = String.format("%02d", calendar.get(Calendar.MONTH) + 1);
-                    mCurrentYearMonth = year + month;//走到这里说明 下次调用这个 getBill()方法的时候拉取的就是上个月的账单了
-                }
+
+                mCurrentYearMonth = data.getNextMonth();
 
                 mLoadingDialog.endLoading();
             }
@@ -408,17 +388,9 @@ public class TransManageView extends LinearLayout {
     public void getTicketBill() {
         mLoadingDialog.startLoading();
 
-        //这里了使用 了 新的 接口俩确定 月份
-        List<MonthBill> groupDate = mBillAdapter.getGroupData();
-        if(groupDate!=null && groupDate.size()>0) {
-            mTicketCurrentYearMonth = groupDate.get(groupDate.size()-1).getNextMonth();
-        }
         quickPayService.getHistoryCouponsAsync(SessonData.loginUser, mTicketCurrentYearMonth, String.valueOf(ticketIndex), "100", new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
-                int size = data.getSize();
-                int totalRecord = data.getTotalRecord();
-
                 parseServerPacket(data, mMonthTicketBillMap, mTicketBillMap, mMonthTicketBilltList, mTicketBillList);
 
                 mTicketAdapter.notifyDataSetChanged();
@@ -428,20 +400,7 @@ public class TransManageView extends LinearLayout {
                     mTicketPullRefreshListView.getRefreshableView().expandGroup(0);
                 }
 
-
-                //这里了使用 了 新的 接口俩确定 月份, 这里 应该不用了！！！！
-                ticketIndex += size;
-                if (ticketIndex == totalRecord) {
-                    //之前用的是size来判断的。size等于零 表示 加载到这个月的全部的了，这时候就要加载前一个月的数据了
-                    //现在用totalRecord来判断，相等表明这个月的数据加载完了，这个时候就要加载前一个月的数据了
-                    ticketIndex = 0;
-                    mMonthTicketAgo += 1;
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.MONTH, 0 - mMonthTicketAgo);    //得到前一个月
-                    String year = String.format("%4d", calendar.get(Calendar.YEAR));
-                    String month = String.format("%02d", calendar.get(Calendar.MONTH) + 1);
-                    mTicketCurrentYearMonth = year + month;//走到这里说明 下次调用这个 getTicketBill()方法的时候拉取的就是上个月的账单了
-                }
+                mTicketCurrentYearMonth = data.getNextMonth();
 
                 mLoadingDialog.endLoading();
             }
@@ -540,7 +499,6 @@ public class TransManageView extends LinearLayout {
         final int refdcount = data.getRefdcount();
         final String refdtotal = data.getRefdtotal();
         final int size = data.getSize();
-        final String nextMonth = data.getNextMonth();
 
         //这里开始遍历这个账单的数组************************************************************
         if (data.getTxn() != null) {
@@ -604,7 +562,6 @@ public class TransManageView extends LinearLayout {
                     monthBill.setRefdtotal(refdtotal);
                     monthBill.setSize(size);
                     monthBill.setTotalRecord(totalRecord);
-                    monthBill.setNextMonth(nextMonth);
                     monthMap.put(currentYearMonth, monthBill);
                 }
 
@@ -668,7 +625,6 @@ public class TransManageView extends LinearLayout {
                     monthBill.setRefdtotal(refdtotal);
                     monthBill.setSize(size);
                     monthBill.setTotalRecord(totalRecord);
-                    monthBill.setNextMonth(nextMonth);
                     monthMap.put(currentYearMonth, monthBill);
                 }
 
