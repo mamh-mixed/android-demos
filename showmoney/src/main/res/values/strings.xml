@@ -53,7 +53,7 @@
     <string name="increase_personal">我是个体</string>
     <string name="increase_limit">提升限额</string>
     <string name="increase_material_requested">所需材料</string>
-    <string name="increase_personal1">个体工商户</string>
+    <string name="increase_personal1">个体商户</string>
     <string name="increase_personal1_material">法人身份证\n营业执照</string>
     <string name="increase_company1">企业商户</string>
     <string name="increase_company1_meaterial">法人身份证\n企业营业执照\n税务登记证\n组织机构代码证</string>
