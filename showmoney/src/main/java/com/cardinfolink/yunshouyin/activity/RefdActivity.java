@@ -13,6 +13,7 @@ import com.cardinfolink.cashiersdk.model.OrderData;
 import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
+import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.ui.EditTextClear;
@@ -126,6 +127,7 @@ public class RefdActivity extends BaseActivity {
                             mAlertDialog.setOkOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    MainActivity.getHandler().sendEmptyMessage(Msg.MSG_REFRESH_BILL_LIST_VIEW);
                                     mAlertDialog.hide();
                                     finish();
                                 }
