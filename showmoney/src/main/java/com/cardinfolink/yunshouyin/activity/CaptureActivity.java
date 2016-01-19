@@ -690,7 +690,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
             chcd = bundle.getString("chcd");
             originaltotal = bundle.getString("originaltotal");
             Date now = new Date();
-            SimpleDateFormat mspf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            SimpleDateFormat mspf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             mCurrentTime = mspf.format(now);
 
             mOrderNum = Utility.geneOrderNumber();
