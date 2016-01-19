@@ -367,7 +367,10 @@ public class TransManageView extends LinearLayout {
         mLoadingDialog.startLoading();
         List<MonthBill> groupDate = mBillAdapter.getGroupData();
         if(groupDate!=null && groupDate.size()>0) {
-            mCurrentYearMonth = groupDate.get(groupDate.size()-1).getNextMonth();
+            String currentYearMonthTemp = groupDate.get(groupDate.size()-1).getNextMonth();
+            if(!TextUtils.isEmpty(currentYearMonthTemp)) {
+                mCurrentYearMonth = currentYearMonthTemp;
+            }
         }
         quickPayService.getHistoryBillsAsync(SessonData.loginUser, mCurrentYearMonth, String.valueOf(billIndex), "100", "success", new QuickPayCallbackListener<ServerPacket>() {
             @Override
@@ -677,6 +680,7 @@ public class TransManageView extends LinearLayout {
                     monthBill.setRefdtotal(refdtotal);
                     monthBill.setSize(size);
                     monthBill.setTotalRecord(totalRecord);
+                    monthBill.setNextMonth(nextMonth);
                     monthMap.put(currentYearMonth, monthBill);
                 }
 

@@ -228,10 +228,13 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             e.printStackTrace();
         }
 
-        if ("android".equals(bill.tradeFrom) || "ios".equals(bill.tradeFrom)) {
+        if ("android".equals(bill.tradeFrom) ) {
             childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_phone);
             childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type1));
-        } else if ("wap".equals(bill.tradeFrom)) {
+        } else if ( "ios".equals(bill.tradeFrom)) {
+            childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_phone);
+            childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type5));
+        }  else if ("wap".equals(bill.tradeFrom)) {
             childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_web);
             childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type2));
         } else if ("PC".equals(bill.tradeFrom)) {
@@ -298,6 +301,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
                 childViewHolder.billDiscount.setVisibility(View.VISIBLE);
                 String origin = discountAmt.add(txAmt).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
                 childViewHolder.billOriginTradeAmount.setText("￥" + origin);
+                childViewHolder.billOriginTradeAmount.getPaint().setColor(Color.GRAY);
                 childViewHolder.billOriginTradeAmount.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
                 childViewHolder.billOriginTradeAmount.setVisibility(View.INVISIBLE);

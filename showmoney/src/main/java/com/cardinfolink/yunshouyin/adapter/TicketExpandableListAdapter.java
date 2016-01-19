@@ -54,6 +54,16 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
         this.mHintDialog = new HintBillDialog(mContext, view);
     }
 
+
+    public List<List<TradeBill>> getChildrenData() {
+        return childrenData;
+    }
+
+    public List<MonthBill> getGroupData() {
+        return groupData;
+    }
+
+
     @Override
     public int getGroupCount() {
         if (groupData != null) {
@@ -329,4 +339,5 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
         public View linearLayoutDay;//左边显示日期，周几的一个线性布局
         public View linearLayoutBillItem;//右边显示详情账单信息的一个线性布局
     }
+
 }
