@@ -124,7 +124,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private YellowTips mYellowTips;
 
 
-    private double mOriginalTotal;//原始金额
+    private BigDecimal mOriginalTotal=new BigDecimal("0");//原始金额
     private double mTotal;//优惠后的金额,实际支付的金额，如果有优惠就是优惠后的金额。如果没有优惠就和原始金额是一样的
     private String mCurrentTime;
 
@@ -335,7 +335,11 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                             String alertMsg = ShowMoneyApp.getResString(R.string.alert_error_limit_error);
                             mYellowTips.show(alertMsg);
                         } else {
-                            captureOrCreate.start();//这里调用扫码还是生成二维码
+                            captureOrCreate.start();//这
+
+
+
+
                         }
                     } catch (Exception e) {
                     }
@@ -345,8 +349,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 public void onFailure(QuickPayException ex) {
                     endLoading();
                     String errorMsg = ex.getErrorMsg();
-                    mScanTitle.setText(errorMsg);
-                    mYellowTips.show(errorMsg);
+//                    mScanTitle.setText(errorMsg);
+                    mYellowTips.show(ErrorUtil.getErrorString(errorMsg));
                 }
             });
         } else {
@@ -458,7 +462,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 int dy = currentY - mLastDownY;
                 if (dy < 0) {
                     if (Math.abs(dy) > keyboardView.getHeight() / 2) {
-                        startQRPay(mTotal, mOriginalTotal);
+                        startQRPay(mTotal, mOriginalTotal.doubleValue());
                     }
                 }
                 break;
@@ -606,14 +610,14 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         mTotal = Double.parseDouble(input.getText().toString());
         switch (v.getId()) {
             case R.id.scancodepay:
-                startCapturePay(mTotal, mOriginalTotal);
+                startCapturePay(mTotal, mOriginalTotal.doubleValue());
                 break;
             case R.id.iv_left:
                 //切换了支付方式
                 if (!mCHCD.equals(CHCD_TYPE[0])) {
                     cancelBill(mOrderNum);
                     mCHCD = CHCD_TYPE[0];
-                    startQRPay(mTotal, mOriginalTotal);
+                    startQRPay(mTotal, mOriginalTotal.doubleValue());
                 }
                 break;
             case R.id.iv_right:
@@ -621,13 +625,13 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                 if (!mCHCD.equals(CHCD_TYPE[1])) {
                     cancelBill(mOrderNum);
                     mCHCD = CHCD_TYPE[1];
-                    startQRPay(mTotal, mOriginalTotal);
+                    startQRPay(mTotal, mOriginalTotal.doubleValue());
                 }
                 break;
             case R.id.scan_qr:
                 cancelBill(mOrderNum);
                 showKeyBoard();
-                startCapturePay(mTotal, mOriginalTotal);
+                startCapturePay(mTotal, mOriginalTotal.doubleValue());
                 break;
             case R.id.iv_keyboard:
                 cancelBill(mOrderNum);
@@ -955,7 +959,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
 
     public void getResult() {
-        mOriginalTotal = 0;
+        mOriginalTotal = new BigDecimal("0");
         String x = output.getText().toString();//上边的文本框
 
 
@@ -963,9 +967,9 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         int i = 0;
         double tempInputResult;//优惠后的金额，
         if (x.indexOf("+") == -1) {
-            mOriginalTotal = Double.parseDouble(x);
+            mOriginalTotal = new BigDecimal(x);
             tempInputResult = discountMoneyResult(mOriginalTotal);
-            input.setText(String.format("%.2f", tempInputResult));
+            input.setText(String.valueOf(tempInputResult));//下面的文本框
         } else {
             while (x.contains("+")) {
                 t = x.substring(0, x.indexOf("+"));
@@ -976,11 +980,11 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             s[i] = x;
             i++;
             for (int c = 0; c < i; c++) {
-                mOriginalTotal += Double.parseDouble(s[c]);
+                mOriginalTotal = mOriginalTotal.add(new BigDecimal(s[c]));
             }
             //优惠后的金额，
             tempInputResult = discountMoneyResult(mOriginalTotal);
-            input.setText(String.format("%.2f", tempInputResult));//下面的文本框
+            input.setText(String.valueOf(tempInputResult));//下面的文本框
         }
 
         //添加浏览判断小数点后最多输入两位小数
@@ -999,7 +1003,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             }
         }
 
-        if (mOriginalTotal > MAX_MONEY) {
+        if (mOriginalTotal.compareTo(new BigDecimal(MAX_MONEY))>0) {
             // "金额过大!"
             String toastMsg = mContext.getString(R.string.toast_money_too_large);
             mYellowTips.show(toastMsg);
@@ -1011,7 +1015,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
     public void getResult(String w) {
-        mOriginalTotal = 0;
+        mOriginalTotal = new BigDecimal("0");
 
         String x = w;
         String t = "";
@@ -1026,13 +1030,13 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         s[i] = x;
         i++;
         for (int c = 0; c < i; c++) {
-            mOriginalTotal += Double.parseDouble(s[c]);
+            mOriginalTotal = mOriginalTotal.add(new BigDecimal(s[c]));
         }
         //优惠后的金额，
         double tempInputResult = discountMoneyResult(mOriginalTotal);
-        input.setText(String.format("%.2f", tempInputResult));
+        input.setText(String.valueOf(tempInputResult));//下面的文本框
 
-        if (mOriginalTotal > MAX_MONEY) {
+        if (mOriginalTotal.compareTo(new BigDecimal(MAX_MONEY))>0) {
             String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
             mYellowTips.show(toastMsg);
             numFlag = false;
@@ -1042,64 +1046,65 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     }
 
     //获取打折后的金额
-    public double discountMoneyResult(double result) {
-        double tempResult = result;
+    public double discountMoneyResult(BigDecimal result) {
+        BigDecimal tempResult = result;
         boolean hasCoupon = Coupon.getInstance().getSaleDiscount() != null &&
                 !"0".equals(Coupon.getInstance().getSaleDiscount());
         if (!hasCoupon) {
             mHasDiscount.setVisibility(View.INVISIBLE);
-            return tempResult;
+            return tempResult.doubleValue();
         }
         //打折门限值
-        double limit = 0;
+        BigDecimal limit = new BigDecimal("0");
         if (Coupon.getInstance().getSaleMinAmount() != null && !"0".equals(Coupon.getInstance().getSaleMinAmount())) {
             BigDecimal saleMinAmount = new BigDecimal(Double.valueOf(Coupon.getInstance().getSaleMinAmount()));
-            limit = saleMinAmount.divide(new BigDecimal(100)).doubleValue();
+            limit = saleMinAmount.divide(new BigDecimal(100));
         }
         //折扣值
         BigDecimal saleDiscount = new BigDecimal(Double.valueOf(Coupon.getInstance().getSaleDiscount()));
-        double discount = saleDiscount.divide(new BigDecimal(100)).doubleValue();
+        BigDecimal discount = saleDiscount.divide(new BigDecimal(100));
 
         //最高优惠金额
         boolean hasMaxDiscount = Coupon.getInstance().getMaxDiscountAmt() != null && !"0".equals(Coupon.getInstance().getMaxDiscountAmt());
-        double maxDiscount = 0;
+        BigDecimal maxDiscount = new BigDecimal("0");
         if (hasMaxDiscount) {
-            maxDiscount = new BigDecimal(Coupon.getInstance().getMaxDiscountAmt()).divide(new BigDecimal(100)).doubleValue();
+            maxDiscount = new BigDecimal(Coupon.getInstance().getMaxDiscountAmt()).divide(new BigDecimal(100));
         }
 
 
         //满减券
         if (Coupon.getInstance().getVoucherType().endsWith("1")) {
-            if (limit > 0 && result >= limit) {
+            if (limit.compareTo(new BigDecimal(0))>0  && result.compareTo(limit) >=0 ) {
                 mHasDiscount.setVisibility(View.VISIBLE);
-                tempResult -= discount;
+                tempResult = tempResult.subtract(discount);
                 Log.e(TAG, tempResult + "满减");
             }
         } else if (Coupon.getInstance().getVoucherType().endsWith("2")) {
             //固定金额券
             mHasDiscount.setVisibility(View.VISIBLE);
-            if (tempResult <= discount) {
-                tempResult = 0;
+            if (tempResult .compareTo(discount)<=0) {
+                tempResult = new BigDecimal(0);
             } else {
-                tempResult -= discount;
+                tempResult.subtract(discount);
             }
             Log.e(TAG, tempResult + "固定金额");
         } else if (Coupon.getInstance().getVoucherType().endsWith("3")) {
             //满折券
-            if (limit > 0 && result >= limit) {
+            if (limit.compareTo(new BigDecimal(0))>0  && result.compareTo(limit) >=0) {
                 mHasDiscount.setVisibility(View.VISIBLE);
-                tempResult = new BigDecimal(tempResult).multiply(new BigDecimal(discount)).doubleValue();
+                tempResult = tempResult.multiply(discount).setScale(2, BigDecimal.ROUND_FLOOR);
                 //判断优惠金额是否大于最大优惠金额
                 // TODO: 2016/1/4  可能存在精度的问题
                 if (hasMaxDiscount) {
-                    if ((result - tempResult) > maxDiscount) {
-                        tempResult = new BigDecimal(result).subtract(new BigDecimal(maxDiscount)).doubleValue();
+                    if ((result.subtract(tempResult)).compareTo(maxDiscount)>0 ) {
+                        //tempResult = new BigDecimal(result).subtract(new BigDecimal(maxDiscount)).doubleValue();
+                        tempResult = result.subtract(maxDiscount).setScale(2, BigDecimal.ROUND_FLOOR);
                     }
                 }
             }
             Log.e(TAG, tempResult + "满折");
         }
-        return tempResult;
+        return tempResult.doubleValue();
     }
 
 
