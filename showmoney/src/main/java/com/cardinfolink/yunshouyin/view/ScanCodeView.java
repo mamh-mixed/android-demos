@@ -124,7 +124,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     private YellowTips mYellowTips;
 
 
-    private BigDecimal mOriginalTotal=new BigDecimal("0");//原始金额
+    private BigDecimal mOriginalTotal = new BigDecimal("0");//原始金额
     private double mTotal;//优惠后的金额,实际支付的金额，如果有优惠就是优惠后的金额。如果没有优惠就和原始金额是一样的
     private String mCurrentTime;
 
@@ -336,8 +336,6 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                             mYellowTips.show(alertMsg);
                         } else {
                             captureOrCreate.start();//这
-
-
 
 
                         }
@@ -736,7 +734,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         Bundle bun = new Bundle();
 
         TradeBill tradeBill = new TradeBill();
-        tradeBill.orderNum = mResultData.orderNum;
+        //这里是改了 还是怎么了 resultdata没有返回orderNum了?????
+        tradeBill.orderNum = mResultData.origOrderNum;
         tradeBill.chcd = mResultData.chcd;
         tradeBill.tandeDate = mCurrentTime;
         tradeBill.response = "success";
@@ -764,7 +763,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         Bundle bun = new Bundle();
         TradeBill tradeBill = new TradeBill();
-        tradeBill.orderNum = mResultData.orderNum;
+        //这里是改了 还是怎么了 resultdata没有返回orderNum了?????
+        tradeBill.orderNum = mResultData.origOrderNum;
         tradeBill.chcd = mResultData.chcd;
         tradeBill.tandeDate = mCurrentTime;
         tradeBill.errorDetail = mResultData.errorDetail;
@@ -1003,7 +1003,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             }
         }
 
-        if (mOriginalTotal.compareTo(new BigDecimal(MAX_MONEY))>0) {
+        if (mOriginalTotal.compareTo(new BigDecimal(MAX_MONEY)) > 0) {
             // "金额过大!"
             String toastMsg = mContext.getString(R.string.toast_money_too_large);
             mYellowTips.show(toastMsg);
@@ -1036,7 +1036,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         double tempInputResult = discountMoneyResult(mOriginalTotal);
         input.setText(String.valueOf(tempInputResult));//下面的文本框
 
-        if (mOriginalTotal.compareTo(new BigDecimal(MAX_MONEY))>0) {
+        if (mOriginalTotal.compareTo(new BigDecimal(MAX_MONEY)) > 0) {
             String toastMsg = ShowMoneyApp.getResString(R.string.toast_money_too_large);
             mYellowTips.show(toastMsg);
             numFlag = false;
@@ -1074,7 +1074,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         //满减券
         if (Coupon.getInstance().getVoucherType().endsWith("1")) {
-            if (limit.compareTo(new BigDecimal(0))>0  && result.compareTo(limit) >=0 ) {
+            if (limit.compareTo(new BigDecimal(0)) > 0 && result.compareTo(limit) >= 0) {
                 mHasDiscount.setVisibility(View.VISIBLE);
                 tempResult = tempResult.subtract(discount);
                 Log.e(TAG, tempResult + "满减");
@@ -1082,7 +1082,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         } else if (Coupon.getInstance().getVoucherType().endsWith("2")) {
             //固定金额券
             mHasDiscount.setVisibility(View.VISIBLE);
-            if (tempResult .compareTo(discount)<=0) {
+            if (tempResult.compareTo(discount) <= 0) {
                 tempResult = new BigDecimal(0);
             } else {
                 tempResult.subtract(discount);
@@ -1090,13 +1090,13 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             Log.e(TAG, tempResult + "固定金额");
         } else if (Coupon.getInstance().getVoucherType().endsWith("3")) {
             //满折券
-            if (limit.compareTo(new BigDecimal(0))>0  && result.compareTo(limit) >=0) {
+            if (limit.compareTo(new BigDecimal(0)) > 0 && result.compareTo(limit) >= 0) {
                 mHasDiscount.setVisibility(View.VISIBLE);
                 tempResult = tempResult.multiply(discount).setScale(2, BigDecimal.ROUND_FLOOR);
                 //判断优惠金额是否大于最大优惠金额
                 // TODO: 2016/1/4  可能存在精度的问题
                 if (hasMaxDiscount) {
-                    if ((result.subtract(tempResult)).compareTo(maxDiscount)>0 ) {
+                    if ((result.subtract(tempResult)).compareTo(maxDiscount) > 0) {
                         //tempResult = new BigDecimal(result).subtract(new BigDecimal(maxDiscount)).doubleValue();
                         tempResult = result.subtract(maxDiscount).setScale(2, BigDecimal.ROUND_FLOOR);
                     }
