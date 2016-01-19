@@ -35,5 +35,10 @@ public class Msg {
     public static final int MSG_FROM_SERVER_COUPON_FAIL = 603;
     public static final int MSG_COUPON_CANCEL = 604;
 
-    public static final int MSG_FINISH_BIG_SCANCODEVIEW=605;
+    public static final int MSG_FINISH_BIG_SCANCODEVIEW = 605;
+
+    /**
+     * 退款的时候 使用 刷新账单界面
+     */
+    public static final int MSG_REFRESH_BILL_LIST_VIEW = 702;
 }
