@@ -1,7 +1,5 @@
 package com.cardinfolink.yunshouyin.core;
 
-import android.util.Log;
-
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.model.MerchantPhoto;

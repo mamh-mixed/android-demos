@@ -13,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 
 /**

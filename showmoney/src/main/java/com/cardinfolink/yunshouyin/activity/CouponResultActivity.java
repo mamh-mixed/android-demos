@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +18,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
+import com.cardinfolink.yunshouyin.util.Log;
 import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.view.HintDialog;
 

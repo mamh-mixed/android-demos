@@ -3,20 +3,13 @@ package com.cardinfolink.yunshouyin.view;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
@@ -34,8 +27,6 @@ import com.cardinfolink.yunshouyin.model.CouponInfo;
 import com.cardinfolink.yunshouyin.model.QRequest;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.model.Txn;
-import com.cardinfolink.yunshouyin.ui.EditTextClear;
-import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
@@ -584,7 +575,6 @@ public class TransManageView extends LinearLayout {
                 }
 
                 if (TextUtils.isEmpty(tradeBill.tandeDate)) {
-                    Log.e(TAG, "[Txn] bill date is empty");
                     continue;
                 }
                 //获取这个账单里面的日期,年月日 的 日
@@ -595,7 +585,6 @@ public class TransManageView extends LinearLayout {
 
                 //渠道为空的 不列入统计，这样totalRecord和实际的list的size可能不一样
                 if (TextUtils.isEmpty(tradeBill.chcd)) {
-                    Log.e(TAG, "[Txn] bill channel is empty");
                     continue;
                 }
 
@@ -655,7 +644,6 @@ public class TransManageView extends LinearLayout {
                 }
                 //获取这个账单里面的日期,年月日 的 日
                 if (TextUtils.isEmpty(tradeBill.tandeDate)) {
-                    Log.e(TAG, "[coupon] coupon date is empty");
                     continue;
                 }
                 String currentDay = tradeBill.tandeDate.substring(6, 8);
