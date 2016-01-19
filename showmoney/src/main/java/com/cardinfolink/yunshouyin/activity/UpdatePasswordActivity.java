@@ -8,7 +8,9 @@ import android.widget.Button;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
+import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
@@ -72,6 +74,14 @@ public class UpdatePasswordActivity extends BaseActivity {
                 mYellowTips.show(alertMsg);
                 mOriginPassword.setPassword("");
                 mNewPassword.setPassword("");
+
+                //保存密码成功之后 就要设置一下这个新的密码
+                SessonData.loginUser.setPassword(newPwd);
+                User user = new User();
+                user.setUsername(SessonData.loginUser.getUsername());
+                user.setPassword(SessonData.loginUser.getPassword());
+                user.setAutoLogin(SessonData.loginUser.isAutoLogin());
+                SaveData.setUser(mContext, user);
             }
 
             @Override
