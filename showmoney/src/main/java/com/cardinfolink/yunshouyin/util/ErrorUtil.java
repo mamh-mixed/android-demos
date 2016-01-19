@@ -90,6 +90,10 @@ public class ErrorUtil {
         if ("CODE_PAYTYPE_NOT_MATCH".equals(error)) {
             return ShowMoneyApp.getResString(R.string.alert_error_CODE_PAYTYPE_NOT_MATCH);
         }
+        if("NO_ENHANCE_LIMIT_AMT".equals(error)){
+            return ShowMoneyApp.getResString(R.string.alert_error_no_enhance_limit_amt);
+
+        }
         return error;
 
     }
