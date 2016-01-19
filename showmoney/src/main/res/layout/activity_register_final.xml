@@ -102,4 +102,6 @@
 
     <include layout="@layout/activate_dialog" />
 
+    <include layout="@layout/yellow_tips_layout" />
+
 </RelativeLayout>
