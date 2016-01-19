@@ -1,9 +1,15 @@
 package com.cardinfolink.yunshouyin.util;
 
+import android.text.TextUtils;
+
 import java.security.MessageDigest;
 
 public class EncoderUtil {
     public static String Encrypt(String strSrc, String encName) {
+        //这里加入了 为null 的判断
+        if (TextUtils.isEmpty(strSrc)) {
+            return null;
+        }
         //parameter strSrc is a string will be encrypted,
         //parameter encName is the algorithm name will be used.
         //encName dafault to "MD5"
