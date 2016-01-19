@@ -338,7 +338,11 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
 
         if (imageFile.exists()) {
             //如果头像图片文件存在就直接使用
-            bitmap = BitmapFactory.decodeFile(imageFile.getPath());
+            BitmapFactory.Options opt = new BitmapFactory.Options();
+            opt.inPreferredConfig = Bitmap.Config.RGB_565;
+            opt.inPurgeable = true;
+            opt.inInputShareable = true;
+            bitmap = BitmapFactory.decodeFile(imageFile.getPath(), opt);
             return bitmap;
         }
 
