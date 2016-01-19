@@ -338,16 +338,18 @@ public class DetailActivity extends BaseActivity {
             if ("android".equals(mTradeBill.tradeFrom)) {
                 //app收款
                 mPayType.setRightText(getString(R.string.detail_activity_pay_type2));
-
             } else if ("ios".equals(mTradeBill.tradeFrom)) {
                 //app收款
                 mPayType.setRightText(getString(R.string.detail_activity_pay_type3));
             } else if ("wap".equals(mTradeBill.tradeFrom)) {
                 //web 收款
                 mPayType.setRightText(getString(R.string.detail_activity_pay_type4));
+            } else if ("PC".equals(mTradeBill.tradeFrom)) {
+                //pc
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type1));
             } else {
                 //其他收款
-                mPayType.setRightText(getString(R.string.detail_activity_pay_type1));
+                mPayType.setRightText(getString(R.string.detail_activity_pay_type5));
             }
         } else {
             //tradeFrom 是 null 清空
