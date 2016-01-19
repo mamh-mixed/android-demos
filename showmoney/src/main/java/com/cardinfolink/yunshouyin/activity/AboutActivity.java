@@ -80,9 +80,14 @@ public class AboutActivity extends Activity implements View.OnClickListener {
             case R.id.website:
                 String urlStr = mWebsite.getRightText();
                 if (!TextUtils.isEmpty(urlStr)) {
-                    Uri uri = Uri.parse(urlStr);
-                    intent = new Intent(Intent.ACTION_VIEW, uri);
-                    startActivity(intent);
+                    //为什么要这样做？？？？
+                    try {
+                        Uri uri = Uri.parse(urlStr);
+                        intent = new Intent(Intent.ACTION_VIEW, uri);
+                        startActivity(intent);
+                    } catch (Exception e) {
+
+                    }
                 }
                 break;
             case R.id.welcome:
