@@ -23,6 +23,7 @@ import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.ui.ResultInfoItem;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
+import com.cardinfolink.yunshouyin.util.Log;
 import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.view.HintDialog;
 
@@ -34,6 +35,8 @@ import java.text.DecimalFormat;
  * Created by charles on 2015/12/20.
  */
 public class PayResultActivity extends Activity {
+
+    private static final String TAG = "PayResultActivity";
     private SettingActionBarItem mActionBar;
 
     private TextView mPayResult;
@@ -53,7 +56,6 @@ public class PayResultActivity extends Activity {
     private TradeBill tradeBill;
     private DecimalFormat decimalFormat = new DecimalFormat("0.00");
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +68,7 @@ public class PayResultActivity extends Activity {
         Bundle bundle = intent.getBundleExtra("BillBundle");
         if (bundle != null) {
             tradeBill = (TradeBill) bundle.getSerializable("TradeBill");
+            Log.i(TAG, "pay result : " + tradeBill);
         }
 
 
@@ -192,6 +195,7 @@ public class PayResultActivity extends Activity {
                     Coupon.getInstance().clear();
                     finish();
                 }
+                MainActivity.getWeipassManager().print(tradeBill);
             }
 
         });

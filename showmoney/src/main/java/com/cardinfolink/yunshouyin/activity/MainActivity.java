@@ -29,6 +29,8 @@ import com.umeng.update.UmengUpdateAgent;
 
 import java.util.ArrayList;
 
+import cn.weipass.biz.WeipassManager;
+
 public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     public boolean mFirsInTicketView = true;
@@ -54,6 +56,12 @@ public class MainActivity extends BaseActivity {
 
     private static Handler mMainActivityHandler;//main activity里面的handler，用来切换界面的
     private SharedPreferences sp;
+    
+    private static WeipassManager weipassManager ;
+
+    public static WeipassManager getWeipassManager() {
+        return weipassManager;
+    }
 
     @Override
     protected void onResume() {
@@ -77,6 +85,8 @@ public class MainActivity extends BaseActivity {
         initHandler();
         initLayout();
         initUmeng();
+        weipassManager = WeipassManager.getInstance(this);
+        weipassManager.init();
     }
 
 
@@ -339,5 +349,11 @@ public class MainActivity extends BaseActivity {
             String ticketcode = data.getStringExtra("ticketcode");
             mTicketView.setTicketCode(ticketcode);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        weipassManager.destory();
     }
 }
