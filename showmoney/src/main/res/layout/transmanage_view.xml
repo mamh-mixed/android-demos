@@ -47,7 +47,7 @@
                     android:paddingTop="10dp"
                     android:text="@string/bill_title1"
                     android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
+                    android:textSize="@dimen/transmanager_view_RadioButton_textSize" />
 
                 <RadioButton
                     android:id="@+id/radio_ticket"
@@ -65,7 +65,7 @@
                     android:paddingTop="10dp"
                     android:text="@string/bill_title2"
                     android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
+                    android:textSize="@dimen/transmanager_view_RadioButton_textSize" />
 
                 <RadioButton
                     android:id="@+id/radio_collection"
@@ -81,7 +81,7 @@
                     android:paddingTop="10dp"
                     android:text="@string/bill_title3"
                     android:textColor="@drawable/radio_button1_color_selector"
-                    android:textSize="15sp" />
+                    android:textSize="@dimen/transmanager_view_RadioButton_textSize" />
 
 
             </RadioGroup>
