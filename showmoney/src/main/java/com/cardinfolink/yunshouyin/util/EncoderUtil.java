@@ -19,7 +19,7 @@ public class EncoderUtil {
             md = MessageDigest.getInstance(encName);
             md.update(bt);
             strDes = bytes2Hex(md.digest()); //to HexString
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             return null;
         }
         return strDes;
@@ -38,7 +38,7 @@ public class EncoderUtil {
             md = MessageDigest.getInstance(encName);
             md.update(bt);
             strDes = bytes2Hex(md.digest()); //to HexString
-        } catch (NoSuchAlgorithmException e) {
+        } catch (Exception e) {
             return null;
         }
         return strDes;
