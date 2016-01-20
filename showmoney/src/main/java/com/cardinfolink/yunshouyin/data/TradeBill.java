@@ -69,6 +69,17 @@ public class TradeBill implements Serializable {
      */
     public String smallTicketNumber;
 
+
+    /**
+     * 在 groupData里面的位置
+     */
+    public int groupPosition;
+
+    /**
+     * 在childData里面的位置
+     */
+    public int childPosition;
+
     @Override
     public String toString() {
         return "TradeBill{" +
