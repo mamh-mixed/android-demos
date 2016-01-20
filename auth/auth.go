@@ -18,22 +18,23 @@ func AuthHandle(w http.ResponseWriter, r *http.Request) {
 
 	log.Infof("user authorization, appID=%s, code=%s", appID, code)
 
+	// 查询存在的大商户
 	agentCm, err := mongo.ChanMerColl.Find(channel.ChanCodeAlipay, appID) // TODO 待确定
 	if err != nil {
-		w.Write([]byte("invalid appID"))
+		w.Write([]byte("非法的APPID参数。"))
 		return
 	}
 
 	resp, err := alipay.GetAppAuthToken(appID, code, []byte(agentCm.PrivateKey))
 	if err != nil {
-		w.Write([]byte("get app_auth_token error: " + err.Error()))
+		w.Write([]byte("获取授权信息失败，请重新授权。详情: " + err.Error()))
 		return
 	}
 
 	log.Infof("alipay auth return: %+v", resp)
 	if resp.CommonBody.Code != "10000" {
-		log.Infof("alipay auth return: %+v", resp)
-		w.Write([]byte("get app_auth_token error: " + resp.CommonBody.Msg))
+		log.Infof("alipay auth return error: %+v", resp)
+		w.Write([]byte("获取授权信息失败，请重新授权。详情: " + resp.CommonBody.Msg))
 		return
 	}
 
