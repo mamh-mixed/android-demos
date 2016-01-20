@@ -175,10 +175,10 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                         coupon.setAvailCount(resultData.availCount);
                         coupon.setCardId(resultData.cardId);
                         coupon.setVoucherType(resultData.voucherType);
-                        coupon.setSaleDiscount(resultData.saleDiscount);
-                        coupon.setMaxDiscountAmt(resultData.maxDiscountAmt);
+                        coupon.setSaleDiscount(resultData.saleDiscount);//都需要除以100，这里返回的是以分为单位的
+                        coupon.setMaxDiscountAmt(resultData.maxDiscountAmt);//都需要除以100，这里返回的是以分为单位的
                         coupon.setExpDate(resultData.expDate);
-                        coupon.setSaleMinAmount(resultData.saleMinAmount);
+                        coupon.setSaleMinAmount(resultData.saleMinAmount);//都需要除以100，这里返回的是以分为单位的
                         coupon.setOrderNum(resultData.orderNum);
                         if (mResultData != null) {
                             if ("00".equals(mResultData.respcd)) {
