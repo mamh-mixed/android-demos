@@ -129,6 +129,19 @@ public class PayResultActivity extends Activity {
                     CleanAfterPay();
                 }
             });
+            mConfirm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (Coupon.getInstance().getVoucherType() != null) {
+                        CleanAfterPay();
+                    } else {
+                        Coupon.getInstance().clear();
+                        finish();
+                    }
+                }
+
+            });
         } else if ("fail".equals(tradeBill.response)) {
             //**这里是支付失败*********************************************************************
             mPayResult.setText(R.string.pay_result_fail);
@@ -168,6 +181,19 @@ public class PayResultActivity extends Activity {
                     }
                 });
             }
+            mConfirm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (Coupon.getInstance().getVoucherType() != null) {
+                        showPayFailPref();
+                    } else {
+                        Coupon.getInstance().clear();
+                        finish();
+                    }
+                }
+
+            });
         }
         mPersonAccount.setRightText(SessionData.loginUser.getUsername());
         mMakeDealTime.setRightText(tradeBill.tandeDate);
@@ -182,19 +208,7 @@ public class PayResultActivity extends Activity {
             mPayAccess.setImageDrawable(null);
         }
 
-        mConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                if (Coupon.getInstance().getVoucherType() != null) {
-                    CleanAfterPay();
-                } else {
-                    Coupon.getInstance().clear();
-                    finish();
-                }
-            }
-
-        });
     }
 
     private void showPayFailUnPref() {

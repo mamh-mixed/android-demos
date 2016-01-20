@@ -1083,7 +1083,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
             if (tempResult.compareTo(discount) <= 0) {
                 tempResult = new BigDecimal(0);
             } else {
-                tempResult.subtract(discount);
+                tempResult = tempResult.subtract(discount);
             }
             Log.e(TAG, tempResult + "固定金额");
         } else if (Coupon.getInstance().getVoucherType().endsWith("3")) {
