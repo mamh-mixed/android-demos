@@ -120,6 +120,8 @@ public class RefdActivity extends BaseActivity {
                         endLoading();
                         String alertMsg = "";
                         if (resultData.respcd.equals("00")) {
+                            //退款成功，打印凭条
+                            MainActivity.getWeipassManager().print(resultData);
                             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog_refd_success);
                             mAlertDialog.setTitle(alertMsg);
                             mAlertDialog.setImageViewResource(R.drawable.right);

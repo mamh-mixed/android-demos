@@ -195,7 +195,7 @@ public class PayResultActivity extends Activity {
                     Coupon.getInstance().clear();
                     finish();
                 }
-                MainActivity.getWeipassManager().print(tradeBill);
+//                MainActivity.getWeipassManager().print(tradeBill);
             }
 
         });

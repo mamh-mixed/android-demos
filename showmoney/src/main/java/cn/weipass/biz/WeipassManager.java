@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.widget.Toast;
 
+import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.util.Log;
 
@@ -39,7 +40,7 @@ public class WeipassManager {
 
     private Context context;
     private Activity activity;
-    private ProgressDialog pd = null;
+//    private ProgressDialog pd = null;
 
     private Scanner sacner = null;
     private Printer printer = null;
@@ -204,17 +205,18 @@ public class WeipassManager {
      *
      * @param bill
      */
-    public void print(TradeBill bill) {
+    public void print(ResultData resultData) {
 
         if (printer == null) {
             Toast.makeText(context, "尚未初始化打印sdk，请稍后再试", Toast.LENGTH_SHORT).show();
             return;
         }
-        if (pd == null) {
-            pd = new ProgressDialog(context);
-        }
-        pd.setMessage("正在打印小票...");
-        pd.show();
+        Log.i(TAG, "print start :正在打印小票...");
+//        if (pd == null) {
+//            pd = new ProgressDialog(context);
+//        }
+//        pd.setMessage("正在打印小票...");
+//        pd.show();
         printer.setOnEventListener(new IPrint.OnEventListener() {
 
             @Override
@@ -225,9 +227,9 @@ public class WeipassManager {
                 // 回调函数中不能做UI操作，所以可以使用runOnUiThread函数来包装一下代码块
                 activity.runOnUiThread(new Runnable() {
                     public void run() {
-                        if (pd != null) {
-                            pd.hide();
-                        }
+//                        if (pd != null) {
+//                            pd.hide();
+//                        }
                         final String message = ToolsUtil.getPrintErrorInfo(what, info);
                         if (message == null || message.length() < 1) {
                             return;
@@ -237,7 +239,7 @@ public class WeipassManager {
                 });
             }
         });
-        ToolsUtil.printNormal(context, printer, bill);
+        ToolsUtil.printNormal(context, printer, resultData);
 
     }
 

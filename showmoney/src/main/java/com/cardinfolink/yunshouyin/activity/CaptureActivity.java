@@ -275,6 +275,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                     Coupon.getInstance().setOrderNum(resultData.orderNum);
                                     Coupon.getInstance().setScanCodeId(resultData.scanCodeId);
                                     if ("00".equals(mResultData.respcd)) {
+                                        //核销成功，打印凭条
+                                        MainActivity.getWeipassManager().print(mResultData);
                                         Intent intent = new Intent(mContext, CouponResultActivity.class);
                                         Bundle bundle = new Bundle();
                                         bundle.putBoolean("check_coupon_result_flag", true);
@@ -337,6 +339,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
+                        MainActivity.getWeipassManager().print(mResultData);
                         enterPaySuccessActivity();
                         break;
                     }

@@ -2,8 +2,10 @@ package cn.weipass.biz.util;
 
 import android.content.Context;
 
+import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
+import com.cardinfolink.yunshouyin.util.Log;
 
 import cn.weipass.pos.sdk.IPrint;
 import cn.weipass.pos.sdk.Printer;
@@ -13,8 +15,50 @@ import cn.weipass.pos.sdk.Printer;
  */
 public class ToolsUtil {
 
+    public static final String TAG = "ToolsUtil";
     public static final int mediumSize = 10 * 2;
 
+    private static final int TYPE_RECEIPT_PAY = 100;//支付凭条
+    private static final int TYPE_RECEIPT_REFUND = 101;//退款凭条
+    private static final int TYPE_RECEIPT_TICKET = 102;//核券凭条
+
+
+    /**
+     * 获取凭条类型
+     *
+     * @param data
+     * @return
+     */
+    private static int getReceiptType(ResultData data) {
+
+        if (data == null || data.busicd == null) {
+            return 0;
+        } else {
+
+            switch (data.busicd) {
+                case "VERI":
+                    return TYPE_RECEIPT_TICKET;
+                case "REFD":
+                    return TYPE_RECEIPT_REFUND;
+                case "PURC":
+                    return TYPE_RECEIPT_PAY;
+//                case "PAUT":
+//                    return TYPE_RECEIPT_PAY;
+                default:
+                    return 0;
+            }
+        }
+
+
+    }
+
+    /**
+     * 打印机的错误信息
+     *
+     * @param what
+     * @param info
+     * @return
+     */
     public static String getPrintErrorInfo(int what, String info) {
         String message = "";
         switch (what) {
@@ -46,6 +90,12 @@ public class ToolsUtil {
     }
 
 
+    /**
+     * 设置空白长度
+     *
+     * @param size
+     * @return
+     */
     public static String getBlankBySize(int size) {
         String resultStr = "";
         for (int i = 0; i < size; i++) {
@@ -86,14 +136,30 @@ public class ToolsUtil {
      * @param context
      * @param printer
      */
-    public static void printNormal(Context context, Printer printer, TradeBill bill) {
+    public static void printNormal(Context context, Printer printer, ResultData resultData) {
+
+        Log.i(TAG, "print info 打印内容:" + resultData);
         // 标准打印，每个字符打印所占位置可能有一点出入（尤其是英文字符）
         String mediumSpline = "";
         for (int i = 0; i < mediumSize - 5; i++) {
             mediumSpline += "-";
         }
 
-        String achd = bill.chcd.equals("ALP") ? "支付宝" : "微信";
+        String achd = "";
+        switch (resultData.chcd) {
+            case "WXP":
+                achd = "微信";
+                break;
+            case "ALP":
+                achd = "支付宝";
+                break;
+            case "ULIVE":
+                achd = "";
+                break;
+            default:
+                achd = "";
+                break;
+        }
 
         printer.printText("签购单（顾客存根）\n" + mediumSpline,
                 Printer.FontFamily.SONG, Printer.FontSize.LARGE,
@@ -107,24 +173,74 @@ public class ToolsUtil {
         printer.printText("收银员:" + SessonData.loginUser.getUsername(),
                 Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
                 Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
-        printer.printText("交易类型:" + achd,
-                Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
-                Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
-        printer.printText("日期时间:" + bill.tandeDate,
-                Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
-                Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
-        printer.printText("交易账号:" + bill.tradeFrom,
-                Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
-                Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
-        printer.printText("渠道订单号:" + bill.orderNum,
-                Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
-                Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
-        printer.printText("商家订单号:" + bill.orderNum,
-                Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
-                Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
-        printer.printText("金额: RMB " + bill.total,
-                Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
-                Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+
+        switch (getReceiptType(resultData)) {
+            case TYPE_RECEIPT_PAY:
+                printer.printText("交易类型:" + achd + "    扫码付",
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("日期时间:" + resultData.expDate,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("交易账号:" + resultData.consumerAccount,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("渠道订单号:" + resultData.channelOrderNum,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("商家订单号:" + resultData.orderNum,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("金额: RMB " + resultData.txamt,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                break;
+            case TYPE_RECEIPT_REFUND:
+                printer.printText("交易类型:" + achd + "    退款",
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("日期时间:" + resultData.expDate,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("交易账号:" + resultData.consumerAccount,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("渠道订单号:" + resultData.channelOrderNum,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("商家订单号:" + resultData.orderNum,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("原交易订单号:" + resultData.origOrderNum,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("金额: RMB -" + resultData.txamt,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+
+                break;
+            case TYPE_RECEIPT_TICKET:
+                printer.printText("交易类型:" + "   卡券核销",
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("日期时间:" + resultData.expDate,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("商家订单号:" + resultData.orderNum,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("卡券号:" + resultData.orderNum,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+                printer.printText("详情:" + resultData.cardId,
+                        Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
+                        Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
+
+                break;
+            default:
+                break;
+        }
+
         printer.printText("\n\n\n\n\n",
                 Printer.FontFamily.SONG, Printer.FontSize.LARGE,
                 Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);

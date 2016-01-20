@@ -25,6 +25,7 @@ import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.CaptureActivity;
+import com.cardinfolink.yunshouyin.activity.MainActivity;
 import com.cardinfolink.yunshouyin.activity.PayResultActivity;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.constant.Msg;
@@ -905,6 +906,8 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                         break;
                     }
                     case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
+                        //支付成功，打印凭条
+                        MainActivity.getWeipassManager().print(mResultData);
                         showKeyBoard();//显示键盘界面
                         enterPaySuccessActivity();
                         break;

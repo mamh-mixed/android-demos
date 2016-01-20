@@ -104,6 +104,7 @@ dependencies {
     compile files('libs/umeng-analytics-v5.5.3.jar')
     compile files('libs/umeng-update-v2.6.0.1.jar')
     compile files('libs/com.umeng.message.lib_v2.5.0.jar')
+    compile files('libs/weiposSDKII.jar')
     compile 'commons-io:commons-io:2.4'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.qiniu:qiniu-android-sdk:7.0.+'

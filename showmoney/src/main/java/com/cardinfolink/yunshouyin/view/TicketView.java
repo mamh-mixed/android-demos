@@ -24,9 +24,11 @@ import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.activity.CaptureActivity;
 import com.cardinfolink.yunshouyin.activity.CouponResultActivity;
+import com.cardinfolink.yunshouyin.activity.MainActivity;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.util.Log;
 import com.cardinfolink.yunshouyin.util.Utility;
 
 /**
@@ -182,6 +184,8 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                         coupon.setOrderNum(resultData.orderNum);
                         if (mResultData != null) {
                             if ("00".equals(mResultData.respcd)) {
+                                //核销成功，打印凭条
+//                                MainActivity.getWeipassManager().print(mResultData);
                                 mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
                             } else {
                                 //核销失败
