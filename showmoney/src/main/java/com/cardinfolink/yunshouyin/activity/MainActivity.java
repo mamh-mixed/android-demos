@@ -102,6 +102,7 @@ public class MainActivity extends BaseActivity {
         if (!mPushAgent.isEnabled()) {
             mPushAgent.enable(mRegisterCallback);
         }
+        mPushAgent.setMergeNotificaiton(false);//不合并消息 通知，这样通知栏会有多条消息显示
     }
 
     public void initHandler() {
