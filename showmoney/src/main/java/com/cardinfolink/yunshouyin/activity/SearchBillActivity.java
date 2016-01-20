@@ -168,25 +168,6 @@ public class SearchBillActivity extends Activity {
         });
 
         mSearch = (TextView) findViewById(R.id.tv_search);
-        mSearchEditText = (EditTextClear) findViewById(R.id.et_search);
-        mSearchEditText.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //订单号大于等于17位才触发查询操作
-                String orderNum = mSearchEditText.getText().toString();
-                if (!TextUtils.isEmpty(orderNum)) {
-                    Log.e(TAG, " search order: " + orderNum);
-                    //这里精确查找
-                    billIndex = 0;
-                    mTradeBillList.clear();
-                    mMonthBilList.clear();
-                    mMonthBillMap.clear();
-                    mTradeBillMap.clear();
-                    findBill(orderNum);
-                }
-            }
-        });
-
         mSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -199,11 +180,13 @@ public class SearchBillActivity extends Activity {
                     mMonthBilList.clear();
                     mMonthBillMap.clear();
                     mTradeBillMap.clear();
+                    mBillAdapter.notifyDataSetChanged();
                     findBill(orderNum);
                 }
             }
         });
 
+        mSearchEditText = (EditTextClear) findViewById(R.id.et_search);
         mSearchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -234,6 +217,7 @@ public class SearchBillActivity extends Activity {
                     mMonthBilList.clear();
                     mMonthBillMap.clear();
                     mTradeBillMap.clear();
+                    mBillAdapter.notifyDataSetChanged();
                     findBill(orderNum);
                 }
             }
