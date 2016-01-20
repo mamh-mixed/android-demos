@@ -34,15 +34,15 @@
 
                 <ImageView
                     android:id="@+id/imageView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_width="@dimen/login_imageview_hight"
+                    android:layout_height="@dimen/login_imageview_hight"
                     android:layout_marginLeft="15dp"
                     android:src="@drawable/name" />
 
                 <EditText
                     android:id="@+id/login_username"
                     android:layout_width="fill_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="@dimen/login_edittext_height"
                     android:background="@null"
                     android:ems="10"
                     android:hint="@string/login_hint_username"
@@ -64,15 +64,15 @@
 
                 <ImageView
                     android:id="@+id/imageView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_width="@dimen/login_imageview_hight"
+                    android:layout_height="@dimen/login_imageview_hight"
                     android:layout_marginLeft="15dp"
                     android:src="@drawable/password" />
 
                 <EditText
                     android:id="@+id/login_password"
                     android:layout_width="fill_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="@dimen/login_edittext_height"
                     android:background="@null"
                     android:ems="10"
                     android:hint="@string/login_hint_password"
@@ -110,12 +110,14 @@
 
             <Button
                 android:id="@+id/btnlogin"
-                android:layout_width="250dp"
-                android:layout_height="50dp"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/login_edittext_height"
                 android:background="@drawable/blue_selector"
                 android:text="@string/login"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="@dimen/login_btn_textsize"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"/>
 
 
         </LinearLayout>

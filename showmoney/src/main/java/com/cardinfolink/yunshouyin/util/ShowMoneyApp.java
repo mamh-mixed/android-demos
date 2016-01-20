@@ -80,7 +80,7 @@ public class ShowMoneyApp extends Application {
                 break;
             case "test":
                 SystemConfig.IS_PRODUCE = false;
-                SystemConfig.Server = "http://10.9.210.12/app";
+                SystemConfig.Server = "http://test.quick.ipay.so/app";
                 break;
             case "dev":
                 SystemConfig.IS_PRODUCE = false;

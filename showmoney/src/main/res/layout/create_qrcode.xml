@@ -11,7 +11,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="@dimen/create_qr_action_bar"
             android:background="@color/background_blue">
 
             <ImageView
@@ -28,11 +28,11 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="10dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="@dimen/create_qr_scan_text_margintop"
                 android:gravity="center_horizontal"
                 android:text="@string/main_activity_menu_scancode"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="25sp" />
         </RelativeLayout>
 
         <TextView
@@ -40,15 +40,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="@dimen/create_qr_scan_text_margintop"
             android:gravity="center_horizontal"
             android:text="@string/create_code_scan_text"
-            android:textSize="18sp" />
+            android:textSize="@dimen/create_qr_scan_text_textsize" />
 
         <ImageView
+            android:layout_marginTop="@dimen/create_qr_scan_image_margintop"
             android:id="@+id/qrcode_img"
-            android:layout_width="200dp"
-            android:layout_height="250dp"
+            android:layout_width="@dimen/create_qr_scan_qr_imageview_width"
+            android:layout_height="@dimen/create_qr_scan_qr_imageview_height"
             android:layout_gravity="center_horizontal" />
 
         <TextView
@@ -56,10 +57,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="@dimen/create_qr_scan_image_margintop"
             android:gravity="center_horizontal"
             android:text="@string/create_code_scan_pay_money"
-            android:textSize="22sp" />
+            android:textSize="@dimen/create_qr_scan_image_pay_money_textsize" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -70,14 +71,14 @@
             <TextView
                 android:id="@+id/qy"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_margin="20dp"
+                android:layout_height="@dimen/create_qr_scan_qy_height"
+                android:layout_margin="@dimen/create_qr_scan_qy_margin"
                 android:background="@drawable/dialog_button_color"
                 android:gravity="center"
                 android:padding="5dp"
                 android:text="@string/create_qrcode_search_deal"
                 android:textColor="@color/white"
-                android:textSize="15sp" />
+                android:textSize="@dimen/create_qr_scan_qy_textsize" />
         </LinearLayout>
     </LinearLayout>
 

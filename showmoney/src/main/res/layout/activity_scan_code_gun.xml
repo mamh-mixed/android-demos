@@ -16,33 +16,37 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="@dimen/scan_gun_textview_top"
         android:text="@string/txt_scan_bar_and_qr_code_"
         android:textColor="@color/white"
-        android:textSize="30sp" />
+        android:textSize="@dimen/scan_gun_textview_textsize" />
 
     <EditText
         android:id="@+id/et_input_box"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/scan_gun_edittext_height"
         android:layout_below="@id/tv_scancode"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="@dimen/scan_gun_editortext_top"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:background="@drawable/scancode_by_gun_editor_color"
-        android:textSize="25dp"
+        android:textSize="@dimen/scan_gun_editortext_textsize"
         android:singleLine="true"
         android:textColor="@color/white"
         android:hint="@string/txt_bar_code" />
     <Button
         android:id="@+id/bt_pay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/scan_gun_btn_height"
         android:layout_below="@id/et_input_box"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/scancode_by_gun_button_selector"
+        android:layout_marginLeft="@dimen/scan_gun_btn_margin_left_right"
+        android:layout_marginRight="@dimen/scan_gun_btn_margin_left_right"
+        android:layout_marginTop="@dimen/scan_gun_btn_top"
+        android:background="@drawable/blue_selector"
         android:text="@string/txt_start_pay"
         android:textColor="@drawable/scancode_by_gun_btn_text_color"
-        android:textSize="30sp"/>
+        android:textSize="@dimen/update_btn_size"/>
 
     <include layout="@layout/showmoney_dialog"/>
 

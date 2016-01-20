@@ -5,9 +5,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -62,6 +64,11 @@ public class MainActivity extends BaseActivity {
         setContentView(R.layout.main_activity);
         initLayout();
         initUmeng();
+        Display mDisplay = getWindowManager().getDefaultDisplay();
+        int W = mDisplay.getWidth();
+        int H = mDisplay.getHeight();
+        Log.i("Main", "Width = " + W);
+        Log.i("Main", "Height = " + H);
     }
 
 
@@ -113,8 +120,10 @@ public class MainActivity extends BaseActivity {
         mLeftMenu.setShadowWidthRes(R.dimen.shadow_width);
         mLeftMenu.setShadowDrawable(R.drawable.shadow);
 
+        WindowManager wm=this.getWindowManager();
+        int with=(wm.getDefaultDisplay().getWidth()/3)*2;
         // 设置滑动菜单视图的宽度
-        mLeftMenu.setBehindOffsetRes(R.dimen.slidingmenu_offset);
+        mLeftMenu.setBehindOffset(with);
         // 设置渐入渐出效果的值
         mLeftMenu.setFadeDegree(0.35f);
         /**
