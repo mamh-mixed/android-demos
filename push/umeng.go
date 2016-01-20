@@ -8,7 +8,7 @@ import (
 	//"github.com/CardInfoLink/quickpay/mongo"
 	"bytes"
 	"fmt"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"io/ioutil"
 	"net/http"
 	"strings"

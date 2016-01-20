@@ -6,7 +6,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/push"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"strings"
 )
 

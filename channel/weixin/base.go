@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // NotifyURL 微信异步通知

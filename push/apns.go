@@ -8,7 +8,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/anachronistic/apns"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 var (

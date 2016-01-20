@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/security"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
 )
 
 const hardHalf = "TEZMUboYmBLVfjnduURAk4="

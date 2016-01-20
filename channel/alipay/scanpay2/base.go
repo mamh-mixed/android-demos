@@ -3,11 +3,12 @@ package scanpay2
 import (
 	"crypto/rsa"
 	"errors"
-	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
-	"github.com/omigo/validator"
 	"net/url"
 	"time"
+
+	"github.com/CardInfoLink/log"
+	"github.com/CardInfoLink/quickpay/model"
+	"github.com/CardInfoLink/validator"
 )
 
 // 编码、签名算法、版本
@@ -135,9 +136,9 @@ func Execute(req BaseReq, resp BaseResp) (err error) {
 		return errors.New("private key is nil")
 	}
 
-	if err := validator.Validate(req); err != nil {
-		log.Errorf("validate error, %s", err)
-		return err
+	if ok, errs := validator.Validate(req); !ok {
+		log.Errorf("validate error, %v", errs)
+		return errors.New("validate error")
 	}
 
 	err = sendRequest(req, resp)

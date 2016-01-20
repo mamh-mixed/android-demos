@@ -9,7 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/qiniu"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // checkSignSha256 APP V3 版本使用SHA256算法签名

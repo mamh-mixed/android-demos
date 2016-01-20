@@ -12,7 +12,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/qiniu"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 var sha1Key = "eu1dr0c8znpa43blzy1wirzmk8jqdaon"

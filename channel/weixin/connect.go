@@ -5,17 +5,18 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
 
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
-	"github.com/omigo/validator"
+	"github.com/CardInfoLink/validator"
 )
 
 // DownloadBill 下载对账单
@@ -44,9 +45,9 @@ func Execute(req BaseReq, resp BaseResp) error {
 	// 记录请求渠道日志
 	logs.SpLogs <- m.GetChanReqLogs(req)
 
-	if err := validator.Validate(req); err != nil {
-		log.Errorf("validate error, %s", err)
-		return err
+	if ok, errs := validator.Validate(req); !ok {
+		log.Errorf("validate error, %v", errs)
+		return errors.New("validate error")
 	}
 
 	xmlBytes, err := prepareData(req)
@@ -170,10 +171,9 @@ func SettleExecute(req BaseReq, resp BaseResp) (string, error) {
 
 	// 记录请求渠道日志
 	// logs.SpLogs <- m.GetChanReqLogs(req)
-
-	if err := validator.Validate(req); err != nil {
-		log.Errorf("validate error, %s", err)
-		return "", err
+	if ok, errs := validator.Validate(req); !ok {
+		log.Errorf("validate error, %v", errs)
+		return "", errors.New("validate error")
 	}
 
 	xmlBytes, err := prepareData(req)

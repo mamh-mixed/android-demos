@@ -12,7 +12,7 @@ import (
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"github.com/tealeg/xlsx"
 	"image/jpeg"
 	"io/ioutil"

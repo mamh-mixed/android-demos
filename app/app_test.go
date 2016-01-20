@@ -17,7 +17,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 type testFunc func(w http.ResponseWriter, r *http.Request)

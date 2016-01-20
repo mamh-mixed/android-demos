@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"strings"
 	"time"
 )

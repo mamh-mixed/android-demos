@@ -6,7 +6,7 @@ import (
 
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/quickpay/weixin"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // busiType

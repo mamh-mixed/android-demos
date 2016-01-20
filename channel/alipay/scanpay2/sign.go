@@ -13,7 +13,7 @@ import (
 	"os"
 
 	"github.com/CardInfoLink/quickpay/goconf"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 var alipayPublicKey *rsa.PublicKey

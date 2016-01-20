@@ -7,7 +7,7 @@ import (
 	// "strconv"
 	"testing"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 /*

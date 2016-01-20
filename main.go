@@ -2,8 +2,8 @@ package main
 
 import (
 	"net/http"
-	"runtime"
 
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/app"
 	"github.com/CardInfoLink/quickpay/auth"
 	"github.com/CardInfoLink/quickpay/bindingpay"
@@ -15,7 +15,6 @@ import (
 	"github.com/CardInfoLink/quickpay/master"
 	"github.com/CardInfoLink/quickpay/scanpay"
 	"github.com/CardInfoLink/quickpay/settle"
-	"github.com/omigo/log"
 
 	// _ "net/http/pprof"
 )
@@ -24,10 +23,7 @@ import (
 //go:generate version
 
 func main() {
-	runtime.GOMAXPROCS(runtime.NumCPU())
-
-	log.SetOutputLevel(goconf.Config.App.LogLevel)
-	// log.SetFlags(log.Ldate | log.Ltime | log.Lmicroseconds | log.Llevel | log.Lprojectfile)
+	log.SetLevel(goconf.Config.App.LogLevel)
 
 	startScanpay()    // 扫码支付
 	startBindingpay() // 绑定支付

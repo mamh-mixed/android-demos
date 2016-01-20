@@ -6,7 +6,7 @@ import (
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 var (
