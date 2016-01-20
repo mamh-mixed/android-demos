@@ -14,3 +14,7 @@ var (
 	Domestic         = &domestic.DefaultClient
 	Alipay2          = &scanpay2.DefaultClient
 )
+
+var (
+	GetAppAuthToken = scanpay2.GetAuthToken
+)
