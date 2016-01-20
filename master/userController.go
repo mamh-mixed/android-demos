@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/log"
 )
 
 const (
@@ -504,6 +504,8 @@ func (u *userController) ResetPwd(data []byte, curUser *model.User) (ret *model.
 	// passData := []byte(model.RAND_PWD + "{" + user.UserName + "}" + model.DEFAULT_PWD)
 	passData := []byte(model.RAND_PWD + "{" + user.UserName + "}" + newPwd)
 	user.Password = fmt.Sprintf("%x", sha1.Sum(passData))
+	user.LoginTime = ""
+	user.LockTime = ""
 
 	err = mongo.UserColl.Update(user)
 	if err != nil {
