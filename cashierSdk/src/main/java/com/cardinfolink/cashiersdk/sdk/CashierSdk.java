@@ -316,6 +316,102 @@ public class CashierSdk {
     public static final String SDK_RESPONSE_CODE_AUTHOR_CODE_CHECK_ERROR = "J1";
 
 
+    /**
+     * 字段不能为空   "C0"
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_PARAMS_EMPTY = "C0";
+
+    /**
+     * "卡券已被核销" "C1"
+     * verification
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_HAD_VERI = "C1";
+
+    /**
+     * 卡券已过期" "C2"  ;expire
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_EXPIRE = "C2";
+
+
+    /**
+     * "无效的卡券"  "C3" invalid
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_INVALID = "C3";
+
+
+    /**
+     * "券状态异常"  "C4"
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_STATUS_ERROR = "C4";
+
+    /**
+     * "未到卡券使用时间"  "C5"
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_NOT_USE_TIME = "C5";
+
+
+    /**
+     * "商户不能使用该卡券" "C6"
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_MERCHANT_CANNOT_USE = "C6";
+
+
+    /**
+     * "金额达不到满足优惠条件的最小金额" "C7"
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_NOT_MINIMUM_CONDITION = "C7";
+
+
+    /**
+     * 不能用此支付类型" "C8"
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_CANNOT_SUCH_PAY_TYPE = "C8";
+
+
+    /**
+     * 未找到原验证记录""C9"
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_NOT_FOUND_ORIGIN_CHECK_RECORD = "C9";
+
+    /**
+     * "CODE_PAYTYPE_NOT_MATCH" "D1"
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_CODE_PAYTYPE_NOT_MATCH = "D1";
+
+    /**
+     * "COUPON_TRADE_NOT_EXIST" "D2"
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_COUPON_TRADE_NOT_EXIST = "D2";
+
+    /**
+     * "NO_ENHANCE_LIMIT_AMT"      "D3"
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_NO_ENHANCE_LIMIT_AMT = "D3";
+
+
+    /**
+     * "CHECKING_LIMIT_AMT" "D4
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_CHECKING_LIMIT_AMT = "D4";
+
+
+    /**
+     * "COUPON_VERI_ERROR_OR_CANCEL" "D5"
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_VERI_ERROR_OR_CANCEL = "D5";
+
+
+    /**
+     * COUPON_ALREADY_PAY" D6
+     */
+    public static final String SDK_RESPONSE_CODE_COUPON_COUPON_ALREADY_PAY = "D6";
+
+    /**
+     * "SYSTEM_ERROR" "58"
+     */
+    public static final String SDK_RESPONSE_CODE_SYSTEM_ERROR = "58";
+
+
     public static final String CHARSET_GBK = "gbk";
     public static final String CHARSET = CHARSET_GBK;
 
