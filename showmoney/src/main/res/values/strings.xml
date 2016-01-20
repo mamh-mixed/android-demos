@@ -62,7 +62,7 @@
     <string name="increase_message3">你提交的材料，我们会在7个工作日内帮你审核。</string>
 
     <string name="limit_increase_message1">企业商户 提交材料</string>
-    <string name="limit_increase_message">个体工商户 提交材料</string>
+    <string name="limit_increase_message">个体商户 提交材料</string>
     <string name="limit_increase_shop_name_hint">输入执照上的注册名称</string>
     <string name="limit_increase_shop_name">店铺名称</string>
     <string name="limit_increase_shop_address_hint">输入执照上的注册地址</string>
