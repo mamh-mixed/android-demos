@@ -2,7 +2,7 @@
 	"Currency":"JPY",
 	"ChanCode":{
 		"ALP":"Alipay",
-		"WXP":"Wechat",
+		"WXP":"WeChat",
 		"Unknown":"未知"
 	},
 	"ReportName":{
@@ -39,7 +39,7 @@
 		"Total" 				:"総計：",
 		"StartDate"				:"取引日時（From）：",
 		"EndDate" 				:"取引日時（TO）：",
-		"Remark"				:"備考：手数料の金額は実際とは異なることがございます。",
+		"Remark"				:"備考： 精算金額、精算総額については実際の精算金額と異なることがございます",
 		"MerId"					:"店铺コード",
 		"MerName"				:"店舗名称",
 		"Summary"				:"総計",
@@ -66,7 +66,7 @@
 		"PayTime"					:"決済事業者応答時間（中国時間）",
 		"TransStatus"    			:"取引状態",
 		"ChanMerId"     			:"決済事業者加盟店コード",
-		"AgentCode"      			:"提携先",
+		"AgentCode"      			:"代理コード",
 		"TerminalId"     			:"端末番号",
 		"Busicd"         			:"取引種類",
 		"OrigOrderNum"   			:"元取引番号",

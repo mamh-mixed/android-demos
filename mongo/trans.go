@@ -473,10 +473,8 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 
 	// 如果是导出报表
 	if q.IsForReport {
-		sortByChan := bson.M{"$sort": bson.M{"chanCode": 1}}
-		sort = bson.M{"$sort": bson.M{"busicd": 1}}
 		// no skip, no limit
-		p = append(p, sort, sortByChan)
+		p = append(p, sort)
 	} else {
 		p = append(p, sort, skip, limit)
 	}
