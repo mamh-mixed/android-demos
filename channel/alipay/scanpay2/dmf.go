@@ -16,10 +16,10 @@ type dmf2 struct{}
 
 func getCommonParams(m *model.ScanPayRequest) *CommonParams {
 	return &CommonParams{
-		AppID:      m.AppID,
-		PrivateKey: LoadPrivateKey(m.PemKey), // TODO 做个缓存处理
-		Req:        m,
-		// TODO 预留authToken
+		AppID:        m.AppID,
+		AppAuthToken: m.AppAuthToken,
+		PrivateKey:   LoadPrivateKey(m.PemKey), // TODO 做个缓存处理
+		Req:          m,
 	}
 }
 
@@ -37,7 +37,7 @@ func (d *dmf2) ProcessBarcodePay(req *model.ScanPayRequest) (*model.ScanPayRespo
 	_, p.TimeExpire = handleExpireTime(req.TimeExpire)
 	p.ExtendParams = Params{req.ExtendParams}
 	p.Body = ""
-	p.StoreID = ""
+	p.StoreID = req.M.Detail.ShopID
 	p.OperatorID = ""
 	p.TerminalID = ""
 
@@ -68,6 +68,7 @@ func (d *dmf2) ProcessQrCodeOfflinePay(req *model.ScanPayRequest) (*model.ScanPa
 	p.GoodsDetail = parseGoods(req)
 	_, p.TimeExpire = handleExpireTime(req.TimeExpire)
 	p.ExtendParams = Params{req.ExtendParams}
+	p.StoreID = req.M.Detail.ShopID
 	q := &PrecreateResp{}
 	err := Execute(p, q)
 	if err != nil {

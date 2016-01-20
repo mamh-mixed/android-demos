@@ -40,13 +40,7 @@ func (col *chanMerCollection) FindByArea(areaType int) ([]model.ChanMer, error) 
 // Add 增加一个渠道商户
 func (col *chanMerCollection) Add(c *model.ChanMer) error {
 	c.UpdateTime = time.Now().Format("2006-01-02 15:04:05")
-	bo := bson.M{
-		"chanMerId": c.ChanMerId,
-		"chanCode":  c.ChanCode,
-	}
-	_, err := database.C(col.name).Upsert(bo, c)
-
-	return err
+	return database.C(col.name).Insert(c)
 }
 
 // BatchAdd 批量增加渠道商户
