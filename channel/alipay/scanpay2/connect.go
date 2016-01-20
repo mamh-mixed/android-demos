@@ -27,7 +27,10 @@ func sendRequest(req BaseReq, resp BaseResp) error {
 	}
 
 	// 记录请求渠道日志
-	logs.SpLogs <- m.GetChanReqLogs(v)
+	var savelogs = req.SaveLog()
+	if savelogs {
+		logs.SpLogs <- m.GetChanReqLogs(v)
+	}
 
 	log.Infof(">>> to alipay message: %s", v.Encode())
 
@@ -43,7 +46,9 @@ func sendRequest(req BaseReq, resp BaseResp) error {
 	}
 
 	// 记录渠道返回日志
-	logs.SpLogs <- m.GetChanRetLogs(resp)
+	if savelogs {
+		logs.SpLogs <- m.GetChanRetLogs(resp)
+	}
 
 	return nil
 }

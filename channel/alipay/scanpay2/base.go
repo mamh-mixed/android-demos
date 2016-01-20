@@ -22,21 +22,23 @@ type BaseReq interface {
 	Values() url.Values             // 组装公共参数
 	GetPrivateKey() *rsa.PrivateKey // 商户 RSA 私钥
 	GetSpReq() *model.ScanPayRequest
+	SaveLog() bool // 是否需要记录日志
 }
 
 // CommonParams 组装公共参数
 type CommonParams struct {
-	AppID     string                `json:"-" validate:"nonzero"` // 支付宝服务窗 APPID
-	Method    string                `json:"-"`                    // 接口名称
-	Charset   string                `json:"-"`                    // 请求使用的编码格式，如utf-8,gbk,gb2312等
-	SignType  string                `json:"-"`                    // 商户生成签名字符串所使用的签名算法类型，目前支持RSA,DSA
-	Sign      string                `json:"-"`                    // 商户请求参数的签名串，详见安全规范中的签名生成算法
-	Timestamp string                `json:"-"`                    // 发送请求的时间，格式“yyyy-MM-dd HH:mm:ss”
-	Version   string                `json:"-"`                    // 调用的接口版本，固定为:1.0
-	NotifyUrl string                `json:"-"`                    // 异步通知地址
-	Req       *model.ScanPayRequest `json:"-" bson:"-"`
+	AppID        string `json:"-" validate:"nonzero"` // 支付宝服务窗 APPID
+	Method       string `json:"-"`                    // 接口名称
+	Charset      string `json:"-"`                    // 请求使用的编码格式，如utf-8,gbk,gb2312等
+	SignType     string `json:"-"`                    // 商户生成签名字符串所使用的签名算法类型，目前支持RSA,DSA
+	Sign         string `json:"-"`                    // 商户请求参数的签名串，详见安全规范中的签名生成算法
+	Timestamp    string `json:"-"`                    // 发送请求的时间，格式“yyyy-MM-dd HH:mm:ss”
+	Version      string `json:"-"`                    // 调用的接口版本，固定为:1.0
+	NotifyUrl    string `json:"-"`                    // 异步通知地址
+	AppAuthToken string `json:"-"`                    // 是否授权
 
-	PrivateKey *rsa.PrivateKey `json:"-" bson:"-"` // 商户 RSA 私钥
+	Req        *model.ScanPayRequest `json:"-" bson:"-"`
+	PrivateKey *rsa.PrivateKey       `json:"-" bson:"-"` // 商户 RSA 私钥
 }
 
 type GoodsDetail struct {
@@ -53,6 +55,12 @@ type Params struct {
 	SysServiceProviderId string `json:"sys_service_provider_id,omitempty"`
 }
 
+// SaveLog 是否需要记录日志
+func (c *CommonParams) SaveLog() bool {
+	return true
+}
+
+// GetSpReq 前端请求报文
 func (c *CommonParams) GetSpReq() *model.ScanPayRequest {
 	return c.Req
 }
@@ -86,6 +94,10 @@ func (c *CommonParams) Values() (v url.Values) {
 
 	if c.NotifyUrl != "" {
 		v.Set("notify_url", c.NotifyUrl)
+	}
+
+	if c.AppAuthToken != "" {
+		v.Set("app_auth_token", c.AppAuthToken)
 	}
 
 	return v

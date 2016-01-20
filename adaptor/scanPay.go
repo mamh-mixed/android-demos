@@ -74,6 +74,7 @@ func ProcessBarcodePay(t *model.Trans, c *model.ChanMer, req *model.ScanPayReque
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 		req.ExtendParams = genExtendParams(req.M, chanMer)
 		req.PemKey = []byte(chanMer.PrivateKey)
+		req.AppAuthToken = c.AuthToken
 		// }
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
@@ -124,6 +125,7 @@ func ProcessQrCodeOfflinePay(t *model.Trans, c *model.ChanMer, req *model.ScanPa
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(t.TransAmt)/100)
 		req.ExtendParams = genExtendParams(req.M, chanMer)
 		req.PemKey = []byte(chanMer.PrivateKey)
+		req.AppAuthToken = c.AuthToken
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", t.TransAmt)
 		req.SubAppID = subAppId
@@ -175,6 +177,7 @@ func ProcessRefund(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 		req.ActTxamt = fmt.Sprintf("%0.2f", float64(req.IntTxamt)/100)
 		req.OrigChanOrderNum = orig.ChanOrderNum
 		req.PemKey = []byte(chanMer.PrivateKey)
+		req.AppAuthToken = c.AuthToken
 	case channel.ChanCodeWeixin:
 		req.ActTxamt = fmt.Sprintf("%d", req.IntTxamt)
 		req.TotalTxamt = fmt.Sprintf("%d", orig.TransAmt)
@@ -237,6 +240,7 @@ func ProcessEnquiry(t *model.Trans, c *model.ChanMer, req *model.ScanPayRequest)
 	case channel.ChanCodeAlipay:
 		// do nothing...
 		req.PemKey = []byte(chanMer.PrivateKey)
+		req.AppAuthToken = c.AuthToken
 	case channel.ChanCodeWeixin:
 		req.SubAppID = subAppId
 		req.SubMchId = subMchId
@@ -299,6 +303,7 @@ func ProcessCancel(orig *model.Trans, c *model.ChanMer, req *model.ScanPayReques
 		ret, err = sp.ProcessRefund(req)
 	case channel.ChanCodeAlipay:
 		req.PemKey = []byte(chanMer.PrivateKey)
+		req.AppAuthToken = c.AuthToken
 		ret, err = sp.ProcessCancel(req)
 	default:
 		err = fmt.Errorf("unknown scan pay channel `%s`", orig.ChanCode)
