@@ -14,6 +14,7 @@ import (
 
 	"github.com/tealeg/xlsx"
 
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/email"
 	"github.com/CardInfoLink/quickpay/goconf"
@@ -21,7 +22,6 @@ import (
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/query"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/CardInfoLink/log"
 )
 
 type user struct{}
@@ -1688,7 +1688,7 @@ func transToCoupon(t *model.Trans) *model.Coupon {
 		Terminalid: t.Terminalid,
 		OrderNum:   t.OrderNum,
 	}
-	if t.ScanPayCoupon != nil {
+	if t.ScanPayCoupon != nil && t.ScanPayCoupon.RespCode == "00" {
 		coupon.ReqData.Busicd = t.ScanPayCoupon.Busicd
 		coupon.ReqData.AgentCode = t.ScanPayCoupon.AgentCode
 		coupon.ReqData.Txndir = "Q"
