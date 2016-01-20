@@ -1,7 +1,5 @@
 package com.cardinfolink.yunshouyin.data;
 
-import com.cardinfolink.cashiersdk.model.ResultData;
-
 public class User {
     private String username;
     private String password;
@@ -31,17 +29,6 @@ public class User {
 
     private String limitAmt;
 
-    public ResultData getResultData() {
-        return resultData;
-    }
-
-    public void setResultData(ResultData resultData) {
-        this.resultData = resultData;
-    }
-
-    private ResultData resultData;
-
-    //新加字段商户名称merName by ChenFeng@20160114
     private String merName;
 
     public String getMerName() {
