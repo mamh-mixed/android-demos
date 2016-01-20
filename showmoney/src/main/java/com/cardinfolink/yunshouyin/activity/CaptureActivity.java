@@ -792,9 +792,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
         msg.obj = obj.getText().toString();
         mHandler.sendMessageDelayed(msg, 0);
-
-        CameraManager.get().stopPreview();//停止camera的preview
-        CameraManager.get().closeDriver();
     }
 
     private void initBeepSound() {
