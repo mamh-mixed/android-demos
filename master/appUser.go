@@ -5,9 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+<<<<<<< HEAD
 	"github.com/omigo/log"
+=======
+>>>>>>> 4703e0d... fix:重置密码后解锁
 )
 
 type appUserController struct{}
@@ -73,6 +77,8 @@ func (u *appUserController) ResetPwd(data []byte, user *model.User) (ret *model.
 	if appUser != nil {
 		pb := md5.Sum([]byte(newPwd))
 		appUser.Password = fmt.Sprintf("%x", string(pb[:]))
+		appUser.LoginTime = ""
+		appUser.LockTime = ""
 		if err = mongo.AppUserCol.Update(appUser); err != nil {
 			return model.NewResultBody(2, "修改密码失败")
 		}

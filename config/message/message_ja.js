@@ -12,7 +12,7 @@
 	"Role":{
 		"Company" :"会社",
 		"Agent"   :"代理",
-		"Group"   :"加盟店",
+		"Group"   :"代表店铺",
 		"Mer"     :"店舗"
 	},
 	"BusicdType":{
@@ -60,7 +60,7 @@
 		"OrderNum"       			:"取引番号",
 		"TransAmt"       			:"売上金額",
 		"TransCurr"					:"取引通貨",
-		"MerFee"					:"加盟店手数料",
+		"MerFee"					:"店铺手抖数",
 		"ChanCode"       			:"チャンネル",
 		"TransTime"      			:"取引時間（日本時間）",
 		"PayTime"					:"決済事業者応答時間（中国時間）",
