@@ -256,9 +256,9 @@ func settJornalReport(transSetts []model.TransSett, locale *LocaleTemplate, z *Z
 			// 是否已清算
 			cell = row.AddCell()
 			if ts.BlendType == 0 {
-				cell.Value = m.Yes
+				cell.Value = "Y"
 			} else {
-				cell.Value = m.No
+				cell.Value = "N"
 			}
 		}
 	}

@@ -26,11 +26,11 @@ func TestListenTcp(t *testing.T) {
 
 func TestDailTcp(t *testing.T) {
 	var err error
-	// addr := "overseas.show.money:6000"
-	addr := "52.192.213.82:6000"
+	addr := "overseas.show.money:6002"
+	// addr := "52.192.213.82:6000"
 
 	config := &tls.Config{}
-	config.InsecureSkipVerify = true
+	// config.InsecureSkipVerify = true
 
 	conn, err := tls.Dial("tcp", addr, config)
 	if err != nil {
