@@ -131,7 +131,7 @@ public class MainActivity extends BaseActivity {
                         break;
                     case Msg.MSG_REFRESH_BILL_LIST_VIEW:
                         if (mTransManageView != null && mTabPager.getCurrentItem() == 2) {
-                            mTransManageView.refresh();
+                            mTransManageView.refresh(msg.arg1, msg.arg2);
                         }
 
                 }
