@@ -15,7 +15,7 @@ import com.cardinfolink.yunshouyin.activity.LoginActivity;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 
 public class ActivateDialog {
@@ -77,8 +77,8 @@ public class ActivateDialog {
      * 激活用户账户的
      */
     private void activate() {
-        String username = SessonData.loginUser.getUsername();
-        String password = SessonData.loginUser.getPassword();
+        String username = SessionData.loginUser.getUsername();
+        String password = SessionData.loginUser.getPassword();
         if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
             //sessondata如果没有保存的情况下会出现。在loginActivity里没设置的话会出现此问题。
             //强制停止应用，再次登录会出现此问题。因为此时

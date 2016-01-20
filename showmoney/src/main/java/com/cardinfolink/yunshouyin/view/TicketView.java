@@ -26,7 +26,7 @@ import com.cardinfolink.yunshouyin.activity.CaptureActivity;
 import com.cardinfolink.yunshouyin.activity.CouponResultActivity;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.Coupon;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.util.Utility;
 
 /**
@@ -79,7 +79,7 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
         mConfirm.setOnClickListener(this);
         mCamera.setOnClickListener(this);
 
-        mAccount.setText(SessonData.loginUser.getUsername());
+        mAccount.setText(SessionData.loginUser.getUsername());
         mCouponCode.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {

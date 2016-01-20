@@ -9,7 +9,7 @@ import com.cardinfolink.yunshouyin.adapter.MessageAdapter;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.MessageDB;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.model.Message;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
@@ -60,8 +60,8 @@ public class MessageDetailActivity extends BaseActivity {
     }
 
     protected void updateMessageStatus() {
-        String username = SessonData.loginUser.getUsername();
-        String password = SessonData.loginUser.getPassword();
+        String username = SessionData.loginUser.getUsername();
+        String password = SessionData.loginUser.getPassword();
         message.setStatus("1");
         quickPayService.updateMessageAsync(username, password, new Message[]{message}, READ_OR_UNDELETED, new QuickPayCallbackListener<ServerPacket>() {
             @Override

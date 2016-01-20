@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.view.YellowTips;
@@ -40,8 +40,8 @@ public class RegisterActivateActivity extends BaseActivity {
 
         mAccount = (TextView) findViewById(R.id.account);
         //这里得到上一个activity中（register acitvity）设置的账号
-        final String username = SessonData.loginUser.getUsername();
-        final String password = SessonData.loginUser.getPassword();
+        final String username = SessionData.loginUser.getUsername();
+        final String password = SessionData.loginUser.getPassword();
         mAccount.setText(username);
 
         mNext = (Button) findViewById(R.id.btnnext);

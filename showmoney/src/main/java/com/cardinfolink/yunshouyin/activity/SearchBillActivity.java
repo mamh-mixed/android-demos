@@ -22,7 +22,7 @@ import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.MonthBill;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.model.QRequest;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
@@ -287,7 +287,7 @@ public class SearchBillActivity extends Activity {
     //精确查找某个账单
     private void findBill(String orderNum) {
         mLoadingDialog.startLoading();
-        quickPayService.getOrderAsync(SessonData.loginUser, orderNum, new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.getOrderAsync(SessionData.loginUser, orderNum, new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 parseServerPacket(data, mMonthBillMap, mTradeBillMap, mMonthBilList, mTradeBillList);
@@ -366,7 +366,7 @@ public class SearchBillActivity extends Activity {
         mLoadingDialog.startLoading();
         String sizeStr = "100";
         String index = String.valueOf(billIndex);
-        quickPayService.findOrderAsync(SessonData.loginUser, index, sizeStr, recType, payType, txnStatus, new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.findOrderAsync(SessionData.loginUser, index, sizeStr, recType, payType, txnStatus, new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 //这里特殊一些，需要用的size。

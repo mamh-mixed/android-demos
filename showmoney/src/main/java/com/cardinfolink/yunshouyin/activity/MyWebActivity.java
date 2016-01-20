@@ -15,7 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.util.EncoderUtil;
 import com.cardinfolink.yunshouyin.util.Utility;
@@ -60,7 +60,7 @@ public class MyWebActivity extends BaseActivity {
         mQRCodeImage = (ImageView) findViewById(R.id.iv_qrcode);
         mQRBitmap = null;
         try {
-            String qrcode = SessonData.loginUser.getPayUrl();
+            String qrcode = SessionData.loginUser.getPayUrl();
             if (!TextUtils.isEmpty(qrcode)) {
                 WindowManager wm = this.getWindowManager();
 
@@ -85,9 +85,9 @@ public class MyWebActivity extends BaseActivity {
         });
 
         merchantName = (TextView) findViewById(R.id.merchant_name);
-        String merName = SessonData.loginUser.getMerName();
+        String merName = SessionData.loginUser.getMerName();
         if (!TextUtils.isEmpty(merName)) {
-            merchantName.setText(getResources().getString(R.string.my_web_activity_merchant_name) + SessonData.loginUser.getMerName());
+            merchantName.setText(getResources().getString(R.string.my_web_activity_merchant_name) + SessionData.loginUser.getMerName());
         } else {
             merchantName.setText(getResources().getString(R.string.my_web_activity_merchant_name) + getString(R.string.app_name));
         }
@@ -116,7 +116,7 @@ public class MyWebActivity extends BaseActivity {
         }
 
         //generate file name
-        String payUrl = SessonData.loginUser.getPayUrl();
+        String payUrl = SessionData.loginUser.getPayUrl();
         String filename = "myweb.png";
         if (!TextUtils.isEmpty(payUrl)) {
             filename = EncoderUtil.Encrypt(payUrl, "MD5");

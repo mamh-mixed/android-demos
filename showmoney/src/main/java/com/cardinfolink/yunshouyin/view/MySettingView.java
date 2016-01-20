@@ -21,7 +21,7 @@ import com.cardinfolink.yunshouyin.activity.StartIncreaseActivity;
 import com.cardinfolink.yunshouyin.activity.UnReadMessageActivity;
 import com.cardinfolink.yunshouyin.data.MessageDB;
 import com.cardinfolink.yunshouyin.data.SaveData;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
 
@@ -70,11 +70,11 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         mAbout = (SettingClikcItem) contentView.findViewById(R.id.about);
 
         mEmail = (TextView) contentView.findViewById(R.id.tv_email);//账户名
-        String merName = SessonData.loginUser.getMerName();
+        String merName = SessionData.loginUser.getMerName();
         if (!TextUtils.isEmpty(merName)) {
-            mEmail.setText(SessonData.loginUser.getMerName());
+            mEmail.setText(SessionData.loginUser.getMerName());
         } else {
-            mEmail.setText(SessonData.loginUser.getUsername());//通过sessonData设置一下用户名
+            mEmail.setText(SessionData.loginUser.getUsername());//通过sessonData设置一下用户名
         }
 
         mLimit = (TextView) contentView.findViewById(R.id.tv_limit_info);//显示限额的一些信息的
@@ -93,7 +93,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
     }
 
     public void checkMessageCount() {
-        int count = mMessageDB.countUnreadedMessages(SessonData.loginUser.getUsername());
+        int count = mMessageDB.countUnreadedMessages(SessionData.loginUser.getUsername());
         if (count > 0) {
             mMessage.setImageResource(R.drawable.setting_news_has);
         } else {
@@ -103,13 +103,13 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
 
 
     private void checkLimit() {
-        User user = SessonData.loginUser;
+        User user = SessionData.loginUser;
         if ("true".equals(user.getLimit())) {//这里等于true表示这个用户有限额。
             String limitMsg = getResources().getString(R.string.setting_limit_message);
-            if (TextUtils.isEmpty(SessonData.loginUser.getLimitAmt())) {
+            if (TextUtils.isEmpty(SessionData.loginUser.getLimitAmt())) {
                 limitMsg = String.format(limitMsg, "500");
             } else {
-                limitMsg = String.format(limitMsg, SessonData.loginUser.getLimitAmt());
+                limitMsg = String.format(limitMsg, SessionData.loginUser.getLimitAmt());
             }
             mLimit.setText(limitMsg);//这里设置限额多少的提示文本
             mIncreaseLimit.setVisibility(VISIBLE);//把提升限额的按钮显示出来
@@ -126,7 +126,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
         switch (v.getId()) {
             case R.id.btn_exit:
                 User user = new User();
-                user.setUsername(SessonData.loginUser.getUsername());
+                user.setUsername(SessionData.loginUser.getUsername());
                 SaveData.setUser(mContext, user);
                 intent = new Intent(mContext, LoginActivity.class);
                 mContext.startActivity(intent);

@@ -6,7 +6,7 @@ import android.view.View;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.model.BankInfo;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingDetailItem;
@@ -40,7 +40,7 @@ public class AccountInfoActivity extends BaseActivity {
         mMerchantName = (SettingDetailItem) findViewById(R.id.merchant_name);
         mPhoneNumber = (SettingDetailItem) findViewById(R.id.phone_number);
 
-        mMerchantName.setDetail(SessonData.loginUser.getMerName());
+        mMerchantName.setDetail(SessionData.loginUser.getMerName());
 
         initUserInfo();//初始化用户的信息
 
@@ -48,7 +48,7 @@ public class AccountInfoActivity extends BaseActivity {
 
 
     private void initUserInfo() {
-        quickPayService.getBankInfoAsync(SessonData.loginUser, new QuickPayCallbackListener<BankInfo>() {
+        quickPayService.getBankInfoAsync(SessionData.loginUser, new QuickPayCallbackListener<BankInfo>() {
             @Override
             public void onSuccess(BankInfo bankInfo) {
                 mName.setDetail(bankInfo.getPayee());
@@ -56,7 +56,7 @@ public class AccountInfoActivity extends BaseActivity {
                 mBankName.setDetail(bankInfo.getBranchBank());
                 mPhoneNumber.setDetail(bankInfo.getPhoneNum());
                 //这里商户名没有获得到！！！！！！！！
-                mMerchantName.setDetail(SessonData.loginUser.getMerName());
+                mMerchantName.setDetail(SessionData.loginUser.getMerName());
             }
 
             @Override

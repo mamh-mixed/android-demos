@@ -18,7 +18,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QiniuCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.MerchantPhoto;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
@@ -305,7 +305,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
 
         Date now = new Date();
         SimpleDateFormat yyMMdd = new SimpleDateFormat("yyyyMMdd");
-        String clientId = SessonData.loginUser.getClientid();
+        String clientId = SessionData.loginUser.getClientid();
         final String qiniuKeyPattern = String.format(QINIU_FORMAT, yyMMdd.format(now), clientId) + "/%s.%s";
 
         startLoading();
@@ -400,7 +400,7 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
             map.put(merchantPhoto.getImageName(), merchantPhoto.getQiniuKey());
         }
 
-        User user = SessonData.loginUser;
+        User user = SessionData.loginUser;
         String shopName = mShopName.getText();//商户名称
         String shopAddress = mShopAddress.getText();//商户地址
         quickPayService.improveCertInfoAsync(user, shopName, shopAddress, map, new QuickPayCallbackListener<Void>() {
@@ -421,8 +421,8 @@ public class LimitIncreaseActivity extends BaseActivity implements View.OnClickL
     }
 
     private void activateUser() {
-        String username = SessonData.loginUser.getUsername();
-        String password = SessonData.loginUser.getPassword();
+        String username = SessionData.loginUser.getUsername();
+        String password = SessionData.loginUser.getPassword();
         // 3.激活
         quickPayService.activateAsync(username, password, new QuickPayCallbackListener<Void>() {
             @Override

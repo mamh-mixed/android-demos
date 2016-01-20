@@ -11,7 +11,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SaveData;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
@@ -105,8 +105,8 @@ public class RegisterActivity extends BaseActivity {
                 SaveData.setUser(mContext, user);//保存到本地文件
 
                 //这里保存到sessondata中，下面一个activity中会用到
-                SessonData.loginUser.setUsername(username);//保存到sessondata里面
-                SessonData.loginUser.setPassword(password);//保存到sessondata里面
+                SessionData.loginUser.setUsername(username);//保存到sessondata里面
+                SessionData.loginUser.setPassword(password);//保存到sessondata里面
 
                 mLoadingDialog.endLoading();
 
@@ -123,15 +123,15 @@ public class RegisterActivity extends BaseActivity {
     }
 
     private void activate() {
-        String username = SessonData.loginUser.getUsername();
-        String password = SessonData.loginUser.getPassword();
+        String username = SessionData.loginUser.getUsername();
+        String password = SessionData.loginUser.getPassword();
         quickPayService.activateAsync(username, password, new QuickPayCallbackListener<Void>() {
             @Override
             public void onSuccess(Void data) {
                 //走到这里是注册成功了 ，就是注册的第一步成功了，之后会进入完善信息的页面。
                 //如果注册成功 点击 了 已激活 按钮 就跳转到 注册的第二个页面。
                 View activateView = findViewById(R.id.activate_dialog);
-                String username = SessonData.loginUser.getUsername();
+                String username = SessionData.loginUser.getUsername();
                 ActivateDialog activateDialog = new ActivateDialog(mContext, activateView, username);
                 activateDialog.setBodyText(getResources().getString(R.string.activate_message) + username);
                 activateDialog.setCancelText(getResources().getString(R.string.activate_after));

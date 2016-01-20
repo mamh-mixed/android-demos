@@ -9,7 +9,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SaveData;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
@@ -65,7 +65,7 @@ public class UpdatePasswordActivity extends BaseActivity {
         }
         startLoading();
 
-        quickPayService.updatePasswordAsync(SessonData.loginUser.getUsername(), originPwd, newPwd, new QuickPayCallbackListener<Void>() {
+        quickPayService.updatePasswordAsync(SessionData.loginUser.getUsername(), originPwd, newPwd, new QuickPayCallbackListener<Void>() {
             @Override
             public void onSuccess(Void data) {
                 //更新一下UI
@@ -76,11 +76,11 @@ public class UpdatePasswordActivity extends BaseActivity {
                 mNewPassword.setPassword("");
 
                 //保存密码成功之后 就要设置一下这个新的密码
-                SessonData.loginUser.setPassword(newPwd);
+                SessionData.loginUser.setPassword(newPwd);
                 User user = new User();
-                user.setUsername(SessonData.loginUser.getUsername());
-                user.setPassword(SessonData.loginUser.getPassword());
-                user.setAutoLogin(SessonData.loginUser.isAutoLogin());
+                user.setUsername(SessionData.loginUser.getUsername());
+                user.setPassword(SessionData.loginUser.getPassword());
+                user.setAutoLogin(SessionData.loginUser.isAutoLogin());
                 SaveData.setUser(mContext, user);
             }
 

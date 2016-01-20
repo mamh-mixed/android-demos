@@ -13,7 +13,7 @@ import com.cardinfolink.yunshouyin.adapter.MessageAdapter;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.MessageDB;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.model.Message;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
@@ -73,7 +73,7 @@ public class UnReadMessageActivity extends BaseActivity {
             }
         });
         //获取最后一次推送的时间
-        lastTime = mMessageDB.getLastTime(SessonData.loginUser.getUsername());
+        lastTime = mMessageDB.getLastTime(SessionData.loginUser.getUsername());
 
         //添加消息重置为已读状态事件
         mSetMessageRead = (Button) findViewById(R.id.set_all_message_read);
@@ -82,7 +82,7 @@ public class UnReadMessageActivity extends BaseActivity {
             public void onClick(View v) {
                 //查询所有未读消息
                 MessageDB messageDataBase = new MessageDB(UnReadMessageActivity.this);
-                List<Message> unreadMessageList = messageDataBase.getUnreadedMessages(SessonData.loginUser.getUsername());
+                List<Message> unreadMessageList = messageDataBase.getUnreadedMessages(SessionData.loginUser.getUsername());
                 //与服务端同步消息状态（所有消息设置成已读状态）
                 Message[] messages = new Message[unreadMessageList.size()];
                 updateMessageStatus(unreadMessageList.toArray(messages));
@@ -108,8 +108,8 @@ public class UnReadMessageActivity extends BaseActivity {
 
 
     protected void updateMessageStatus(Message[] messages) {
-        String username = SessonData.loginUser.getUsername();
-        String password = SessonData.loginUser.getPassword();
+        String username = SessionData.loginUser.getUsername();
+        String password = SessionData.loginUser.getPassword();
         quickPayService.updateMessageAsync(username, password, messages, READ_OR_UNDELETED, new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
@@ -118,7 +118,7 @@ public class UnReadMessageActivity extends BaseActivity {
                     //批量更新本地消息为已读状态
                     Message message = new Message();
                     message.setStatus(READ_OR_UNDELETED);
-                    message.setUsername(SessonData.loginUser.getUsername());
+                    message.setUsername(SessionData.loginUser.getUsername());
                     mMessageDB.setAllMessageReaded(message);
                     notifyChange(READ_OR_UNDELETED);
                 } else {
@@ -176,8 +176,8 @@ public class UnReadMessageActivity extends BaseActivity {
      * 拉取消息数据：首先从本地数据库加载，本地没有，从服务器获取
      */
     private void initMessageList(final String type) {
-        String username = SessonData.loginUser.getUsername();
-        String password = SessonData.loginUser.getPassword();
+        String username = SessionData.loginUser.getUsername();
+        String password = SessionData.loginUser.getPassword();
         if (type == null || PULL_DOWN.equals(type)) { //查询最新消息
             //获取系统当前时间
             SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -231,7 +231,7 @@ public class UnReadMessageActivity extends BaseActivity {
 
     protected List<Message> getLocalMessages(String pushTime, String status, String type) {
         Message message = new Message();
-        message.setUsername(SessonData.loginUser.getUsername());
+        message.setUsername(SessionData.loginUser.getUsername());
         if (TextUtils.isEmpty(pushTime)) {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             pushTime = format.format(new Date());

@@ -16,7 +16,7 @@ import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.ui.EditTextClear;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
@@ -201,7 +201,7 @@ public class RefdActivity extends BaseActivity {
             mYellowTips.show(alertMsg);
             return false;
         }
-        if (!mPassword.getText().toString().equals(SessonData.loginUser.getPassword())) {
+        if (!mPassword.getText().toString().equals(SessionData.loginUser.getPassword())) {
             alertMsg = ShowMoneyApp.getResString(R.string.refd_dialog__password_error);
             mYellowTips.show(alertMsg);
             return false;

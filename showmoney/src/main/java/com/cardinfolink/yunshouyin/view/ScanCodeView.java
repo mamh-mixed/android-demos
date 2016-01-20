@@ -31,7 +31,7 @@ import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.Coupon;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.util.ErrorUtil;
@@ -158,7 +158,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         mYellowTips = new YellowTips(mContext, findViewById(R.id.yellow_tips));
 
         mAccount = (TextView) findViewById(R.id.tv_account);//显示账号的
-        mAccount.setText(SessonData.loginUser.getUsername());
+        mAccount.setText(SessionData.loginUser.getUsername());
 
         scanCodeView = findViewById(R.id.ll_qrcode);
         keyboardView = findViewById(R.id.ll_keyboard);
@@ -317,7 +317,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
 
         QuickPayService quickPayService = ShowMoneyApp.getInstance().getQuickPayService();
         String date = (new SimpleDateFormat("yyyyMMdd")).format(new Date());
-        User user = SessonData.loginUser;
+        User user = SessionData.loginUser;
         if ("true".equals(user.getLimit())) {
             quickPayService.getTotalAsync(user, date, new QuickPayCallbackListener<String>() {
                 @Override
@@ -326,7 +326,7 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
                         data = "0";
                     }
                     try {
-                        BigDecimal maxLimitBg = new BigDecimal(SessonData.loginUser.getLimitAmt());
+                        BigDecimal maxLimitBg = new BigDecimal(SessionData.loginUser.getLimitAmt());
                         BigDecimal limitValueBg = new BigDecimal(data);
                         if (limitValueBg.compareTo(maxLimitBg) >= 0) {
                             //"当日交易已超过限额,请申请提升限额!";
