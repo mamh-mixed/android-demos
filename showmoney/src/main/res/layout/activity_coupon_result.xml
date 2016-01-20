@@ -54,58 +54,71 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="0.3"
+                android:gravity="center"
                 android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_coupon_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:gravity="center"
+                    android:textColor="@color/textview_textcolor_discount_info"
+                    android:textSize="20sp" />
 
                 <TextView
                     android:id="@+id/tv_coupon_message"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
                     android:textColor="@color/textview_textcolor_discount_info"
-                    android:textSize="25sp" />
+                    android:textSize="15sp" />
             </LinearLayout>
         </LinearLayout>
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.33"
-        android:orientation="vertical">
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="60dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.33"
             android:orientation="vertical">
 
-            <Button
-                android:id="@+id/bt_scancode"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:background="@drawable/blue_selector"
-                android:text="@string/coupon_payby_scancode"
-                android:textColor="@color/button_textcolor" />
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_marginBottom="60dp"
+                android:orientation="vertical">
 
-            <Button
-                android:id="@+id/bt_money"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginLeft="30dp"
-                android:layout_marginRight="30dp"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/blue_selector"
-                android:text="@string/coupon_payby_cash"
-                android:textColor="@color/button_textcolor" />
+                <Button
+                    android:id="@+id/bt_scancode"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:background="@drawable/blue_selector"
+                    android:text="@string/coupon_payby_scancode"
+                    android:textColor="@color/button_textcolor" />
+
+                <Button
+                    android:id="@+id/bt_money"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_marginRight="30dp"
+                    android:layout_marginTop="30dp"
+                    android:background="@drawable/blue_selector"
+                    android:text="@string/coupon_payby_cash"
+                    android:textColor="@color/button_textcolor" />
+            </LinearLayout>
+
+
         </LinearLayout>
-
-
     </LinearLayout>
-    </LinearLayout>
+
     <include layout="@layout/hint_dialog" />
 </RelativeLayout>
