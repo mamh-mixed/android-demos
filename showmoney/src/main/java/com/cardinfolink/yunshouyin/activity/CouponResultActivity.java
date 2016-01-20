@@ -14,11 +14,11 @@ import com.cardinfolink.cashiersdk.listener.CashierListener;
 import com.cardinfolink.cashiersdk.model.OrderData;
 import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
+import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
-import com.cardinfolink.yunshouyin.util.Log;
 import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.view.HintDialog;
 
@@ -33,6 +33,8 @@ public class CouponResultActivity extends Activity {
     private Context mContext;
 
     private TextView mCouponContent;
+    private TextView mCouponMessage;
+
     private Button mPayByCash;//现金收款按钮
     private Button mPayByScanCode;//扫码付款按钮
     private SettingActionBarItem mActionBar;
@@ -44,7 +46,9 @@ public class CouponResultActivity extends Activity {
         setContentView(R.layout.activity_coupon_result);
         mContext = this;
         mHintDialog = new HintDialog(CouponResultActivity.this, findViewById(R.id.hint_dialog));
-        mCouponContent = (TextView) findViewById(R.id.tv_coupon_message);
+        mCouponContent = (TextView) findViewById(R.id.tv_coupon_content);
+        mCouponMessage = (TextView) findViewById(R.id.tv_coupon_message);
+
         mPayByCash = (Button) findViewById(R.id.bt_money);
         mPayByScanCode = (Button) findViewById(R.id.bt_scancode);
         mActionBar = (SettingActionBarItem) findViewById(R.id.action_bar);
@@ -52,20 +56,30 @@ public class CouponResultActivity extends Activity {
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        boolean isSuccess = bundle.getBoolean("check_coupon_result_flag", false);//核销成功失败的标记
+        boolean isSuccess = bundle.getBoolean("check_coupon_result_flag", false);
+        //核销成功失败的标记
         if (isSuccess) {
+            mCouponMessage.setText(R.string.coupon_verial_success_info);
+
             //换物品
             if ("2".equals(Coupon.getInstance().getVoucherType())) {
                 mCouponContent.setText(Coupon.getInstance().getCardId());
                 mPayByScanCode.setVisibility(View.GONE);
                 mPayByCash.setText(getString(R.string.coupon_confirm_ok));
-            } else {//打折
-                //指定扫码支付
-                Boolean preferenceScancode = Coupon.getInstance().getVoucherType() != null && (Coupon.getInstance().getVoucherType().startsWith("4")
-                        || Coupon.getInstance().getVoucherType().startsWith("5"));
-                //指定扫码支付
-                Log.e(TAG, "preferenceScancode:" + preferenceScancode);
-                if (preferenceScancode) {
+            } else {
+                //打折
+                if (Coupon.getInstance().getVoucherType().startsWith("4")) {
+                    // 4开头的指定微信支付。
+                    mCouponMessage.setText(R.string.coupon_verial_success_info_weixin);
+                } else if (Coupon.getInstance().getVoucherType().startsWith("5")) {
+                    // 5开头的表示 指定支付宝的
+                    mCouponMessage.setText(R.string.coupon_verial_success_info_ali);
+                }
+
+                //指定扫码支付,5开头的表示 指定支付宝的，4开头的指定微信支付。
+                Boolean isHidePayByCash = Coupon.getInstance().getVoucherType() != null && (Coupon.getInstance().getVoucherType().startsWith("4") || Coupon.getInstance().getVoucherType().startsWith("5"));
+                //指定扫码支付,这里判断是否要隐藏 现金支付 这个按钮
+                if (isHidePayByCash) {
                     mPayByCash.setVisibility(View.INVISIBLE);
                 }
 
@@ -77,22 +91,19 @@ public class CouponResultActivity extends Activity {
                         finish();
                     }
                 });
-                String mSaleMinAccount = new BigDecimal(Coupon.getInstance().getSaleMinAmount()).divide(new BigDecimal(100)).toString();
-                String mDiscount = new BigDecimal(Coupon.getInstance().getSaleDiscount()).divide(new BigDecimal(100)).toString();
+                String saleMinAccount = TxamtUtil.getNormal(Coupon.getInstance().getSaleMinAmount());
+                String discount = TxamtUtil.getNormal(Coupon.getInstance().getSaleDiscount());
                 if (Coupon.getInstance().getVoucherType().endsWith("3")) {
                     //满折券
-                    mDiscount = new BigDecimal(mDiscount).multiply(new BigDecimal("10")).toString();
-                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_man) + mSaleMinAccount + getString(R.string.coupon_yuan) + getString(R.string.coupon_da) + mDiscount + getString(R.string.coupon_zhe));
-
+                    discount = new BigDecimal(discount).multiply(new BigDecimal("10")).toString();
+                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_man) + saleMinAccount + getString(R.string.coupon_yuan) + getString(R.string.coupon_da) + discount + getString(R.string.coupon_zhe));
                 } else if (Coupon.getInstance().getVoucherType().endsWith("1")) {
                     //满减券
-                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_man) + mSaleMinAccount + getString(R.string.coupon_yuan) + getString(R.string.coupon_jian) + mDiscount + getString(R.string.coupon_yuan));
-
+                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_man) + saleMinAccount + getString(R.string.coupon_yuan) + getString(R.string.coupon_jian) + discount + getString(R.string.coupon_yuan));
                 } else {
-                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_jian) + mDiscount + getString(R.string.coupon_yuan));
+                    mCouponContent.setText(Coupon.getInstance().getCardId() + getString(R.string.coupon_jian) + discount + getString(R.string.coupon_yuan));
                     //返回销券
                 }
-
             }
         } else {
             mCouponContent.setText(getString(R.string.coupon_verial_fail_info));
