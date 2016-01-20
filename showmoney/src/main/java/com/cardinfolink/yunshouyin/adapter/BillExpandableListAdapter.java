@@ -202,6 +202,8 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
 
         //从list中根据位置获取到相应的bill项
         final TradeBill bill = childrenData.get(groupPosition).get(childPosition);
+        bill.groupPosition = groupPosition;//这里赋值一下 这个 group的位置，当退款成功时候，返回mainActivity 只刷新这一个位置上的账单
+        bill.childPosition = childPosition;//这里赋值一下 child的位置，
 
         if (!TextUtils.isEmpty(bill.chcd)) {
             //有chcd渠道的话,这里设置不同渠道的图片
@@ -228,13 +230,13 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             e.printStackTrace();
         }
 
-        if ("android".equals(bill.tradeFrom) ) {
+        if ("android".equals(bill.tradeFrom)) {
             childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_phone);
             childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type1));
-        } else if ( "ios".equals(bill.tradeFrom)) {
+        } else if ("ios".equals(bill.tradeFrom)) {
             childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_phone);
             childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type5));
-        }  else if ("wap".equals(bill.tradeFrom)) {
+        } else if ("wap".equals(bill.tradeFrom)) {
             childViewHolder.billTradeFromImage.setImageResource(R.drawable.bill_web);
             childViewHolder.billTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type2));
         } else if ("PC".equals(bill.tradeFrom)) {
