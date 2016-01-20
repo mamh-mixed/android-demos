@@ -787,12 +787,11 @@
             value: this.aagentCodeMap[this.alipay.agentCode],
           };
         }
-        if (this.alipay.version) {
-          this.aversion = {
-            key: this.alipay.version,
-            value: this.aversionMap[this.alipay.version],
-          };
-        }
+        this.aversion = {
+          key: this.alipay.version,
+          value: this.aversionMap[this.alipay.version],
+        };
+
       },
       // 编辑的时候查询微信路由渠道商户请求的响应事件
       handleWxpChanMerResponse: function(e) {
@@ -897,7 +896,8 @@
           chanCode: 'ALP',
           chanMerId: '',
           chanMerName: '',
-          signCert: ''
+          signCert: '',
+          privateKey: '',
         };
         this.weixin = {
           chanCode: 'WXP',
@@ -1041,12 +1041,10 @@
             value: this.aagentCodeMap[this.alipay.agentCode],
           };
         }
-        if (this.alipay.version) {
-          this.aversion = {
-            key: this.alipay.version,
-            value: this.aversionMap[this.alipay.version],
-          };
-        }
+        this.aversion = {
+          key: this.alipay.version,
+          value: this.aversionMap[this.alipay.version],
+        };
         this.set('alipayRoute.acqFee', '');
         this.set('alipayRoute.merFee', '');
         this.set('alipayRoute.settFlag', '');
@@ -1464,7 +1462,7 @@
             _this.set('alipay.privateKey', this.result);
           };
           reader.readAsText(file);
-        
+
         }
       },
       // 代理列表响应
