@@ -8,7 +8,7 @@ static/v0.0.1/elements/yun-select/yun-select-bak.html
 cloudCashier/bower_components/
 cloudCashier/**/bower_components/
 
-admin/bower_components
+/admin/
 
 static/dist
 static/bower_components
