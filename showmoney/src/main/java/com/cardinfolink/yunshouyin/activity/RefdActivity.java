@@ -2,6 +2,8 @@ package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
@@ -127,7 +129,14 @@ public class RefdActivity extends BaseActivity {
                             mAlertDialog.setOkOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    MainActivity.getHandler().sendEmptyMessage(Msg.MSG_REFRESH_BILL_LIST_VIEW);
+                                    Handler mainHandler = MainActivity.getHandler();
+                                    if (mainHandler != null) {
+                                        Message message = mainHandler.obtainMessage();
+                                        message.arg1 = mTradeBill.groupPosition;
+                                        message.arg2 = mTradeBill.childPosition;
+                                        message.what = Msg.MSG_REFRESH_BILL_LIST_VIEW;
+                                        mainHandler.sendMessage(message);
+                                    }
                                     mAlertDialog.hide();
                                     finish();
                                 }
