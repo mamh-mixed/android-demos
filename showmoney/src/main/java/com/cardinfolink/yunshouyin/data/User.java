@@ -258,7 +258,6 @@ public class User {
                 ", limitPhone='" + limitPhone + '\'' +
                 ", payUrl='" + payUrl + '\'' +
                 ", limitAmt='" + limitAmt + '\'' +
-                ", resultData=" + resultData +
                 ", merName='" + merName + '\'' +
                 '}';
     }
