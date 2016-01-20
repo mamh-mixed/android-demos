@@ -33,7 +33,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -351,6 +350,38 @@ public class TransManageView extends LinearLayout {
         getTicketBill();
     }
 
+    //局部账单跟新的方法，传人groupdata位置，和child的位置
+    public void refresh(int groupPosition, int childPosition) {
+        String orderNum;
+        final TradeBill bill;
+        try {
+            bill = mTradeBillList.get(groupPosition).get(childPosition);
+            orderNum = bill.orderNum;//账单号
+        } catch (Exception e) {
+            return;
+        }
+
+        quickPayService.getOrderAsync(SessonData.loginUser, orderNum, new QuickPayCallbackListener<ServerPacket>() {
+            @Override
+            public void onSuccess(ServerPacket data) {
+                try {
+                    Txn[] txn = data.getTxn();
+                    bill.refundAmt = TxamtUtil.getNormal(txn[0].getRefundAmt());//对于人民币的金额都需要除以100
+                    bill.transStatus = txn[0].getTransStatus();
+                    mBillAdapter.notifyDataSetChanged();
+                } catch (Exception e) {
+
+                }
+            }
+
+            @Override
+            public void onFailure(QuickPayException ex) {
+                //出错不处理
+            }
+        });
+
+
+    }
 
     //获取收款的账单账单
     private void getBill() {
@@ -697,4 +728,6 @@ public class TransManageView extends LinearLayout {
             monthList.add(map.get(key));
         }
     }
+
+
 }
