@@ -164,6 +164,19 @@ public class PayResultActivity extends Activity {
                             showPayFailPref();
                         }
                     });
+                    mConfirm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            if (Coupon.getInstance().getVoucherType() != null) {
+                                showPayFailPref();
+                            } else {
+                                Coupon.getInstance().clear();
+                                finish();
+                            }
+                        }
+
+                    });
                 } else {
                     //未指定扫码支付
                     mActionBar.setLeftTextOnclickListner(new View.OnClickListener() {
@@ -171,6 +184,19 @@ public class PayResultActivity extends Activity {
                         public void onClick(View v) {
                             showPayFailUnPref();
                         }
+                    });
+                    mConfirm.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            if (Coupon.getInstance().getVoucherType() != null) {
+                                CleanAfterPay();
+                            } else {
+                                Coupon.getInstance().clear();
+                                finish();
+                            }
+                        }
+
                     });
                 }
             } else {
@@ -180,20 +206,21 @@ public class PayResultActivity extends Activity {
                         finish();
                     }
                 });
-            }
-            mConfirm.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                mConfirm.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
 
-                    if (Coupon.getInstance().getVoucherType() != null) {
-                        showPayFailPref();
-                    } else {
-                        Coupon.getInstance().clear();
-                        finish();
+                        if (Coupon.getInstance().getVoucherType() != null) {
+                            CleanAfterPay();
+                        } else {
+                            Coupon.getInstance().clear();
+                            finish();
+                        }
                     }
-                }
 
-            });
+                });
+            }
+
         }
         mPersonAccount.setRightText(SessionData.loginUser.getUsername());
         mMakeDealTime.setRightText(tradeBill.tandeDate);
