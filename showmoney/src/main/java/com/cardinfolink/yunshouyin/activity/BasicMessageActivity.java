@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.MessageDB;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.Message;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
@@ -29,7 +29,7 @@ public class BasicMessageActivity extends Activity {
     protected static final String UNREAD_OR_DELETED = "2";
     protected static final String READ_OR_DELETE = "3";
 
-    protected User user = SessonData.loginUser;
+    protected User user = SessionData.loginUser;
 
     protected SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 

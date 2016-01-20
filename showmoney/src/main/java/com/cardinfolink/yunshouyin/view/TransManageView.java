@@ -21,7 +21,7 @@ import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.MonthBill;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.model.CouponInfo;
 import com.cardinfolink.yunshouyin.model.QRequest;
@@ -361,7 +361,7 @@ public class TransManageView extends LinearLayout {
             return;
         }
 
-        quickPayService.getOrderAsync(SessonData.loginUser, orderNum, new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.getOrderAsync(SessionData.loginUser, orderNum, new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 try {
@@ -387,7 +387,7 @@ public class TransManageView extends LinearLayout {
     private void getBill() {
         mLoadingDialog.startLoading();
 
-        quickPayService.getHistoryBillsAsync(SessonData.loginUser, mCurrentYearMonth, String.valueOf(billIndex), "100", "success", new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.getHistoryBillsAsync(SessionData.loginUser, mCurrentYearMonth, String.valueOf(billIndex), "100", "success", new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 //这里可以在ui线程里执行的
@@ -419,7 +419,7 @@ public class TransManageView extends LinearLayout {
     public void getTicketBill() {
         mLoadingDialog.startLoading();
 
-        quickPayService.getHistoryCouponsAsync(SessonData.loginUser, mTicketCurrentYearMonth, String.valueOf(ticketIndex), "100", new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.getHistoryCouponsAsync(SessionData.loginUser, mTicketCurrentYearMonth, String.valueOf(ticketIndex), "100", new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 parseServerPacket(data, mMonthTicketBillMap, mTicketBillMap, mMonthTicketBilltList, mTicketBillList);
@@ -484,7 +484,7 @@ public class TransManageView extends LinearLayout {
          */
         String txnStatus = "7";
 
-        quickPayService.findOrderAsync(SessonData.loginUser, index, sizeStr, recType, payType, txnStatus, new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.findOrderAsync(SessionData.loginUser, index, sizeStr, recType, payType, txnStatus, new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 //这里特殊一些，需要用的size。

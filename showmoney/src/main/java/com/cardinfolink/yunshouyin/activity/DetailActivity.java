@@ -16,7 +16,7 @@ import com.cardinfolink.cashiersdk.util.TxamtUtil;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.model.QRequest;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
@@ -469,7 +469,7 @@ public class DetailActivity extends BaseActivity {
         orderData.origOrderNum = mTradeBill.orderNum;
         startLoading(mPayResultImage);
 
-        quickPayService.getOrderAsync(SessonData.loginUser, mTradeBill.orderNum, new QuickPayCallbackListener<ServerPacket>() {
+        quickPayService.getOrderAsync(SessionData.loginUser, mTradeBill.orderNum, new QuickPayCallbackListener<ServerPacket>() {
             @Override
             public void onSuccess(ServerPacket data) {
                 Log.e(TAG, "[getOrderAsync][onSuccess]  data = " + data);

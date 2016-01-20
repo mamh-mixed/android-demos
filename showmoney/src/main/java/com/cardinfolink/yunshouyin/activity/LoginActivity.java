@@ -21,7 +21,7 @@ import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SaveData;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.EditTextClear;
 import com.cardinfolink.yunshouyin.util.Log;
@@ -159,16 +159,16 @@ public class LoginActivity extends BaseActivity {
                     user.setAutoLogin(true);
                 }
                 SaveData.setUser(mContext, user);
-                SessonData.loginUser.setUsername(username);
-                SessonData.loginUser.setPassword(password);
-                SessonData.loginUser.setClientid(data.getClientid());
-                SessonData.loginUser.setObjectId(data.getObjectId());
-                SessonData.loginUser.setLimit(data.getLimit());//限额使用的 true or false
-                SessonData.loginUser.setLimitAmt(TxamtUtil.getNormal(data.getLimitAmt()));//限额使用的 数值
-                SessonData.loginUser.setPayUrl(data.getPayUrl());
-                SessonData.loginUser.setMerName(data.getMerName());
+                SessionData.loginUser.setUsername(username);
+                SessionData.loginUser.setPassword(password);
+                SessionData.loginUser.setClientid(data.getClientid());
+                SessionData.loginUser.setObjectId(data.getObjectId());
+                SessionData.loginUser.setLimit(data.getLimit());//限额使用的 true or false
+                SessionData.loginUser.setLimitAmt(TxamtUtil.getNormal(data.getLimitAmt()));//限额使用的 数值
+                SessionData.loginUser.setPayUrl(data.getPayUrl());
+                SessionData.loginUser.setMerName(data.getMerName());
 
-                if (TextUtils.isEmpty(SessonData.loginUser.getClientid())) {
+                if (TextUtils.isEmpty(SessionData.loginUser.getClientid())) {
                     // clientid为空,跳转到完善信息页面
                     Intent intent = new Intent(mContext, RegisterNextActivity.class);
                     mContext.startActivity(intent);
@@ -197,12 +197,12 @@ public class LoginActivity extends BaseActivity {
                 user.setUsername(username);
                 user.setPassword(password);
                 SaveData.setUser(mContext, user);
-                SessonData.loginUser.setUsername(username);
-                SessonData.loginUser.setPassword(password);
+                SessionData.loginUser.setUsername(username);
+                SessionData.loginUser.setPassword(password);
                 if (errorCode.equals("user_no_activate")) {
                     //更新UI
                     View view = findViewById(R.id.activate_dialog);
-                    String eMail = SessonData.loginUser.getUsername();
+                    String eMail = SessionData.loginUser.getUsername();
                     ActivateDialog activateDialog = new ActivateDialog(mContext, view, eMail);
                     activateDialog.show();
                 } else {

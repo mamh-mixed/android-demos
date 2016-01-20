@@ -18,7 +18,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.model.Bank;
 import com.cardinfolink.yunshouyin.model.City;
@@ -163,8 +163,8 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
 
         mLoadingDialog.startLoading();
         User user = new User();
-        user.setUsername(SessonData.loginUser.getUsername());
-        user.setPassword(SessonData.loginUser.getPassword());
+        user.setUsername(SessionData.loginUser.getUsername());
+        user.setPassword(SessionData.loginUser.getPassword());
         user.setProvince(province);
         user.setCity(city);
         user.setBankOpen(bank);
@@ -176,9 +176,9 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         quickPayService.improveInfoAsync(user, new QuickPayCallbackListener<User>() {
             @Override
             public void onSuccess(User data) {
-                SessonData.loginUser.setClientid(data.getClientid());
-                SessonData.loginUser.setObjectId(data.getObjectId());
-                SessonData.loginUser.setLimit(data.getLimit());
+                SessionData.loginUser.setClientid(data.getClientid());
+                SessionData.loginUser.setObjectId(data.getObjectId());
+                SessionData.loginUser.setLimit(data.getLimit());
 
                 InitData initData = new InitData();
                 initData.setMchntid(data.getClientid());    // 商户号

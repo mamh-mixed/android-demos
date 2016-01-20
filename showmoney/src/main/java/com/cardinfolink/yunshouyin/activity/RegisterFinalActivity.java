@@ -12,7 +12,7 @@ import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.constant.SystemConfig;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.data.SaveData;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.view.ActivateDialog;
@@ -55,8 +55,8 @@ public class RegisterFinalActivity extends BaseActivity implements View.OnClickL
                 //立即使用
                 break;
             case R.id.btnlimit:
-                SessonData.loginUser.setAutoLogin(true);
-                SaveData.setUser(RegisterFinalActivity.this, SessonData.loginUser);
+                SessionData.loginUser.setAutoLogin(true);
+                SaveData.setUser(RegisterFinalActivity.this, SessionData.loginUser);
                 //提升限额,进入到 提升限额的界面，提升用户 选择商户类型
                 intent = new Intent(RegisterFinalActivity.this, StartIncreaseActivity.class);
                 startActivity(intent);
@@ -69,8 +69,8 @@ public class RegisterFinalActivity extends BaseActivity implements View.OnClickL
 
 
     private void login() {
-        final String username = SessonData.loginUser.getUsername();
-        final String password = SessonData.loginUser.getPassword();
+        final String username = SessionData.loginUser.getUsername();
+        final String password = SessionData.loginUser.getPassword();
 
         User user = new User();
         user.setUsername(username);
@@ -80,9 +80,9 @@ public class RegisterFinalActivity extends BaseActivity implements View.OnClickL
         quickPayService.loginAsync(username, password, new QuickPayCallbackListener<User>() {
             @Override
             public void onSuccess(User data) {
-                SessonData.loginUser.setClientid(data.getClientid());
-                SessonData.loginUser.setObjectId(data.getObjectId());
-                SessonData.loginUser.setLimit(data.getLimit());
+                SessionData.loginUser.setClientid(data.getClientid());
+                SessionData.loginUser.setObjectId(data.getObjectId());
+                SessionData.loginUser.setLimit(data.getLimit());
 
                 InitData initData = new InitData();
                 initData.setMchntid(data.getClientid());
@@ -106,7 +106,7 @@ public class RegisterFinalActivity extends BaseActivity implements View.OnClickL
                 if (errorCode.equals("user_no_activate")) {
                     //更新UI,这里不太可能是 没激活状态吧
                     View view = findViewById(R.id.activate_dialog);
-                    String eMail = SessonData.loginUser.getUsername();
+                    String eMail = SessionData.loginUser.getUsername();
                     ActivateDialog activateDialog = new ActivateDialog(mContext, view, eMail);
                     activateDialog.show();
                 } else {

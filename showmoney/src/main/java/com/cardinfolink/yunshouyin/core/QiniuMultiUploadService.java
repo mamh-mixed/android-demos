@@ -1,7 +1,7 @@
 package com.cardinfolink.yunshouyin.core;
 
 import com.cardinfolink.yunshouyin.api.QuickPayException;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.model.MerchantPhoto;
 import com.qiniu.android.http.ResponseInfo;
 import com.qiniu.android.storage.UpCompletionHandler;
@@ -45,7 +45,7 @@ public class QiniuMultiUploadService {
         this.mListener = listener;
         this.mQiniuKeyPattern = qiniuKeyPattern;
 
-        quickPayService.getUploadTokenAsync(SessonData.loginUser, new QuickPayCallbackListener<String>() {
+        quickPayService.getUploadTokenAsync(SessionData.loginUser, new QuickPayCallbackListener<String>() {
             @Override
             public void onSuccess(final String uploadToken) {
                 //进入后台线程,这里会根据map的大小创建多少个子线程用来上传

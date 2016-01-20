@@ -20,7 +20,7 @@ import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.core.QuickPayCallbackListener;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
 import com.cardinfolink.yunshouyin.data.MonthBill;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.model.ServerPacket;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
@@ -332,7 +332,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
                     currentdate = spf2.format(new Date());
                 }
                 final String finalCurrentdate = currentdate;
-                quickPayService.getSummaryDayAsync(SessonData.loginUser, date, "1", new QuickPayCallbackListener<ServerPacket>() {
+                quickPayService.getSummaryDayAsync(SessionData.loginUser, date, "1", new QuickPayCallbackListener<ServerPacket>() {
                     @Override
                     public void onSuccess(ServerPacket data) {
                         //笔数

@@ -18,7 +18,7 @@ import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.Coupon;
-import com.cardinfolink.yunshouyin.data.SessonData;
+import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.ui.ResultInfoItem;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
@@ -169,7 +169,7 @@ public class PayResultActivity extends Activity {
                 });
             }
         }
-        mPersonAccount.setRightText(SessonData.loginUser.getUsername());
+        mPersonAccount.setRightText(SessionData.loginUser.getUsername());
         mMakeDealTime.setRightText(tradeBill.tandeDate);
         mBillOrderNum.setRightText(tradeBill.orderNum);
         mReceiveMoney.setText(decimalFormat.format(Double.valueOf(tradeBill.total)) + getString(R.string.coupon_yuan));
