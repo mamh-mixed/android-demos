@@ -504,6 +504,8 @@ func (u *userController) ResetPwd(data []byte, curUser *model.User) (ret *model.
 	// passData := []byte(model.RAND_PWD + "{" + user.UserName + "}" + model.DEFAULT_PWD)
 	passData := []byte(model.RAND_PWD + "{" + user.UserName + "}" + newPwd)
 	user.Password = fmt.Sprintf("%x", sha1.Sum(passData))
+	user.LoginTime = ""
+	user.LockTime = ""
 
 	err = mongo.UserColl.Update(user)
 	if err != nil {
@@ -560,6 +562,8 @@ func (u *userController) PasswordReset(data []byte) (ret *model.ResultBody) {
 	}
 
 	appUser.Password = resetUser.PassWord
+	appUser.LoginTime = ""
+	appUser.LockTime = ""
 	err = mongo.AppUserCol.Update(appUser)
 	if err != nil {
 		log.Errorf("reset password err,userName=%s,%s", resetUser.UserName, err)
