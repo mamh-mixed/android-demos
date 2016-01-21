@@ -44,6 +44,15 @@
                     android:text="@string/txt_reset_messsage"
                     android:textSize="18sp" />
 
+                <TextView
+                    android:id="@+id/hint_messsage_detail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center"
+                    android:text="@string/txt_reset_messsage"
+                    android:textSize="16sp" />
+
 
             </LinearLayout>
 
