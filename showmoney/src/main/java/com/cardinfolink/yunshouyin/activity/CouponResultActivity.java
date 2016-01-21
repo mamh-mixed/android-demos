@@ -19,6 +19,7 @@ import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
 import com.cardinfolink.yunshouyin.data.Coupon;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
+import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.view.HintDialog;
 
@@ -57,7 +58,8 @@ public class CouponResultActivity extends Activity {
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         boolean isSuccess = bundle.getBoolean("check_coupon_result_flag", false);
-        //核销成功失败的标记
+        String failRespcd=bundle.getString("respcd");
+        //核销成功
         if (isSuccess) {
             mCouponMessage.setText(R.string.coupon_verial_success_info);
 
@@ -105,7 +107,9 @@ public class CouponResultActivity extends Activity {
                     //返回销券
                 }
             }
-        } else {
+        } else {//核销失败
+
+            mCouponMessage.setText(ErrorUtil.getErrorString(failRespcd));
             mCouponContent.setText(getString(R.string.coupon_verial_fail_info));
             mPayByScanCode.setVisibility(View.GONE);
             mPayByCash.setText(getString(R.string.coupon_goback));
