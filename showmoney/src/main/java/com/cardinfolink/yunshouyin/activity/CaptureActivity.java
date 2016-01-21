@@ -33,6 +33,7 @@ import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.decoding.CaptureActivityHandler;
 import com.cardinfolink.yunshouyin.decoding.InactivityTimer;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
+import com.cardinfolink.yunshouyin.util.ErrorUtil;
 import com.cardinfolink.yunshouyin.util.Log;
 import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.view.HintDialog;
@@ -296,7 +297,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                                             @Override
                                             public void run() {
                                                 mCouponLoadDialog.hide();
-                                                mHintErrorDialog.setText(getResources().getString(R.string.coupon_ver_fail), getResources().getString(R.string.coupon_ver_try_again), getResources().getString(R.string.coupon_ver_close));
+                                                mHintErrorDialog.setText(getResources().getString(R.string.coupon_ver_fail),ErrorUtil.getErrorString(mResultData.respcd), getResources().getString(R.string.coupon_ver_try_again), getResources().getString(R.string.coupon_ver_close));
                                                 mHintErrorDialog.show();
                                                 mHintErrorDialog.setCancelOnClickListener(new OnClickListener() {
                                                     @Override
