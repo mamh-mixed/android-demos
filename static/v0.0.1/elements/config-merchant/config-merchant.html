@@ -144,15 +144,15 @@
       <section alias="merchant">
         <div class="row">
           <x-select items="[[agents]]" name="agent" selected-item="{{agent}}" label="代理"></x-select>
-          <paper-input label="代理代码" value="{{merchant.agentCode::input}}"></paper-input>
+          <paper-input label="代理代码" value="{{merchant.agentCode::input}}" readonly></paper-input>
         </div>
         <div class="row">
           <x-select items="[[subAgents]]" name="subAgent" selected-item="{{subAgent}}" label="公司"></x-select>
-          <paper-input label="公司代码" value="{{merchant.subAgentCode::input}}"></paper-input>
+          <paper-input label="公司代码" value="{{merchant.subAgentCode::input}}" readonly></paper-input>
         </div>
         <div class="row">
           <x-select items="[[groups]]" name="group" selected-item="{{group}}" label="商户"></x-select>
-          <paper-input label="商户代码" value="{{merchant.groupCode::input}}"></paper-input>
+          <paper-input label="商户代码" value="{{merchant.groupCode::input}}" readonly></paper-input>
         </div>
         <div class="row">
           <paper-input id="merId" label="门店代码" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项"></paper-input>
@@ -889,6 +889,7 @@
           transCurr: '156',
           signKey: '',
           isNeedSign: false,
+          limitAmt: 50000,
           encryptKey: '',
           permission: []
         };
