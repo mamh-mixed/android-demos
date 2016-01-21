@@ -732,8 +732,11 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
         Bundle bun = new Bundle();
 
         TradeBill tradeBill = new TradeBill();
-        //这里是改了 还是怎么了 resultdata没有返回orderNum了?????
-        tradeBill.orderNum = mResultData.origOrderNum;
+        tradeBill.orderNum = mResultData.orderNum;
+        if (TextUtils.isEmpty(mResultData.orderNum)) {
+            //判断一下是否是空，是空的话使用 orig订单号
+            tradeBill.orderNum = mResultData.origOrderNum;
+        }
         tradeBill.chcd = mResultData.chcd;
         tradeBill.tandeDate = mCurrentTime;
         tradeBill.response = "success";
@@ -756,13 +759,17 @@ public class ScanCodeView extends LinearLayout implements View.OnClickListener, 
     /**
      * 跳转到交易失败的界面
      */
+
     public void enterPayFailActivity() {
         Intent intent = new Intent(mContext, PayResultActivity.class);
 
         Bundle bun = new Bundle();
         TradeBill tradeBill = new TradeBill();
-        //这里是改了 还是怎么了 resultdata没有返回orderNum了?????
-        tradeBill.orderNum = mResultData.origOrderNum;
+        tradeBill.orderNum = mResultData.orderNum;
+        if (TextUtils.isEmpty(mResultData.orderNum)) {
+            //判断一下是否是空，是空的话使用 orig订单号
+            tradeBill.orderNum = mResultData.origOrderNum;
+        }
         tradeBill.chcd = mResultData.chcd;
         tradeBill.tandeDate = mCurrentTime;
         tradeBill.errorDetail = mResultData.errorDetail;
