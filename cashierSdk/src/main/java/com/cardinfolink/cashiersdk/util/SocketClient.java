@@ -4,8 +4,6 @@
  */
 package com.cardinfolink.cashiersdk.util;
 
-import android.util.Log;
-
 import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 
 import java.io.BufferedReader;
