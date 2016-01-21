@@ -1,7 +1,5 @@
 package com.cardinfolink.cashiersdk.sdk;
 
-import android.util.Log;
-
 import com.cardinfolink.cashiersdk.listener.CashierListener;
 import com.cardinfolink.cashiersdk.listener.CommunicationListener;
 import com.cardinfolink.cashiersdk.model.InitData;
@@ -18,27 +16,33 @@ import java.util.Map;
 public class CashierSdk {
     private static final String TAG = "CashierSdk";
 
-    private static final String mProduceHost = "121.40.167.112";
-    private static final String mProducePort = "6001";
-    private static final String mTestHost = "121.40.86.222";
-    private static final String mTestPort = "6001";
+    private static final String PRODUCE_HOST = "121.40.167.112";
+    private static final String PRODUCE_PORT = "6001";//gbk 端口
+
+    private static final String TEST_HOST = "121.40.86.222";
+    private static final String TEST_PORT = "6001";//gbk 端口
+
     private static InitData mInitData;
 
     public static void init(InitData data) {
         mInitData = data;
         if (mInitData.isProduce) {
             Server server = new Server();
-            server.setHost(mProduceHost);
-            server.setPort(mProducePort);
+            server.setHost(PRODUCE_HOST);
+            server.setPort(PRODUCE_PORT);
+            CommunicationUtil.setDEBUG(false);
             CommunicationUtil.setServer(server);
         } else {
             Server server = new Server();
-            server.setHost(mTestHost);
-            server.setPort(mTestPort);
+            server.setHost(TEST_HOST);
+            server.setPort(TEST_PORT);
             CommunicationUtil.setDEBUG(true);
             CommunicationUtil.setServer(server);
         }
+    }
 
+    public static void setDebug(boolean debug) {
+        CommunicationUtil.setDEBUG(debug);
     }
 
     /**
@@ -413,6 +417,8 @@ public class CashierSdk {
 
 
     public static final String CHARSET_GBK = "gbk";
+    public static final String CHARSET_UTF_8 = "utf-8";
+
     public static final String CHARSET = CHARSET_GBK;
 
     public static final String SIGN_TYPE_SHA_1 = "SHA-1";
@@ -555,7 +561,6 @@ public class CashierSdk {
                 if (sign != null) {
                     map.remove("sign");
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
-                    Log.i(TAG, "verisign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
@@ -572,6 +577,14 @@ public class CashierSdk {
         });
     }
 
+    /**
+     * 3.3. 查询订单  这个接口没有在子线程里面调用
+     * 此接口用于查询下单支付和预下单交易的交易状态，当下单支付或预下单
+     * 支付返回09：交易处理中或98：交易超时的应答码或者接入方没有收到应答时
+     * （网络原因等），推荐需要调用此接口，以明确订单状态。
+     *
+     * @param orderData
+     */
     public static ResultData startQy(OrderData orderData) {
         String result = CommunicationUtil.sendDataToServer(ParamsUtil.getQy(mInitData, orderData));
         if (result == null || result.length() == 0) {
@@ -582,7 +595,6 @@ public class CashierSdk {
         if (sign != null) {
             map.remove("sign");
             String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey, "SHA-1");
-            Log.i(TAG, "verisign: " + veriSign);
             if (sign.equals(veriSign)) {
                 ResultData resultData = MapUtil.getResultData(map);
                 return resultData;
@@ -659,7 +671,6 @@ public class CashierSdk {
                 if (sign != null) {
                     map.remove("sign");
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey);
-                    Log.i(TAG, "veriSign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
@@ -695,7 +706,6 @@ public class CashierSdk {
                 if (sign != null) {
                     map.remove("sign");
                     String veriSign = ParamsUtil.getSign(MapUtil.getSignString(map), mInitData.signKey);
-                    Log.i(TAG, "veriSign: " + veriSign);
                     if (sign.equals(veriSign)) {
                         ResultData resultData = MapUtil.getResultData(map);
                         listener.onResult(resultData);
