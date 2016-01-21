@@ -1,11 +1,15 @@
 package cn.weipass.biz.util;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.cardinfolink.cashiersdk.model.ResultData;
 import com.cardinfolink.yunshouyin.data.SessonData;
-import com.cardinfolink.yunshouyin.data.TradeBill;
 import com.cardinfolink.yunshouyin.util.Log;
+
+import java.io.ByteArrayOutputStream;
 
 import cn.weipass.pos.sdk.IPrint;
 import cn.weipass.pos.sdk.Printer;
@@ -77,6 +81,7 @@ public class ToolsUtil {
             case IPrint.EVENT_OK:
                 // 回调函数中不能做UI操作，所以可以使用runOnUiThread函数来包装一下代码块
                 // Log.e("subscribe_msg", "打印机正常");
+                message = "EVENT_OK";
                 break;
             case IPrint.EVENT_NO_PAPER:
                 message = "打印机缺纸";
@@ -176,7 +181,7 @@ public class ToolsUtil {
 
         switch (getReceiptType(resultData)) {
             case TYPE_RECEIPT_PAY:
-                printer.printText("交易类型:" + achd + "    扫码付",
+                printer.printText("交易类型:" + achd + " 扫码付",
                         Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
                         Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
                 printer.printText("日期时间:" + resultData.expDate,
@@ -196,7 +201,7 @@ public class ToolsUtil {
                         Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
                 break;
             case TYPE_RECEIPT_REFUND:
-                printer.printText("交易类型:" + achd + "    退款",
+                printer.printText("交易类型:" + achd + " 退款",
                         Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
                         Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
                 printer.printText("日期时间:" + resultData.expDate,
@@ -220,7 +225,7 @@ public class ToolsUtil {
 
                 break;
             case TYPE_RECEIPT_TICKET:
-                printer.printText("交易类型:" + "   卡券核销",
+                printer.printText("交易类型:" + "卡券核销",
                         Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
                         Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
                 printer.printText("日期时间:" + resultData.expDate,
@@ -232,7 +237,7 @@ public class ToolsUtil {
                 printer.printText("卡券号:" + resultData.orderNum,
                         Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
                         Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
-                printer.printText("详情:" + resultData.cardId,
+                printer.printText("详情:\n" + resultData.cardId,
                         Printer.FontFamily.SONG, Printer.FontSize.MEDIUM,
                         Printer.FontStyle.NORMAL, Printer.Gravity.LEFT);
 
@@ -240,6 +245,8 @@ public class ToolsUtil {
             default:
                 break;
         }
+
+//        printer.printQrCode(resultData.orderNum, 400, IPrint.Gravity.CENTER);
 
         printer.printText("\n\n\n\n\n",
                 Printer.FontFamily.SONG, Printer.FontSize.LARGE,

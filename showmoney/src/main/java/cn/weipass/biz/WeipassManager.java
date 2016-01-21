@@ -234,7 +234,10 @@ public class WeipassManager {
                         if (message == null || message.length() < 1) {
                             return;
                         }
-                        showResultInfo(context, "打印", "打印结果信息", message);
+                        if (message.equals("EVENT_OK")) {
+                            printer.cutting();
+                        }
+//                        showResultInfo(context, "打印", "打印结果信息", message);
                     }
                 });
             }

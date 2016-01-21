@@ -376,7 +376,7 @@ public class DetailActivity extends BaseActivity {
                     //成功的
                     mPayResult.setTextColor(getResources().getColor(R.color.textview_textcolor_pay_success));
                     mPayResult.setText(getString(R.string.detail_activity_trade_status_success));
-                    mPayResultImage.setVisibility(View.GONE);
+//                    mPayResultImage.setVisibility(View.GONE);
                     mPayResultImage.setImageResource(R.drawable.pay_result_succeed);
                 } else {
                     //部分退款的
