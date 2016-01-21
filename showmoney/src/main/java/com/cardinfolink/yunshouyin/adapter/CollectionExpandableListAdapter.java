@@ -4,6 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -304,7 +309,7 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
         new AsyncTask<Void, Integer, Bitmap>() {
             @Override
             protected Bitmap doInBackground(Void... params) {
-                return getUrlBitmap(url);
+                return toRoundBitmap(getUrlBitmap(url));
             }
 
             @Override
@@ -319,6 +324,41 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     /**
+     * 把bitmap转成圆形
+     */
+    public Bitmap toRoundBitmap(Bitmap bitmap) {
+        if (bitmap == null) {
+            return bitmap;
+        }
+
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+        int r = 0;
+        //取最短边做边长
+        if (width < height) {
+            r = width;
+        } else {
+            r = height;
+        }
+        //构建一个bitmap
+        Bitmap backgroundBm = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        //new一个Canvas，在backgroundBmp上画图
+        Canvas canvas = new Canvas(backgroundBm);
+        Paint p = new Paint();
+        //设置边缘光滑，去掉锯齿
+        p.setAntiAlias(true);
+        RectF rect = new RectF(0, 0, r, r);
+        //通过制定的rect画一个圆角矩形，当圆角X轴方向的半径等于Y轴方向的半径时，
+        //且都等于r/2时，画出来的圆角矩形就是圆形
+        canvas.drawRoundRect(rect, r / 2, r / 2, p);
+        //设置当两个图形相交时的模式，SRC_IN为取SRC图形相交的部分，多余的将被去掉
+        p.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        //canvas将bitmap画在backgroundBmp上
+        canvas.drawBitmap(bitmap, null, rect, p);
+        return backgroundBm;
+    }
+
+    /**
      * 获取网络上的图片
      *
      * @param url
@@ -327,6 +367,13 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
     private Bitmap getUrlBitmap(String url) {
         URL myFileUrl = null;
         Bitmap bitmap = null;
+        BitmapFactory.Options bitmapOption = new BitmapFactory.Options();
+        bitmapOption.inPreferredConfig = Bitmap.Config.RGB_565;
+        bitmapOption.inPurgeable = true;
+        bitmapOption.inInputShareable = true;
+
+        //压缩，用于节省BITMAP内存空间--解决BUG的关键步骤
+        bitmapOption.inSampleSize = 10;//这个的值压缩的倍数（2的整数倍），数值越小，压缩率越小，图片越清晰
 
         if (TextUtils.isEmpty(url)) {
             return bitmap;
@@ -337,11 +384,7 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
 
         if (imageFile.exists()) {
             //如果头像图片文件存在就直接使用
-            BitmapFactory.Options opt = new BitmapFactory.Options();
-            opt.inPreferredConfig = Bitmap.Config.RGB_565;
-            opt.inPurgeable = true;
-            opt.inInputShareable = true;
-            bitmap = BitmapFactory.decodeFile(imageFile.getPath(), opt);
+            bitmap = BitmapFactory.decodeFile(imageFile.getPath(), bitmapOption);
             return bitmap;
         }
 
@@ -364,7 +407,7 @@ public class CollectionExpandableListAdapter extends BaseExpandableListAdapter {
                 fos.write(buffer, 0, len);
             }
 
-            bitmap = BitmapFactory.decodeFile(imageFile.getPath());
+            bitmap = BitmapFactory.decodeFile(imageFile.getPath(), bitmapOption);
 
             is.close();
             fos.close();
