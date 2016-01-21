@@ -112,7 +112,7 @@ public class ScanCodeActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //重新支付
-                MainActivity.getHandler().sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
+
                 mHintDialog.hide();
                 mScanCodeView.clearValue();
 
