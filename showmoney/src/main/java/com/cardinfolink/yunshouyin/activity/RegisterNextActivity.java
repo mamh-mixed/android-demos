@@ -147,7 +147,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
 
     private void register() {
         String name = mName.getText().replace(" ", ""); //姓名
-        String banknum = mBankNumber.getText().replace(" ", ""); //银行卡号
+        String bankCardNum = mBankNumber.getText().replace(" ", ""); //银行卡号
         String phonenum = mPhone.getText().replace(" ", "");
 
         String province = mProvinceName;
@@ -157,7 +157,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         String subbank = mSubBankName;
         String bankNo = mBankNo;
 
-        if (!validate(name, banknum, phonenum, province, city, bank, subbank)) {
+        if (!validate(name, bankCardNum, phonenum, province, city, bank, subbank)) {
             return;
         }
 
@@ -168,10 +168,16 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
         user.setProvince(province);
         user.setCity(city);
         user.setBankOpen(bank);
+        if (TextUtils.isEmpty(subbank)) {
+            subbank = " ";
+        }
         user.setBranchBank(subbank);
+        if (TextUtils.isEmpty(bankNo)) {
+            bankNo = " ";
+        }
         user.setBankNo(bankNo);//注意这里 是两个 bankNo 拼接的
         user.setPayee(name);//姓名
-        user.setPayeeCard(banknum);//银行卡号
+        user.setPayeeCard(bankCardNum);//银行卡号
         user.setPhoneNum(phonenum);
         quickPayService.improveInfoAsync(user, new QuickPayCallbackListener<User>() {
             @Override
@@ -275,6 +281,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
             return;
         }
 
+
         updateBankData();//去获取银行信息
 
         selectDialog.setSearchText("");
@@ -343,7 +350,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
     private void searchBank() {
         try {
             String bank = selectDialog.getSearchText();
-            if(TextUtils.isEmpty(bank)) {
+            if (TextUtils.isEmpty(bank)) {
                 return;
             }
             try {
@@ -382,7 +389,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
     private void searchProvince() {
         try {
             String provice = selectDialog.getSearchText();
-            if(TextUtils.isEmpty(provice)) {
+            if (TextUtils.isEmpty(provice)) {
                 return;
             }
             try {
@@ -419,6 +426,7 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
      * 这里调用显示选择 省份城市 滚轮 的界面
      */
     private void showProvinceCity() {
+
         updateProvinceData();
 
         selectDialog.addLeftScrollingListener(new ProvinceOnWheelScrollListener());
@@ -451,6 +459,8 @@ public class RegisterNextActivity extends BaseActivity implements View.OnClickLi
 
                 mSetBank.setTitle(getResources().getString(R.string.register_bank_branch_bank));
                 mSetBank.setRightText("");
+                mBankName = "";
+                mSubBankName = "";
                 selectDialog.hide();
             }
         });
