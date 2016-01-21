@@ -1030,6 +1030,7 @@ func refresh(req *model.ScanPayRequest, c *model.ChanMer) {
 
 		// 如果交易已经不是处理中，那么直接返回即可
 		if t.TransStatus != model.TransHandling {
+			mongo.SpTransColl.Unlock(req.Mchntid, req.OrderNum)
 			return
 		}
 

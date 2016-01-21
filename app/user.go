@@ -1688,7 +1688,7 @@ func transToCoupon(t *model.Trans) *model.Coupon {
 		Terminalid: t.Terminalid,
 		OrderNum:   t.OrderNum,
 	}
-	if t.ScanPayCoupon != nil {
+	if t.ScanPayCoupon != nil && t.ScanPayCoupon.RespCode == "00" {
 		coupon.ReqData.Busicd = t.ScanPayCoupon.Busicd
 		coupon.ReqData.AgentCode = t.ScanPayCoupon.AgentCode
 		coupon.ReqData.Txndir = "Q"
