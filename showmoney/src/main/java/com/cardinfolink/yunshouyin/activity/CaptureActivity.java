@@ -571,6 +571,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
         TradeBill tradeBill = new TradeBill();
         tradeBill.orderNum = mResultData.orderNum;
+        if (TextUtils.isEmpty(mResultData.orderNum)) {
+            //判断一下是否是空，是空的话使用 orig订单号
+            tradeBill.orderNum = mResultData.origOrderNum;
+        }
         tradeBill.chcd = mResultData.chcd;
         tradeBill.tandeDate = mCurrentTime;
         tradeBill.response = "success";
@@ -600,6 +604,10 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
         TradeBill tradeBill = new TradeBill();
         tradeBill.orderNum = mResultData.orderNum;
+        if (TextUtils.isEmpty(mResultData.orderNum)) {
+            //判断一下是否是空，是空的话使用 orig订单号
+            tradeBill.orderNum = mResultData.origOrderNum;
+        }
         tradeBill.chcd = mResultData.chcd;
         tradeBill.tandeDate = mCurrentTime;
         tradeBill.errorDetail = mResultData.errorDetail;
