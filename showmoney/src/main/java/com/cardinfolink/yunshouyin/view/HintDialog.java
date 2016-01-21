@@ -17,6 +17,8 @@ public class HintDialog {
     private View dialogView;
 
     private TextView mTitle;
+    private TextView mTitleInfo;
+
     private TextView mOk;
     private TextView mCancel;
 
@@ -28,6 +30,7 @@ public class HintDialog {
         dialogView = view;
 
         mTitle = (TextView) dialogView.findViewById(R.id.hint_messsage);
+        mTitleInfo = (TextView) dialogView.findViewById(R.id.hint_messsage_detail);
         mOk = (TextView) dialogView.findViewById(R.id.hint_dialog_ok);
         mCancel = (TextView) dialogView.findViewById(R.id.hint_dialog_cancel);
 
@@ -105,6 +108,20 @@ public class HintDialog {
     }
 
     /**
+     * 设置带有错误信息的文本显示框
+     *
+     * @param titlea
+     * @param titleb
+     * @param ok
+     * @param cancel
+     */
+    public void setText(String titlea, String titleb, String ok, String cancel) {
+        setTitle(titlea, titleb);
+        setOkText(ok);
+        setCancelText(cancel);
+    }
+
+    /**
      * 右边 一般显示 “确认”按钮
      * 设置对话框中间显示的文本
      *
@@ -112,6 +129,11 @@ public class HintDialog {
      */
     public void setTitle(String title) {
         mTitle.setText(title);
+    }
+
+    public void setTitle(String titlea, String titleb) {
+        mTitle.setText(titlea);
+        mTitleInfo.setText(titleb);
     }
 
     /**
