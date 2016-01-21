@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/log"
 )
 
 const (
