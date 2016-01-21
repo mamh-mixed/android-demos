@@ -413,6 +413,17 @@
     <string name="coupon_vertical">销券</string>
     <string name="coupon_discount_cash">优惠后金额</string>
     <string name="coupon_first_suggest_info">出于安全考虑，我们不提供卡券查询功能。您输入券号点击或者扫码后，卡券将直接被使用。如有必要，请核实顾客出示的卡券页面的内容</string>
+    <string name="coupon_c0">字段不能为空</string>
+    <string name="coupon_c1">卡券已被核销</string>
+    <string name="coupon_c2">卡券已过期</string>
+    <string name="coupon_c3">无效的卡券</string>
+    <string name="coupon_c4">券状态异常</string>
+    <string name="coupon_c5">未到卡券使用时间</string>
+    <string name="coupon_c6">商户不能使用该卡券</string>
+    <string name="coupon_c7">金额达不到满足优惠条件的最小金额</string>
+    <string name="coupon_c8">不能用此支付类型</string>
+    <string name="coupon_c9">未找到原验证记录</string>
+
 
 
     <!--  欢迎界面 要用到的文本 -->
