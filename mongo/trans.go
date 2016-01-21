@@ -6,9 +6,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/CardInfoLink/log"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -560,7 +560,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		p = append(p, sort, skip, limit)
 	}
 
-	err = database.C(col.name).Pipe(p).All(&trans)
+	err = database.C(col.name).Pipe(p).AllowDiskUse().All(&trans)
 	return trans, total, err
 }
 
