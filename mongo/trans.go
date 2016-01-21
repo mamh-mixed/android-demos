@@ -3,14 +3,14 @@ package mongo
 import (
 	"errors"
 	"fmt"
-	"strings"
-	"time"
-
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/util"
 	"github.com/CardInfoLink/log"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"io"
+	"strings"
+	"time"
 )
 
 type transCollection struct {
@@ -98,7 +98,10 @@ func (col *transCollection) UpdateAndUnlock(t *model.Trans) error {
 // Unlock 只做解锁操作
 func (col *transCollection) Unlock(merId, orderNum string) {
 	set := bson.M{"$set": bson.M{"lockFlag": 0}}
-	database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, set)
+	err := database.C(col.name).Update(bson.M{"merId": merId, "orderNum": orderNum}, set)
+	if err != nil {
+		log.Errorf("ERR: Unlock Trans Fail, merId=%s, orderNum=%d, error: %s", merId, orderNum, err)
+	}
 }
 
 // Update 通过Add时生成的Id来修改
@@ -188,7 +191,12 @@ func (col *transCollection) FindOneInMaster(merId, orderNum string) (t *model.Tr
 	}
 	t = new(model.Trans)
 	err = masterDB.C(col.name).Find(q).One(t)
-
+	if err != nil && err == io.EOF {
+		log.Warn("DB: replset primary change, refresh session.")
+		masterDB.Session.Refresh()
+		// do again
+		err = masterDB.C(col.name).Find(q).One(t)
+	}
 	return
 }
 
@@ -363,7 +371,11 @@ func (col *transCollection) FindBySysOrderNum(sysOrderNum string) (t *model.Tran
 		"sysOrderNum": sysOrderNum,
 	}
 	err = masterDB.C(col.name).Find(q).One(t)
-
+	if err != nil && err == io.EOF {
+		log.Warn("DB: replset primary change, refresh session.")
+		masterDB.Session.Refresh()
+		err = masterDB.C(col.name).Find(q).One(t)
+	}
 	return
 }
 
@@ -375,7 +387,7 @@ func (col *transCollection) FindByAppID(orderNum, appID string) (t *model.Trans,
 		"appID":    appID,
 		"orderNum": orderNum,
 	}
-	err = masterDB.C(col.name).Find(q).One(t)
+	err = database.C(col.name).Find(q).One(t)
 
 	return
 }

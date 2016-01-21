@@ -73,6 +73,8 @@ func (u *appUserController) ResetPwd(data []byte, user *model.User) (ret *model.
 	if appUser != nil {
 		pb := md5.Sum([]byte(newPwd))
 		appUser.Password = fmt.Sprintf("%x", string(pb[:]))
+		appUser.LoginTime = ""
+		appUser.LockTime = ""
 		if err = mongo.AppUserCol.Update(appUser); err != nil {
 			return model.NewResultBody(2, "修改密码失败")
 		}
