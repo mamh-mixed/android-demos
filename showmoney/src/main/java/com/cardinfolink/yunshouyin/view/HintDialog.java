@@ -150,7 +150,7 @@ public class HintDialog {
      * @param v
      */
     public void setOkVisibility(int v) {
-        mCancel.setVisibility(v);
+        mOk.setVisibility(v);
     }
 
     /**
