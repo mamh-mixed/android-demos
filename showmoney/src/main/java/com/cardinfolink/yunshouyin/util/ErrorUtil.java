@@ -90,10 +90,42 @@ public class ErrorUtil {
         if ("CODE_PAYTYPE_NOT_MATCH".equals(error)) {
             return ShowMoneyApp.getResString(R.string.alert_error_CODE_PAYTYPE_NOT_MATCH);
         }
-        if("NO_ENHANCE_LIMIT_AMT".equals(error)){
+        if ("NO_ENHANCE_LIMIT_AMT".equals(error)) {
             return ShowMoneyApp.getResString(R.string.alert_error_no_enhance_limit_amt);
-
         }
+        if ("C0".equals(error)) {//字段不能为空
+            return ShowMoneyApp.getResString(R.string.coupon_c0);
+        }
+        if ("C1".equals(error)) {//卡券已被核销
+            return ShowMoneyApp.getResString(R.string.coupon_c1);
+        }
+
+        if ("C2".equals(error)) {//卡券已过期
+            return ShowMoneyApp.getResString(R.string.coupon_c2);
+        }
+        if ("C3".equals(error)) {//无效的卡券
+            return ShowMoneyApp.getResString(R.string.coupon_c3);
+        }
+        if ("C4".equals(error)) {//券状态异常
+            return ShowMoneyApp.getResString(R.string.coupon_c4);
+        }
+        if ("C5".equals(error)) {//未到卡券使用时间
+            return ShowMoneyApp.getResString(R.string.coupon_c5);
+        }
+        if ("C6".equals(error)) {//商户不能使用该卡券
+            return ShowMoneyApp.getResString(R.string.coupon_c6);
+        }
+        if ("C7".equals(error)) {//金额达不到满足优惠条件的最小金额
+            return ShowMoneyApp.getResString(R.string.coupon_c7);
+        }
+        if ("C8".equals(error)) {//不能用此支付类型
+            return ShowMoneyApp.getResString(R.string.coupon_c8);
+        }
+        if ("C9".equals(error)) {//未找到原验证记录
+            return ShowMoneyApp.getResString(R.string.coupon_c9);
+        }
+
+
         return error;
 
     }
