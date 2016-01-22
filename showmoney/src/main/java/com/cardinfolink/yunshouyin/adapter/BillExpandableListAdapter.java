@@ -193,7 +193,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             childViewHolder.billTradeStatus = (TextView) convertView.findViewById(R.id.bill_tradestatus);
             childViewHolder.billTradeAmount = (TextView) convertView.findViewById(R.id.bill_tradeamount);
             childViewHolder.billOriginTradeAmount = (TextView) convertView.findViewById(R.id.bill_origin_trademount);
-            childViewHolder.billDiscount = (ImageView) convertView.findViewById(R.id.bill_descount);
+            childViewHolder.billDiscountImage = (ImageView) convertView.findViewById(R.id.bill_discount);
 
             convertView.setTag(childViewHolder);
         } else {
@@ -300,18 +300,18 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
             if (discountAmt.compareTo(b0) > 0) {
                 //大于0 说明有优惠金额
                 childViewHolder.billOriginTradeAmount.setVisibility(View.VISIBLE);
-                childViewHolder.billDiscount.setVisibility(View.VISIBLE);
+                childViewHolder.billDiscountImage.setVisibility(View.VISIBLE);
                 String origin = discountAmt.add(txAmt).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
                 childViewHolder.billOriginTradeAmount.setText("￥" + origin);
                 childViewHolder.billOriginTradeAmount.getPaint().setColor(Color.GRAY);
                 childViewHolder.billOriginTradeAmount.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
             } else {
-                childViewHolder.billOriginTradeAmount.setVisibility(View.INVISIBLE);
-                childViewHolder.billDiscount.setVisibility(View.INVISIBLE);
+                childViewHolder.billOriginTradeAmount.setVisibility(View.GONE);
+                childViewHolder.billDiscountImage.setVisibility(View.INVISIBLE);
             }
         } catch (Exception e) {
-            childViewHolder.billOriginTradeAmount.setVisibility(View.INVISIBLE);
-            childViewHolder.billDiscount.setVisibility(View.INVISIBLE);
+            childViewHolder.billOriginTradeAmount.setVisibility(View.GONE);
+            childViewHolder.billDiscountImage.setVisibility(View.INVISIBLE);
         }
 
         childViewHolder.linearLayoutDay.setOnClickListener(new View.OnClickListener() {
@@ -408,7 +408,7 @@ public class BillExpandableListAdapter extends BaseExpandableListAdapter {
         public TextView billTradeAmount;//优惠后的实际支付的金额
         public TextView billOriginTradeAmount;//优惠之前的金额
 
-        public ImageView billDiscount;//显示折扣的一个图片
+        public ImageView billDiscountImage;//显示折扣的一个图片
 
         public View linearLayoutDay;//左边显示日期，周几的一个线性布局
         public View linearLayoutBillItem;//右边显示详情账单信息的一个线性布局
