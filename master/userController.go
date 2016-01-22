@@ -562,6 +562,8 @@ func (u *userController) PasswordReset(data []byte) (ret *model.ResultBody) {
 	}
 
 	appUser.Password = resetUser.PassWord
+	appUser.LoginTime = ""
+	appUser.LockTime = ""
 	err = mongo.AppUserCol.Update(appUser)
 	if err != nil {
 		log.Errorf("reset password err,userName=%s,%s", resetUser.UserName, err)

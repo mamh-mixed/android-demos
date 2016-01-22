@@ -24,6 +24,9 @@ func init() {
 	}
 
 	// 连接master的session
+	// Strong session 强制要求与master连接
+	// 当数据库master移位的时候，Strong session 可能会发生EOF
+	// 需要重新Refresh
 	masterSession := session.Copy()
 	masterSession.SetMode(mgo.Strong, true) // 从master读写，处理对于实时性要求高的操作
 	masterSession.SetSafe(&mgo.Safe{})
