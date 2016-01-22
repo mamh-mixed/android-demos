@@ -141,10 +141,6 @@
             android:name=".activity.FinalIncreaseActivity"
             android:label="@string/app_name" />
         <activity
-            android:name=".activity.TicketResultActivity"
-            android:label="@string/app_name"
-            android:launchMode="singleTask" />
-        <activity
             android:name=".activity.RefdActivity"
             android:label="@string/app_name" />
         <activity
