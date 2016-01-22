@@ -16,7 +16,7 @@
       <div class="search-condition">
         <paper-input name="date" label="清算日期" on-tap="showSettDateDialog" value="{{cond.date::input}}"></paper-input>
         <paper-dialog with-backdrop id="settDateDialog" class="paper-date-picker-dialog" on-iron-overlay-closed="dismissSettDateDialog">
-          <paper-date-picker id="settDatePicker" locale="ja" responsive-width="655px" locale-msg-id="DATE_PICKER.LOCALE" heading-format="MMM Do, ddd"></paper-date-picker>
+          <paper-date-picker id="settDatePicker" locale="ja" responsive-width="655px" locale-msg-id="DATE_PICKER.LOCALE" heading-format="MMM Do, (ddd)"></paper-date-picker>
           <div class="buttons">
             <paper-button dialog-dismiss>取消</paper-button>
             <paper-button dialog-confirm>确定</paper-button>
