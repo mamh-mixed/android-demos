@@ -3,8 +3,6 @@ package mongo
 import (
 	"errors"
 	"fmt"
-	"strings"
-	"time"
 
 	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/model"
