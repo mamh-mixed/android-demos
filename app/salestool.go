@@ -475,7 +475,7 @@ func NotifySalesman(day string) {
 			fds = append(fds, downloadImage(m.Detail.Images, m.MerId)...)
 		}
 
-		sendEmail(&emailData{es: eds, fs: fds, to: user.Mail, cc: "", day: day, key: k, body: toolsBody, excelTemplate: toolsExcel})
+		sendEmail(&emailData{es: eds, fs: fds, to: user.Mail, cc: "", day: day, key: k, body: toolsBody, excelTemplate: toolsExcel, title: toolsTitle})
 
 		if user.RelatedEmail != "" {
 			// 将数据整合到同个代理邮箱
@@ -490,6 +490,7 @@ func NotifySalesman(day string) {
 					cc:            andyLi,
 					day:           day,
 					key:           user.RelatedEmail,
+					title:         toolsTitle,
 					body:          toolsBody,
 					excelTemplate: toolsExcel,
 				}

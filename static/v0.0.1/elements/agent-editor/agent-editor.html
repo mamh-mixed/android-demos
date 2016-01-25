@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-slider/paper-slider.html">
 <dom-module id="agent-editor">
   <style>
     :host {
@@ -27,6 +28,29 @@
     .row paper-input:first-child {
       margin-right: 20px;
     }
+
+    .row > .col {
+      height: 50px;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      -ms-flex-direction: row;
+      -webkit-flex-direction: row;
+      flex-direction: row;
+    }
+
+    .col > div {
+      @apply(--layout-self-end);
+    }
+
+    .row > .col .label {
+      color: #727272;
+    }
+
+    #flowGenerateType,
+    #flowGenerateType1 {
+      width: 130px;
+    }
   </style>
   <template>
     <paper-dialog with-backdrop id="dialogAdd">
@@ -37,6 +61,15 @@
         </div>
         <div class="row">
           <paper-input label="代理名称" value="{{agent.agentName::input}}"></paper-input>
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="layout horizontal center">
+              <div class="label">流水类型 </div>
+              <paper-slider id="flowGenerateType" min="0" max="2" value="{{agent.flowGenerateType::change}}"></paper-slider>
+              <div class="">{{flowGenerateTypeDesc}}</div>
+            </div>
+          </div>
         </div>
         <div class="row">
           <paper-input label="微信成本" value="{{agent.wxpCost::input}}"></paper-input>
@@ -62,6 +95,15 @@
           <paper-input label="代理名称" value="{{agent.agentName::input}}"></paper-input>
         </div>
         <div class="row">
+          <div class="col">
+            <div class="layout horizontal center">
+              <div class="label">流水类型 </div>
+              <paper-slider id="flowGenerateType1" min="0" max="2" value="{{agent.flowGenerateType::change}}"></paper-slider>
+              <div class="">{{flowGenerateTypeDesc}}</div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
           <paper-input label="微信成本" value="{{agent.wxpCost::input}}"></paper-input>
         </div>
         <div class="row">
@@ -83,9 +125,19 @@
 
         properties: {
           agent: {
-            type: Object
+            type: Object,
+            value: function() {
+              return {
+                agentCode: '',
+                agentName: '',
+                flowGenerateType: 0
+              };
+            }
           }
         },
+        observers: [
+          'flowGenerateTypeChanged(agent.flowGenerateType)'
+        ],
         ready: function() {
           this.agent = {};
         },
@@ -114,7 +166,20 @@
           this.$.dialogEdit.close();
           this.fire('saved');
           this.set('agent', {});
-      },
+        },
+        flowGenerateTypeChanged: function(newValue, oldValue) {
+          if (!newValue) {
+            newValue = 0;
+          }
+
+          var types = {
+            0: '不生成流水',
+            1: '生成勾兑后流水',
+            2: '生成不勾兑流水'
+          };
+
+          this.flowGenerateTypeDesc = types[newValue];
+        },
         // 点击保存事件
         handleUpdateTapped: function() {
           this.set('agent.wxpCost', parseFloat(this.agent.wxpCost));

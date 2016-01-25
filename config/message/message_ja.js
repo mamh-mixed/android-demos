@@ -1,4 +1,4 @@
-{	
+{
 	"Currency":"JPY",
 	"ChanCode":{
 		"ALP":"アリペイ",
@@ -12,7 +12,7 @@
 	"Role":{
 		"Company" :"会社",
 		"Agent"   :"代理",
-		"Group"   :"加盟店",
+		"Group"   :"代表店舗",
 		"Mer"     :"店舗"
 	},
 	"BusicdType":{
@@ -35,7 +35,7 @@
 		"Unknown":"未知"
 	},
 	"StatReport":{
-		"Title"					:"加盟店取引レポート統計",
+		"Title"					:"代表店舗取引集計レポート",
 		"Total" 				:"総計：",
 		"StartDate"				:"開始日：",
 		"EndDate" 				:"終了日：",
@@ -59,13 +59,13 @@
 		"OrderNum"       			:"オーダーナンバー",
 		"TransAmt"       			:"取引金額",
 		"TransCurr"					:"取引通貨",
-		"MerFee"					:"加盟店手数料",
+		"MerFee"					:"店舗手数料",
 		"ChanCode"       			:"チャンネル",
 		"TransTime"      			:"取引時間",
 		"PayTime"					:"支払い時間",
 		"TransStatus"    			:"取引状態",
-		"ChanMerId"     			:"チャンネル加盟店コード",
-		"AgentCode"      			:"提携先",
+		"ChanMerId"     			:"決済事業者代表店舗コード",
+		"AgentCode"      			:"代理コード",
 		"TerminalId"     			:"端末番号",
 		"Busicd"         			:"取引種類",
 		"OrigOrderNum"   			:"元オーダーナンバー",
