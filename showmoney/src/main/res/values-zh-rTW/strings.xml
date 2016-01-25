@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">雲收銀</string>
+    <string name="app_name">華南收銀平台</string>
     <string name="copyright">Cardinfolink 2015</string>
     <string name="login_bank_name">華南銀行</string>
     <string name="login_hint_username">請輸入用戶名</string>
@@ -33,7 +33,7 @@
     <string name="dialog_trade_success">交易成功\n感謝購買！</string>
     <string name="dialog_trade_nopay">交易未支付，請支付後査詢！</string>
     <string name="dialog_trade_fail">本次交易出錯\n支付失敗！</string>
-    <string name="server_timeout">服務器超時，請檢查網絡！</string>
+    <string name="server_timeout">服務器超時，請檢查網路！</string>
     <string name="username_password_error">用戶名或密碼錯誤！</string>
     <string name="press_again_exit">再按一次退出程式！</string>
     <string name="username_exist">用戶名已存在！</string>
@@ -82,7 +82,7 @@
     <string name="alert_error_user_has_three_times">您還有三次機會!</string>
     <string name="alert_error_user_has_two_times">您還有二次機會!</string>
     <string name="alert_error_user_has_one_times">您還有壹次機會!</string>
-    <string name="alert_error_network">網絡錯誤,請檢查網絡是否連接</string>
+    <string name="alert_error_network">網路錯誤,請檢查網路是否連接</string>
     <string name="alert_error_user_lock">賬號鎖定3小時，需立即解鎖請聯繫管理員</string>
 
     <string name="alert_update_success">修改成功!</string>
@@ -101,7 +101,7 @@
     <string name="refd_dialog_amount_foramt_error">金額格式錯誤</string>
     <string name="refd_dialog_amount_not_exceeds_max">金額不能超過%s元</string>
     <string name="refd_dialog__password_error">密碼錯誤!</string>
-    <string name="scancode_view_create_code">生成二維碼</string>
+    <string name="scancode_view_create_code">產生QR Code</string>
     <string name="scancode_view_scaning_code">開始掃描</string>
     <string name="scancode_view_scaning_pay_zhifubao">支付寶</string>
     <string name="scancode_view_scaning_pay_weixin">微信支付</string>
@@ -138,7 +138,7 @@
     <string name="txn_refund">退款</string>
     <string name="txn_unit">筆</string>
     <string name="login">登錄</string>
-    <string name="clear">清空</string>
+    <string name="clear">清除</string>
     <string name="delete">删除</string>
     <string name="begin_scan">開始掃描</string>
     <string name="my_bill">我的帳單</string>
@@ -158,7 +158,7 @@
     <string name="txt_scan_bar_and_qr_code_">掃QR code</string>
     <string name="txt_start_pay">開啟支付</string>
     <string name="txt_enter_paycode">輸入支付碼</string>
-    <string name="txt_enter_camera">攝像頭掃碼</string>
+    <string name="txt_enter_camera">店家掃碼</string>
     <string name="txt_enter_scancode">掃碼槍掃碼</string>
     <string name="txt_enter_usercode">用戶掃碼</string>
 
