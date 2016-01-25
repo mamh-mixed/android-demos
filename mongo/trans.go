@@ -474,6 +474,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 	// 如果是导出报表
 	if q.IsForReport {
 		// no skip, no limit
+		sort = bson.M{"$sort": bson.M{"createTime": 1}}
 		p = append(p, sort)
 	} else {
 		p = append(p, sort, skip, limit)
