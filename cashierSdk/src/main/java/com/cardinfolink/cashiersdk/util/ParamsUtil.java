@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 
 public class ParamsUtil {
-    public static final String SIGN_TYPE = CashierSdk.SIGN_TYPE_SHA_256;
+    public static final String SIGN_TYPE = CashierSdk.SIGN_TYPE;
 
     @SuppressLint("SimpleDateFormat")
     public static JSONObject getPay(InitData initData, OrderData orderData) {
