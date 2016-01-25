@@ -44,11 +44,11 @@ public class ScanCodeGunActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_code_gun);
         mContext = this;
-        mInputScan=(EditText)findViewById(R.id.et_input_box);
+        mInputScan = (EditText) findViewById(R.id.et_input_box);
         intent = getIntent();
         chcd = intent.getStringExtra("chcd");
         total = intent.getStringExtra("total");
-        mPay =(Button)findViewById(R.id.bt_pay);
+        mPay = (Button) findViewById(R.id.bt_pay);
         Date now = new Date();
         SimpleDateFormat spf = new SimpleDateFormat("yyMMddHHmmss");
         mOrderNum = spf.format(now);
@@ -63,19 +63,20 @@ public class ScanCodeGunActivity extends Activity {
             @Override
             public void onClick(View v) {
                 scancode = mInputScan.getText().toString();
-                scancode=scancode.replace("\n","");
+                scancode = scancode.replace("\n", "");
                 if (TextUtils.isEmpty(scancode)) {
                     Toast.makeText(ScanCodeGunActivity.this, "QR不能为空", Toast.LENGTH_SHORT).show();
                 } else {
-                    Message msg=Message.obtain();
-                    msg.what=Msg.MSG_FROM_SCANCODE_SUCCESS;
-                    msg.obj= scancode;
+                    Message msg = Message.obtain();
+                    msg.what = Msg.MSG_FROM_SCANCODE_SUCCESS;
+                    msg.obj = scancode;
                     mHandler.sendMessage(msg);
                 }
 
             }
         });
     }
+
     public void initHandler() {
         mHandler = new Handler() {
             @Override
@@ -86,7 +87,7 @@ public class ScanCodeGunActivity extends Activity {
                         final OrderData orderData = new OrderData();
                         orderData.orderNum = mOrderNum;
                         orderData.txamt = total;
-                        orderData.currency = CashierSdk.SDK_CURRENCY_TWD;
+                        orderData.currency = CashierSdk.SDK_CURRENCY;
                         orderData.chcd = chcd;
                         orderData.scanCodeId = (String) msg.obj;
                         // /orderData.scanCodeId="13241252555";
@@ -143,7 +144,6 @@ public class ScanCodeGunActivity extends Activity {
             }
         };
     }
-
 
 
 }

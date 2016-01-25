@@ -69,7 +69,7 @@ public class CreateQRcodeActivity extends BaseActivity {
         final OrderData orderData = new OrderData();
         orderData.orderNum = mOrderNum;
         orderData.txamt = total;
-        orderData.currency = CashierSdk.SDK_CURRENCY_TWD;
+        orderData.currency = CashierSdk.SDK_CURRENCY;
         orderData.chcd = chcd;
 
         initHandler();

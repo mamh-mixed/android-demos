@@ -124,7 +124,7 @@ public class RefdDialog {
             orderNmuber = orderNmuber + random.nextInt(10);
         }
         orderData.orderNum = orderNmuber;
-        orderData.currency = CashierSdk.SDK_CURRENCY_TWD;
+        orderData.currency = CashierSdk.SDK_CURRENCY;
         orderData.txamt = refdValue.getText().toString();
 
         CashierSdk.startRefd(orderData, new CashierListener() {

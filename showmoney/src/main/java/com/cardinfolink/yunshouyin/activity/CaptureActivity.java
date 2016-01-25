@@ -168,7 +168,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
                         final OrderData orderData = new OrderData();
                         orderData.orderNum = mOrderNum;
                         orderData.txamt = total;
-                        orderData.currency = CashierSdk.SDK_CURRENCY_TWD;
+                        orderData.currency = CashierSdk.SDK_CURRENCY;
                         orderData.chcd = chcd;
                         orderData.scanCodeId = (String) msg.obj;
                         // /orderData.scanCodeId="13241252555";
