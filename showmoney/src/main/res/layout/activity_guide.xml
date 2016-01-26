@@ -19,4 +19,5 @@
         android:text="开始体验"
         android:visibility="invisible" />
 
+    <include layout="@layout/showmoney_dialog" />
 </RelativeLayout>

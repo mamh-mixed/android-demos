@@ -1,6 +1,5 @@
 package com.cardinfolink.yunshouyin.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,7 +20,7 @@ import java.util.ArrayList;
 /**
  * Created by charles on 2016/1/5.
  */
-public class GuideActivity extends Activity {
+public class GuideActivity extends BaseActivity {
 
     private static final int[] mImageIds = new int[]{R.drawable.guide1,
             R.drawable.guide2, R.drawable.guide3};

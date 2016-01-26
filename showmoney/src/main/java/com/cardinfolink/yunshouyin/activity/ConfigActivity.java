@@ -1,7 +1,6 @@
 package com.cardinfolink.yunshouyin.activity;
 
 import android.os.Bundle;
-import android.app.Activity;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -14,7 +13,7 @@ import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.util.Log;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 
-public class ConfigActivity extends Activity {
+public class ConfigActivity extends BaseActivity {
 
     private SettingActionBarItem mActionBar;
 

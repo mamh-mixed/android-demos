@@ -1,6 +1,5 @@
 package com.cardinfolink.yunshouyin.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -8,7 +7,7 @@ import android.widget.Button;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
-public class FinalIncreaseActivity extends Activity {
+public class FinalIncreaseActivity extends BaseActivity {
     private SettingActionBarItem mActionBar;
     private Button mFinish;
 

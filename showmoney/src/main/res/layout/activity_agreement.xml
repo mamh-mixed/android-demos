@@ -24,4 +24,6 @@
             android:layout_height="match_parent"
             android:scrollbarSize="0dip" />
     </LinearLayout>
+
+    <include layout="@layout/showmoney_dialog" />
 </RelativeLayout>

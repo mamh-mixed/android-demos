@@ -1,6 +1,5 @@
 package com.cardinfolink.yunshouyin.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -33,7 +32,7 @@ import java.text.DecimalFormat;
 /**
  * Created by charles on 2015/12/20.
  */
-public class PayResultActivity extends Activity {
+public class PayResultActivity extends BaseActivity {
     private SettingActionBarItem mActionBar;
 
     private TextView mPayResult;

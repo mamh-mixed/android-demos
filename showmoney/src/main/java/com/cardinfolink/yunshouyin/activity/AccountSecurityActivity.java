@@ -2,14 +2,13 @@ package com.cardinfolink.yunshouyin.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.app.Activity;
 import android.view.View;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
 
-public class AccountSecurityActivity extends Activity implements View.OnClickListener {
+public class AccountSecurityActivity extends BaseActivity implements View.OnClickListener {
 
     private SettingClikcItem mAccountInfo;
     private SettingClikcItem mUpdatePassword;
@@ -47,6 +46,5 @@ public class AccountSecurityActivity extends Activity implements View.OnClickLis
                 startActivity(intent);
                 break;
         }
-        //finish();//结束当前的activity
     }
 }
