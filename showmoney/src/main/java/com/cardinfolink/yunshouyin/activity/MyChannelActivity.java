@@ -1,13 +1,12 @@
 package com.cardinfolink.yunshouyin.activity;
 
 import android.os.Bundle;
-import android.app.Activity;
 import android.view.View;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
-public class MyChannelActivity extends Activity {
+public class MyChannelActivity extends BaseActivity {
 
     private SettingActionBarItem mActionBar;
 

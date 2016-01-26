@@ -1,6 +1,5 @@
 package com.cardinfolink.yunshouyin.activity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,7 +18,7 @@ import com.umeng.update.UmengUpdateListener;
 import com.umeng.update.UpdateResponse;
 import com.umeng.update.UpdateStatus;
 
-public class AboutActivity extends Activity implements View.OnClickListener {
+public class AboutActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "AboutActivity";
 
     private SettingActionBarItem mActionBar;//关于云收银的 action bar

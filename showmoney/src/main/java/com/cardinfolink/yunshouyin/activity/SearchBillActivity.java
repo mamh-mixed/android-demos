@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SearchBillActivity extends Activity {
+public class SearchBillActivity extends BaseActivity {
     private static final String TAG = "SearchBillActivity";
     private Context mContext;
     private QuickPayService quickPayService;

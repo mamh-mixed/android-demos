@@ -28,4 +28,5 @@
         android:src="@drawable/setting_details"
         cardinfolink:title="@string/setting_modify_password" />
 
+    <include layout="@layout/showmoney_dialog" />
 </LinearLayout>

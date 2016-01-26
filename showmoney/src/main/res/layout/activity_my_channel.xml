@@ -129,4 +129,8 @@
                 android:src="@drawable/setting_meituan" />
         </LinearLayout>
     </LinearLayout>
+
+    <include layout="@layout/showmoney_dialog" />
+
+
 </LinearLayout>

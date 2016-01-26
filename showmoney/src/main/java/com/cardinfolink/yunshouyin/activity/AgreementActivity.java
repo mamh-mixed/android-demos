@@ -1,7 +1,6 @@
 package com.cardinfolink.yunshouyin.activity;
 
 import android.os.Bundle;
-import android.app.Activity;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -11,7 +10,7 @@ import android.webkit.WebViewClient;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 
-public class AgreementActivity extends Activity {
+public class AgreementActivity extends BaseActivity {
     private static final java.lang.String AGREEMENT_URL = "http://test.quick.ipay.so/index/#/app/agreement";
     private WebView mWebView;
     private SettingActionBarItem mActionBar;

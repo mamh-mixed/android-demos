@@ -66,5 +66,5 @@
 
     </RelativeLayout>
 
-
+    <include layout="@layout/showmoney_dialog" />
 </LinearLayout>
