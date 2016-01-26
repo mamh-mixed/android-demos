@@ -201,10 +201,15 @@ public class MainActivity extends BaseActivity {
                 toast.show();
                 exitTime = System.currentTimeMillis();
             } else {
-                //finish();
-                ActivityCollector.finishAll();
+                try {
+                    //finish 掉所有的 activity 活动，这里使用了list来管理所有的activity
+                    ActivityCollector.finishAll();
+                    // 杀死该应用进程
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                    System.exit(0);
+                } catch (Exception e) {
 
-                android.os.Process.killProcess(android.os.Process.myPid());
+                }
             }
             return true;
         }
