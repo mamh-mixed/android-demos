@@ -1,8 +1,8 @@
 package mongo
 
 import (
-	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/log"
+	"github.com/CardInfoLink/quickpay/model"
 	"gopkg.in/mgo.v2/bson"
 	"time"
 )
@@ -91,6 +91,7 @@ func (col *appUserCollection) Find(q *model.AppUserContiditon) ([]*model.AppUser
 	if q.StartTime != "" && q.EndTime != "" {
 		query["createTime"] = bson.M{"$gte": q.StartTime, "$lte": q.EndTime}
 	}
+	// query["deviceToken"] = bson.M{"$exists": true}
 
 	var users []*model.AppUser
 	err := database.C(col.name).Find(query).All(&users)
