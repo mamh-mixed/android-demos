@@ -144,7 +144,6 @@ func (col *userCollection) FindCountByUserName(userName string) (num int, err er
 	}
 	num, err = database.C(col.name).Find(bo).Count()
 	if err != nil {
-		log.Errorf("find count by userName err,userName=%s", err)
 		return 0, err
 	}
 	return num, nil
