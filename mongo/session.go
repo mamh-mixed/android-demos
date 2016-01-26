@@ -54,5 +54,8 @@ func (col *sessionCollection) Remove(sessionID string) (err error) {
 func (col *sessionCollection) RemoveByTime() (num int, err error) {
 	bo := bson.M{"expires": bson.M{"$lte": time.Now().Format("2006-01-02 15:04:05")}}
 	info, err := database.C(col.name).RemoveAll(bo)
-	return info.Removed, err
+	if err != nil {
+		return 0, err
+	}
+	return info.Removed, nil
 }

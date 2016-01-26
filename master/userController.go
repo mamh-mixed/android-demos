@@ -227,6 +227,16 @@ func (u *userController) CreateUser(data []byte) (ret *model.ResultBody) {
 		log.Errorf("json unmsrshal err,%s", err)
 		return model.NewResultBody(1, "JSON_ERROR")
 	}
+	// 用户名不能重复
+	num, err := mongo.UserColl.FindCountByUserName(user.UserName)
+	if err != nil {
+		log.Errorf("find database err,username=%s,%s", user.UserName, err)
+		return model.NewResultBody(1, "SELECT_ERROR")
+	}
+	if num != 0 {
+		return model.NewResultBody(3, "USERNAME_EXIST")
+	}
+
 	// 设置默认密码
 	passData := []byte(model.RAND_PWD + "{" + user.UserName + "}" + model.DEFAULT_PWD)
 	user.Password = fmt.Sprintf("%x", sha1.Sum(passData))
@@ -299,26 +309,6 @@ func (u *userController) CreateUser(data []byte) (ret *model.ResultBody) {
 	}
 	user.LoginTime = ""
 	user.LockTime = ""
-
-	// 用户名不能重复
-	_, err = mongo.UserColl.FindOneUser(user.UserName, "", "")
-	if err == nil {
-		log.Errorf("username exists,userName=%s", user.UserName)
-		return model.NewResultBody(3, "USERNAME_EXIST")
-	}
-	// 邮箱不能重复
-	// _, err = mongo.UserColl.FindOneUser("", user.Mail, "")
-	// if err == nil {
-	// 	log.Errorf("邮箱已存在,userName=%s", user.UserName)
-	// 	return model.NewResultBody(4, "邮箱已存在")
-	// }
-	// 手机号码不能重复
-	// _, err = mongo.UserColl.FindOneUser("", "", user.PhoneNum)
-	// if err == nil {
-	// 	log.Errorf("用手机号码已存在,userName=%s", user.UserName)
-	// 	return model.NewResultBody(5, "手机号码已存在")
-	// }
-
 	err = mongo.UserColl.Add(user)
 	if err != nil {
 		log.Errorf("create user error,%s", err)
