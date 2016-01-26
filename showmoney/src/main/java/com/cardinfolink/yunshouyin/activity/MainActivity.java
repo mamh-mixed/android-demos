@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.constant.Msg;
+import com.cardinfolink.yunshouyin.util.ActivityCollector;
 import com.cardinfolink.yunshouyin.view.MySettingView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TicketView;
@@ -201,10 +202,8 @@ public class MainActivity extends BaseActivity {
                 exitTime = System.currentTimeMillis();
             } else {
                 //finish();
-                Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.addCategory(Intent.CATEGORY_HOME);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);
+                ActivityCollector.finishAll();
+
                 android.os.Process.killProcess(android.os.Process.myPid());
             }
             return true;
