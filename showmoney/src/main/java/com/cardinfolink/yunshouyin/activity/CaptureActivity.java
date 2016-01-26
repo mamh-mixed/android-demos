@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.Vibrator;
 import android.text.TextUtils;
@@ -43,6 +44,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -211,177 +213,195 @@ public class CaptureActivity extends BaseActivity implements Callback {
         vibrate = true;
     }
 
-    public void initHandler() {
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case Msg.MSG_FROM_SCANCODE_SUCCESS: {
-                        if ("scancodeview".equals(originalFromFlag)) {
-                            //这边是扫码支付
-                            mTradingLoadDialog.loading();
-                            final OrderData orderData = new OrderData();
-                            orderData.orderNum = mOrderNum;
-                            orderData.txamt = total;
-                            orderData.currency = CashierSdk.SDK_CURRENCY;
-                            orderData.scanCodeId = (String) msg.obj;
-                            //有优惠金额的时候
-                            if (Coupon.getInstance().getSaleDiscount() != null && !"0".equals(Coupon.getInstance().getSaleDiscount())) {
-                                orderData.discountMoney = String.valueOf(new BigDecimal(originaltotal).subtract(new BigDecimal(total)).doubleValue());
-                                orderData.couponOrderNum = Coupon.getInstance().getOrderNum();
-                            }
-                            // /orderData.scanCodeId="13241252555";
-                            CashierSdk.startPay(orderData, new CashierListener() {
+    private static class CaptureHandler extends Handler {
+        final WeakReference<CaptureActivity> mActivity;
 
-                                @Override
-                                public void onResult(ResultData resultData) {
+        public CaptureHandler(CaptureActivity activity, Looper looper) {
+            super(looper);
+            mActivity = new WeakReference<>(activity);
+        }
 
-                                    mResultData = resultData;
-                                    if (mResultData.respcd.equals("00")) {
-                                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
-                                    } else if (mResultData.respcd.equals("09")) {
-                                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_NOPAY);
-                                    } else {
-                                        //返回14 表示 条码错误或过期
-                                        mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
-                                    }
-                                }
-
-                                @Override
-                                public void onError(int errorCode) {
-                                    mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
-                                }
-
-                            });
-                        } else if ("ticketview".equals(originalFromFlag)) {
-                            //这里是卡券核销
-                            String scancode = (String) msg.obj;
-                            Intent intentForTicketView = new Intent();
-                            intentForTicketView.putExtra("ticketcode", scancode);
-                            setResult(0, intentForTicketView);
-
-                            final OrderData orderData = new OrderData();
-                            orderData.orderNum = Utility.geneOrderNumber();
-                            orderData.scanCodeId = scancode;
-                            mCouponLoadDialog.waiting();
-                            CashierSdk.startVeri(orderData, new CashierListener() {
-                                @Override
-                                public void onResult(ResultData resultData) {
-                                    mResultData = resultData;
-                                    Coupon.getInstance().setAvailCount(resultData.availCount);
-                                    Coupon.getInstance().setCardId(resultData.cardId);
-                                    Coupon.getInstance().setVoucherType(resultData.voucherType);
-                                    Coupon.getInstance().setSaleDiscount(resultData.saleDiscount);
-                                    Coupon.getInstance().setMaxDiscountAmt(resultData.maxDiscountAmt);
-                                    Coupon.getInstance().setExpDate(resultData.expDate);
-                                    Coupon.getInstance().setSaleMinAmount(resultData.saleMinAmount);//保存卡券核销返回信息
-                                    Coupon.getInstance().setOrderNum(resultData.orderNum);
-                                    Coupon.getInstance().setScanCodeId(resultData.scanCodeId);
-                                    if ("00".equals(mResultData.respcd)) {
-                                        Intent intent = new Intent(mContext, CouponResultActivity.class);
-                                        Bundle bundle = new Bundle();
-                                        bundle.putBoolean("check_coupon_result_flag", true);
-                                        intent.putExtras(bundle);
-                                        mContext.startActivity(intent);
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mCouponLoadDialog.hide();
-                                            }
-                                        });
-
-                                        finish();
-                                    } else {
-                                        //核销失败
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mCouponLoadDialog.hide();
-                                                mHintErrorDialog.setText(getResources().getString(R.string.coupon_ver_fail),ErrorUtil.getErrorString(mResultData.respcd), getResources().getString(R.string.coupon_ver_try_again), getResources().getString(R.string.coupon_ver_close));
-                                                mHintErrorDialog.show();
-                                                mHintErrorDialog.setCancelOnClickListener(new OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        Coupon.getInstance().clear();
-                                                        finish();
-                                                    }
-                                                });
-                                                mHintErrorDialog.setOkOnClickListener(new OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        Intent intent = new Intent(mContext, CaptureActivity.class);
-                                                        Bundle bundle = new Bundle();
-                                                        bundle.putString("original", "ticketview");
-                                                        intent.putExtras(bundle);
-                                                        mContext.startActivity(intent);
-                                                        mHintErrorDialog.hide();
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    }//end if()
-                                }
-
-                                @Override
-                                public void onError(int errorCode) {
-                                    Log.e(TAG, " starVeri fail===" + errorCode);
-                                    MainActivity.getHandler().sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_FAIL);
-                                }
-                            });
-                            break;
-
-                        } else if ("searchbill".equals(originalFromFlag)) {
-                            String qrCode = (String) msg.obj;
-                            Intent mIntent = new Intent();
-                            mIntent.putExtra("qrcode", qrCode);
-                            setResult(RESULT_OK, mIntent);
-                            finish();
-                        }
-                        break;
-                    }
-                    case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
-                        enterPaySuccessActivity();
-                        break;
-                    }
-                    case Msg.MSG_FROM_SERVER_TRADE_FAIL: {
-                        enterPayFailActivity();
-                        break;
-                    }
-                    case Msg.MSG_FROM_SERVER_TRADE_NOPAY: {
-                        showNopayDialog();
-                        break;
-                    }
-                    case Msg.MSG_FROM_SEARCHING_POLLING: {
-                        String title = String.format(getString(R.string.capture_activity_wait_user_input_password), pollingCount);
-                        mHintDialog.setTitle(title);
-                        searchBill();
-                        break;
-                    }
-                    case Msg.MSG_FROM_SERVER_TIMEOUT: {
-                        showPayTimeoutDialog();
-                        break;
-                    }
-                    case Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS: {
-                        //关单成功
-                        showCancelBillSuccess();
-                        break;
-                    }
-                    case Msg.MSG_FROM_SERVER_CLOSEBILL_DOING: {
-                        //关单返回09，
-                        break;
-                    }
-                    case Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL: {
-                        //关单失败
-                        showPayTimeoutDialog();
-                        break;
-                    }
-                    case Msg.MSG_COUPON_CANCEL:
-                        cancelCouponVerial();
-                        break;
-                }
-                super.handleMessage(msg);
+        @Override
+        public void handleMessage(Message msg) {
+            final CaptureActivity activity = mActivity.get();
+            if (activity == null) {
+                return;
             }
-        };
+            switch (msg.what) {
+                case Msg.MSG_FROM_SCANCODE_SUCCESS: {
+                    if ("scancodeview".equals(activity.originalFromFlag)) {
+                        //这边是扫码支付
+                        activity.mTradingLoadDialog.loading();
+                        final OrderData orderData = new OrderData();
+                        orderData.orderNum = activity.mOrderNum;//订单号
+                        orderData.txamt = activity.total;//交易金额
+                        orderData.currency = CashierSdk.SDK_CURRENCY;//币种
+                        orderData.scanCodeId = (String) msg.obj;
+
+                        //有优惠金额的时候
+                        if (Coupon.getInstance().getSaleDiscount() != null && !"0".equals(Coupon.getInstance().getSaleDiscount())) {
+                            orderData.discountMoney = String.valueOf(new BigDecimal(activity.originaltotal).subtract(new BigDecimal(activity.total)).doubleValue());
+                            orderData.couponOrderNum = Coupon.getInstance().getOrderNum();
+                        }
+
+                        CashierSdk.startPay(orderData, new CashierListener() {
+
+                            @Override
+                            public void onResult(ResultData resultData) {
+                                activity.mResultData = resultData;
+                                if (activity.mResultData.respcd.equals("00")) {
+                                    activity.mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_SUCCESS);
+                                } else if (activity.mResultData.respcd.equals("09")) {
+                                    activity.mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_NOPAY);
+                                } else {
+                                    //返回14 表示 条码错误或过期
+                                    activity.mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TRADE_FAIL);
+                                }
+                            }
+
+                            @Override
+                            public void onError(int errorCode) {
+                                activity.mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_TIMEOUT);
+                            }
+
+                        });//end CashierSdk.startPay()
+                    } else if ("ticketview".equals(activity.originalFromFlag)) {
+                        //这里是卡券核销
+                        String scancode = (String) msg.obj;
+                        Intent intentForTicketView = new Intent();
+                        intentForTicketView.putExtra("ticketcode", scancode);
+                        activity.setResult(0, intentForTicketView);
+
+                        final OrderData orderData = new OrderData();
+                        orderData.orderNum = Utility.geneOrderNumber();
+                        orderData.scanCodeId = scancode;
+                        activity.mCouponLoadDialog.waiting();
+                        CashierSdk.startVeri(orderData, new CashierListener() {
+                            @Override
+                            public void onResult(ResultData resultData) {
+                                activity.mResultData = resultData;
+                                Coupon.getInstance().setAvailCount(resultData.availCount);
+                                Coupon.getInstance().setCardId(resultData.cardId);
+                                Coupon.getInstance().setVoucherType(resultData.voucherType);
+                                Coupon.getInstance().setSaleDiscount(resultData.saleDiscount);
+                                Coupon.getInstance().setMaxDiscountAmt(resultData.maxDiscountAmt);
+                                Coupon.getInstance().setExpDate(resultData.expDate);
+                                Coupon.getInstance().setSaleMinAmount(resultData.saleMinAmount);//保存卡券核销返回信息
+                                Coupon.getInstance().setOrderNum(resultData.orderNum);
+                                Coupon.getInstance().setScanCodeId(resultData.scanCodeId);
+                                if ("00".equals(activity.mResultData.respcd)) {
+                                    Intent intent = new Intent(activity.mContext, CouponResultActivity.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putBoolean("check_coupon_result_flag", true);
+                                    intent.putExtras(bundle);
+                                    activity.mContext.startActivity(intent);
+                                    activity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            activity.mCouponLoadDialog.hide();
+                                        }
+                                    });
+
+                                    activity.finish();
+                                } else {
+                                    //核销失败
+                                    activity.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            activity.mCouponLoadDialog.hide();
+                                            activity.mHintErrorDialog.setText(
+                                                    activity.getResources().getString(R.string.coupon_ver_fail),
+                                                    ErrorUtil.getErrorString(activity.mResultData.respcd),
+                                                    activity.getResources().getString(R.string.coupon_ver_try_again),
+                                                    activity.getResources().getString(R.string.coupon_ver_close));
+                                            activity.mHintErrorDialog.show();
+                                            activity.mHintErrorDialog.setCancelOnClickListener(new OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    Coupon.getInstance().clear();
+                                                    activity.finish();
+                                                }
+                                            });
+                                            activity.mHintErrorDialog.setOkOnClickListener(new OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    Intent intent = new Intent(activity.mContext, CaptureActivity.class);
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putString("original", "ticketview");
+                                                    intent.putExtras(bundle);
+                                                    activity.mContext.startActivity(intent);
+                                                    activity.mHintErrorDialog.hide();
+                                                }
+                                            });
+                                        }
+                                    });
+                                }//end if()
+                            }//end onResult()
+
+                            @Override
+                            public void onError(int errorCode) {
+                                MainActivity.getHandler().sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_FAIL);
+                            }
+                        });//end CashierSdk.startVeri()
+                        break;
+                    } else if ("searchbill".equals(activity.originalFromFlag)) {
+                        String qrCode = (String) msg.obj;
+                        Intent mIntent = new Intent();
+                        mIntent.putExtra("qrcode", qrCode);
+                        activity.setResult(RESULT_OK, mIntent);
+                        activity.finish();
+                    }
+                    break;
+                }
+                case Msg.MSG_FROM_SERVER_TRADE_SUCCESS: {
+                    activity.enterPaySuccessActivity();
+                    break;
+                }
+                case Msg.MSG_FROM_SERVER_TRADE_FAIL: {
+                    activity.enterPayFailActivity();
+                    break;
+                }
+                case Msg.MSG_FROM_SERVER_TRADE_NOPAY: {
+                    activity.showNopayDialog();
+                    break;
+                }
+                case Msg.MSG_FROM_SEARCHING_POLLING: {
+                    String title = String.format(
+                            activity.getString(R.string.capture_activity_wait_user_input_password),
+                            activity.pollingCount);
+                    activity.mHintDialog.setTitle(title);
+                    activity.searchBill();
+                    break;
+                }
+                case Msg.MSG_FROM_SERVER_TIMEOUT: {
+                    activity.showPayTimeoutDialog();
+                    break;
+                }
+                case Msg.MSG_FROM_SERVER_CLOSEBILL_SUCCESS: {
+                    //关单成功
+                    activity.showCancelBillSuccess();
+                    break;
+                }
+                case Msg.MSG_FROM_SERVER_CLOSEBILL_DOING: {
+                    //关单返回09，
+                    break;
+                }
+                case Msg.MSG_FROM_SERVER_CLOSEBILL_FAIL: {
+                    //关单失败
+                    activity.showPayTimeoutDialog();
+                    break;
+                }
+                case Msg.MSG_COUPON_CANCEL:
+                    activity.cancelCouponVerial();
+                    break;
+            }
+            super.handleMessage(msg);
+        }
+    }
+
+
+    public void initHandler() {
+        mHandler = new CaptureHandler(this, getMainLooper());
     }
 
     /**
@@ -398,7 +418,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
         mTradingLoadDialog.hide();
 
         pollingCount = 0;
-        String title = String.format(getString(R.string.capture_activity_wait_user_input_password), pollingCount);
+        String title = String.format(
+                getString(R.string.capture_activity_wait_user_input_password),
+                pollingCount);
         mHintDialog.setTitle(title);
 
         //左边的对话框
