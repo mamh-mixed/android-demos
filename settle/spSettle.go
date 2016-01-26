@@ -5,13 +5,13 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/channel/alipay"
 	"github.com/CardInfoLink/quickpay/channel/weixin/scanpay"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/log"
 )
 
 func init() {
@@ -236,7 +236,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 			}
 		}
 		rs := getRsRecord(ChanMoreReport, date)
-		if err = upload(rs.ReportName, genC002ReportExcel(chanMMap, date)); err != nil {
+		if err = upload(rs.ReportName, genC002ReportExcel(chanMMap, date)); err == nil {
 			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
 				log.Errorf("roleSett upsert error: %s", err)
 			}
@@ -248,7 +248,11 @@ func (s scanpayDomestic) Reconciliation(date string) {
 func genLocalBlendMap(date string) (lbm model.LocalBlendMap, alpChanMer map[string]string, wxpChanMer map[string]string, err error) {
 
 	var transSetts []model.TransSett
-	transSetts, err = mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date, IsForReport: true})
+	transSetts, err = mongo.SpTransSettColl.Find(&model.QueryCondition{
+		Date:        date,
+		IsForReport: true,
+		ChanCode:    "WXP", // 暂时只勾兑微信
+	})
 	if err != nil {
 		return
 	}
