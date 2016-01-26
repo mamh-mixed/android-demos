@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.view.View;
 
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.core.BankDataService;
 import com.cardinfolink.yunshouyin.core.QiniuMultiUploadService;
 import com.cardinfolink.yunshouyin.core.QuickPayService;
+import com.cardinfolink.yunshouyin.util.ActivityCollector;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.view.AlertDialog;
 import com.cardinfolink.yunshouyin.view.LoadingDialog;
@@ -48,6 +50,17 @@ public class BaseActivity extends Activity {
 
     }
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ActivityCollector.addActivity(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ActivityCollector.removeActivity(this);
+    }
 
     public void startLoading() {
         mLoadingDialog.startLoading();

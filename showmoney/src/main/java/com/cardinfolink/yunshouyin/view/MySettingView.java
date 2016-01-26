@@ -24,6 +24,7 @@ import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingClikcItem;
+import com.cardinfolink.yunshouyin.util.ActivityCollector;
 
 /**
  * 第四个界面，就是设置界面
@@ -128,9 +129,7 @@ public class MySettingView extends LinearLayout implements View.OnClickListener 
                 User user = new User();
                 user.setUsername(SessionData.loginUser.getUsername());
                 SaveData.setUser(mContext, user);
-                intent = new Intent(mContext, LoginActivity.class);
-                mContext.startActivity(intent);
-                ((Activity) mContext).finish();
+                ActivityCollector.goLoginAndFinishRest();
                 break;
             case R.id.btn_limit:
                 //调用StartIncreaseActivity界面，用户选择个体用户，还是企业用户，之后完成上传照片的步骤
