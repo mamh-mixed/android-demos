@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CardInfoLink/quickpay/app"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/qiniu"
@@ -21,6 +22,28 @@ import (
 )
 
 var maxReportRec = 10000
+
+// pushMessageHandle 推送休息
+func pushMessageHandle(w http.ResponseWriter, r *http.Request) {
+	title := r.FormValue("title")
+	content := r.FormValue("content")
+
+	ret := &model.ResultBody{
+		Status:  0,
+		Message: "SUCCESS",
+	}
+
+	if title != "" && content != "" {
+		_, err := app.PushMessageToClient(title, content)
+		if err != nil {
+			ret.Status = 1
+			ret.Message = "FAIL"
+		}
+	}
+
+	retBytes, _ := json.Marshal(ret)
+	w.Write(retBytes)
+}
 
 // appLocaleHandle 网关展示语言
 func appLocaleHandle(w http.ResponseWriter, r *http.Request) {

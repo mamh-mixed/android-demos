@@ -2,10 +2,12 @@ package app
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
+	"github.com/CardInfoLink/quickpay/push"
 
 	"github.com/CardInfoLink/log"
 )
@@ -14,6 +16,34 @@ type userV3 struct{}
 
 // UserV3 app v3版本的相关逻辑代码
 var UserV3 userV3
+
+func PushMessageToClient(title, content string) (int, error) {
+	apps, err := mongo.AppUserCol.Find(&model.AppUserContiditon{})
+	if err != nil {
+		return 0, err
+	}
+
+	var ss int
+	for _, u := range apps {
+		if u.DeviceToken != "" && u.MerId != "" {
+			ss++
+			var to = strings.ToLower(u.DeviceType)
+			push.Do(&model.PushMessageReq{
+				MerID:       u.MerId,
+				UserName:    u.UserName,
+				Title:       content,
+				Message:     title,
+				DeviceToken: u.DeviceToken,
+				MsgType:     MsgType_C,
+				To:          to,
+				// OrderNum:    "",
+			})
+		}
+	}
+
+	log.Infof("send %d message success ...", ss)
+	return ss, nil
+}
 
 // 拉取消息的处理器
 func (u *userV3) messagePullHandler(req *reqParams) (result model.AppResult) {
