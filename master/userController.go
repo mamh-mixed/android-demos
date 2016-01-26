@@ -229,8 +229,12 @@ func (u *userController) CreateUser(data []byte) (ret *model.ResultBody) {
 	}
 
 	// 用户名不能重复
-	_, err = mongo.UserColl.FindOne(user.UserName)
-	if err == nil {
+	num, err := mongo.UserColl.FindCountByUserName(user.UserName)
+	if err != nil {
+		log.Errorf("find database err,%s", err)
+		return model.NewResultBody(6, "系统错误，请重试")
+	}
+	if num != 0 {
 		return model.NewResultBody(3, "用户名已存在")
 	}
 

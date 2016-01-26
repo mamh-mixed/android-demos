@@ -3,8 +3,8 @@ package mongo
 import (
 	"time"
 
-	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/log"
+	"github.com/CardInfoLink/quickpay/model"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -136,4 +136,16 @@ func (col *userCollection) UpdateLoginTime(userName, loginTime, lockTime string)
 	}
 	err := database.C(col.name).Update(bo, update)
 	return err
+}
+
+func (col *userCollection) FindCountByUserName(userName string) (num int, err error) {
+	bo := bson.M{
+		"userName": userName,
+	}
+	num, err = database.C(col.name).Find(bo).Count()
+	if err != nil {
+		log.Errorf("find count by userName err,userName=%s", err)
+		return 0, err
+	}
+	return num, nil
 }
