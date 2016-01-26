@@ -101,7 +101,7 @@
     <string name="refd_dialog_amount_foramt_error">金額格式錯誤</string>
     <string name="refd_dialog_amount_not_exceeds_max">金額不能超過%s元</string>
     <string name="refd_dialog__password_error">密碼錯誤!</string>
-    <string name="scancode_view_create_code">產生QR Code</string>
+    <string name="scancode_view_create_code">產生QR Code</string>
     <string name="scancode_view_scaning_code">開始掃描</string>
     <string name="scancode_view_scaning_pay_zhifubao">支付寶</string>
     <string name="scancode_view_scaning_pay_weixin">微信支付</string>
@@ -161,5 +161,5 @@
     <string name="txt_enter_camera">店家掃碼</string>
     <string name="txt_enter_scancode">掃碼槍掃碼</string>
     <string name="txt_enter_usercode">用戶掃碼</string>
-
+    <string name="viewfinder_message">@string/scancode_qrcode</string>
 </resources>

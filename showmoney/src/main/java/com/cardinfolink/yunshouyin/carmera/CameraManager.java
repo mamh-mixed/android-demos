@@ -16,7 +16,6 @@
 
 package com.cardinfolink.yunshouyin.carmera;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
@@ -42,9 +41,10 @@ public final class CameraManager {
     private static final String TAG = CameraManager.class.getSimpleName();
     private static final int MIN_FRAME_WIDTH = 240;
     private static final int MIN_FRAME_HEIGHT = 240;
-    private static final int MAX_FRAME_WIDTH = 780;
-    private static final int MAX_FRAME_HEIGHT = 780;
+    private static final int MAX_FRAME_WIDTH = 480;
+    private static final int MAX_FRAME_HEIGHT = 360;
     private static CameraManager cameraManager;
+    public static boolean isCameraFront = false;
 
     static {
         int sdkInt;
@@ -149,20 +149,19 @@ public final class CameraManager {
     }
 
 
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
-    public void openDriver(SurfaceHolder holder, boolean OpenBackCamera) throws IOException {
+    public void openDriver(SurfaceHolder holder) throws IOException {
         if (camera == null) {
-
-            if (OpenBackCamera) {
-                camera = Camera.open(FindBackCamera());
-            } else {
+            if (isCameraFront) {
                 camera = Camera.open(FindFrontCamera());
+            } else {
+                camera = Camera.open(FindBackCamera());
             }
+
+
             if (camera == null) {
                 throw new IOException();
             }
             camera.setPreviewDisplay(holder);
-            camera.startPreview();
 
             if (!initialized) {
                 initialized = true;
@@ -170,7 +169,11 @@ public final class CameraManager {
             }
             configManager.setDesiredCameraParameters(camera);
 
-
+            //     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            //�Ƿ�ʹ��ǰ��
+//      if (prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false)) {
+//        FlashlightManager.enableFlashlight();
+//      }
             FlashlightManager.enableFlashlight();
         }
     }
@@ -350,8 +353,7 @@ public final class CameraManager {
                 previewFormat + '/' + previewFormatString);
     }
 
-    //调用前置摄像头
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+
     private int FindFrontCamera() {
         int cameraCount = 0;
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
@@ -368,8 +370,6 @@ public final class CameraManager {
     }
 
 
-    //调用后面的摄像头
-    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     private int FindBackCamera() {
         int cameraCount = 0;
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
@@ -384,6 +384,5 @@ public final class CameraManager {
         }
         return -1;
     }
-
 
 }

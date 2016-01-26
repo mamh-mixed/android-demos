@@ -25,6 +25,7 @@ import com.cardinfolink.cashiersdk.sdk.CashierSdk;
 import com.cardinfolink.yunshouyin.R;
 import com.cardinfolink.yunshouyin.carmera.CameraManager;
 import com.cardinfolink.yunshouyin.constant.Msg;
+import com.cardinfolink.yunshouyin.data.SaveData;
 import com.cardinfolink.yunshouyin.data.SessonData;
 import com.cardinfolink.yunshouyin.decoding.CaptureActivityHandler;
 import com.cardinfolink.yunshouyin.decoding.InactivityTimer;
@@ -72,9 +73,6 @@ public class CaptureActivity extends BaseActivity implements Callback {
     private SurfaceHolder surfaceHolder;
     private SurfaceView surfaceView;
 
-    //前摄像头 还是后摄像头来扫码，true的时候是后摄像头扫码
-    private Boolean isBackCamera = true;
-
     /**
      * Called when the activity is first created.
      */
@@ -91,8 +89,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         }
 
 
-        CameraManager.init(getApplication());
-
+        initCamera();
         initHandler();
         initLayout();
         initListener();
@@ -143,19 +140,36 @@ public class CaptureActivity extends BaseActivity implements Callback {
         findViewById(R.id.switch_camer).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                isBackCamera = !isBackCamera;
-
-                CameraManager.get().closeDriver();
-
-                initCamera(surfaceHolder, isBackCamera);
-
-                if (captureActivityHandler == null) {
-                    captureActivityHandler = new CaptureActivityHandler(CaptureActivity.this, decodeFormats, characterSet);
-                } else {
-                    captureActivityHandler.switchPreviewAndDecode();
+                CameraManager.isCameraFront = !CameraManager.isCameraFront;
+                if (captureActivityHandler != null) {
+                    captureActivityHandler.quitSynchronously();
+                    captureActivityHandler = null;
                 }
+                CameraManager.get().closeDriver();
+                openCamera();
             }
         });
+    }
+
+    private void openCamera() {
+        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+        SurfaceHolder surfaceHolder = surfaceView.getHolder();
+        if (hasSurface) {
+            initCamera(surfaceHolder);
+        } else {
+            surfaceHolder.addCallback(this);
+            surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        }
+        decodeFormats = null;
+        characterSet = null;
+
+        playBeep = true;
+        AudioManager audioService = (AudioManager) getSystemService(AUDIO_SERVICE);
+        if (audioService.getRingerMode() != AudioManager.RINGER_MODE_NORMAL) {
+            playBeep = false;
+        }
+        initBeepSound();
+        vibrate = true;
     }
 
     public void initHandler() {
@@ -226,6 +240,12 @@ public class CaptureActivity extends BaseActivity implements Callback {
         };
     }
 
+    private void initCamera() {
+        CameraManager.init(getApplication());
+        hasSurface = false;
+        inactivityTimer = new InactivityTimer(this);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -236,7 +256,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
         surfaceView = (SurfaceView) findViewById(R.id.preview_view);
         surfaceHolder = surfaceView.getHolder();
         if (hasSurface) {
-            initCamera(surfaceHolder, isBackCamera);
+            initCamera(surfaceHolder);
         } else {
             surfaceHolder.addCallback(this);
             surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -269,9 +289,9 @@ public class CaptureActivity extends BaseActivity implements Callback {
         super.onDestroy();
     }
 
-    private void initCamera(SurfaceHolder surfaceHolder, Boolean openBackCamera) {
+    private void initCamera(SurfaceHolder surfaceHolder) {
         try {
-            CameraManager.get().openDriver(surfaceHolder, openBackCamera);
+            CameraManager.get().openDriver(surfaceHolder);
         } catch (IOException ioe) {
             return;
         } catch (RuntimeException e) {
@@ -283,8 +303,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width,
-                               int height) {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
     }
 
@@ -292,7 +311,7 @@ public class CaptureActivity extends BaseActivity implements Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         if (!hasSurface) {
             hasSurface = true;
-            initCamera(holder, isBackCamera);
+            initCamera(holder);
         }
 
     }

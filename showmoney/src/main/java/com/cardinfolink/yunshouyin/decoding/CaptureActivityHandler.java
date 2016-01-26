@@ -48,9 +48,11 @@ public final class CaptureActivityHandler extends Handler {
     private final DecodeThread decodeThread;
     private State state;
 
-    public CaptureActivityHandler(CaptureActivity activity, Vector<BarcodeFormat> decodeFormats, String characterSet) {
+    public CaptureActivityHandler(CaptureActivity activity, Vector<BarcodeFormat> decodeFormats,
+                                  String characterSet) {
         this.activity = activity;
-        decodeThread = new DecodeThread(activity, decodeFormats, characterSet, new ViewfinderResultPointCallback(activity.getViewfinderView()));
+        decodeThread = new DecodeThread(activity, decodeFormats, characterSet,
+                new ViewfinderResultPointCallback(activity.getViewfinderView()));
         decodeThread.start();
         state = State.SUCCESS;
 
@@ -71,11 +73,11 @@ public final class CaptureActivityHandler extends Handler {
                 }
                 break;
             case R.id.restart_preview:
-                Log.e(TAG, "Got restart preview message");
+                Log.d(TAG, "Got restart preview message");
                 restartPreviewAndDecode();
                 break;
             case R.id.decode_succeeded:
-                Log.e(TAG, "Got decode succeeded message");
+                Log.d(TAG, "Got decode succeeded message");
                 state = State.SUCCESS;
                 Bundle bundle = message.getData();
                 Bitmap barcode = bundle == null ? null :
@@ -118,14 +120,7 @@ public final class CaptureActivityHandler extends Handler {
         removeMessages(R.id.decode_failed);
     }
 
-    public void switchPreviewAndDecode() {
-        state = State.PREVIEW;
-        CameraManager.get().requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
-        CameraManager.get().requestAutoFocus(this, R.id.auto_focus);
-        activity.drawViewfinder();
-    }
-
-    public void restartPreviewAndDecode() {
+    private void restartPreviewAndDecode() {
         if (state == State.SUCCESS) {
             state = State.PREVIEW;
             CameraManager.get().requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
