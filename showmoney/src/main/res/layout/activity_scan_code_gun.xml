@@ -31,8 +31,6 @@
         android:background="@drawable/scancode_by_gun_editor_color"
         android:textSize="25dp"
         android:singleLine="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
         android:textColor="@color/white"
         android:hint="@string/txt_bar_code" />
     <Button
@@ -41,9 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/et_input_box"
         android:layout_marginTop="30dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:background="@drawable/blue_selector"
+        android:background="@drawable/scancode_by_gun_button_selector"
         android:text="@string/txt_start_pay"
         android:textColor="@drawable/scancode_by_gun_btn_text_color"
         android:textSize="30sp"/>
