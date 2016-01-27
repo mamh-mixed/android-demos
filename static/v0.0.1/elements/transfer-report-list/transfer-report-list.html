@@ -193,7 +193,7 @@
         // 日期、时间控件
         dismissSettDateDialog: function() {
           var date = this.$.settDatePicker.date;
-          this.set('cond.date', this.$.settDatePicker.dateFormat(date, 'l'));
+          this.set('cond.date', this.$.settDatePicker.dateFormat(date, 'YYYY-MM-DD'));
         },
         showSettDateDialog: function() {
           this.$.settDateDialog.toggle();
