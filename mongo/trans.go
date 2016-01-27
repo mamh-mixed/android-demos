@@ -572,7 +572,7 @@ func (col *transCollection) Find(q *model.QueryCondition) ([]*model.Trans, int, 
 		p = append(p, sort, skip, limit)
 	}
 
-	err = database.C(col.name).Pipe(p).All(&trans)
+	err = database.C(col.name).Pipe(p).AllowDiskUse().All(&trans)
 	return trans, total, err
 }
 
