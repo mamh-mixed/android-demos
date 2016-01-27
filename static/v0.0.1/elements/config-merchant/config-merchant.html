@@ -154,15 +154,15 @@
       <section alias="merchant">
         <div class="row">
           <x-select items="[[agents]]" name="agent" selected-item="{{agent}}" label="代理" data-msg-id="SCANPAY_TRADE_LIST.AGENT"></x-select>
-          <paper-input label="代理代码" value="{{merchant.agentCode::input}}" data-msg-id="TRADE_DETAIL.AGENT_NO"></paper-input>
+          <paper-input label="代理代码" value="{{merchant.agentCode::input}}" data-msg-id="TRADE_DETAIL.AGENT_NO" readonly></paper-input>
         </div>
         <div class="row">
           <x-select items="[[subAgents]]" name="subAgent" selected-item="{{subAgent}}" label="公司" data-msg-id="GROUP.SUB_AGENT"></x-select>
-          <paper-input label="公司代码" value="{{merchant.subAgentCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO"></paper-input>
+          <paper-input label="公司代码" value="{{merchant.subAgentCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.SUBAGENT_NO" readonly></paper-input>
         </div>
         <div class="row">
           <x-select items="[[groups]]" name="group" selected-item="{{group}}" label="商户" data-msg-id="GROUP.GROUP"></x-select>
-          <paper-input label="商户代码" value="{{merchant.groupCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO"></paper-input>
+          <paper-input label="商户代码" value="{{merchant.groupCode::input}}" data-msg-id="SCANPAY_TRADE_LIST.GROUP_NO" readonly></paper-input>
         </div>
         <div class="row">
           <paper-input id="merId" label="门店代码" value="{{merchant.merId::input}}" disabled$="{{update}}" required error-message="必填项" data-msg-id="SCANPAY_TRADE_LIST.MERCHANT_NO" data-error-msg-id="PASSWORDMODIFICATION.REQUIREDITEM"></paper-input>
@@ -873,6 +873,7 @@
           transCurr: 'USD',
           signKey: '',
           isNeedSign: false,
+          limitAmt: 50000,
           encryptKey: '',
           permission: []
         };

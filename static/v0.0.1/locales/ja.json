@@ -93,11 +93,11 @@
   },
   "LOGIN.HINT": {
     "description": "登录页提示",
-    "message": "ユーザーが未登録です。NTTデータにご連絡ください。"
+    "message": "ログインできない場合は問い合わせ先にご連絡ください。"
   },
   "LOGIN.TOAST.LOGIN_FAIL": {
     "description": "登录失败提示",
-    "message": "ユーザー名またはパスワードが空白不可"
+    "message": "ユーザー名またはパスワードが空白です"
   },
   "LOGIN.TOAST.LOGIN_ERROR": {
     "description": "用户名或密码错误",
@@ -145,7 +145,7 @@
   },
   "PASSWORDMODIFICATION.TOAST.NOT_EMPTY_FOR_REQUIRED_ITEMS": {
     "description": "必填项不能为空",
-    "message": "必須項目ため、空白不可"
+    "message": "未入力の項目があります"
   },
   "PASSWORDMODIFICATION.TOAST.OLD_PASSWORD_NOT_MATCH": {
     "description": "原密码错误",
@@ -157,11 +157,11 @@
   },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_MUST_NOT_EQUAL_WITH_OLD_PASSWORD": {
     "description": "新密码不能和旧密码相同",
-    "message": "新しいパスワードと現在のパスワードが一致しません"
+    "message": "現在のパスワードと同じパスワードが指定されています"
   },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_NOT_MATCH": {
     "description": "新密码不一致",
-    "message": "新しいパスワード不一致"
+    "message": "新しいパスワードが一致していません"
   },
   "PASSWORDMODIFICATION.TOAST.NEW_PASSWORD_LEAST_LENGTH": {
     "description": "新密码最小长度位",
@@ -481,7 +481,7 @@
   },
   "TRADE_DETAIL.CHANNEL_MERCHANT": {
     "description": "渠道商户",
-    "message": "チャンネル代表店舗"
+    "message": "決済代理コード"
   },
   "TRADE_DETAIL.CHANNEL_ORDER": {
     "description": "渠道订单",
@@ -489,7 +489,7 @@
   },
   "TRADE_DETAIL.CHANNEL_DISCOUNT": {
     "description": "渠道折扣",
-    "message": "チャンネル値引き"
+    "message": "決済代理値引き"
   },
   "TRADE_DETAIL.MERCHANT_DISCOUNT": {
     "description": "商户折扣",
@@ -505,11 +505,11 @@
   },
   "TRADE_DETAIL.SETT_ROLE": {
     "description": "清算角色",
-    "message": "精算機構"
+    "message": "精算事業者"
   },
   "TRADE_DETAIL.TICKET_NUM": {
     "description": "小票号",
-    "message": "領収証番号"
+    "message": "任意項目"
   },
   "TRADE_DETAIL.PAY_TIME": {
     "description": "支付时间",
@@ -533,11 +533,11 @@
   },
   "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_SUMMARY_REPORT": {
     "description": "下载汇总报表",
-    "message": "取引サマリダウンロード"
+    "message": "サマリ（精算）レポート（集計）"
   },
   "SCANPAY_TRADE_SETTLE_REPORT.DOWNLOAD_DETAIL_REPORT": {
     "description": "下载明细报表",
-    "message": "取引集計ダウンロード"
+    "message": "サマリ（精算）レポート (明細)"
   },
   "xxx": {
     "description": "xxx",
@@ -1141,7 +1141,7 @@
   },
   "ROUTE_POLICY.SETTROLE": {
     "description": "清算角色",
-    "message": "JA清算角色"
+    "message": "精算事業者"
   },
   "MERCHANT.SIGN_KEY_LOWEST_LENGTH": {
     "description": "签名密钥长度不能小于8位",
