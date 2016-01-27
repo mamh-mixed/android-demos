@@ -74,6 +74,7 @@ public final class CameraManager {
     private Rect framingRectInPreview;
     private boolean initialized;
     private boolean previewing;
+    private int rotation = 0;
 
     private CameraManager(Context context) {
 
@@ -100,6 +101,14 @@ public final class CameraManager {
         if (cameraManager == null) {
             cameraManager = new CameraManager(context);
         }
+    }
+
+    public int getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(int rotation) {
+        this.rotation = rotation;
     }
 
     /**
@@ -151,10 +160,13 @@ public final class CameraManager {
 
     public void openDriver(SurfaceHolder holder) throws IOException {
         if (camera == null) {
+            int cameraId;
             if (isCameraFront) {
-                camera = Camera.open(FindFrontCamera());
+                cameraId = FindFrontCamera();
+                camera = Camera.open(cameraId);
             } else {
-                camera = Camera.open(FindBackCamera());
+                cameraId = FindBackCamera();
+                camera = Camera.open(cameraId);
             }
 
 
@@ -167,13 +179,8 @@ public final class CameraManager {
                 initialized = true;
                 configManager.initFromCameraParameters(camera);
             }
-            configManager.setDesiredCameraParameters(camera);
+            configManager.setDesiredCameraParameters(rotation, cameraId, camera);
 
-            //     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            //�Ƿ�ʹ��ǰ��
-//      if (prefs.getBoolean(PreferencesActivity.KEY_FRONT_LIGHT, false)) {
-//        FlashlightManager.enableFlashlight();
-//      }
             FlashlightManager.enableFlashlight();
         }
     }

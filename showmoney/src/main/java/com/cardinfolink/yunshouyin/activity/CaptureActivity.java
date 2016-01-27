@@ -242,6 +242,8 @@ public class CaptureActivity extends BaseActivity implements Callback {
 
     private void initCamera() {
         CameraManager.init(getApplication());
+        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+        CameraManager.get().setRotation(rotation);
         hasSurface = false;
         inactivityTimer = new InactivityTimer(this);
     }
