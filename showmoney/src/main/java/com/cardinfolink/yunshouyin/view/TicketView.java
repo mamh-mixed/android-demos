@@ -110,7 +110,7 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
         String ok = mContext.getString(R.string.coupon_confirm_ok);
         String cancel = mContext.getString(R.string.coupon_abandom);
         mHintDialog.setText(title, ok, cancel);
-        mHintDialog.setOkVisibility(View.GONE);
+        mHintDialog.setCancelVisibility(View.GONE);//隐藏左边的 按钮,这里只需要一个按钮的对话框
         mHintDialog.show();
     }
 
@@ -136,7 +136,7 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                         intent = new Intent(mContext, CouponResultActivity.class);
                         bundle = new Bundle();
                         bundle.putBoolean("check_coupon_result_flag", false);
-                        bundle.putString("respcd",(String)msg.obj);
+                        bundle.putString("respcd", (String) msg.obj);
                         intent.putExtras(bundle);
                         mContext.startActivity(intent);
                         break;
@@ -186,9 +186,9 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
                                 mHandler.sendEmptyMessage(Msg.MSG_FROM_SERVER_COUPON_SUCCESS);
                             } else {
                                 //核销失败
-                                Message msg =Message.obtain();
-                                msg.obj=mResultData.respcd;
-                                msg.what=Msg.MSG_FROM_SERVER_COUPON_FAIL;
+                                Message msg = Message.obtain();
+                                msg.obj = mResultData.respcd;
+                                msg.what = Msg.MSG_FROM_SERVER_COUPON_FAIL;
                                 mHandler.sendMessage(msg);
                             }
                         } else {
