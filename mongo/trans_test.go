@@ -42,11 +42,11 @@ func TestBeginWith(t *testing.T) {
 func TestTransFindAndGroupBy(t *testing.T) {
 
 	q := &model.QueryCondition{
-		StartTime:          "2015-11-01 00:00:00",
-		EndTime:            "2015-11-09 23:59:59",
-		TransStatus:        []string{model.TransSuccess},
-		TransType:          model.PayTrans,
-		IsAggregateByGroup: true,
+		StartTime:   "2016-01-01 00:00:00",
+		EndTime:     "2016-01-05 23:59:59",
+		TransStatus: []string{model.TransSuccess},
+		// TransType:   model.PayTrans,
+		// IsAggregateByGroup: true,
 		// RefundStatus:       model.TransRefunded,
 		// MerIds:       []string{"999118880000312"},
 		Page: 1,
