@@ -147,7 +147,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 							transSett.BlendType = MATCH
 							transSett.SettTime = time.Now().Format("2006-01-02 15:04:05")
 							// log.Infof("blend success, merId=%s, orderNum=%s, chanOrderNum=%s", transSett.Trans.MerId, transSett.Trans.OrderNum, transSett.Trans.ChanOrderNum)
-							mongo.SpTransSettColl.Update(&transSett)
+							// mongo.SpTransSettColl.Update(&transSett)
 						}
 						chanSuccess += len(blendArray)
 						delete(localOrderMap, chanOrderNum) //删除本地记录，剩下的进C001
@@ -164,7 +164,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 						for _, transSett := range transSetts {
 							transSett.BlendType = AMT_ERROR
 							transSett.SettTime = time.Now().Format("2006-01-02 15:04:05")
-							mongo.SpTransSettColl.Update(&transSett)
+							// mongo.SpTransSettColl.Update(&transSett)
 						}
 						amtErrorMap[chanOrderNum] = chanOrderNum // 只是打个标记
 					}
@@ -236,7 +236,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 			}
 		}
 		rs := getRsRecord(ChanMoreReport, date)
-		if err = upload(rs.ReportName, genC002ReportExcel(chanMMap, date)); err != nil {
+		if err = upload(rs.ReportName, genC002ReportExcel(chanMMap, date)); err == nil {
 			if err = mongo.RoleSettCol.Upsert(rs); err != nil {
 				log.Errorf("roleSett upsert error: %s", err)
 			}
@@ -248,7 +248,11 @@ func (s scanpayDomestic) Reconciliation(date string) {
 func genLocalBlendMap(date string) (lbm model.LocalBlendMap, alpChanMer map[string]string, wxpChanMer map[string]string, err error) {
 
 	var transSetts []model.TransSett
-	transSetts, err = mongo.SpTransSettColl.Find(&model.QueryCondition{Date: date, IsForReport: true})
+	transSetts, err = mongo.SpTransSettColl.Find(&model.QueryCondition{
+		Date:        date,
+		IsForReport: true,
+		ChanCode:    channel.ChanCodeWeixin,
+	})
 	if err != nil {
 		return
 	}

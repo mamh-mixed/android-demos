@@ -264,7 +264,12 @@ func (col *transSettCollection) Find(q *model.QueryCondition) ([]model.TransSett
 	var err error
 
 	if q.IsForReport {
-		err = database.C(col.name).Find(find).Sort("trans.busicd").Sort("trans.chanCode").All(&ts)
+		err = database.C(col.name).Pipe([]bson.M{
+			bson.M{"$match": find},
+			bson.M{"$sort": bson.M{"trans.busicd": 1}},
+			bson.M{"$sort": bson.M{"trans.chanCode": 1}},
+		}).AllowDiskUse().All(&ts)
+		// err = database.C(col.name).Find(find).Sort("trans.busicd").Sort("trans.chanCode").All(&ts)
 		return ts, err
 	}
 
