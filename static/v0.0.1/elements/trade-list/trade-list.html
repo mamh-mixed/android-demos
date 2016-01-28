@@ -369,7 +369,7 @@
 
         var filename = "Trans_" + this.cond.startTime + "_" + this.cond.endTime + ".xlsx";
         filename = filename.replace(/-/g, '');
-        this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=' + filename;
+        this.reportUri = '/master/trade/report?' + Util.query(this.cond) + '&filename=' + filename + '&from=trans';
       },
       // 交易状态选择框改变
       _watchTransStatusChange: function(key) {

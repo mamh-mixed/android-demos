@@ -289,7 +289,7 @@ func TransStatistics(q *model.QueryCondition) (model.Summary, int) {
 	// 设置条件过滤
 	q.TransStatus = []string{model.TransSuccess}
 	q.RefundStatus = []int{model.TransRefunded}
-	q.TransType = model.PayTrans
+	// q.TransType = model.PayTrans
 
 	// 默认当天开始
 	today := time.Now().Format("2006-01-02")
