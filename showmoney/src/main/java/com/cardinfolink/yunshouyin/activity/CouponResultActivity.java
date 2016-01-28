@@ -158,8 +158,8 @@ public class CouponResultActivity extends BaseActivity {
 
     //弹出是否放弃本子核销对话框
     public void showPayFailPref() {
-        mHintDialog.setText(getString(R.string.coupon_abandom_verial_or_not), getString(R.string.coupon_pay_again), getString(R.string.coupon_abandom));
-        mHintDialog.setOkVisibility(View.GONE);
+        mHintDialog.setText(getString(R.string.coupon_abandom_verial_or_not), getString(R.string.coupon_pay_cancel), getString(R.string.coupon_abandom));
+
         mHintDialog.setCancelOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -202,9 +202,8 @@ public class CouponResultActivity extends BaseActivity {
         mHintDialog.setOkOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //重新支付
+                //取消
                 mHintDialog.hide();
-                finish();
             }
 
         });

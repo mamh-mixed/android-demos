@@ -401,6 +401,7 @@
     <string name="coupon_abandom_verial_or_not">是否放弃本次核销</string>
     <string name="coupon_abandom">放弃</string>
     <string name="coupon_pay_again">重新支付</string>
+    <string name="coupon_pay_cancel">取消</string>
     <string name="coupon_verial_success">冲正成功</string>
     <string name="coupon_verial_fail">冲正失败</string>
     <string name="coupon_format_string">满%1$s元%2$s打%3$s折</string>
