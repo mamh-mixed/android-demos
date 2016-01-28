@@ -245,6 +245,7 @@ type ChanMer struct {
 type SftpAccount struct {
 	Username string `bson:"username"`
 	Password string `bson:"password"`
+	Email    string `bson:"email,omitempty"`
 }
 
 type Agent struct {

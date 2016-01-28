@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/qiniu"
 	"github.com/SKatiyar/qr"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 )
@@ -104,4 +106,38 @@ func TestSendOpen(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+}
+
+func TestSendTranscationFile(t *testing.T) {
+	e := Email{
+		To:    "379630413@qq.com",
+		Title: "QR Payment Channel Files",
+		Body: `
+		<html>
+		<body>
+		Dear NTTDATA,<br>
+		Please find the channel files in attachment.<br>
+		Email is sent by system automatically, please do not reply this email.<br>
+		Thanks
+		</body>
+	</html>
+	`,
+	}
+
+	f, err := os.Open("/Users/zhiruichen/Desktop/201501_trans.xlsx")
+	if err != nil {
+		t.Error(err)
+		t.FailNow()
+	}
+
+	dst := bytes.NewBuffer([]byte{})
+	io.Copy(dst, f)
+
+	e.Attach(dst, f.Name(), "")
+	err = e.Send()
+	if err != nil {
+		t.Error(err)
+	}
+
+	// t.Logf("%d", f.)
 }

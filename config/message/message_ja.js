@@ -40,7 +40,7 @@
 		"StartDate"				:"取引日時（From）：",
 		"EndDate" 				:"取引日時（TO）：",
 		"Remark"				:"備考： 精算金額、精算総額については実際の精算金額と異なることがございます",
-		"MerId"					:"店铺コード",
+		"MerId"					:"店舗コード",
 		"MerName"				:"店舗名称",
 		"Summary"				:"総計",
 		"AgentName"				:"代理名称",
@@ -54,8 +54,8 @@
 		"Fee"					:"手数料"
 	},
 	"TransReport":{
-		"SheetName"      			:"店铺取引レポート",
-		"MerId"          			:"店铺コード",
+		"SheetName"      			:"店舗取引レポート",
+		"MerId"          			:"店舗コード",
 		"MerName"        			:"店舗名称",
 		"OrderNum"       			:"取引番号",
 		"TransAmt"       			:"売上金額",
