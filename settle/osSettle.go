@@ -3,9 +3,11 @@ package settle
 import (
 	"bufio"
 	// "fmt"
+	"bytes"
 	"fmt"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/currency"
+	"github.com/CardInfoLink/quickpay/email"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
@@ -13,6 +15,7 @@ import (
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 	"gopkg.in/mgo.v2/bson"
+	"io"
 	"strings"
 	"time"
 )
@@ -92,6 +95,11 @@ func (a *alipayOverseas) download(date string) [][]string {
 			if err != nil {
 				log.Errorf("open file error: %s", err)
 				continue
+			}
+
+			// send email
+			if cm.Sftp.Email != "" {
+				sendFile(cm.Sftp.Email, f)
 			}
 
 			// read
@@ -212,5 +220,35 @@ func (a *alipayOverseas) Reconciliation(date string) {
 				log.Errorf("fail to update transSett error: %s, orderNum=%s", err, orderNum)
 			}
 		}
+	}
+}
+
+func sendFile(to string, f *sftp.File) {
+
+	if f == nil {
+		return
+	}
+
+	bf := bytes.NewBuffer([]byte{})
+	io.Copy(bf, f)
+
+	e := email.Email{}
+	e.To = to
+	e.Body = `
+	<html>
+		<body>
+		Dear NTTDATA,<br>
+		Please find the channel files in attachment.<br>
+		Email is sent by system automatically, please do not reply this email.<br>
+		Thanks
+		</body>
+	</html>
+	
+	`
+	e.Title = "QR Payment Channel Files"
+	e.Attach(bf, f.Name(), "")
+
+	if err := e.Send(); err != nil {
+		log.Errorf("send reconciliation file error: %s", err)
 	}
 }

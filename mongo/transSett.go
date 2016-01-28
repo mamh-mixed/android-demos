@@ -250,7 +250,7 @@ func (col *transSettCollection) Find(q *model.QueryCondition) ([]model.TransSett
 	var err error
 
 	if q.IsForReport {
-		err = database.C(col.name).Find(find).Sort("-trans.payTime").All(&ts)
+		err = database.C(col.name).Find(find).Sort("trans.payTime").All(&ts)
 		return ts, err
 	}
 
