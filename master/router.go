@@ -9,10 +9,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/CardInfoLink/log"
 )
 
 // 路径中包含以下关键字，则记录到数据库
@@ -84,6 +84,7 @@ func Route() (mux *MyServeMux) {
 	mux.HandleFunc("/master/app/locale", appLocaleHandle)
 	mux.HandleFunc("/master/app/resetPwd", appResetPwdHandle)
 	mux.HandleFunc("/master/list", kvListHandle)
+	mux.HandleFunc("/master/push", pushMessageHandle)
 	return mux
 }
 

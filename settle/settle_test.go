@@ -12,7 +12,7 @@ import (
 func TestSpSettle(t *testing.T) {
 	s := &scanpayDomestic{}
 
-	s.Reconciliation("2016-01-11")
+	s.Reconciliation("2016-01-21")
 }
 
 func TestGenReport(t *testing.T) {
