@@ -23,6 +23,8 @@ var fileName = "IA502-%s.csv"
 type transFlow struct {
 }
 
+var TransFlow = transFlow{}
+
 func (t *transFlow) GenerateTransFlow(date string) {
 
 	cond := &model.Agent{
