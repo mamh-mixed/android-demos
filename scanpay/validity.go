@@ -76,6 +76,9 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	if matched, err := validateOrderNum(req.OrderNum); !matched {
 		return err
 	}
+	if matched, _ := regexp.MatchString(`^[A-Z]{3}$`, req.Currency); !matched {
+		return fieldFormatError(curr)
+	}
 
 	return
 }
@@ -113,6 +116,10 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 	}
 	if matched, err := validateOrderNum(req.OrderNum); !matched {
 		return err
+	}
+
+	if matched, _ := regexp.MatchString(`^[A-Z]{3}$`, req.Currency); !matched {
+		return fieldFormatError(curr)
 	}
 
 	if req.TimeExpire != "" {
