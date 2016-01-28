@@ -5,8 +5,8 @@
 
     <ImageView
         android:id="@+id/paylogo"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/trade_manager_item_imageview_width"
+        android:layout_height="@dimen/trade_manager_item_imageview_width"
         android:layout_centerVertical="true"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="10dp"
@@ -32,7 +32,7 @@
                 android:layout_height="wrap_content"
                 android:text="APP支付"
                 android:textColor="@color/black"
-                android:textSize="15sp" />
+                android:textSize="@dimen/trade_manager_item_textsize_payaccess" />
 
             <TextView
                 android:id="@+id/bill_tradedate"
@@ -40,7 +40,7 @@
                 android:layout_height="wrap_content"
                 android:text="2015-09-07 13:56:13"
                 android:textColor="@color/gray"
-                android:textSize="13sp" />
+                android:textSize="@dimen/trade_manager_item_result_textsize" />
 
             <TextView
                 android:id="@+id/bill_tradestatus"
@@ -49,7 +49,7 @@
                 android:paddingBottom="10dp"
                 android:text="@string/txn_status_success"
                 android:textColor="@color/gray"
-                android:textSize="13sp" />
+                android:textSize="@dimen/trade_manager_item_result_textsize" />
         </LinearLayout>
 
         <LinearLayout
@@ -67,19 +67,19 @@
                 android:layout_marginRight="10dp"
                 android:text="￥100"
                 android:textColor="@color/black"
-                android:textSize="15sp" />
+                android:textSize="@dimen/trade_manager_item_textsize_payaccess" />
 
             <Button
                 android:id="@+id/bill_tradedetail"
-                android:layout_width="50dp"
-                android:layout_height="30dp"
+                android:layout_width="@dimen/trade_manager_item_btn_with"
+                android:layout_height="@dimen/trade_manager_item_btn_hight"
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/white_selector"
                 android:padding="5dp"
                 android:text="@string/txt_txn_detail"
                 android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="@dimen/trade_manager_item_result_textsize" />
 
 
         </LinearLayout>

@@ -8,7 +8,7 @@
     <RelativeLayout
         android:id="@+id/bill_top"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/trade_manager_detail_custom_btn_height">
 
         <ImageView
             android:id="@+id/iv_back"
@@ -24,7 +24,7 @@
             android:layout_centerInParent="true"
             android:text="@string/txn_bill_info"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="@dimen/trade_manager_detail_activity_title_textsize"
             android:textStyle="bold" />
     </RelativeLayout>
 
@@ -45,10 +45,10 @@
 
             <ImageView
                 android:id="@+id/paylogo"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="@dimen/trade_manager_item_imageview_width"
+                android:layout_height="@dimen/trade_manager_item_imageview_width"
                 android:layout_marginBottom="5dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginLeft="@dimen/trade_manager_detail_custom_btn_margin"
                 android:layout_marginRight="5dp"
                 android:layout_marginTop="5dp" />
 
@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
-                android:textSize="17sp" />
+                android:textSize="@dimen/trade_manager_detail_custom_textsize" />
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -65,8 +65,8 @@
 
                 <Button
                     android:id="@+id/refresh"
-                    android:layout_width="50dp"
-                    android:layout_height="30dp"
+                    android:layout_width="@dimen/trade_manager_item_btn_with"
+                    android:layout_height="@dimen/trade_manager_item_btn_hight"
                     android:layout_alignParentRight="true"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="20dp"
@@ -75,7 +75,7 @@
                     android:padding="5dp"
                     android:text="@string/txn_status_refresh"
                     android:textColor="@color/white"
-                    android:textSize="12sp" />
+                    android:textSize="@dimen/trade_manager_item_result_textsize" />
 
             </RelativeLayout>
 
@@ -101,16 +101,16 @@
                 android:layout_height="wrap_content"
                 android:text="@string/txn_amount"
                 android:textColor="@color/black"
-                android:textSize="15sp" />
+                android:textSize="@dimen/trade_manager_detail_custom_btn_textsize" />
 
             <TextView
                 android:id="@+id/tradeamount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/trade_manager_detail_activity_title_textsize"
                 android:text="￥100"
                 android:textColor="@color/red"
-                android:textSize="19sp"
+                android:textSize="@dimen/trade_manager_detail_trade_textsize"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -132,6 +132,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/white"
                 android:gravity="center_vertical"
+                android:layout_marginLeft="@dimen/trade_manager_detail_custom_btn_margin"
                 android:orientation="horizontal">
 
                 <TextView
@@ -139,7 +140,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/custom_account"
                     android:textColor="@color/gray"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/trade_manager_detail_custom_textsize" />
 
                 <TextView
                     android:id="@+id/consumer_account"
@@ -147,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:text="330961193@qq.com"
                     android:textColor="@color/gray"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/trade_manager_detail_custom_textsize" />
             </LinearLayout>
 
             <LinearLayout
@@ -156,14 +157,15 @@
                 android:layout_marginTop="20dp"
                 android:background="@color/white"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginLeft="@dimen/trade_manager_detail_custom_btn_margin">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/txn_time"
                     android:textColor="@color/gray"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/trade_manager_detail_custom_textsize" />
 
                 <TextView
                     android:id="@+id/tradedate"
@@ -171,15 +173,16 @@
                     android:layout_height="wrap_content"
                     android:text="2015-09-07 13:56:13"
                     android:textColor="@color/gray"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/trade_manager_detail_custom_textsize" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/trade_manager_detail_activity_title_textsize"
                 android:background="@color/white"
                 android:gravity="center_vertical"
+                android:layout_marginLeft="@dimen/trade_manager_detail_custom_btn_margin"
                 android:orientation="horizontal">
 
                 <TextView
@@ -187,7 +190,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/txn_status"
                     android:textColor="@color/gray"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/trade_manager_detail_custom_textsize" />
 
                 <TextView
                     android:id="@+id/tradestatus"
@@ -195,15 +198,16 @@
                     android:layout_height="wrap_content"
                     android:text="交易成功"
                     android:textColor="@color/gray"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/trade_manager_detail_custom_textsize" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/trade_manager_detail_activity_title_textsize"
                 android:background="@color/white"
                 android:gravity="center_vertical"
+                android:layout_marginLeft="@dimen/trade_manager_detail_custom_btn_margin"
                 android:orientation="horizontal">
 
                 <TextView
@@ -211,7 +215,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/txn_order_num"
                     android:textColor="@color/gray"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/trade_manager_detail_custom_textsize" />
 
                 <TextView
                     android:id="@+id/ordernum"
@@ -219,15 +223,16 @@
                     android:layout_height="wrap_content"
                     android:text="20150907135613"
                     android:textColor="@color/gray"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/trade_manager_detail_custom_textsize" />
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/trade_manager_detail_activity_title_textsize"
                 android:background="@color/white"
                 android:gravity="center_vertical"
+                android:layout_marginLeft="@dimen/trade_manager_detail_custom_btn_margin"
                 android:orientation="horizontal">
 
                 <TextView
@@ -235,7 +240,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/txn_description"
                     android:textColor="@color/gray"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/trade_manager_detail_custom_textsize" />
 
                 <TextView
                     android:id="@+id/goodinfo"
@@ -243,7 +248,7 @@
                     android:layout_height="wrap_content"
                     android:text=""
                     android:textColor="@color/gray"
-                    android:textSize="17sp" />
+                    android:textSize="@dimen/trade_manager_detail_custom_textsize" />
             </LinearLayout>
 
             <LinearLayout
@@ -254,12 +259,14 @@
 
                 <Button
                     android:id="@+id/btn_refd"
-                    android:layout_width="300dp"
-                    android:layout_height="50dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/trade_manager_detail_custom_btn_height"
+                    android:layout_marginLeft="@dimen/trade_manager_detail_custom_btn_margin"
+                    android:layout_marginRight="@dimen/trade_manager_detail_custom_btn_margin"
                     android:background="@drawable/white_selector"
                     android:text="@string/detail_refd"
                     android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textSize="@dimen/trade_manager_detail_custom_btn_textsize" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

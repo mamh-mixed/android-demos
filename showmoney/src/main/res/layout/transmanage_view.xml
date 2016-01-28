@@ -12,7 +12,7 @@
         android:layout_marginTop="16dp"
         android:text="@string/my_bill"
         android:textColor="@color/white"
-        android:textSize="25dp" />
+        android:textSize="@dimen/trade_manager_bill_textsize" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -24,7 +24,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/rbg_bg"
-
             android:gravity="center"
             android:orientation="horizontal"
             android:padding="2dp">
@@ -38,7 +37,8 @@
                 android:checked="true"
                 android:padding="7dp"
                 android:text="@string/txn_all"
-                android:textColor="@color/rb_txt" />
+                android:textColor="@color/rb_txt"
+                android:textSize="@dimen/trade_manager_radio_btn_textsize"/>
 
             <RadioButton
                 android:id="@+id/radio_success"
@@ -48,7 +48,8 @@
                 android:button="@null"
                 android:padding="7dp"
                 android:text="@string/txn_success"
-                android:textColor="@color/rb_txt" />
+                android:textColor="@color/rb_txt"
+                android:textSize="@dimen/trade_manager_radio_btn_textsize"/>
 
             <RadioButton
                 android:id="@+id/radio_fail"
@@ -58,7 +59,8 @@
                 android:button="@null"
                 android:padding="7dp"
                 android:text="@string/txn_failed"
-                android:textColor="@color/rb_txt" />
+                android:textColor="@color/rb_txt"
+                android:textSize="@dimen/trade_manager_radio_btn_textsize"/>
 
 
         </RadioGroup>
@@ -74,11 +76,11 @@
         <TextView
             android:id="@+id/bill_tips"
             android:layout_width="fill_parent"
-            android:layout_height="40dp"
+            android:layout_height="@dimen/trade_manager_text_height"
             android:background="@color/gray2"
             android:gravity="center"
             android:text=""
-            android:textSize="13sp" />
+            android:textSize="@dimen/trade_manager_text_textsize" />
 
 
         <com.handmark.pulltorefresh.library.PullToRefreshListView

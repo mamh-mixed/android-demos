@@ -7,22 +7,20 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="@dimen/login_imageview_margin"
         android:gravity="center_horizontal"
         android:orientation="vertical">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:maxHeight="80dp"
-            android:minHeight="40dp"
+            android:layout_width="@dimen/login_imageview_with"
+            android:layout_height="@dimen/login_imageview_with"
+            android:scaleType="fitXY"
             android:src="@drawable/logo" />
 
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp">
+            android:layout_marginTop="@dimen/login_edittext_image_margin_top">
 
             <TableRow
                 android:layout_width="wrap_content"
@@ -44,13 +42,14 @@
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/login_edittext_height"
                     android:background="@null"
-                    android:ems="10"
+                    android:ems="20"
                     android:hint="@string/login_hint_username"
                     android:inputType="textEmailAddress"
                     android:paddingLeft="15dp"
                     android:singleLine="true"
                     android:textColor="@color/white"
-                    android:textColorHint="@color/gray3" />
+                    android:textColorHint="@color/gray3"
+                    android:textSize="@dimen/login_edittext_image_textsize"/>
             </TableRow>
 
             <TableRow
@@ -58,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="@dimen/login_edittext_margin_top"
                 android:background="@drawable/bluemain_bg"
                 android:gravity="center_vertical">
 
@@ -74,13 +73,14 @@
                     android:layout_width="fill_parent"
                     android:layout_height="@dimen/login_edittext_height"
                     android:background="@null"
-                    android:ems="10"
+                    android:ems="16"
                     android:hint="@string/login_hint_password"
                     android:inputType="textPassword"
                     android:paddingLeft="15dp"
                     android:singleLine="true"
                     android:textColor="@color/white"
-                    android:textColorHint="@color/gray3" />
+                    android:textColorHint="@color/gray3"
+                    android:textSize="@dimen/login_edittext_image_textsize"/>
             </TableRow>
         </TableLayout>
 

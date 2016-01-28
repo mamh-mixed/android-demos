@@ -2,9 +2,9 @@
 <resources>
     <dimen name="keyboard_button_width">0dp</dimen>
     <dimen name="keyboard_button_hight">135dp</dimen>
-    <dimen name="keyboard_button_text_size">50sp</dimen>
+    <dimen name="keyboard_button_text_size">40sp</dimen>
     <dimen name="keyboard_radio_btn_with">180dp</dimen>
-    <dimen name="keyboard_radio_btn_hight">45dp</dimen>
+    <dimen name="keyboard_radio_btn_hight">40dp</dimen>
     <dimen name="keyboard_radio_btn_text_size">25sp</dimen>
     <dimen name="keyboard_textview_txtmoney_textsize">45sp</dimen>
     <dimen name="keyboard_textview_output_textsize">35sp</dimen>
