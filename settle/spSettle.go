@@ -242,6 +242,9 @@ func (s scanpayDomestic) Reconciliation(date string) {
 			}
 		}
 	}
+
+	//勾兑完了，跑流水
+	TransFlow.GenerateTransFlow(date)
 }
 
 // genLocalBlendMap 根据当天交易生成本地勾兑数据集
