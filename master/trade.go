@@ -101,7 +101,7 @@ func tradeFindOne(q *model.QueryCondition) (ret *model.ResultBody) {
 }
 
 // tradeReport 处理查找所有商户的请求
-func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename string) {
+func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename string, from string) {
 
 	// 语言模板
 	rl := GetLocale(cond.Locale)
@@ -110,7 +110,7 @@ func tradeReport(w http.ResponseWriter, cond *model.QueryCondition, filename str
 	trans, _ := query.SpTransQuery(cond)
 
 	// 生成报表
-	file := genReport(trans, rl, &Zone{cond.UtcOffset, time.Local})
+	file := genReport(trans, rl, &Zone{cond.UtcOffset, time.Local}, from)
 
 	w.Header().Set(`Content-Type`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`)
 	w.Header().Set(`Content-Disposition`, fmt.Sprintf(`attachment; filename="%s"`, filename))
@@ -135,7 +135,7 @@ func tradeTransferReport(w http.ResponseWriter, cond *model.QueryCondition, file
 }
 
 // genReport 生成报表
-func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File {
+func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone, from string) *xlsx.File {
 
 	var file = xlsx.NewFile()
 	var sheet *xlsx.Sheet
@@ -150,8 +150,10 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 	sheet, _ = file.AddSheet(m.SheetName)
 
 	// 先空3行，最后写入汇总数据
-	for i := 0; i < 3; i++ {
-		sheet.AddRow()
+	if from != "trans" {
+		for i := 0; i < 3; i++ {
+			sheet.AddRow()
+		}
 	}
 
 	// 生成title
@@ -339,29 +341,30 @@ func genReport(trans []*model.Trans, locale *LocaleTemplate, z *Zone) *xlsx.File
 	fee = alpFee + wxpFee
 
 	// 写入汇总数据
-	rows := sheet.Rows
-	row = rows[0]
-	row.WriteStruct(&summary{
-		lALP + m.TransAmt + "：", cur.F64(alpTransAmt),
-		lALP + m.RefundAmt + "：", -cur.F64(alpRefundAmt),
-		lALP + m.Fee + "：", cur.F64(alpFee),
-		lALP + m.SettAmt + "：", cur.F64(alpTransAmt - alpRefundAmt - alpFee),
-	}, -1)
-	row = rows[1]
-	row.WriteStruct(&summary{
-		lWXP + m.TransAmt + "：", cur.F64(wxpTransAmt),
-		lWXP + m.RefundAmt + "：", -cur.F64(wxpRefundAmt),
-		lWXP + m.Fee + "：", cur.F64(wxpFee),
-		lWXP + m.SettAmt + "：", cur.F64(wxpTransAmt - wxpRefundAmt - wxpFee),
-	}, -1)
-	row = rows[2]
-	row.WriteStruct(&summary{
-		m.TotalTransAmt + "：", cur.F64(transAmt),
-		m.TotalRefundAmt + "：", -cur.F64(refundAmt),
-		m.TotalFee + "：", cur.F64(fee),
-		m.TotalSettAmt + "：", cur.F64(transAmt - refundAmt - fee),
-	}, -1)
-
+	if from != "trans" {
+		rows := sheet.Rows
+		row = rows[0]
+		row.WriteStruct(&summary{
+			lALP + m.TransAmt + "：", cur.F64(alpTransAmt),
+			lALP + m.RefundAmt + "：", -cur.F64(alpRefundAmt),
+			lALP + m.Fee + "：", cur.F64(alpFee),
+			lALP + m.SettAmt + "：", cur.F64(alpTransAmt - alpRefundAmt - alpFee),
+		}, -1)
+		row = rows[1]
+		row.WriteStruct(&summary{
+			lWXP + m.TransAmt + "：", cur.F64(wxpTransAmt),
+			lWXP + m.RefundAmt + "：", -cur.F64(wxpRefundAmt),
+			lWXP + m.Fee + "：", cur.F64(wxpFee),
+			lWXP + m.SettAmt + "：", cur.F64(wxpTransAmt - wxpRefundAmt - wxpFee),
+		}, -1)
+		row = rows[2]
+		row.WriteStruct(&summary{
+			m.TotalTransAmt + "：", cur.F64(transAmt),
+			m.TotalRefundAmt + "：", -cur.F64(refundAmt),
+			m.TotalFee + "：", cur.F64(fee),
+			m.TotalSettAmt + "：", cur.F64(transAmt - refundAmt - fee),
+		}, -1)
+	}
 	return file
 }
 

@@ -347,7 +347,7 @@ func tradeReportHandle(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	tradeReport(w, cond, "trade_detail.xlsx")
+	tradeReport(w, cond, "trade_detail.xlsx", params.Get("from"))
 }
 
 func tradeQueryStatsHandle(w http.ResponseWriter, r *http.Request) {
