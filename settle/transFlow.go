@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/CardInfoLink/log"
 	"github.com/pkg/sftp"
 	"golang.org/x/crypto/ssh"
 )
@@ -23,10 +23,12 @@ var fileName = "IA502-%s.csv"
 type transFlow struct {
 }
 
+var TransFlow = transFlow{}
+
 func (t *transFlow) GenerateTransFlow(date string) {
 
 	cond := &model.Agent{
-		IsGenerateFlow: model.GenerateFlow,
+		FlowGenerateType: model.GenerateReconciliationFlow,
 	}
 	agentArray, err := mongo.AgentColl.FindByCondition(cond)
 	if err != nil {

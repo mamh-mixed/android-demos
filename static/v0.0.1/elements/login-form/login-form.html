@@ -127,9 +127,11 @@
           },
           user: {
             type: Object,
-            value: {
-              userName: '',
-              password: ''
+            value: function() {
+              return {
+                userName: '',
+                password: ''
+              };
             }
           }
         },
