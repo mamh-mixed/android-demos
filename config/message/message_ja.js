@@ -1,4 +1,4 @@
-{	
+{
 	"Currency":"JPY",
 	"ChanCode":{
 		"ALP":"Alipay",
@@ -12,7 +12,7 @@
 	"Role":{
 		"Company" :"会社",
 		"Agent"   :"代理",
-		"Group"   :"代表店铺",
+		"Group"   :"代表店舗",
 		"Mer"     :"店舗"
 	},
 	"BusicdType":{
@@ -35,12 +35,12 @@
 		"Unknown":"未知"
 	},
 	"StatReport":{
-		"Title"					:"加盟店取引集計レポート",
+		"Title"					:"代表店舗取引集計レポート",
 		"Total" 				:"総計：",
 		"StartDate"				:"取引日時（From）：",
 		"EndDate" 				:"取引日時（TO）：",
 		"Remark"				:"備考： 精算金額、精算総額については実際の精算金額と異なることがございます",
-		"MerId"					:"店铺コード",
+		"MerId"					:"店舗コード",
 		"MerName"				:"店舗名称",
 		"Summary"				:"総計",
 		"AgentName"				:"代理名称",
@@ -54,18 +54,18 @@
 		"Fee"					:"手数料"
 	},
 	"TransReport":{
-		"SheetName"      			:"店铺取引レポート",
-		"MerId"          			:"店铺コード",
+		"SheetName"      			:"店舗取引レポート",
+		"MerId"          			:"店舗コード",
 		"MerName"        			:"店舗名称",
 		"OrderNum"       			:"取引番号",
 		"TransAmt"       			:"売上金額",
 		"TransCurr"					:"取引通貨",
-		"MerFee"					:"店铺手抖数",
+		"MerFee"					:"店舗手数料",
 		"ChanCode"       			:"チャンネル",
 		"TransTime"      			:"取引時間（日本時間）",
 		"PayTime"					:"決済事業者応答時間（中国時間）",
 		"TransStatus"    			:"取引状態",
-		"ChanMerId"     			:"決済事業者加盟店コード",
+		"ChanMerId"     			:"決済事業者代表店舗コード",
 		"AgentCode"      			:"代理コード",
 		"TerminalId"     			:"端末番号",
 		"Busicd"         			:"取引種類",
