@@ -112,9 +112,9 @@ public class ScanCodeActivity extends Activity {
             @Override
             public void onClick(View v) {
                 //重新支付
-
                 mHintDialog.hide();
                 mScanCodeView.clearValue();
+                mScanCodeView.showKeyBoard();
 
             }
 
