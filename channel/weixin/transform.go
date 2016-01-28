@@ -29,8 +29,10 @@ func Transform(busicd, returnCode, resultCode, errCode, errCodeDes string) (stat
 			return success.ISO8583Code, success.ISO8583Msg, success.ErrorCode
 		}
 	} else {
-		// 通讯失败，返回处理中
-		return inprocess.ISO8583Code, inprocess.ISO8583Msg, inprocess.ErrorCode
+		// 查询接口通讯失败，返回处理中
+		if busicd == "payQuery" {
+			return inprocess.ISO8583Code, inprocess.ISO8583Msg, inprocess.ErrorCode
+		}
 	}
 
 	// 微信系统错误、银行错误
