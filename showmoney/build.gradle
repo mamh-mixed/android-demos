@@ -10,7 +10,7 @@ android {
         minSdkVersion 8
         targetSdkVersion 23
         versionCode 57
-        versionName "3.0.12"
+        versionName "3.0.13"
         // 3 options: pro, test, dev
         buildConfigField 'String', 'ENVIRONMENT', '"pro"'
     }
