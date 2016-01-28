@@ -147,7 +147,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 							transSett.BlendType = MATCH
 							transSett.SettTime = time.Now().Format("2006-01-02 15:04:05")
 							// log.Infof("blend success, merId=%s, orderNum=%s, chanOrderNum=%s", transSett.Trans.MerId, transSett.Trans.OrderNum, transSett.Trans.ChanOrderNum)
-							// mongo.SpTransSettColl.Update(&transSett)
+							mongo.SpTransSettColl.Update(&transSett)
 						}
 						chanSuccess += len(blendArray)
 						delete(localOrderMap, chanOrderNum) //删除本地记录，剩下的进C001
@@ -164,7 +164,7 @@ func (s scanpayDomestic) Reconciliation(date string) {
 						for _, transSett := range transSetts {
 							transSett.BlendType = AMT_ERROR
 							transSett.SettTime = time.Now().Format("2006-01-02 15:04:05")
-							// mongo.SpTransSettColl.Update(&transSett)
+							mongo.SpTransSettColl.Update(&transSett)
 						}
 						amtErrorMap[chanOrderNum] = chanOrderNum // 只是打个标记
 					}
@@ -242,6 +242,9 @@ func (s scanpayDomestic) Reconciliation(date string) {
 			}
 		}
 	}
+
+	//勾兑完了，跑流水
+	TransFlow.GenerateTransFlow(date)
 }
 
 // genLocalBlendMap 根据当天交易生成本地勾兑数据集
