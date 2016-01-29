@@ -211,4 +211,9 @@ public class TicketView extends LinearLayout implements View.OnClickListener {
         mCouponCode.setText(num);
     }
 
+
+    public void clearEditorText(){
+        mCouponCode.setText("");
+    }
+
 }

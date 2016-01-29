@@ -65,6 +65,8 @@ public class MainActivity extends BaseActivity {
         if (mMySettingView != null && mTabPager.getCurrentItem() == 3) {
             mMySettingView.checkMessageCount();
         }
+
+        mTicketView.clearEditorText();
     }
 
     @Override
