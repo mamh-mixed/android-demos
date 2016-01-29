@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="keyboard_button_width">0dp</dimen>
+    <dimen name="keyboard_button_hight">135dp</dimen>
+    <dimen name="keyboard_button_text_size">50sp</dimen>
+    <dimen name="keyboard_radio_btn_with">180dp</dimen>
+    <dimen name="keyboard_radio_btn_hight">45dp</dimen>
+    <dimen name="keyboard_radio_btn_text_size">25sp</dimen>
+    <dimen name="keyboard_textview_txtmoney_textsize">45sp</dimen>
+    <dimen name="keyboard_textview_output_textsize">35sp</dimen>
+    <dimen name="keyboard_keyboard_editext_textsize">45sp</dimen>
+    <!-- splashactivity -->
+    <dimen name="splash_imageview_with">110dp</dimen>
+    <dimen name="splash_textview_textsize">55sp</dimen>
+    <dimen name="splash_bank_textsize">35sp</dimen>
+
+    <!-- loginactivity -->
+    <dimen name="login_imageview_hight">40dp</dimen>
+    <dimen name="login_edittext_height">80dp</dimen>
+    <dimen name="login_btn_textsize">24sp</dimen>
+    <dimen name="login_imageview_with">120dp</dimen>
+    <dimen name="login_imageview_margin">120dp</dimen>
+    <dimen name="login_edittext_margin_top">40dp</dimen>
+    <dimen name="login_edittext_image_margin_top">50dp</dimen>
+    <dimen name="login_edittext_image_textsize">24sp</dimen>
+
+
+    <!-- password_upadate -->
+    <dimen name="update_textview_size">40sp</dimen>
+    <dimen name="update_btn_size">35sp</dimen>
+    <dimen name="update_editext_height">90dp</dimen>
+    <dimen name="update_margin_top">50dp</dimen>
+    <dimen name="update_imageview_height">40dp</dimen>
+    <dimen name="update_password_margintop">60dp</dimen>
+
+
+    <!-- scancodegun_activity -->
+    <dimen name="scan_gun_edittext_height">80dp</dimen>
+    <dimen name="scan_gun_btn_height">80dp</dimen>
+    <dimen name="scan_gun_btn_margin_left_right">25dp</dimen>
+    <dimen name="scan_gun_btn_top">30dp</dimen>
+    <dimen name="scan_gun_textview_textsize">30sp</dimen>
+    <dimen name="scan_gun_editortext_top">20dp</dimen>
+    <dimen name="scan_gun_editortext_textsize">25sp</dimen>
+    <dimen name="scan_gun_textview_top">30dp</dimen>
+
+    <!-- createqrcode_activity -->
+    <dimen name="create_qr_action_bar">80dp</dimen>
+    <dimen name="create_qr_scan_text_margintop">30dp</dimen>
+    <dimen name="create_qr_scan_text_textsize">23sp</dimen>
+    <dimen name="create_qr_scan_qr_imageview_width">400dp</dimen>
+    <dimen name="create_qr_scan_qr_imageview_height">450dp</dimen>
+    <dimen name="create_qr_scan_image_margintop">40dp</dimen>
+    <dimen name="create_qr_scan_image_pay_money_textsize">28sp</dimen>
+    <dimen name="create_qr_scan_qy_height">80dp</dimen>
+    <dimen name="create_qr_scan_qy_margin">40dp</dimen>
+    <dimen name="create_qr_scan_qy_textsize">25sp</dimen>
+
+    <!-- menu_list_item-->
+    <dimen name="menu_list_item_height">90dp</dimen>
+    <dimen name="menu_list_item_textsize">25sp</dimen>
+
+    <!-- trade_manager_bill-->
+    <dimen name="trade_manager_bill_textsize">40sp</dimen>
+    <dimen name="trade_manager_radio_btn_textsize">25sp</dimen>
+    <dimen name="trade_manager_text_textsize">19dp</dimen>
+    <dimen name="trade_manager_text_height">70dp</dimen>
+
+    <!-- trade_manager_bill_item-->
+    <dimen name="trade_manager_item_imageview_width">70dp</dimen>
+    <dimen name="trade_manager_item_textsize_payaccess">20sp</dimen>
+    <dimen name="trade_manager_item_result_textsize">18sp</dimen>
+    <dimen name="trade_manager_item_btn_with">70dp</dimen>
+    <dimen name="trade_manager_item_btn_hight">50dp</dimen>
+
+    <!-- trade_manager_detail_activity-->
+    <dimen name="trade_manager_detail_activity_title_textsize">32sp</dimen>
+    <dimen name="trade_manager_detail_trade_textsize">40sp</dimen>
+    <dimen name="trade_manager_detail_custom_textsize">28sp</dimen>
+    <dimen name="trade_manager_detail_custom_btn_textsize">30sp</dimen>
+    <dimen name="trade_manager_detail_custom_btn_margin">20dp</dimen>
+    <dimen name="trade_manager_detail_custom_btn_height">90dp</dimen>
+
+
+
+</resources>
