@@ -183,6 +183,16 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 		}
 	}
 
+	// 校验币种，如果请求支付的币种不符合商户配置的币种，拒掉
+	if req.Currency == "" {
+		req.Currency = mer.TransCurr
+	}
+
+	if req.Currency != mer.TransCurr {
+		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("UNSUPPORT_CURRENCY"))
+		return
+	}
+
 	// 过滤包含空格字符串
 	req.Chcd = strings.TrimSpace(req.Chcd)
 	var reqAgentCode = req.AgentCode
