@@ -4,5 +4,7 @@
     android:background="@color/background_layout"
     android:orientation="vertical">
 
+    <include layout="@layout/showmoney_dialog" />
+
     <include layout="@layout/hint_dialog" />
 </RelativeLayout>

@@ -1,6 +1,5 @@
 package com.cardinfolink.yunshouyin.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -20,7 +19,7 @@ import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.view.HintDialog;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 
-public class ScanCodeActivity extends Activity {
+public class ScanCodeActivity extends BaseActivity {
 
     private static Handler scanCodehandler;
     private HintDialog mHintDialog;
