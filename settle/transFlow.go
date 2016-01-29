@@ -149,10 +149,10 @@ func generateFile(data []model.TransSett, dateStr string, agentFee float64, sBuf
 		*sBuffer += ","
 		*sBuffer += v.Trans.ChanOrderNum
 		if isReverse {
-			*sBuffer += fmt.Sprintf(",CNY,-%0.2f,-%0.2f,CNY,-%0.2f,-%0.2f,-%0.2f,", amt, amt*agentFee+float64(v.AcqFee/100), //收单币种,收单交易金额,收单手续费,商户币种,
+			*sBuffer += fmt.Sprintf(",CNY,-%0.2f,-%0.2f,CNY,-%0.2f,-%0.2f,-%0.2f,", amt, amt*agentFee+float64(v.AcqFee)/100, //收单币种,收单交易金额,收单手续费,商户币种,
 				amt, float64(v.MerFee)/100, float64(v.Trans.TransAmt-v.MerFee)/100) //商户交易金额,商户手续费,商户清算金额
 		} else {
-			*sBuffer += fmt.Sprintf(",CNY,%0.2f,%0.2f,CNY,%0.2f,%0.2f,%0.2f,", amt, amt*agentFee+float64(v.AcqFee/100), //收单币种,收单交易金额,收单手续费,商户币种,
+			*sBuffer += fmt.Sprintf(",CNY,%0.2f,%0.2f,CNY,%0.2f,%0.2f,%0.2f,", amt, amt*agentFee+float64(v.AcqFee)/100, //收单币种,收单交易金额,收单手续费,商户币种,
 				amt, float64(v.MerFee)/100, float64(v.Trans.TransAmt-v.MerFee)/100) //商户交易金额,商户手续费,商户清算金额
 		}
 

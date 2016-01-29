@@ -3,11 +3,12 @@ package settle
 import (
 	"bytes"
 	"fmt"
+	"time"
+
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/qiniu"
-	"github.com/omigo/log"
 	"github.com/tealeg/xlsx"
-	"time"
 )
 
 func upload(key string, excel *xlsx.File) error {
@@ -440,7 +441,7 @@ func genC001ReportExcel(data map[string]map[string][]model.TransSett, date strin
 				}
 				cell = row.AddCell()
 				cell.SetStyle(bodyStyle)
-				cell.Value = fmt.Sprintf("%0.2f", float64(d.TransAmt/100))
+				cell.Value = fmt.Sprintf("%0.2f", float64(d.TransAmt)/100)
 				cell = row.AddCell()
 				cell.SetStyle(bodyStyle)
 				cell.Value = "渠道少清"

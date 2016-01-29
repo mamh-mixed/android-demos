@@ -47,7 +47,7 @@ func (s scanpayDomestic) ProcessDuration() time.Duration {
 
 // Reconciliation 勾兑
 func (s scanpayDomestic) Reconciliation(date string) {
-
+	log.Info("Begin to process domestic reconciliation")
 	// 本地数据集
 	localMMap, alpMers, wxpMers, err := genLocalBlendMap(date)
 	if err != nil {
@@ -97,6 +97,11 @@ func (s scanpayDomestic) Reconciliation(date string) {
 		if err != nil {
 			log.Errorf("the request error: %s , merId: %s, chanCode: %s", err, c.ChanMerId, "ALP")
 		}
+	}
+
+	if len(chanMMap) == 0 {
+		log.Infof("the wxp has no trans data")
+		return
 	}
 
 	log.Infof("begin blend, chanMMap length=%d", len(chanMMap))
