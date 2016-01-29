@@ -2,6 +2,7 @@ package com.cardinfolink.yunshouyin.model;
 
 import com.cardinfolink.yunshouyin.api.QuickPayException;
 import com.cardinfolink.yunshouyin.data.User;
+import com.cardinfolink.yunshouyin.util.ActivityCollector;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.SerializedName;
@@ -89,6 +90,10 @@ public class ServerPacket {
         try {
             Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
             ServerPacket packet = gson.fromJson(json, ServerPacket.class);
+            String error = packet.getError();
+            if (error.equals("username_password_error")) {
+                ActivityCollector.goLoginAndFinishRest();
+            }
             return packet;
         } catch (Exception ex) {
             throw new QuickPayException(QuickPayException.CONFIG_ERROR);
