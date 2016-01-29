@@ -206,8 +206,10 @@ public class LoginActivity extends BaseActivity {
                     ActivateDialog activateDialog = new ActivateDialog(mContext, view, eMail);
                     activateDialog.show();
                 } else {
-                    mYellowTips.show(errorMsg);
                     if (errorCode.equals("username_password_error")) {
+                        //用户名密码错误的处理放在了 showPasswordError里面
+                    } else {
+                        mYellowTips.show(errorMsg);
                         mPasswordEdit.setText("");
                     }
                 }
@@ -215,6 +217,16 @@ public class LoginActivity extends BaseActivity {
         });
     }
 
+    //这里显示 用户名密码错误的提示
+    public void showPasswordError(final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mYellowTips.show(msg);
+                mPasswordEdit.setText("");
+            }
+        });
+    }
 
     @Override
     protected void onResume() {
