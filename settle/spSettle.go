@@ -99,6 +99,11 @@ func (s scanpayDomestic) Reconciliation(date string) {
 		}
 	}
 
+	if len(chanMMap) == 0 {
+		log.Infof("the wxp has no trans data")
+		return
+	}
+
 	log.Infof("begin blend, chanMMap length=%d", len(chanMMap))
 
 	// 金额有误交易
