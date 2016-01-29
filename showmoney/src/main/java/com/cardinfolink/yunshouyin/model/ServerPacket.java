@@ -91,7 +91,7 @@ public class ServerPacket {
             Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
             ServerPacket packet = gson.fromJson(json, ServerPacket.class);
             String error = packet.getError();
-            if (error.equals("username_password_error")) {
+            if ("username_password_error".equals(error)) {
                 ActivityCollector.goLoginAndFinishRest();
             }
             return packet;
