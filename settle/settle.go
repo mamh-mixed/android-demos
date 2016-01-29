@@ -30,24 +30,28 @@ var needSettles []Settle
 // DoSettle 勾兑
 func DoSettle(date string, immediately bool) {
 	for _, ns := range needSettles {
-		var d time.Duration
-		// 马上执行，用于网页发起
-		if immediately {
-			d = 0
-		} else {
-			d = ns.ProcessDuration()
-		}
+		doReconciliation(ns, date, immediately)
+	}
+}
 
-		switch d {
-		case 0:
-			go ns.Reconciliation(date)
-		case -1:
-			// ignore
-		default:
-			time.AfterFunc(d, func() {
-				ns.Reconciliation(date)
-			})
-		}
+func doReconciliation(s Settle, date string, immediately bool) {
+	var d time.Duration
+	// 马上执行，用于网页发起
+	if immediately {
+		d = 10 * time.Second
+	} else {
+		d = s.ProcessDuration()
+	}
+
+	switch d {
+	case 0:
+		go s.Reconciliation(date)
+	case -1:
+		// ignore
+	default:
+		time.AfterFunc(d, func() {
+			s.Reconciliation(date)
+		})
 	}
 }
 
