@@ -56,8 +56,8 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 		return fieldEmptyError(txamt)
 	case req.ScanCodeId == "":
 		return fieldEmptyError(scanCodeId)
-	case req.Currency == "":
-		return fieldEmptyError(curr)
+		// case req.Currency == "":
+		// 	return fieldEmptyError(curr)
 	}
 
 	// 验证格式
@@ -76,8 +76,10 @@ func validateBarcodePay(req *model.ScanPayRequest) (ret *model.ScanPayResponse) 
 	if matched, err := validateOrderNum(req.OrderNum); !matched {
 		return err
 	}
-	if matched, _ := regexp.MatchString(`^[A-Z]{3}$`, req.Currency); !matched {
-		return fieldFormatError(curr)
+	if req.Currency != "" {
+		if matched, _ := regexp.MatchString(`^[A-Z]{3}$`, req.Currency); !matched {
+			return fieldFormatError(curr)
+		}
 	}
 
 	return
@@ -97,8 +99,8 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 		return fieldEmptyError(mchntid)
 	case req.Txamt == "":
 		return fieldEmptyError(txamt)
-	case req.Currency == "":
-		return fieldEmptyError(curr)
+		// case req.Currency == "":
+		// 	return fieldEmptyError(curr)
 	}
 
 	// 验证格式
@@ -118,8 +120,10 @@ func validateQrCodeOfflinePay(req *model.ScanPayRequest) (ret *model.ScanPayResp
 		return err
 	}
 
-	if matched, _ := regexp.MatchString(`^[A-Z]{3}$`, req.Currency); !matched {
-		return fieldFormatError(curr)
+	if req.Currency != "" {
+		if matched, _ := regexp.MatchString(`^[A-Z]{3}$`, req.Currency); !matched {
+			return fieldFormatError(curr)
+		}
 	}
 
 	if req.TimeExpire != "" {
