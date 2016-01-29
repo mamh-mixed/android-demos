@@ -11,7 +11,7 @@
         "TCPAddr": ":6600", // 扫码 TCP 接口，UTF-8 编码传输，UTF-8 签名
         "TCPGBKAddr": ":6601", // 扫码 TCP 接口，GBK 编码传输，UTF-8 签名
         "DefaultCacheTime": "1s", // 缓存有效时间，0 表示永不过期（慎用），比如 "1h2m3s"
-        "NotifyURL": "http://dev.quick.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "NotifyURL": "http://dev.overseas.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
         "OrderCloseTime": "40m", // 未支付订单关闭时间
         "OrderRefreshTime": "10m",
         // 平台用户登录后，一段时间内无操作失效时间，比如 30m， 表示 30m 无操作后会话失效，
@@ -42,14 +42,14 @@
     },
     "WeixinScanPay": {
         "URL": "https://api.mch.weixin.qq.com", // 微信刷卡支付接口地址
-        "NotifyURL": "http://dev.quick.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
+        "NotifyURL": "http://dev.overseas.ipay.so", // 异步消息通知地址，路径是固定的，只需要域名和端口
         "DNSCacheRefreshTime": "5m" // 微信域名解析慢，程序内部做了缓存，这里配置缓存刷新时间
     },
     "AlipayScanPay": {
         "AlipayPubKey": "config/pem/alipay/pubkey.pem", // 支付宝 RSA 公钥
         "OpenAPIURL": "https://openapi.alipay.com/gateway.do", // 支付宝 Open API 地址
         "URL": "https://mapi.alipay.com/gateway.do?_input_charset=utf-8", // 支付宝扫码支付接口地址
-        "NotifyUrl": "http://dev.quick.ipay.so", // 支付宝异步消息通知地址，路径是固定的，只需要域名和端口
+        "NotifyUrl": "http://dev.overseas.ipay.so", // 支付宝异步消息通知地址，路径是固定的，只需要域名和端口
         "AgentId": "12010128a1" // 标识讯联交易
     },
     "MobileApp": {

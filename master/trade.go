@@ -7,7 +7,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/query"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"github.com/tealeg/xlsx"
 	"net/http"
 	"strings"

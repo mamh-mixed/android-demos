@@ -3,10 +3,10 @@ package adaptor
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/channel"
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
 	"strings"
 	"time"
 )

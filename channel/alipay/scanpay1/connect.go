@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/CardInfoLink/quickpay/logs"
 	"github.com/CardInfoLink/quickpay/util"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	"io/ioutil"
 	"net/http"
 	"net/url"

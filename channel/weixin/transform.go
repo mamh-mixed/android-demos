@@ -28,49 +28,37 @@ func Transform(busicd, returnCode, resultCode, errCode, errCodeDes string) (stat
 			}
 			return success.ISO8583Code, success.ISO8583Msg, success.ErrorCode
 		}
+
+		// 微信系统错误、银行错误
+		if errCode == "SYSTEMERROR" || errCode == "BANKERROR" {
+			// 默认为处理中
+			return inprocess.ISO8583Code, inprocess.ISO8583Msg, inprocess.ErrorCode
+		}
+
+		// 业务结果失败，则根据具体的错误码转换对应的应答码
+		respCode := mongo.ScanPayRespCol.GetByWxp(errCode, busicd)
+		log.Debugf("response code is %#v", respCode)
+
+		if respCode.IsUseISO {
+			return respCode.ISO8583Code, respCode.ISO8583Msg, respCode.ErrorCode
+		}
+
+		errCodeDesRune := []rune(errCodeDes)
+		if len(errCodeDesRune) > 64 {
+			errCodeDes = string(errCodeDesRune[:64])
+		}
+
+		return respCode.ISO8583Code, errCodeDes, respCode.ErrorCode
+
 	} else {
 		// 查询接口通讯失败，返回处理中
 		if busicd == "payQuery" {
 			return inprocess.ISO8583Code, inprocess.ISO8583Msg, inprocess.ErrorCode
 		}
+
+		// 其他接口通讯失败回58
+		unknow := mongo.ScanPayRespCol.DefaultResp
+		return unknow.ISO8583Code, unknow.ISO8583Msg, unknow.ErrorCode
 	}
 
-	// 微信系统错误、银行错误
-	if errCode == "SYSTEMERROR" || errCode == "BANKERROR" {
-		// 默认为处理中
-		return inprocess.ISO8583Code, inprocess.ISO8583Msg, inprocess.ErrorCode
-	}
-
-	// 来到这一般是参数不完整，通讯失败
-	// if errCode == "" {
-	// 	return systemError.ISO8583Code, systemError.ISO8583Msg, systemError.ErrorCode
-	// }
-	// if returnCode == "FAIL" {
-	// 	log.Error("weixin request fail, return code is FAIL")
-	// 	return unknownError.ISO8583Code, unknownError.ISO8583Msg
-	// }
-
-	// // 如果业务结果标识成功，直接返回给前台成功的应答码
-	// if resultCode == "SUCCESS" {
-	// 	// 预下单时返回09
-	// 	if busicd == "prePay" {
-	// 		return inprocess.ISO8583Code, inprocess.ISO8583Msg
-	// 	}
-	// 	return success.ISO8583Code, success.ISO8583Msg
-	// }
-
-	// 业务结果失败，则根据具体的错误码转换对应的应答码
-	respCode := mongo.ScanPayRespCol.GetByWxp(errCode, busicd)
-	log.Debugf("response code is %#v", respCode)
-
-	if respCode.IsUseISO {
-		return respCode.ISO8583Code, respCode.ISO8583Msg, respCode.ErrorCode
-	}
-
-	errCodeDesRune := []rune(errCodeDes)
-	if len(errCodeDesRune) > 64 {
-		errCodeDes = string(errCodeDesRune[:64])
-	}
-
-	return respCode.ISO8583Code, errCodeDes, respCode.ErrorCode
 }

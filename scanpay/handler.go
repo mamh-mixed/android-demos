@@ -9,7 +9,7 @@ import (
 	"github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/query"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 	// "github.com/omigo/mahonia"
 	"io/ioutil"
 	"math/rand"

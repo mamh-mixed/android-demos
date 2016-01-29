@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 var defaultWeixinClient *http.Client

@@ -1,7 +1,7 @@
 package bindingpay
 
 import (
-	// "github.com/omigo/log"
+	// "github.com/CardInfoLink/log"
 	"regexp"
 
 	"github.com/CardInfoLink/quickpay/model"

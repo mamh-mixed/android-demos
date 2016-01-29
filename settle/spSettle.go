@@ -1,12 +1,11 @@
 package settle
 
 import (
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/channel/alipay"
 	"github.com/CardInfoLink/quickpay/channel/weixin/scanpay"
-	// "github.com/CardInfoLink/quickpay/goconf"
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
-	"github.com/omigo/log"
 	"math"
 	"strconv"
 	"time"

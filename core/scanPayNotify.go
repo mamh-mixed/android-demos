@@ -17,7 +17,7 @@ import (
 	"github.com/CardInfoLink/quickpay/model"
 	"github.com/CardInfoLink/quickpay/mongo"
 	"github.com/CardInfoLink/quickpay/security"
-	"github.com/omigo/log"
+	"github.com/CardInfoLink/log"
 )
 
 // ProcessAlipayNotify 支付宝异步通知处理，接受预下单和下单异步通知

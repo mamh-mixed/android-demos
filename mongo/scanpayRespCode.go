@@ -1,19 +1,19 @@
 package mongo
 
 import (
+	"github.com/CardInfoLink/log"
 	"github.com/CardInfoLink/quickpay/cache"
 	"github.com/CardInfoLink/quickpay/model"
-	"github.com/omigo/log"
 	"gopkg.in/mgo.v2/bson"
 )
 
-var ScanPayRespCol = &scanPayRespCollection{"respCode.sp"}
-
-// 未知应答码时，使用渠道应答
-var defaultResp = &model.ScanPayRespCode{"", "", "58", "未知应答,请联系管理员", false, "UNKNOWN"}
+var ScanPayRespCol = &scanPayRespCollection{"respCode.sp",
+	&model.ScanPayRespCode{"", "", "58", "未知", false, "UNKNOWN"},
+}
 
 type scanPayRespCollection struct {
-	name string
+	name        string
+	DefaultResp *model.ScanPayRespCode // 未知应答码时，使用渠道应答
 }
 
 var spRespCache = cache.New(model.Cache_ScanPayResp)
@@ -33,7 +33,7 @@ func (c *scanPayRespCollection) Get(errorCode string) (resp *model.ScanPayRespCo
 	if err != nil {
 		log.Errorf("can not find scanPayResp for %s: %s", errorCode, err)
 		// 没找到对应应答码，返回默认应答
-		return defaultResp
+		return c.DefaultResp
 	}
 
 	// save cache
@@ -62,7 +62,7 @@ func (c *scanPayRespCollection) GetByAlp(code, busicd string) (resp *model.ScanP
 	err := database.C(c.name).Find(q).One(resp)
 	if err != nil {
 		log.Errorf("can not find scanPayResp for (code:%s,busicd:%s): %s", code, busicd, err)
-		return defaultResp
+		return c.DefaultResp
 	}
 
 	return resp
@@ -83,7 +83,7 @@ func (c *scanPayRespCollection) GetByWxp(code, busicd string) (resp *model.ScanP
 	err := database.C(c.name).Find(q).One(resp)
 	if err != nil {
 		log.Errorf("can not find scanPayResp for (code:%s,busicd:%s): %s", code, busicd, err)
-		return defaultResp
+		return c.DefaultResp
 	}
 	return resp
 }
