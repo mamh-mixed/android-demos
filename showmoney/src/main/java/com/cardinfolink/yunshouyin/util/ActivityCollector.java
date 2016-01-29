@@ -41,4 +41,17 @@ public class ActivityCollector {
             }
         }
     }
+
+    public static void goLoginAndFinishRest(String error) {
+        for (Activity activity : activityList) {
+            if (activity instanceof LoginActivity) {
+                //这里调用一下 loginActivity里面的一个方法，来显示 用户名密码错误
+                ((LoginActivity) activity).showPasswordError(ErrorUtil.getErrorString(error));
+                continue;
+            }
+            if (!activity.isFinishing()) {
+                activity.finish();
+            }
+        }
+    }
 }
