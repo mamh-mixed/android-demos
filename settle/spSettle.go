@@ -47,7 +47,7 @@ func (s scanpayDomestic) ProcessDuration() time.Duration {
 
 // Reconciliation 勾兑
 func (s scanpayDomestic) Reconciliation(date string) {
-
+	log.Info("Begin to process domestic reconciliation")
 	// 本地数据集
 	localMMap, alpMers, wxpMers, err := genLocalBlendMap(date)
 	if err != nil {

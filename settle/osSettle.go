@@ -113,7 +113,7 @@ func (a *alipayOverseas) download(date string) [][]string {
 
 // Reconciliation 海外接口对账函数
 func (a *alipayOverseas) Reconciliation(date string) {
-
+	log.Info("Begin to process overseas reconciliation")
 	// 下载渠道数据
 	recs := a.download(date)
 
