@@ -38,7 +38,7 @@ func doReconciliation(s Settle, date string, immediately bool) {
 	var d time.Duration
 	// 马上执行，用于网页发起
 	if immediately {
-		d = 10 * time.Second
+		d = 0
 	} else {
 		d = s.ProcessDuration()
 	}
