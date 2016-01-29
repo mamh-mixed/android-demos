@@ -153,6 +153,16 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 	// 	return
 	// }
 
+	// 校验币种，如果请求支付的币种不符合商户配置的币种，拒掉
+	if req.Currency == "" {
+		req.Currency = mer.TransCurr
+	}
+
+	if req.Currency != mer.TransCurr {
+		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("UNSUPPORT_CURRENCY"))
+		return
+	}
+
 	// 4. 商户、机构号都通过后，验证接口权限
 	if !util.StringInSlice(req.Busicd, mer.Permission) {
 		log.Errorf("merchant(%s) request(%s) refused", req.Mchntid, req.Busicd)
@@ -181,16 +191,6 @@ func doScanPay(validateFunc, processFunc handleFunc, req *model.ScanPayRequest) 
 			ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("SIGN_AUTH_ERROR"))
 			return
 		}
-	}
-
-	// 校验币种，如果请求支付的币种不符合商户配置的币种，拒掉
-	if req.Currency == "" {
-		req.Currency = mer.TransCurr
-	}
-
-	if req.Currency != mer.TransCurr {
-		ret = model.NewScanPayResponse(*mongo.ScanPayRespCol.Get("UNSUPPORT_CURRENCY"))
-		return
 	}
 
 	// 过滤包含空格字符串
