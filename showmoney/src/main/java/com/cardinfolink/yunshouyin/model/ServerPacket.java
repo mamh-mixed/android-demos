@@ -91,8 +91,9 @@ public class ServerPacket {
             Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd HH:mm:ss").create();
             ServerPacket packet = gson.fromJson(json, ServerPacket.class);
             String error = packet.getError();
+            //用户名密码错误统一在这里处理了
             if ("username_password_error".equals(error)) {
-                ActivityCollector.goLoginAndFinishRest();
+                ActivityCollector.goLoginAndFinishRest(error);
             }
             return packet;
         } catch (Exception ex) {
