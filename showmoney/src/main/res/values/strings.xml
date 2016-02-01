@@ -14,14 +14,14 @@
     <string name="register_qr_password">确认密码</string>
     <string name="register_hint_qr_password">请确认密码</string>
     <string name="register_message">点击“注册”按钮，即表示您同意</string>
-    <string name="register_message1">还差一步，你就可以正常使用了</string>
-    <string name="register_message2">你还需要完善一下你的收款账户信息。</string>
+    <string name="register_message1">还差一步，您就可以正常使用了</string>
+    <string name="register_message2">您还需要完善一下您的收款账户信息。</string>
     <string name="register_welcome_message">欢迎进入 互联网 + 收款时代</string>
-    <string name="register_limit_message">恭喜，你已经可以收款了。目前限额500元/日，提升限额马上免费体验收款无上限！</string>
+    <string name="register_limit_message">恭喜，您已经可以收款了。目前限额500元/日，提升限额马上免费体验收款无上限！</string>
     <string name="register_use_now">立即使用</string>
     <string name="register_check">查看</string>
     <string name="register_cloud_version">云收银服务使用协议</string>
-    <string name="register_hint_email">你的激活码将发送到此邮箱</string>
+    <string name="register_hint_email">您的激活码将发送到此邮箱</string>
     <string name="register_next_finished">完成</string>
     <string name="register_next_hint_openbank">请输入您的开户行,精准到支行</string>
     <string name="register_next_hint_name">请输入您的姓名</string>
@@ -47,8 +47,8 @@
     <string name="update_account">账号修改</string>
     <string name="qr_update">确认修改</string>
 
-    <string name="increase_choose_type">请选择你的商户类型</string>
-    <string name="increase_message">你可能需要准备一些相关材料</string>
+    <string name="increase_choose_type">请选择您的商户类型</string>
+    <string name="increase_message">您可能需要准备一些相关材料</string>
     <string name="increase_company">我是企业</string>
     <string name="increase_personal">我是个体</string>
     <string name="increase_limit">提升限额</string>
@@ -59,7 +59,7 @@
     <string name="increase_company1_meaterial">法人身份证\n企业营业执照\n税务登记证\n组织机构代码证</string>
     <string name="increase_i_know">我知道了</string>
     <string name="increase_message2">提升限额材料提交完成</string>
-    <string name="increase_message3">你提交的材料，我们会在7个工作日内帮你审核。</string>
+    <string name="increase_message3">您提交的材料，我们会在7个工作日内帮你审核。</string>
 
     <string name="limit_increase_message1">企业商户 提交材料</string>
     <string name="limit_increase_message">个体商户 提交材料</string>
@@ -255,7 +255,7 @@
     <string name="txt_please_activate">请激活帐号</string>
     <string name="txt_cancel">取消</string>
     <string name="txt_close">关闭</string>
-    <string name="txt_reset_messsage">如果你忘记密码请点击重置密码</string>
+    <string name="txt_reset_messsage">如果您忘记密码请点击重置密码</string>
     <string name="txt_reset">重置密码</string>
     <string name="txt_search">搜索</string>
     <string name="txt_hint_search">请输入搜索的内容</string>
@@ -292,7 +292,7 @@
     <string name="setting_local_city">所在城市</string>
     <string name="setting_bank_name">清算银行</string>
     <string name="setting_merchant_name">商户名称</string>
-    <string name="setting_account_infomation">如信息有误请联系你的服务商</string>
+    <string name="setting_account_infomation">如信息有误请联系您的服务商</string>
     <string name="setting_account_and_security">账户与安全</string>
     <string name="setting_modify_password">修改密码</string>
     <string name="setting_all_message_list">全部消息列表</string>
@@ -317,7 +317,7 @@
     <string name="setting_cloud_use">云收银服务使用协议</string>
     <string name="setting_cloud_version">上海讯联数据服务有限公司  版权所有</string>
     <string name="setting_limit_message">当前账户收款限额 %1$s/日</string>
-    <string name="setting_limit_message_updated">你已经成为正式商户，已经没有人能阻碍你使用微信、支付宝来收款了</string>
+    <string name="setting_limit_message_updated">您已经成为正式商户，已经没有人能阻碍您使用微信、支付宝来收款了</string>
     <string name="setting_no_update">没有更新</string>
     <string name="setting_no_wifi_no_update">没有wifi连接， 只在wifi下更新</string>
     <string name="setting_update_timeout">超时</string>
@@ -333,10 +333,10 @@
 
     <!--忘记密码界面用到的字符串文本-->
     <string name="forget_hint_username">请填写登录邮箱</string>
-    <string name="forget_username">你的账号</string>
+    <string name="forget_username">您的账号</string>
     <string name="forget_password">忘记密码</string>
-    <string name="forget_password_messsage">其他账号登录请联系你的服务商为你重置密码</string>
-    <string name="forget_account_message">忘记登录账户请联系你的服务商</string>
+    <string name="forget_password_messsage">其他账号登录请联系您的服务商为您重置密码</string>
+    <string name="forget_account_message">忘记登录账户请联系您的服务商</string>
     <string name="forget_account_message1">重置密码将发送到此邮箱：</string>
     <string name="forget_cancel">取消</string>
     <string name="forget_i_known">我知道了</string>
@@ -345,9 +345,9 @@
     <string name="activate_message">激活码已发送到此邮箱:\n\n</string>
     <string name="activate_after">稍后激活</string>
     <string name="activate_had_activated">已激活</string>
-    <string name="activate_your_not_activate">你注册的账号尚未激活</string>
-    <string name="activate_your_had_activate">你注册的账号已经激活</string>
-    <string name="activate_message1">如果长时间没有收到邮件，请检查你的邮箱垃圾箱</string>
+    <string name="activate_your_not_activate">您注册的账号尚未激活</string>
+    <string name="activate_your_had_activate">您注册的账号已经激活</string>
+    <string name="activate_message1">如果长时间没有收到邮件，请检查您的邮箱垃圾箱</string>
     <string name="activate_i_had_activated">我已经激活了</string>
     <string name="activate_had_not_activated">未激活！</string>
 
@@ -428,7 +428,7 @@
 
 
     <!--  欢迎界面 要用到的文本 -->
-    <string name="splash_activity_message">一天让你的店铺进入互联网 + 收款时代"</string>
+    <string name="splash_activity_message">一天让您的店铺进入互联网 + 收款时代"</string>
     <string name="splash_activity_title">云收银</string>
 
     <!-- 账单界面用到的文本 -->
@@ -458,7 +458,7 @@
     <string name="my_web_activity_merchant_name">店铺名称：</string>
     <string name="my_web_activity_save">将二维码保存到相册"</string>
     <string name="my_web_activity_message">手机微信扫一扫输入金额付款</string>
-    <string name="my_web_activity_message1">你可以将此图打印后贴在店铺内让顾客自主扫码付款</string>
+    <string name="my_web_activity_message1">您可以将此图打印后贴在店铺内让顾客自主扫码付款</string>
     <string name="my_web_activity_save_success">保存成功</string>
 
     <string name="config_activity_title">App配置</string>
