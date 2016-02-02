@@ -215,9 +215,12 @@ public class TicketExpandableListAdapter extends BaseExpandableListAdapter {
             e.printStackTrace();
         }
 
-        if ("android".equals(bill.tradeFrom) || "ios".equals(bill.tradeFrom)) {
+        if ("android".equals(bill.tradeFrom)) {
             childViewHolder.couponTradeFromImage.setImageResource(R.drawable.bill_phone);
             childViewHolder.couponTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type1));
+        } else if ("ios".equals(bill.tradeFrom)) {
+            childViewHolder.couponTradeFromImage.setImageResource(R.drawable.bill_phone);
+            childViewHolder.couponTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type5));
         } else if ("wap".equals(bill.tradeFrom)) {
             childViewHolder.couponTradeFromImage.setImageResource(R.drawable.bill_web);
             childViewHolder.couponTradeFrom.setText(mContext.getString(R.string.expandable_listview_pay_type2));
