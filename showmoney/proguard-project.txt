@@ -22,26 +22,65 @@
 #-dontwarn **CompatCreatorHoneycombMR2
 #-dontwarn **ActivityCompatHoneycomb
 #-dontwarn **MenuCompatHoneycomb
-#
-#-keep public class com.cardinfolink.yunshouyin.R$*{
-#public static final int *;
-#}
-#
-#-keepclassmembers enum * {
-#    public static **[] values();
-#    public static ** valueOf(java.lang.String);
-#}
-#
-#-keepclassmembers class * {
-#   public <init>(org.json.JSONObject);
-#}
-#
-#-keep public class com.umeng.fb.ui.ThreadView {
-#}
-#
-#-keep public class * extends com.umeng.**
-#-keep class com.umeng.** { *; }
+-dontwarn com.umeng.**
 
+-keep public class com.cardinfolink.yunshouyin.R$*{
+public static final int *;
+}
+
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+-keepclassmembers class * {
+   public <init>(org.json.JSONObject);
+}
+
+-keep public class com.umeng.fb.ui.ThreadView {
+}
+
+-keep public class * extends com.umeng.**
+-keep class com.umeng.** { *; }
+
+
+-keep,allowshrinking class org.android.agoo.service.* {
+    public <fields>;
+    public <methods>;
+}
+
+-keep,allowshrinking class com.umeng.message.* {
+    public <fields>;
+    public <methods>;
+}
 
 
 #-injars libs
+
+# 以下类过滤不混淆
+-keep public class * extends com.umeng.**
+# 以下包不进行过滤
+-keep class com.umeng.** { *; }
+
+##---------------Begin: proguard configuration for Gson  ----------
+# Gson uses generic type information stored in a class file when working with fields. Proguard
+# removes such information by default, so configure it to keep all of it.
+-keepattributes Signature
+
+# For using GSON @Expose annotation
+-keepattributes *Annotation*
+
+# Gson specific classes
+-keep class sun.misc.Unsafe { *; }
+#-keep class com.google.gson.stream.** { *; }
+
+# Application classes that will be serialized/deserialized over Gson
+-keep class com.google.gson.examples.android.model.** { *; }
+
+##---------------End: proguard configuration for Gson  ----------
+
+-keep class com.cardinfolink.yunshouyin.model.** { *; }
+
+-keep class com.cardinfolink.yunshouyin.data.** { *; }
+
+

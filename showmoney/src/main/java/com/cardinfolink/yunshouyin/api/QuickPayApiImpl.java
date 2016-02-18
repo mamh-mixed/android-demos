@@ -142,7 +142,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[register] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return;
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -180,7 +180,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[login] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return serverPacket.getUser();
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -217,7 +217,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[updatePassword] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return;
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -249,7 +249,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[activate] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return;
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -291,7 +291,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[improveInfo] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return serverPacket.getUser();
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -318,7 +318,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[getBankInfo] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return serverPacket.getInfo();
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -349,7 +349,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             Log.e(TAG, "[forgetPassword] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
             //TODO: issue, what if serverPacket has not state?
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return serverPacket;
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -394,7 +394,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[getHistoryBills] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return serverPacket;
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -436,7 +436,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[getHistoryCoupons] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return serverPacket;
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -503,7 +503,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[findOrder] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return serverPacket;
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -539,7 +539,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[getTotal] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return serverPacket.getTotal();
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -576,7 +576,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[getSummaryDay] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return serverPacket;
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -612,7 +612,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[getRefd] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return serverPacket;
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -654,7 +654,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[getUploadToken] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return serverPacket.getUploadToken();
             } else {
                 throw new QuickPayException(serverPacket.getError());
@@ -703,7 +703,7 @@ public class QuickPayApiImpl implements QuickPayApi {
             String response = postEngine.post(url, params);
             Log.e(TAG, "[improveCertInfo] response = " + response);
             ServerPacket serverPacket = ServerPacket.getServerPacketFrom(response);
-            if (serverPacket.getState().equals(QUICK_PAY_SUCCESS)) {
+            if (QUICK_PAY_SUCCESS.equals(serverPacket.getState())) {
                 return;
             } else {
                 throw new QuickPayException(serverPacket.getError());
