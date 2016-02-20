@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/main_preferencecategory_start_title" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="main_switchpreference_start"
+        android:summaryOff="@string/main_switchpreference_start_summaryoff"
+        android:summaryOn="@string/main_switchpreference_start_summaryon"
+        android:title="@string/main_switchpreference_start_title" />
+
+    <PreferenceCategory android:title="@string/main_preferencecategory_settings_title" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="main_checkboxpreference_systemapp"
+        android:summaryOff="@string/main_checkboxpreference_systemapp_summaryoff"
+        android:summaryOn="@string/main_checkboxpreference_systemapp_summaryon"
+        android:title="@string/main_checkboxpreference_systemapp_title" />
+
+    <PreferenceScreen
+        android:icon="@drawable/ic_settings_applications"
+        android:key="main_preferencescreen_first"
+        android:summary="@string/main_preferencescreen_first_summary"
+        android:title="@string/main_preferencescreen_first_title" />
+
+    <PreferenceScreen
+        android:icon="@drawable/ic_settings_applications"
+        android:key="main_preferencescreen_second"
+        android:summary="@string/main_preferencescreen_second_summary"
+        android:title="@string/main_preferencescreen_second_title" />
+
+    <PreferenceScreen
+        android:icon="@drawable/ic_settings_applications"
+        android:key="main_preferencescreen_third"
+        android:summary="@string/main_preferencescreen_third_summary"
+        android:title="@string/main_preferencescreen_third_title" />
+
+    <PreferenceScreen
+        android:key="main_preferencescreen_ratio"
+        android:summary="@string/main_preferencescreen_ratio_summary"
+        android:title="@string/main_preferencescreen_ratio_title" />
+
+    <PreferenceScreen
+        android:key="main_preferencescreen_total"
+        android:summary="@string/main_preferencescreen_total_summary"
+        android:title="@string/main_preferencescreen_total_title" />
+
+</PreferenceScreen>

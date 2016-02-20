@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 简体中文 -->
+<resources>
+
+    <string name="app_name">随机启动应用</string>
+    <string name="title_activity_first">设置第1级别的应用</string>
+    <string name="title_activity_second">设置第2级别的应用</string>
+    <string name="title_activity_third">设置第3级别的应用</string>
+    <string name="title_activity_result">结果</string>
+    <string name="confirmbutton_text">确认</string>
+    <string name="allcheckbox_text">全选</string>
+    <string name="activity_floatview_stopbutton_text">停止</string>
+    <string name="main_preferencecategory_settings_title">设置</string>
+    <string name="main_preferencecategory_start_title">开始</string>
+    <string name="main_switchpreference_start_title">运行……</string>
+    <string name="main_checkboxpreference_systemapp_title">系统应用?</string>
+    <string name="main_preferencescreen_first_title">第一级别</string>
+    <string name="main_preferencescreen_second_title">第二级别</string>
+    <string name="main_preferencescreen_third_title">第三级别</string>
+    <string name="main_preferencescreen_ratio_title">比例</string>
+    <string name="main_preferencescreen_total_title">总数</string>
+    <string name="main_switchpreference_start_summaryoff">关</string>
+    <string name="main_switchpreference_start_summaryon">开</string>
+    <string name="main_checkboxpreference_systemapp_summaryoff">用户应用</string>
+    <string name="main_checkboxpreference_systemapp_summaryon">系统应用</string>
+    <string name="main_preferencescreen_first_summary">选择第一级别的应用</string>
+    <string name="main_preferencescreen_second_summary">选择第二级别的应用</string>
+    <string name="main_preferencescreen_third_summary">选择第三级别的应用</string>
+    <string name="main_preferencescreen_ratio_summary">设置三种级别启动次数的比例</string>
+    <string name="main_preferencescreen_total_summary">设置总的启动次数</string>
+    <string name="dialog_total_title">设置总的启动次数</string>
+    <string name="dialog_ratio_title">设置比例</string>
+    <string name="dialog_result_title">停止和启动</string>
+    <string name="dialog_ok">确认</string>
+    <string name="dialog_cancel">取消</string>
+    <string name="list_item_launch">启动次数: </string>
+    <string name="list_item_kill">杀死次数: </string>
+
+</resources>
