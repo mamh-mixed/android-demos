@@ -163,7 +163,12 @@
     <string name="alert_error_password_cannot_empty">密码不能为空!</string>
     <string name="alert_error_email_cannot_empty">邮箱不能为空!</string>
     <string name="alert_error_email_format_error">邮箱格式不正确!</string>
-    <string name="alert_error_password_short_six">密码不能小于六位</string>
+    <string name="alert_error_password_too_short">密码不能小于8位</string>
+    <string name="alert_error_password_too_long">密码不能多于30位!</string>
+    <string name="alert_error_password_should_contain">密码必须包含大小写字母和数字!</string>
+    <string name="alert_error_password_not_contain_number">密码必须包含数字!</string>
+    <string name="alert_error_password_not_contain_uppercase">密码必须包含大写字母!</string>
+    <string name="alert_error_password_not_contain_lowercase">密码必须包含小写字母!</string>
     <string name="alert_error_qrpassword_error">"确认密码不一致!"</string>
     <string name="alert_error_province_cannot_empty">开户行所在省份不能为空!</string>
     <string name="alert_error_city_cannot_empty">开户行所在城市不能为空!</string>
@@ -190,9 +195,9 @@
     <string name="alert_update_success">修改成功!</string>
     <string name="alert_commit_success">提交完成!</string>
     <string name="alert_error_old_password_cannot_empty">原密码不能为空!</string>
-    <string name="alert_error_old_password_short_six">原密码不能少于6位!</string>
     <string name="alert_error_new_password_cannot_empty">新密码不能为空!</string>
-    <string name="alert_error_new_password_short_six">新密码不能少于6位!</string>
+    <string name="alert_error_new_password_too_short">新密码不能少于8位!</string>
+    <string name="alert_error_new_password_too_long">新密码不能多于30位!</string>
     <string name="alert_error_limit_error">"当日交易已超过限额,请申请提升限额!"</string>
     <string name="alert_error__shop_name_cannot_empty">店铺名称不能为空</string>
     <string name="alert_error__shop_address_cannot_empty">店铺地址不能为空</string>

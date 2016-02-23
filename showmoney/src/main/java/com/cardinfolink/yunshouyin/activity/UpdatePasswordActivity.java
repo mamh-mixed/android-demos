@@ -102,24 +102,28 @@ public class UpdatePasswordActivity extends BaseActivity {
             return false;
         }
 
-        if (originPwd.length() < 6) {
-            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_old_password_short_six);
-            mYellowTips.show(alertMsg);
-            return false;
-        }
-
         if (TextUtils.isEmpty(newPwd)) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_new_password_cannot_empty);
             mYellowTips.show(alertMsg);
             return false;
         }
-
-        if (newPwd.length() < 6) {
-            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_new_password_short_six);
+        //新增要求密码长度不能少于八位
+        if (newPwd.length() < 8) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_new_password_too_short);
             mYellowTips.show(alertMsg);
             return false;
         }
-
+        if (newPwd.length() > 30) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_new_password_too_long);
+            mYellowTips.show(alertMsg);
+            return false;
+        }
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
+        if (!newPwd.matches(regex)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_password_should_contain);
+            mYellowTips.show(alertMsg);
+            return false;
+        }
         return true;
     }
 }

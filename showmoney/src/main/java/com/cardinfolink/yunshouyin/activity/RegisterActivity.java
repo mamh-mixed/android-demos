@@ -16,6 +16,7 @@ import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingInputItem;
 import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
+import com.cardinfolink.yunshouyin.util.Log;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
 import com.cardinfolink.yunshouyin.util.Utility;
 import com.cardinfolink.yunshouyin.util.VerifyUtil;
@@ -175,8 +176,19 @@ public class RegisterActivity extends BaseActivity {
             mYellowTips.show(alertMsg);
             return false;
         }
-        if (password.length() < 6) {
-            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_password_short_six);
+        if (password.length() < 8) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_password_too_short);
+            mYellowTips.show(alertMsg);
+            return false;
+        }
+        if (password.length() > 30) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_password_too_long);
+            mYellowTips.show(alertMsg);
+            return false;
+        }
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
+        if (!password.matches(regex)) {
+            alertMsg = ShowMoneyApp.getResString(R.string.alert_error_password_should_contain);
             mYellowTips.show(alertMsg);
             return false;
         }
