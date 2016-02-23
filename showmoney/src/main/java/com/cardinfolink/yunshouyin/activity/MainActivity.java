@@ -24,8 +24,6 @@ import com.cardinfolink.yunshouyin.view.MySettingView;
 import com.cardinfolink.yunshouyin.view.ScanCodeView;
 import com.cardinfolink.yunshouyin.view.TicketView;
 import com.cardinfolink.yunshouyin.view.TransManageView;
-import com.umeng.message.IUmengRegisterCallback;
-import com.umeng.message.PushAgent;
 import com.umeng.update.UmengUpdateAgent;
 
 import java.util.ArrayList;
@@ -40,11 +38,6 @@ public class MainActivity extends BaseActivity {
 
     private long exitTime = 0;
 
-    private Handler handler = new Handler();
-    //此处是注册的回调处理
-    //参考集成文档的1.7.10
-    //http://dev.umeng.com/push/android/integration#1_7_10
-    private IUmengRegisterCallback mRegisterCallback = new UmengPushAgengRegisterCallback();
 
     private ViewPager mTabPager;//声明对象
     private ImageView mTab1, mTab2, mTab3, mTab4;
@@ -91,21 +84,7 @@ public class MainActivity extends BaseActivity {
         UmengUpdateAgent.setUpdateCheckConfig(false);
         UmengUpdateAgent.update(this);
 
-        PushAgent mPushAgent = PushAgent.getInstance(this);
-        //mPushAgent.setPushCheck(true);    //默认不检查集成配置文件
-        //mPushAgent.setLocalNotificationIntervalLimit(false);  //默认本地通知间隔最少是10分钟
 
-        //应用程序启动统计
-        //参考集成文档的1.5.1.2
-        //http://dev.umeng.com/push/android/integration#1_5_1
-        mPushAgent.setResourcePackageName("com.cardinfolink.yunshouyin");
-        mPushAgent.onAppStart();
-
-        //开启推送并设置注册的回调处理
-        if (!mPushAgent.isEnabled()) {
-            mPushAgent.enable(mRegisterCallback);
-        }
-        mPushAgent.setMergeNotificaiton(false);//不合并消息 通知，这样通知栏会有多条消息显示
     }
 
     public void initHandler() {
@@ -328,19 +307,6 @@ public class MainActivity extends BaseActivity {
 
     }
 
-
-    private class UmengPushAgengRegisterCallback implements IUmengRegisterCallback {
-
-        @Override
-        public void onRegistered(String s) {
-            handler.post(new Runnable() {
-
-                @Override
-                public void run() {
-                }
-            });
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
