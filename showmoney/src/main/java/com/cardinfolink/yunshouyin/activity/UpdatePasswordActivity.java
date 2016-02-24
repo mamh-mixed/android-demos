@@ -13,7 +13,9 @@ import com.cardinfolink.yunshouyin.data.SessionData;
 import com.cardinfolink.yunshouyin.data.User;
 import com.cardinfolink.yunshouyin.ui.SettingActionBarItem;
 import com.cardinfolink.yunshouyin.ui.SettingPasswordItem;
+import com.cardinfolink.yunshouyin.util.Log;
 import com.cardinfolink.yunshouyin.util.ShowMoneyApp;
+import com.cardinfolink.yunshouyin.util.VerifyUtil;
 import com.cardinfolink.yunshouyin.view.YellowTips;
 
 public class UpdatePasswordActivity extends BaseActivity {
@@ -118,12 +120,14 @@ public class UpdatePasswordActivity extends BaseActivity {
             mYellowTips.show(alertMsg);
             return false;
         }
-        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$";
-        if (!newPwd.matches(regex)) {
+        //检查密码等级返回一个整数
+        int level = VerifyUtil.checkPasswordLevel(newPwd);
+        if (level < 2) {
             alertMsg = ShowMoneyApp.getResString(R.string.alert_error_password_should_contain);
             mYellowTips.show(alertMsg);
             return false;
         }
+
         return true;
     }
 }
