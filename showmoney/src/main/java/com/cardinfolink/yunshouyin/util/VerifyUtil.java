@@ -222,5 +222,31 @@ public class VerifyUtil {
         return flag;
     }
 
+    /**
+     * 检查密码等级返回一个整数
+     *
+     * @param password
+     * @return
+     */
+    public static int checkPasswordLevel(String password) {
+        int level = 0;//密码等级，包含了数字，level就加个，包含了大写字母就再次加个
+        Pattern pattern = Pattern.compile("[0-9]");
+        if (pattern.matcher(password).find()) {
+            level += 1;
+        }
+        pattern = Pattern.compile("[a-z]");
+        if (pattern.matcher(password).find()) {
+            level += 1;
+        }
+        pattern = Pattern.compile("[A-Z]");
+        if (pattern.matcher(password).find()) {
+            level += 1;
+        }
+        pattern = Pattern.compile("[#@$_]");
+        if (pattern.matcher(password).find()) {
+            level += 1;
+        }
+        return level;
+    }
 
 }
